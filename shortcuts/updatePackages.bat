@@ -1,1 +1,1 @@
-start cmd /k "cd .. && cd frontend && npm install"
+start cmd /k "cd frontend && npm install"
