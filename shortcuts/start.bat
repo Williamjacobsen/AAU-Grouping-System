@@ -1,2 +1,2 @@
-start cmd /k "cd backend && gradlew bootRun"
-start cmd /k "cd frontend && npm start"
+start cmd /k "cd .. && cd backend && gradlew bootRun"
+start cmd /k "cd .. && cd frontend && npm start"
