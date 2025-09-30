@@ -16,6 +16,7 @@ public class Database {
 
 	public int saveCoordinator(Coordinator coordinator) {
 		int id = idGenerator.incrementAndGet();
+		coordinator.setDatabaseID(id);
 		coordinators.put(id, coordinator);
 		return id;
 	}
