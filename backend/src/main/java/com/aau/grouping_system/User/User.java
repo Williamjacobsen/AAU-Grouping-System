@@ -2,33 +2,27 @@ package com.aau.grouping_system.User;
 
 public class User {
 
-    private String id;
-    private String name;
+	private String email;
+	private String passwordHash;
+	private String name;
 
-    public User() {
-    }
+	// getters & setters
 
-    public User(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	public String getEmail() { return email; }
+	public void setEmail(String email) { this.email = email; }
 
-    // getters & setters
-    public String getId() {
-        return id;
-    }
+	public String getPasswordHash() { return passwordHash; }
+	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
 
-    public String getName() {
-        return name;
-    }
+	// constructors
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public User(String email, String passwordHash, String name) {
+		this.email = email;
+		this.passwordHash = passwordHash;
+		this.name = name;
+	}
+
 }
-
-

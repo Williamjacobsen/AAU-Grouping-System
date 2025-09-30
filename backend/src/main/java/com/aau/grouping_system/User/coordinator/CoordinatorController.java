@@ -1,42 +1,47 @@
-package com.aau.grouping_system.User.coordinator;
+package com.aau.grouping_system.User.Coordinator;
 
-import java.util.Map;
-
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.database.Database;
+import com.aau.grouping_system.Database.Database;
 
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
-    private final Coordinator coordinator
-            = new Coordinator("coordinator1", "John i guess", "IT?");
+	private final Database db;
 
-    private final Database db;
+	public CoordinatorController(Database db) {
+		this.db = db;
+	}
 
-    // dependency injection
-    public CoordinatorController(Database db) {
-        this.db = db;
-    }
+	// requests
 
-    @GetMapping
-    public Map<Integer, String> getSessions() {
-        return db.getAllSessions();
-    }
+	private record SignUpRequest(String email, String password, String name) { }
+	@PostMapping("/signUp")
+	public void signUp(@RequestBody SignUpRequest request) {
+		// todo: check that no other coordinator has the same email
+		// todo: hash password
+		String passwordHash = request.password();
+		Coordinator newCoordinator = new Coordinator(request.email(), passwordHash, request.name());
+		db.saveCoordinator(newCoordinator);
+	}
 
-    // How to test: send a post request "http://localhost:8080/coordinator/createSession?sessionName=test"
-    @PostMapping("/createSession")
-    public String createSession(@RequestParam String sessionName) {
-        return coordinator.createSession(db, sessionName);
-    }
+	private record ModifyEmailRequest(Coordinator coordinator, String newEmail) { }
+	@PostMapping("/modifyEmail")
+	public void modifyEmail(@RequestBody ModifyEmailRequest request) {
+		// todo: Credentials validation
+		request.coordinator().setEmail(request.newEmail());
+	}
 
-    @GetMapping("/me")
-    public Coordinator getCoordinator() {
-        return coordinator;
-    }
+	private record ModifyPasswordRequest(Coordinator coordinator, String newPassword) { }
+	@PostMapping("/modifyPassword")
+	public void modifyPassword(@RequestBody ModifyPasswordRequest request) {
+		// todo: Credentials validation
+		// todo: Hash password
+		String passwordHash = request.newPassword();
+		request.coordinator().setPasswordHash(passwordHash);
+	}
 }
