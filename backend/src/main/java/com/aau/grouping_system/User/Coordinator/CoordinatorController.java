@@ -17,6 +17,7 @@ import com.aau.grouping_system.Database.Database;
 public class CoordinatorController {
 
 	private final Database db;
+
 	private final PasswordEncoder passwordEncoder;
 
 	public CoordinatorController(Database db, PasswordEncoder passwordEncoder) {

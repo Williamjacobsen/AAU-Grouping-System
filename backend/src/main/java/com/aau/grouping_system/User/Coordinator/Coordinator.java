@@ -16,7 +16,4 @@ public class Coordinator extends User {
 	public Coordinator(String email, String password, String name) {
 		super(email, password, name);
 	}
-
-
-
 }
