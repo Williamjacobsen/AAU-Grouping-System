@@ -1,4 +1,4 @@
-package com.aau.grouping_system.database;
+package com.aau.grouping_system.Database;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -6,20 +6,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.stereotype.Component;
 
+import com.aau.grouping_system.User.Coordinator.Coordinator;
+
 @Component // so we can do dependency injection
 public class Database {
 
-    private final Map<Integer, String> sessions = new ConcurrentHashMap<>();
-    private final AtomicInteger idGenerator = new AtomicInteger();
+	private final Map<Integer, Coordinator> coordinators = new ConcurrentHashMap<>();
+	private final AtomicInteger idGenerator = new AtomicInteger();
 
-    // Encapsulation & Abstraction
-    public int saveSession(String data) {
-        int id = idGenerator.incrementAndGet();
-        sessions.put(id, data);
-        return id;
-    }
+	public int saveCoordinator(Coordinator coordinator) {
+		int id = idGenerator.incrementAndGet();
+		coordinators.put(id, coordinator);
+		return id;
+	}
 
-    public Map<Integer, String> getAllSessions() {
-        return sessions;
-    }
+	public Map<Integer, Coordinator> getAllCoordinators() {
+		return coordinators;
+	}
 }
