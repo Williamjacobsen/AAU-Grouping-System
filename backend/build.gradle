@@ -19,13 +19,8 @@ repositories {
 }
 
 dependencies {
-<<<<<<< Updated upstream
-	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.springframework.security:spring-security-crypto") // For BCrypt
-=======
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
->>>>>>> Stashed changes
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	developmentOnly("org.springframework.boot:spring-boot-devtools") // For automatic restart upon file change
 }
