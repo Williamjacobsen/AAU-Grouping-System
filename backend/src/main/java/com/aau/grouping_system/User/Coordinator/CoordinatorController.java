@@ -38,7 +38,6 @@ public class CoordinatorController {
 		String passwordHash = passwordEncoder.encode(request.password());
 		Coordinator newCoordinator = new Coordinator(request.email(), passwordHash, request.name());
 		db.saveCoordinator(newCoordinator);
-		System.out.println("Added profile: " + "Email: " + request.email() + ", Password hash:" + passwordHash);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
       .body("Coordinator has been added to database.");
