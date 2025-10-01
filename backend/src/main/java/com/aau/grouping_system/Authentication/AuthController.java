@@ -5,6 +5,8 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -33,31 +35,31 @@ public ResponseEntity<?> login(@RequestBody Map<String, String> body, HttpServle
 String email = body.get("email");
 String password = body.get("password");
 
-// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i variablen 
-// ellers bliver emailen sat til null
-Coordinator user = db.getAllCoordinators().values().stream()
-.filter(c -> c.getEmail().equals(email)).findFirst().orElse(null); 
-				
-//Hvis emailen ikke eksistere, så sendes der en 401 error response
-if (user == null) {
-	return ResponseEntity.status(401).body("Invalid email or password");
-}
-
-// Adg.koden hashes og sammenlignes med den rigige adg.kode som allerede er hashed 
-// og så sendes der en 401 error response hvis adg. er forkert
-if (!passwordEncoder.matches(password, user.getPasswordHash())) {
-	return ResponseEntity.status(401).body("Invalid email or password");
-}
-
-// Hvis der findes en session ved login, så skal den slettes og der skal laves en ny
-HttpSession oldSession = request.getSession(false);
-if (oldSession != null)
-	oldSession.invalidate();
-HttpSession session = request.getSession(true);
-// Gemmer nøglen "user" i session objektet.
-// Til fremtide kald under samme session, skal credentials ikke tjekkes igen, 
-// men derimod kan session.getAttribute("user") tjekkes.
-session.setAttribute("user", user);
+		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i variablen
+		Coordinator user = null;
+		for (Coordinator existingCoordinator : db.getAllCoordinators().values()) {
+			if (existingCoordinator.getEmail().equals(email)) {
+				user = existingCoordinator;
+				break; 
+			}
+		}
+	
+		// Hvis emailen ikke eksistere eller adg.koden er forkert, så sendes der en 401 error response
+		if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
+		}
+	
+		// Hvis der findes en session ved login, så skal den slettes og der skal laves en ny
+		//getSession tjekker om der eksistere en session i HttpSession objektet
+		HttpSession oldSession = request.getSession(false);
+		if (oldSession != null)
+			oldSession.invalidate();
+		HttpSession session = request.getSession(true);
+		session.setMaxInactiveInterval(86400); //1 dag
+		// Gemmer nøglen "user" i session objektet.
+		// Til fremtide kald under samme session, skal credentials ikke tjekkes igen,
+		// men derimod kan session.getAttribute("user") tjekkes.
+		session.setAttribute("user", user);
 
 return ResponseEntity.ok("Logged in, user: " + user.getName());
 }
@@ -71,9 +73,27 @@ public ResponseEntity<?> logout(HttpServletRequest request) {
 	return ResponseEntity.ok("Logged out");
 }
 
-// Mangler? - @GetMapping("/me") så frontenden kan tjekke hvem der er logget ind
+
 // Mangler for studerne og supervisors
 // Benytter sig af bruteforce metoden, 
 // 	når den skal tjekke db for coordinatore - kan det optimeres?
+
+// Mangler? - @GetMapping("/me") så frontenden kan tjekke hvem der er logget ind
+
+	@PostMapping("/me")
+	public ResponseEntity<String> me(HttpServletRequest request) {
+
+	// Tjekker om session stadig er aktiv
+	HttpSession session = request.getSession(false);
+	if (session != null) {
+
+	}
+
+		
+		return ResponseEntity.ok("User is logged in");
+	}
+	// Mangler for studerne og supervisors
+	// Benytter sig af bruteforce metoden,
+	// når den skal tjekke db for coordinatore - kan det optimeres?
 
 }
