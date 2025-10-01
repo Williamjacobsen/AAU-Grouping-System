@@ -29,7 +29,7 @@ public class Database {
 		return coordinators;
 	}
 	
-	// Test coordinator
+	// Test coordinator (Skal slettes)
 
 	@PostConstruct
 	public void init() {

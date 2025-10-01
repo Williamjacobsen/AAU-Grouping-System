@@ -7,19 +7,19 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-// test
 @Configuration
 public class SecurityConfig {
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-            .csrf(csrf -> csrf.disable())  // disable CSRF
-            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll()); // allow all
-        return http.build();
-    }
+	// test (filterChain skal slettes)
+	@Bean
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+				.csrf(csrf -> csrf.disable()) // disable CSRF
+				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()); // allow all
+		return http.build();
+	}
 
-		@Bean
-		public PasswordEncoder passwordEncoder() {
-    	return new BCryptPasswordEncoder();
-		}
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }
