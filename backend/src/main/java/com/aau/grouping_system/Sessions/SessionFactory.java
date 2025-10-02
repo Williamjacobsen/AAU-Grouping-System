@@ -1,8 +1,8 @@
-package com.aau.grouping_system.Sessions;
+import java.util.List;
 
 public class SessionFactory {
-    public static Session create(Coordinator coordinator, Supervisor[] supervisors, Student[] students,
-                                 Project[] projects, Group[] groups) {
+    public static Session create(Coordinator coordinator, List<Supervisor> supervisors, List<Student> students,
+                                 List<Project> projects, List<Group> groups) {
         return new Session(coordinator, supervisors, students, projects, groups);
     }
 }

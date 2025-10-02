@@ -1,15 +1,16 @@
-package com.aau.grouping_system.Sessions;
+package com.aau.grouping_system;
+import java.util.List;
 
 public class Session {
     private Coordinator coordinator;
-    private Supervisor[] supervisors;
-    private Student[] students;
-    private Project[] projects;
-    private Group[] groups;
+    private List<Supervisor> supervisors;
+    private List<Student> students;
+    private List<Project> projects;
+    private List<Group> groups;
 
     // Constructor
-    public Session(Coordinator coordinator, Supervisor[] supervisors, Student[] students,
-                   Project[] projects, Group[] groups) {
+    public Session(Coordinator coordinator, List<Supervisor> supervisors, List<Student> students,
+                   List<Project> projects, List<Group> groups) {
         this.coordinator = coordinator;
         this.supervisors = supervisors;
         this.students = students;
@@ -21,16 +22,16 @@ public class Session {
     public Coordinator getCoordinator() { return coordinator; }
     public void setCoordinator(Coordinator coordinator) { this.coordinator = coordinator; }
 
-    public Supervisor[] getSupervisors() { return supervisors; }
-    public void setSupervisors(Supervisor[] supervisors) { this.supervisors = supervisors; }
+    public List<Supervisor> getSupervisors() { return supervisors; }
+    public void setSupervisors(List<Supervisor> supervisors) { this.supervisors = supervisors; }
 
-    public Student[] getStudents() { return students; }
-    public void setStudents(Student[] students) { this.students = students; }
+    public List<Student> getStudents() { return students; }
+    public void setStudents(List<Student> students) { this.students = students; }
 
-    public Project[] getProjects() { return projects; }
-    public void setProjects(Project[] projects) { this.projects = projects; }
+    public List<Project> getProjects() { return projects; }
+    public void setProjects(List<Project> projects) { this.projects = projects; }
 
-    public Group[] getGroups() { return groups; }
-    public void setGroups(Group[] groups) { this.groups = groups; }
+    public List<Group> getGroups() { return groups; }
+    public void setGroups(List<Group> groups) { this.groups = groups; }
 
 }
