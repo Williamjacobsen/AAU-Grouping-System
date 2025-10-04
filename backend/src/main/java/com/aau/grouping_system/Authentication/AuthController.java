@@ -35,10 +35,7 @@ public class AuthController {
 		String email = body.get("email");
 		String password = body.get("password");
 
-		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i
-		// variablen
-		// ellers bliver emailen sat til null
-
+		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i variablen
 		Coordinator user = null;
 		for (Coordinator existingCoordinator : db.getAllCoordinators().values()) {
 			if (existingCoordinator.getEmail().equals(email)) {
@@ -52,7 +49,6 @@ public class AuthController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
 		}
 	
-		// Hvis der findes en session ved login, så skal den slettes og der skal laves en ny
 		//getSession tjekker om der eksistere en session i HttpSession objektet
 		HttpSession oldSession = request.getSession(false);
 		if (oldSession != null)
@@ -60,8 +56,6 @@ public class AuthController {
 		HttpSession session = request.getSession(true);
 		session.setMaxInactiveInterval(86400); //1 dag
 		// Gemmer nøglen "user" i session objektet.
-		// Til fremtide kald under samme session, skal credentials ikke tjekkes igen,
-		// men derimod kan session.getAttribute("user") tjekkes.
 		session.setAttribute("user", user);
 
 		return ResponseEntity.ok("Logged in, user: " + user.getName());
@@ -76,9 +70,23 @@ public class AuthController {
 		return ResponseEntity.ok("Logged out");
 	}
 
-	// Mangler? - @GetMapping("/me") så frontenden kan tjekke hvem der er logget ind
-	// Mangler for studerne og supervisors
-	// Benytter sig af bruteforce metoden,
-	// når den skal tjekke db for coordinatore - kan det optimeres?
+
+	@GetMapping("/me")
+	public ResponseEntity<Coordinator> me(HttpServletRequest request) {
+
+	// Tjekker om session stadig er aktiv
+	HttpSession session = request.getSession(false);
+	if (session == null) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+	}
+
+	Coordinator user = (Coordinator) session.getAttribute("user");
+
+	// Hvis brugeren findes, så retuneres bruger info som et JSON obj.
+	if (user != null) {
+		return ResponseEntity.ok(user);
+	}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+	}
 
 }
