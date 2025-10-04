@@ -12,6 +12,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.Map;
 
 @RestController
@@ -73,27 +74,22 @@ public ResponseEntity<?> logout(HttpServletRequest request) {
 	return ResponseEntity.ok("Logged out");
 }
 
-
-// Mangler for studerne og supervisors
-// Benytter sig af bruteforce metoden, 
-// 	når den skal tjekke db for coordinatore - kan det optimeres?
-
-// Mangler? - @GetMapping("/me") så frontenden kan tjekke hvem der er logget ind
-
-	@PostMapping("/me")
-	public ResponseEntity<String> me(HttpServletRequest request) {
+	@GetMapping("/me")
+	public ResponseEntity<Coordinator> me(HttpServletRequest request) {
 
 	// Tjekker om session stadig er aktiv
 	HttpSession session = request.getSession(false);
-	if (session != null) {
-
+	if (session == null) {
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 	}
 
-		
-		return ResponseEntity.ok("User is logged in");
+	Coordinator user = (Coordinator) session.getAttribute("user");
+
+	// Hvis brugeren findes, så retuneres bruger info som et JSON obj.
+	if (user != null) {
+		return ResponseEntity.ok(user);
 	}
-	// Mangler for studerne og supervisors
-	// Benytter sig af bruteforce metoden,
-	// når den skal tjekke db for coordinatore - kan det optimeres?
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+	}
 
 }
