@@ -28,15 +28,15 @@ public class Database {
 	public Map<Integer, Coordinator> getAllCoordinators() {
 		return coordinators;
 	}
-	
+
 	// Test coordinator (Skal slettes)
 
 	@PostConstruct
 	public void init() {
-    PasswordEncoder encoder = new BCryptPasswordEncoder();
-    String hashedPassword = encoder.encode("Password123");
-    Coordinator testUser = new Coordinator("test@example.com", hashedPassword, "Test User");
-    saveCoordinator(testUser);
-}
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		String hashedPassword = encoder.encode("Password123");
+		Coordinator testUser = new Coordinator("test@example.com", hashedPassword, "Test User");
+		saveCoordinator(testUser);
+	}
 
 }

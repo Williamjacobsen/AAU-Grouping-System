@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequestMapping("/groups")
 public class GroupController {
 
-	// Store this in db
+	// Store this in db? db is not used? or make GroupRepository file for its data?
 	private final Map<Long, Group> groups = new ConcurrentHashMap<>();
 	private final Map<Long, Student> students = new ConcurrentHashMap<>();
 	private final Database db;

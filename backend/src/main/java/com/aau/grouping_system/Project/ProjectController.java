@@ -3,13 +3,13 @@ package com.aau.grouping_system.Project;
 import java.util.List;
 import java.util.ArrayList;
 
-public class ProjectCoordinator {
+public class ProjectController {
 	private String name;
 	private String email;
 	private List<Project> projects;
 
 		// Constructor (forklar)
-	public ProjectCoordinator(String name, String email) {
+	public ProjectController(String name, String email) {
 		this.name = name;
 		this.email = email;
 		this.projects = new ArrayList<>();
