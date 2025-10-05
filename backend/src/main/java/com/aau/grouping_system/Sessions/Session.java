@@ -1,5 +1,10 @@
-package com.aau.grouping_system;
+package com.aau.grouping_system.Sessions;
 import java.util.List;
+
+import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 public class Session {
     private Coordinator coordinator;

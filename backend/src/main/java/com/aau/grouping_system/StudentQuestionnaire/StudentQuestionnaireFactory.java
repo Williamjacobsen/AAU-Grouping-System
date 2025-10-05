@@ -1,4 +1,4 @@
-package com.aau.grouping_system.User.coordinator;
+package com.aau.grouping_system.StudentQuestionnaire;
 
 import java.util.List;
 

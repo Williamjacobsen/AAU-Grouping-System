@@ -1,4 +1,4 @@
-package com.aau.grouping_system.config;
+package com.aau.grouping_system.Config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
