@@ -32,16 +32,15 @@ public class CoordinatorController {
 	public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) {
 		if (isEmailDuplicate(request.email())) {
 			return ResponseEntity
-					.status(HttpStatus.CONFLICT)
-      		.body("Error: Inputted email is already used by another coordinator.");
+				.status(HttpStatus.CONFLICT)
+      	.body("Error: Inputted email is already used by another coordinator.");
 		}
 		String passwordHash = passwordEncoder.encode(request.password());
 		Coordinator newCoordinator = new Coordinator(request.email(), passwordHash, request.name());
 		db.saveCoordinator(newCoordinator);
-		System.out.println("Added profile: " + "Email: " + request.email() + ", Password hash:" + passwordHash);
 		return ResponseEntity
 			.status(HttpStatus.CREATED)
-      .body("Coordinator has been added to database.");
+    	.body("Coordinator has been added to database.");
 	}
 
 	private record ModifyEmailRequest(Coordinator coordinator, String newEmail) { }
@@ -50,8 +49,8 @@ public class CoordinatorController {
 		// todo: Credentials validation
 		if (isEmailDuplicate(request.newEmail())) {
 			return ResponseEntity
-					.status(HttpStatus.CONFLICT)
-      		.body("Error: Inputted email is already used by another coordinator.");
+				.status(HttpStatus.CONFLICT)
+      	.body("Error: Inputted email is already used by another coordinator.");
 		}
 		request.coordinator().setEmail(request.newEmail());
 		return ResponseEntity
