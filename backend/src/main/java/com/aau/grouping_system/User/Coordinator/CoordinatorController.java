@@ -5,6 +5,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -16,83 +18,67 @@ import com.aau.grouping_system.Database.Database;
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
-	private final Database db;
+	private final CoordinatorService service;
 
-	private final PasswordEncoder passwordEncoder;
+	// constructors
 
-	public CoordinatorController(Database db, PasswordEncoder passwordEncoder) {
-		this.db = db;
-		this.passwordEncoder = passwordEncoder;
+	public CoordinatorController(CoordinatorService coordinatorService, Database db, PasswordEncoder passwordEncoder) {
+		this.service = coordinatorService;
 	}
 
 	// requests
 
-	private record SignUpRequest(String email, String password, String name) {
-	}
-
 	@PostMapping("/signUp")
-	public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) {
+	public ResponseEntity<String> signUp(@RequestBody Map<String, String> request) {
 
-		if (isEmailDuplicate(request.email())) {
+		String email = request.get("email");
+		String password = request.get("password");
+		String name = request.get("name");
+
+		if (service.isEmailDuplicate(email)) {
 			return ResponseEntity
 					.status(HttpStatus.CONFLICT)
 					.body("Error: Inputted email is already used by another coordinator.");
 		}
 
-		// Todo: Lav det til en funktion i CoordinatorService.java.
-		String passwordHash = passwordEncoder.encode(request.password());
-		Coordinator newCoordinator = new Coordinator(request.email(), passwordHash, request.name());
-		db.saveCoordinator(newCoordinator);
+		service.addCoordinator(email, password, name);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body("Coordinator has been added to database.");
 	}
 
-	private record ModifyEmailRequest(Coordinator coordinator, String newEmail) {
-	}
-
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(@RequestBody ModifyEmailRequest request) {
+	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> request) {
 		// todo: Credentials validation
 
-		if (isEmailDuplicate(request.newEmail())) {
+		Integer coordinatorID = Integer.parseInt(request.get("coordinatorID"));
+		String newEmail = request.get("newEmail");
+
+		if (service.isEmailDuplicate(newEmail)) {
 			return ResponseEntity
 					.status(HttpStatus.CONFLICT)
 					.body("Error: Inputted email is already used by another coordinator.");
 		}
 
-		request.coordinator().setEmail(request.newEmail());
+		service.modifyEmail(newEmail, coordinatorID);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Email has been changed.");
 	}
 
-	private record ModifyPasswordRequest(Coordinator coordinator, String newPassword) {
-	}
-
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(@RequestBody ModifyPasswordRequest request) {
-
+	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> request) {
 		// todo: Credentials validation
 
-		String passwordHash = passwordEncoder.encode(request.newPassword());
-		request.coordinator().setPasswordHash(passwordHash);
+		Integer coordinatorID = Integer.parseInt(request.get("coordinatorID"));
+		String newPassword = request.get("newPassword");
+
+		service.modifyPassword(newPassword, coordinatorID);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Password has been changed.");
-	}
-
-	// helpers
-
-	private boolean isEmailDuplicate(String email) {
-		for (Coordinator existingCoordinator : db.getAllCoordinators().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

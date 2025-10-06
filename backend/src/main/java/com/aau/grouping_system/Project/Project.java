@@ -1,6 +1,8 @@
 package com.aau.grouping_system.Project;
 
-public class Project {
+import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
+
+public class Project extends EnhancedMappable {
 	// todo: Fjern "project" fra variabelnavne.
 	private String projectName;
 	private String description;

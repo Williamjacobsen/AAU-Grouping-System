@@ -1,10 +1,12 @@
 package com.aau.grouping_system.User.Coordinator;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import com.aau.grouping_system.Sessions.Session;
 import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	private Integer databaseID = null;
+	public EnhancedMap<Session> sessions = new EnhancedMap<>();
 
 	// constructors
 
@@ -12,14 +14,11 @@ public class Coordinator extends User {
 		super(email, password, name);
 	}
 
-	// getters & setters
+	// abstract method overrides
 
-	public Integer getDatabaseID() {
-		return this.databaseID;
-	}
-
-	public void setDatabaseID(Integer id) {
-		this.databaseID = id;
+	@Override
+	public Role getRole() {
+		return Role.COORDINATOR;
 	}
 
 }

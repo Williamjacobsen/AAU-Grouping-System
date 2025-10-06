@@ -1,10 +1,11 @@
 package com.aau.grouping_system.Group;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-public class Group {
+public class Group extends EnhancedMappable {
 
 	// todo: Use lists instead of arrays.
 

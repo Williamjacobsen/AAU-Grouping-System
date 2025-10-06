@@ -1,26 +1,29 @@
 package com.aau.grouping_system.Sessions;
 
-import java.util.List;
-
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-public class Session {
+public class Session extends EnhancedMappable {
 
 	// todo: brug CopyOnWriteArrayList i stedet for lister, fordi det er
 	// thread-safe.
 	private Coordinator coordinator;
-	private List<Supervisor> supervisors;
-	private List<Student> students;
-	private List<Project> projects;
-	private List<Group> groups;
+	public EnhancedMap<Supervisor> supervisors = new EnhancedMap<>();
+	public EnhancedMap<Student> students = new EnhancedMap<>();
+	public EnhancedMap<Project> projects = new EnhancedMap<>();
+	public EnhancedMap<Group> groups = new EnhancedMap<>();
 
 	// Constructor
-	public Session(Coordinator coordinator, List<Supervisor> supervisors, List<Student> students,
-			List<Project> projects, List<Group> groups) {
+	public Session(Coordinator coordinator,
+			EnhancedMap<Supervisor> supervisors,
+			EnhancedMap<Student> students,
+			EnhancedMap<Project> projects,
+			EnhancedMap<Group> groups) {
 		this.coordinator = coordinator;
 		this.supervisors = supervisors;
 		this.students = students;
@@ -37,35 +40,35 @@ public class Session {
 		this.coordinator = coordinator;
 	}
 
-	public List<Supervisor> getSupervisors() {
+	public EnhancedMap<Supervisor> getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(List<Supervisor> supervisors) {
+	public void setSupervisors(EnhancedMap<Supervisor> supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public List<Student> getStudents() {
+	public EnhancedMap<Student> getStudents() {
 		return students;
 	}
 
-	public void setStudents(List<Student> students) {
+	public void setStudents(EnhancedMap<Student> students) {
 		this.students = students;
 	}
 
-	public List<Project> getProjects() {
+	public EnhancedMap<Project> getProjects() {
 		return projects;
 	}
 
-	public void setProjects(List<Project> projects) {
+	public void setProjects(EnhancedMap<Project> projects) {
 		this.projects = projects;
 	}
 
-	public List<Group> getGroups() {
+	public EnhancedMap<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(List<Group> groups) {
+	public void setGroups(EnhancedMap<Group> groups) {
 		this.groups = groups;
 	}
 

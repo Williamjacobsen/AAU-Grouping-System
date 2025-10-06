@@ -2,26 +2,20 @@ package com.aau.grouping_system.Database;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.stereotype.Component;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 @Component // so we can do dependency injection
 public class Database {
 
-	private final Map<Integer, Coordinator> coordinators = new ConcurrentHashMap<>();
-	private final AtomicInteger idGenerator = new AtomicInteger();
+	private final EnhancedMap<Coordinator> coordinators = new EnhancedMap<>();
 
-	public int saveCoordinator(Coordinator coordinator) {
-		int id = idGenerator.incrementAndGet();
-		coordinator.setDatabaseID(id);
-		coordinators.put(id, coordinator);
-		return id;
-	}
+	// getters & setters
 
-	public Map<Integer, Coordinator> getAllCoordinators() {
+	public EnhancedMap<Coordinator> getCoordinators() {
 		return coordinators;
 	}
 

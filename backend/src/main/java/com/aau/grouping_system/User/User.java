@@ -1,10 +1,23 @@
 package com.aau.grouping_system.User;
 
-public class User {
+import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
+
+public abstract class User extends EnhancedMappable {
 
 	private String email;
 	private String passwordHash;
 	private String name;
+
+	public enum Role {
+		UNDEFINED,
+		COORDINATOR,
+		SUPERVISOR,
+		STUDENT
+	}
+
+	// abstract methods
+
+	public abstract Role getRole();
 
 	// constructors
 
@@ -39,5 +52,4 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }
