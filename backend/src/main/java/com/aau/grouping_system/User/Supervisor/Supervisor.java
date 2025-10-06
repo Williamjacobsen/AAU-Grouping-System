@@ -4,8 +4,17 @@ import com.aau.grouping_system.User.User;
 
 public class Supervisor extends User {
 
+	// constructors
+
 	public Supervisor(String email, String passwordHash, String name) {
 		super(email, passwordHash, name);
 	}
-	
+
+	// abstract method overrides
+
+	@Override
+	public Role getRole() {
+		return Role.SUPERVISOR;
+	}
+
 }

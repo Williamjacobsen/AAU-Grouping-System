@@ -1,10 +1,21 @@
 package com.aau.grouping_system.User;
 
-public class User {
+public abstract class User {
 
 	private String email;
 	private String passwordHash;
 	private String name;
+
+	public enum Role {
+		UNDEFINED,
+		COORDINATOR,
+		SUPERVISOR,
+		STUDENT
+	}
+
+	// abstract methods
+
+	public abstract Role getRole();
 
 	// constructors
 
@@ -39,5 +50,4 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

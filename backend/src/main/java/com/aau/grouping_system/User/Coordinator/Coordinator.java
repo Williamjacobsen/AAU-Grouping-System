@@ -12,6 +12,13 @@ public class Coordinator extends User {
 		super(email, password, name);
 	}
 
+	// abstract method overrides
+
+	@Override
+	public Role getRole() {
+		return Role.COORDINATOR;
+	}
+
 	// getters & setters
 
 	public Integer getDatabaseID() {

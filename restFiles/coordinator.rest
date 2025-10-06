@@ -4,7 +4,7 @@ POST http://localhost:8080/coordinator/signUp
 Content-Type: application/json
 
 {
-  "email": "test@emailjddf.com",
+  "email": "test@example.com",
   "password": "testPassword",
   "name": "Test Name"
 }
@@ -14,5 +14,5 @@ Content-Type: application/json
 
 {
   "email": "test@example.com",
-  "password": "Password123"
+  "password": "testPassword"
 }
