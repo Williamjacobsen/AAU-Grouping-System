@@ -27,43 +27,62 @@ public class CoordinatorController {
 
 	// requests
 
-	private record SignUpRequest(String email, String password, String name) { }
+	private record SignUpRequest(String email, String password, String name) {
+	}
+
 	@PostMapping("/signUp")
 	public ResponseEntity<String> signUp(@RequestBody SignUpRequest request) {
+
 		if (isEmailDuplicate(request.email())) {
 			return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-      	.body("Error: Inputted email is already used by another coordinator.");
+					.status(HttpStatus.CONFLICT)
+					.body("Error: Inputted email is already used by another coordinator.");
 		}
+
+		// Todo: Lav det til en funktion i CoordinatorService.java.
 		String passwordHash = passwordEncoder.encode(request.password());
 		Coordinator newCoordinator = new Coordinator(request.email(), passwordHash, request.name());
 		db.saveCoordinator(newCoordinator);
+
 		return ResponseEntity
-			.status(HttpStatus.CREATED)
-    	.body("Coordinator has been added to database.");
+				.status(HttpStatus.CREATED)
+				.body("Coordinator has been added to database.");
 	}
 
-	private record ModifyEmailRequest(Coordinator coordinator, String newEmail) { }
+	private record ModifyEmailRequest(Coordinator coordinator, String newEmail) {
+	}
+
 	@PostMapping("/modifyEmail")
 	public ResponseEntity<String> modifyEmail(@RequestBody ModifyEmailRequest request) {
 		// todo: Credentials validation
+
 		if (isEmailDuplicate(request.newEmail())) {
 			return ResponseEntity
-				.status(HttpStatus.CONFLICT)
-      	.body("Error: Inputted email is already used by another coordinator.");
+					.status(HttpStatus.CONFLICT)
+					.body("Error: Inputted email is already used by another coordinator.");
 		}
+
 		request.coordinator().setEmail(request.newEmail());
+
 		return ResponseEntity
-			.status(HttpStatus.OK)
-      .body("Coordinator has been added to database.");
+				.status(HttpStatus.OK)
+				.body("Email has been changed.");
 	}
 
-	private record ModifyPasswordRequest(Coordinator coordinator, String newPassword) { }
+	private record ModifyPasswordRequest(Coordinator coordinator, String newPassword) {
+	}
+
 	@PostMapping("/modifyPassword")
-	public void modifyPassword(@RequestBody ModifyPasswordRequest request) {
+	public ResponseEntity<String> modifyPassword(@RequestBody ModifyPasswordRequest request) {
+
 		// todo: Credentials validation
+
 		String passwordHash = passwordEncoder.encode(request.newPassword());
 		request.coordinator().setPasswordHash(passwordHash);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Password has been changed.");
 	}
 
 	// helpers

@@ -4,22 +4,27 @@ import java.util.List;
 import java.util.ArrayList;
 
 public class ProjectController {
+
+	// todo: fjern name og email
+	// todo: lav liste af projekter til en del af databasen.
+
 	private String name;
 	private String email;
 	private List<Project> projects;
 
-		// Constructor (forklar)
+	// Constructor (forklar)
 	public ProjectController(String name, String email) {
 		this.name = name;
 		this.email = email;
 		this.projects = new ArrayList<>();
 	}
 
-		// returnerer intet(void); hvis denne kører, så tager den project som parameter 
+	// returnerer intet(void); hvis denne kører, så tager den project som parameter
 	public void addProject(Project project) {
 		projects.add(project);
 	}
-		// Sæt kommentarer 
+
+	// Sæt kommentarer
 	public void removeProject(Project project) {
 		projects.remove(project);
 	}

@@ -4,28 +4,27 @@ import java.util.List;
 
 public class StudentQuestionnaireFactory {
 
-    public static StudentQuestionnaire create(
-            String studentName,
-            int previousSessionTeammates,
-            int projectPriorities,
-            int desiredGroupMembers,
-            int desiredGroupSize,
-            String workingEnvironment,
-            String specialNeeds,
-            List<String> personalSkills,
-            List<String> academicInterests,
-            String otherComments
-    ) {
-        StudentQuestionnaire q = new StudentQuestionnaire(studentName);
-        q.setPreviousSessionTeammates(previousSessionTeammates);
-        q.setProjectPriorities(projectPriorities);
-        q.setDesiredGroupMembers(desiredGroupMembers);
-        q.setDesiredGroupSize(desiredGroupSize);
-        q.setWorkingEnvironment(workingEnvironment);
-        q.setSpecialNeeds(specialNeeds);
-        q.setPersonalSkills(personalSkills);
-        q.setAcademicInterests(academicInterests);
-        q.setOtherComments(otherComments);
-        return q;
-    }
+	public static StudentQuestionnaire create(
+			String studentName,
+			int previousSessionTeammates,
+			int projectPriorities,
+			int desiredGroupMembers,
+			int desiredGroupSize,
+			String workingEnvironment,
+			String specialNeeds,
+			List<String> personalSkills,
+			List<String> academicInterests,
+			String otherComments) {
+		StudentQuestionnaire questionnaire = new StudentQuestionnaire(studentName);
+		questionnaire.setPreviousSessionTeammates(previousSessionTeammates);
+		questionnaire.setProjectPriorities(projectPriorities);
+		questionnaire.setDesiredGroupMembers(desiredGroupMembers);
+		questionnaire.setDesiredGroupSize(desiredGroupSize);
+		questionnaire.setWorkingEnvironment(workingEnvironment);
+		questionnaire.setSpecialNeeds(specialNeeds);
+		questionnaire.setPersonalSkills(personalSkills);
+		questionnaire.setAcademicInterests(academicInterests);
+		questionnaire.setOtherComments(otherComments);
+		return questionnaire;
+	}
 }

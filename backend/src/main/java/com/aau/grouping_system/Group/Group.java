@@ -6,6 +6,8 @@ import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 public class Group {
 
+	// todo: Use lists instead of arrays.
+
 	private Supervisor supervisor;
 	private Student[] students;
 	private Project project;

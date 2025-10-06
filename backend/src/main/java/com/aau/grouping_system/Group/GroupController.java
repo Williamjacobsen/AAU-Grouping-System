@@ -27,6 +27,8 @@ public class GroupController {
 			@PathVariable Long groupId,
 			@PathVariable Long studentId) {
 
+		// User authority validation
+
 		Group group = groups.get(groupId);
 		Student student = students.get(studentId);
 
