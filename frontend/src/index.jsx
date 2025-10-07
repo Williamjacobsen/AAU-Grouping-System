@@ -9,6 +9,7 @@ import NoPage from "./pages/NoPage/NoPage";
 import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
 import User from "./pages/User/User";
+import ChatBox from "./Components/ChatBox/ChatBox"
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -19,6 +20,7 @@ root.render(
 					<Route index element={<About />} />
 					<Route path="/user" element={<User />} />
 					<Route path="/coordinator" element={<Coordinator />} />
+					<Route path="/chatBoxTestRoute" element={<ChatBox />} /> 
 					<Route path="*" element={<NoPage />} />
 				</Route>
 			</Routes>
