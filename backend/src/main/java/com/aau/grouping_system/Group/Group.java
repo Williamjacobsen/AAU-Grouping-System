@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Group;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
@@ -15,12 +16,9 @@ public class Group extends EnhancedMapItem {
 	private String groupEmail;
 	private Student[] joinRequests;
 
-	@Override
-	protected void initializeChildMapReferences() {
-		// Leave empty because this has no children.
-	}
-
-	public Group(Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
+	public Group(EnhancedMap<EnhancedMapItem> parentMap, Supervisor supervisor, Project project, String groupEmail,
+			int maxStudents, int maxRequests) {
+		super(parentMap);
 		this.supervisor = supervisor;
 		this.project = project;
 		this.groupEmail = groupEmail;

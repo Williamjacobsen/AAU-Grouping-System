@@ -7,31 +7,27 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapReference;
 
 public class Session extends EnhancedMapItem {
 
 	private Coordinator coordinator;
-	public CopyOnWriteArrayList<Supervisor> supervisors = new CopyOnWriteArrayList<>();
-	public CopyOnWriteArrayList<Student> students = new CopyOnWriteArrayList<>();
-	public CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
-	public CopyOnWriteArrayList<Group> groups = new CopyOnWriteArrayList<>();
-
-	@Override
-	protected void initializeChildMapReferences() {
-		childMapReferences.add(supervisors);
-		childMapReferences.add(students);
-		childMapReferences.add(projects);
-		childMapReferences.add(groups);
-	}
+	public EnhancedMapReference<Supervisor> supervisors = new EnhancedMapReference<>(this);
+	public EnhancedMapReference<Student> students = new EnhancedMapReference<>(this);
+	public EnhancedMapReference<Project> projects = new EnhancedMapReference<>(this);
+	public EnhancedMapReference<Group> groups = new EnhancedMapReference<>(this);
 
 	// Constructor
 
-	public Session(Coordinator coordinator,
-			CopyOnWriteArrayList<Supervisor> supervisors,
-			CopyOnWriteArrayList<Student> students,
-			CopyOnWriteArrayList<Project> projects,
-			CopyOnWriteArrayList<Group> groups) {
+	public Session(EnhancedMap<EnhancedMapItem> parentMap,
+			Coordinator coordinator,
+			EnhancedMapReference<Supervisor> supervisors,
+			EnhancedMapReference<Student> students,
+			EnhancedMapReference<Project> projects,
+			EnhancedMapReference<Group> groups) {
+		super(parentMap);
 		this.coordinator = coordinator;
 		this.supervisors = supervisors;
 		this.students = students;
@@ -49,35 +45,35 @@ public class Session extends EnhancedMapItem {
 		this.coordinator = coordinator;
 	}
 
-	public CopyOnWriteArrayList<Supervisor> getSupervisors() {
+	public EnhancedMapReference<Supervisor> getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(CopyOnWriteArrayList<Supervisor> supervisors) {
+	public void setSupervisors(EnhancedMapReference<Supervisor> supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public CopyOnWriteArrayList<Student> getStudents() {
+	public EnhancedMapReference<Student> getStudents() {
 		return students;
 	}
 
-	public void setStudents(CopyOnWriteArrayList<Student> students) {
+	public void setStudents(EnhancedMapReference<Student> students) {
 		this.students = students;
 	}
 
-	public CopyOnWriteArrayList<Project> getProjects() {
+	public EnhancedMapReference<Project> getProjects() {
 		return projects;
 	}
 
-	public void setProjects(CopyOnWriteArrayList<Project> projects) {
+	public void setProjects(EnhancedMapReference<Project> projects) {
 		this.projects = projects;
 	}
 
-	public CopyOnWriteArrayList<Group> getGroups() {
+	public EnhancedMapReference<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(CopyOnWriteArrayList<Group> groups) {
+	public void setGroups(EnhancedMapReference<Group> groups) {
 		this.groups = groups;
 	}
 

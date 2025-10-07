@@ -47,11 +47,11 @@ public class EnhancedMap<T extends EnhancedMapItem> {
 
 	// getters & setters
 
-	public T getEntry(Integer id) {
+	public T getItem(Integer id) {
 		return map.get(id);
 	}
 
-	public Map<Integer, T> getAllEntries() {
+	public Map<Integer, T> getAllItems() {
 		return map;
 	}
 

@@ -1,23 +1,19 @@
 package com.aau.grouping_system.User.Coordinator;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapReference;
 import com.aau.grouping_system.Sessions.Session;
 import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	public CopyOnWriteArrayList<Session> sessions;
-
-	@Override
-	protected void initializeChildMapReferences() {
-		childMapReferences.add(sessions);
-	}
+	public EnhancedMapReference<Session> sessions = new EnhancedMapReference<>(this);
 
 	// constructors
 
-	public Coordinator(String email, String password, String name) {
-		super(email, password, name);
+	public Coordinator(EnhancedMap<EnhancedMapItem> parentMap, String email, String password, String name) {
+		super(parentMap, email, password, name);
 	}
 
 	// abstract method overrides

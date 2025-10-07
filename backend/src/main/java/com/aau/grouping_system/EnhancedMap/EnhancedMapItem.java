@@ -13,21 +13,23 @@ public abstract class EnhancedMapItem {
 	/// not work, because Java cannot recognize nested generics and therefore does
 	/// not believe it can downcast the subtype to a supertype. However, by writing
 	/// it using Wildcards, we can make it work.
-	protected CopyOnWriteArrayList<CopyOnWriteArrayList<? extends EnhancedMapItem>> childMapReferences = new CopyOnWriteArrayList<CopyOnWriteArrayList<? extends EnhancedMapItem>>();
+	protected CopyOnWriteArrayList<EnhancedMapReference<? extends EnhancedMapItem>> childMapReferences = new CopyOnWriteArrayList<EnhancedMapReference<? extends EnhancedMapItem>>();
 
 	// public methods
 
 	public void removeChildren() {
-		for (CopyOnWriteArrayList<? extends EnhancedMapItem> mapReference : childMapReferences) {
-			for (EnhancedMapItem item : mapReference) {
+		for (EnhancedMapReference<? extends EnhancedMapItem> mapReference : childMapReferences) {
+			for (EnhancedMapItem item : mapReference.getItemReferences()) {
 				item.parentMap.remove(item);
 			}
 		}
 	}
 
-	// abstract methods
+	// constructors
 
-	protected abstract void initializeChildMapReferences();
+	public EnhancedMapItem(EnhancedMap<EnhancedMapItem> parentMap) {
+		this.parentMap = parentMap;
+	}
 
 	// getters & setters
 

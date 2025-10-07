@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Project;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
 
 public class Project extends EnhancedMapItem {
@@ -9,12 +10,8 @@ public class Project extends EnhancedMapItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	@Override
-	protected void initializeChildMapReferences() {
-		// Leave empty because this has no children.
-	}
-
-	public Project(String projectName, String description, int projectId) {
+	public Project(EnhancedMap<EnhancedMapItem> parentMap, String projectName, String description, int projectId) {
+		super(parentMap);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;
