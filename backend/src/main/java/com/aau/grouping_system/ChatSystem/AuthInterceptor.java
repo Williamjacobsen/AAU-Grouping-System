@@ -7,6 +7,9 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+
+// TODO: Figure out why this is running
+
 public class AuthInterceptor implements HandshakeInterceptor {
 
 	@SuppressWarnings("null")
@@ -14,6 +17,9 @@ public class AuthInterceptor implements HandshakeInterceptor {
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
 			WebSocketHandler wsHandler, Map<String, Object> attributes) {
 		// TODO: Authentication client here...
+		
+		System.out.println("beforeHandshake function has run...");
+
 		return true;
 	}
 
