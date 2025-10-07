@@ -1,12 +1,18 @@
 package com.aau.grouping_system.User.Coordinator;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.aau.grouping_system.Sessions.Session;
 import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	public EnhancedMap<Session> sessions = new EnhancedMap<>();
+	public CopyOnWriteArrayList<Session> sessions;
+
+	@Override
+	protected void initializeChildMapReferences() {
+		childMapReferences.add(sessions);
+	}
 
 	// constructors
 

@@ -4,21 +4,22 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EnhancedMap<T extends EnhancedMappable> {
+public class EnhancedMap<T extends EnhancedMapItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();
 	private AtomicInteger idGenerator = new AtomicInteger();
 
 	// public methods
 
-	public void put(T mappable) {
+	public void put(T item) {
 		int id = getNewId();
-		mappable.setMapID(id);
-		map.put(id, mappable);
+		item.setMapId(id);
+		map.put(id, item);
 	}
 
-	public void remove(T mappable) {
-		map.remove(mappable.getMapID());
+	public void remove(T item) {
+		item.removeChildren();
+		map.remove(item.getMapId());
 	}
 
 	// private methods

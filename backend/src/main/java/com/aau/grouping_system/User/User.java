@@ -1,8 +1,8 @@
 package com.aau.grouping_system.User;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
 
-public abstract class User extends EnhancedMappable {
+public abstract class User extends EnhancedMapItem {
 
 	private String email;
 	private String passwordHash;

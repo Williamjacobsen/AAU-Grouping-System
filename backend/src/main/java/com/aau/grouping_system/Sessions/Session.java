@@ -1,29 +1,37 @@
 package com.aau.grouping_system.Sessions;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMap;
-import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
 
-public class Session extends EnhancedMappable {
+public class Session extends EnhancedMapItem {
 
-	// todo: brug CopyOnWriteArrayList i stedet for lister, fordi det er
-	// thread-safe.
 	private Coordinator coordinator;
-	public EnhancedMap<Supervisor> supervisors = new EnhancedMap<>();
-	public EnhancedMap<Student> students = new EnhancedMap<>();
-	public EnhancedMap<Project> projects = new EnhancedMap<>();
-	public EnhancedMap<Group> groups = new EnhancedMap<>();
+	public CopyOnWriteArrayList<Supervisor> supervisors = new CopyOnWriteArrayList<>();
+	public CopyOnWriteArrayList<Student> students = new CopyOnWriteArrayList<>();
+	public CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
+	public CopyOnWriteArrayList<Group> groups = new CopyOnWriteArrayList<>();
+
+	@Override
+	protected void initializeChildMapReferences() {
+		childMapReferences.add(supervisors);
+		childMapReferences.add(students);
+		childMapReferences.add(projects);
+		childMapReferences.add(groups);
+	}
 
 	// Constructor
+
 	public Session(Coordinator coordinator,
-			EnhancedMap<Supervisor> supervisors,
-			EnhancedMap<Student> students,
-			EnhancedMap<Project> projects,
-			EnhancedMap<Group> groups) {
+			CopyOnWriteArrayList<Supervisor> supervisors,
+			CopyOnWriteArrayList<Student> students,
+			CopyOnWriteArrayList<Project> projects,
+			CopyOnWriteArrayList<Group> groups) {
 		this.coordinator = coordinator;
 		this.supervisors = supervisors;
 		this.students = students;
@@ -32,6 +40,7 @@ public class Session extends EnhancedMappable {
 	}
 
 	// Getters og setters
+
 	public Coordinator getCoordinator() {
 		return coordinator;
 	}
@@ -40,35 +49,35 @@ public class Session extends EnhancedMappable {
 		this.coordinator = coordinator;
 	}
 
-	public EnhancedMap<Supervisor> getSupervisors() {
+	public CopyOnWriteArrayList<Supervisor> getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(EnhancedMap<Supervisor> supervisors) {
+	public void setSupervisors(CopyOnWriteArrayList<Supervisor> supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public EnhancedMap<Student> getStudents() {
+	public CopyOnWriteArrayList<Student> getStudents() {
 		return students;
 	}
 
-	public void setStudents(EnhancedMap<Student> students) {
+	public void setStudents(CopyOnWriteArrayList<Student> students) {
 		this.students = students;
 	}
 
-	public EnhancedMap<Project> getProjects() {
+	public CopyOnWriteArrayList<Project> getProjects() {
 		return projects;
 	}
 
-	public void setProjects(EnhancedMap<Project> projects) {
+	public void setProjects(CopyOnWriteArrayList<Project> projects) {
 		this.projects = projects;
 	}
 
-	public EnhancedMap<Group> getGroups() {
+	public CopyOnWriteArrayList<Group> getGroups() {
 		return groups;
 	}
 
-	public void setGroups(EnhancedMap<Group> groups) {
+	public void setGroups(CopyOnWriteArrayList<Group> groups) {
 		this.groups = groups;
 	}
 
