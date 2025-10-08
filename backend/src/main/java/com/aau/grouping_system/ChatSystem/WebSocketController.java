@@ -13,18 +13,15 @@ public class WebSocketController {
 	public record Message(String content, String sender) {
 	}
 
-	// Receives messages from /app/chat (client sends to /app/chat)
-	// Broadcasts response to all subscribers of /topic/messages
-	@MessageMapping("/chat")
-	@SendTo("/topic/messages")
+	@MessageMapping("/group/send")
+	@SendTo("/group/messages")
 	public Message sendMessage(Message message) {
-		System.out.println("Received message on /app/chat");
+		System.out.println("Received message on /group/send");
 		return new Message(message.content, message.sender);
 	}
 
-	// Send to specific user
-	@MessageMapping("/private")
-	@SendToUser("/queue/reply")
+	@MessageMapping("/private/send")
+	@SendToUser("/private/reply")
 	public Message sendPrivateMessage(Message message, Principal principal) {
 		System.out.println("Received private message from: " +
 				(principal != null ? principal.getName() : "NULL"));
