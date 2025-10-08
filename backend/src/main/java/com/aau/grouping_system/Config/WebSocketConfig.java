@@ -53,7 +53,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.enableSimpleBroker("/group", "/private")
 				.setHeartbeatValue(new long[] { 10_000, 20_000 })
 				.setTaskScheduler(this.messageBrokerTaskScheduler);
-		registry.setApplicationDestinationPrefixes("/chat");
+		//registry.setApplicationDestinationPrefixes("/chat");
 		registry.setUserDestinationPrefix("/user");
 
 		// TODO: Should the other channels also have a heartbeat

@@ -20,7 +20,7 @@ export default function ChatBox() {
       () => {
         console.log("Connected to WebSocket");
 
-        stompClient.current.subscribe("/group/messages", (message) => {
+        stompClient.current.subscribe("/group/1/messages", (message) => {
           console.log("Received:", JSON.parse(message.body));
         });
 
@@ -29,7 +29,7 @@ export default function ChatBox() {
         });
 
         stompClient.current.send(
-          "/chat/group/send",
+          "/group/1/send",
           {},
           JSON.stringify({
             content: "Hello from React",
@@ -40,7 +40,7 @@ export default function ChatBox() {
 				setTimeout(() => {
           console.log("Sending private message...");
           stompClient.current.send(
-            "/chat/private/send",
+            "/private/send",
             {},
             JSON.stringify({
               content: "This is a private message",

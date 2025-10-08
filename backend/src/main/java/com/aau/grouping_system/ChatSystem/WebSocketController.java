@@ -2,6 +2,7 @@ package com.aau.grouping_system.ChatSystem;
 
 import java.security.Principal;
 
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.annotation.SendToUser;
@@ -13,18 +14,17 @@ public class WebSocketController {
 	public record Message(String content, String sender) {
 	}
 
-	@MessageMapping("/group/send")
-	@SendTo("/group/messages")
-	public Message sendMessage(Message message) {
-		System.out.println("Received message on /group/send");
+	@MessageMapping("/group/{groupId}/send")
+	@SendTo("/group/{groupId}/messages")
+	public Message sendMessage(@DestinationVariable String groupId, Message message, Principal principal) {
+		System.out.println("Received group message");
 		return new Message(message.content, message.sender);
 	}
 
 	@MessageMapping("/private/send")
 	@SendToUser("/private/reply")
 	public Message sendPrivateMessage(Message message, Principal principal) {
-		System.out.println("Received private message from: " +
-				(principal != null ? principal.getName() : "NULL"));
+		System.out.println("Received private message");
 		return message;
 	}
 }
