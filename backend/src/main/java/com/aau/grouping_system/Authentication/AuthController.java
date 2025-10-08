@@ -1,7 +1,7 @@
 package com.aau.grouping_system.Authentication;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.EnhancedMap.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;

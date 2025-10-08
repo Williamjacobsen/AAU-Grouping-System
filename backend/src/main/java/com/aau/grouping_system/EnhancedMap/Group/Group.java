@@ -1,10 +1,10 @@
-package com.aau.grouping_system.Group;
+package com.aau.grouping_system.EnhancedMap.Group;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
-import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.EnhancedMap.Project.Project;
+import com.aau.grouping_system.EnhancedMap.User.Student.Student;
+import com.aau.grouping_system.EnhancedMap.User.Supervisor.Supervisor;
 
 public class Group extends EnhancedMapItem {
 

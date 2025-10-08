@@ -1,9 +1,9 @@
-package com.aau.grouping_system.User.Supervisor;
+package com.aau.grouping_system.EnhancedMap.User.Supervisor;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
-import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.EnhancedMap.Session.Session;
+import com.aau.grouping_system.EnhancedMap.User.User;
 
 public class Supervisor extends User {
 

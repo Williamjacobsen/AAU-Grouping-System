@@ -1,4 +1,4 @@
-package com.aau.grouping_system.Project;
+package com.aau.grouping_system.EnhancedMap.Project;
 
 import java.util.List;
 import java.util.ArrayList;

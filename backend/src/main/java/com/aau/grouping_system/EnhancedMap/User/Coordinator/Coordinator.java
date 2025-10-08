@@ -1,10 +1,10 @@
-package com.aau.grouping_system.User.Coordinator;
+package com.aau.grouping_system.EnhancedMap.User.Coordinator;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
-import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.EnhancedMap.Session.Session;
+import com.aau.grouping_system.EnhancedMap.User.User;
 
 public class Coordinator extends User {
 

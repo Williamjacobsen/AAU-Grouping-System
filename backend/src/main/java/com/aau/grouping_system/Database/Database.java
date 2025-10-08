@@ -3,12 +3,12 @@ package com.aau.grouping_system.Database;
 import org.springframework.stereotype.Component;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
-import com.aau.grouping_system.Group.Group;
-import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.EnhancedMap.Group.Group;
+import com.aau.grouping_system.EnhancedMap.Project.Project;
+import com.aau.grouping_system.EnhancedMap.Session.Session;
+import com.aau.grouping_system.EnhancedMap.User.Coordinator.Coordinator;
+import com.aau.grouping_system.EnhancedMap.User.Student.Student;
+import com.aau.grouping_system.EnhancedMap.User.Supervisor.Supervisor;
 
 @Component // so we can do dependency injection
 public class Database {

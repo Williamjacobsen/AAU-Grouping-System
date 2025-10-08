@@ -1,10 +1,10 @@
-package com.aau.grouping_system.Group;
+package com.aau.grouping_system.EnhancedMap.Group;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.EnhancedMap.User.Student.Student;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
