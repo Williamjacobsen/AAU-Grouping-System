@@ -20,23 +20,19 @@ public class AuthController {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 
-	// Constructer injection
-	// Til at bruge Databasen når vi senere tjekker igennem listen af Coordinators.
+	
 	public AuthController(Database db, PasswordEncoder passwordEncoder) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	// Metoden behandler en POST request, når coordinatoren prøver at logge ind
 	@PostMapping("/login")
 	public ResponseEntity<String> login(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		// De forskellige værdier fra coordinatoren bliver stored i variabler
 		String email = body.get("email");
 		String password = body.get("password");
 
-		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i
-		// variablen
+		
 		Coordinator user = null;
 		for (Coordinator existingCoordinator : db.getCoordinators().getAllEntries().values()) {
 			if (existingCoordinator.getEmail().equals(email)) {
@@ -45,8 +41,7 @@ public class AuthController {
 			}
 		}
 
-		// Hvis emailen ikke eksistere eller adg.koden er forkert, så sendes der en 401
-		// error response
+		// Hvis emailen ikke eksistere eller adg.koden er forkert, så sendes der en 401 error response
 		if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
 		}
@@ -75,9 +70,6 @@ public class AuthController {
 	@GetMapping("/me")
 	public ResponseEntity<Coordinator> me(HttpServletRequest request) {
 
-		// todo: Set cookie?
-
-		// Tjekker om session stadig er aktiv
 		HttpSession session = request.getSession(false);
 		if (session == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -85,7 +77,7 @@ public class AuthController {
 
 		Coordinator user = (Coordinator) session.getAttribute("user");
 
-		// Hvis brugeren findes, så retuneres bruger info som et JSON obj.
+		// Hvis brugeren findes, så retuneres brugerens info som et JSON obj.
 		if (user != null) {
 			return ResponseEntity.ok(user);
 		}
