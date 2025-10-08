@@ -22,7 +22,7 @@ public abstract class User extends EnhancedMapItem {
 
 	// constructors
 
-	public User(EnhancedMap<EnhancedMapItem> parentMap, String email, String passwordHash, String name) {
+	public User(EnhancedMap<? extends EnhancedMapItem> parentMap, String email, String passwordHash, String name) {
 		super(parentMap);
 		this.email = email;
 		this.passwordHash = passwordHash;

@@ -10,7 +10,8 @@ public class Project extends EnhancedMapItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(EnhancedMap<EnhancedMapItem> parentMap, String projectName, String description, int projectId) {
+	public Project(EnhancedMap<? extends EnhancedMapItem> parentMap, String projectName, String description,
+			int projectId) {
 		super(parentMap);
 		this.projectName = projectName;
 		this.description = description;

@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aau.grouping_system.Database.Database;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController // singleton bean
 @RequestMapping("/coordinator")
@@ -52,7 +54,7 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> request) {
 		// todo: Credentials validation
 
-		Integer coordinatorID = Integer.parseInt(request.get("coordinatorID"));
+		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
 		String newEmail = request.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
@@ -61,7 +63,7 @@ public class CoordinatorController {
 					.body("Error: Inputted email is already used by another coordinator.");
 		}
 
-		service.modifyEmail(newEmail, coordinatorID);
+		service.modifyEmail(newEmail, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
@@ -72,13 +74,23 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> request) {
 		// todo: Credentials validation
 
-		Integer coordinatorID = Integer.parseInt(request.get("coordinatorID"));
+		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
 		String newPassword = request.get("newPassword");
 
-		service.modifyPassword(newPassword, coordinatorID);
+		service.modifyPassword(newPassword, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Password has been changed.");
+	}
+
+	// TODO: Remove this
+	@GetMapping("/test")
+	public ResponseEntity<String> test() {
+		service.test();
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Test successful.");
 	}
 }

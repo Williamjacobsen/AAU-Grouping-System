@@ -30,7 +30,7 @@ public class EnhancedMap<T extends EnhancedMapItem> {
 
 		while (map.get(idGenerator.get()) != null) {
 
-			if (idGenerator.get() <= Integer.MAX_VALUE - 1) {
+			if (idGenerator.get() >= Integer.MAX_VALUE - 1) {
 				if (hasLoopedOnce) {
 					throw new IllegalStateException("A valid new ID cannot be found because the Map is completely full.");
 				} else {

@@ -6,28 +6,33 @@ public abstract class EnhancedMapItem {
 
 	/// If the ID is negative, it means it is unassigned.
 	private int mapId = -1;
-	private EnhancedMap<EnhancedMapItem> parentMap;
-	/// We need to use Wildcards here because of how Java handles generic types. For
-	/// example: When we cast a List<Subtype> as List<Supertype>, it works fine.
-	/// However, when we cast List<List<Subtype>> as List<List<Supertype>>, it does
-	/// not work, because Java cannot recognize nested generics and therefore does
-	/// not believe it can downcast the subtype to a supertype. However, by writing
-	/// it using Wildcards, we can make it work.
-	protected CopyOnWriteArrayList<EnhancedMapReference<? extends EnhancedMapItem>> childMapReferences = new CopyOnWriteArrayList<EnhancedMapReference<? extends EnhancedMapItem>>();
+	protected EnhancedMap<? extends EnhancedMapItem> parentMap;
+	protected CopyOnWriteArrayList<EnhancedMapItemReferenceList<? extends EnhancedMapItem>> children = new CopyOnWriteArrayList<EnhancedMapItemReferenceList<? extends EnhancedMapItem>>();
 
 	// public methods
 
+	@SuppressWarnings("unchecked") // Because the type safety violation warning isn't true here.
 	public void removeChildren() {
-		for (EnhancedMapReference<? extends EnhancedMapItem> mapReference : childMapReferences) {
-			for (EnhancedMapItem item : mapReference.getItemReferences()) {
-				item.parentMap.remove(item);
+		for (EnhancedMapItemReferenceList<? extends EnhancedMapItem> itemReferences : children) {
+			for (EnhancedMapItem item : itemReferences) {
+				// This "technically" violates type safety (if @SuppressWarnings("unchecked")
+				// wasn't here, we would get a warning), since Java can't know whether the items
+				// inside "EnhancedMapItemReferenceList<? extends EnhancedMapItem>" actually are
+				// the same type as or a subtype of "EnhancedMapItem". This is because Java
+				// treats generics as invariants, meaning e.g. "Generic<Supertype>"" and
+				// "Generic<Subtype>"" are treated as being completely unrelated. However,
+				// this warning is false in our case, since we know that the Wilcard (the "?"
+				// symbol) extends EnhancedMapItem. So, it's alright to manually downcast like
+				// this (prepending the "(EnhancedMap<EnhancedMapItem>)" cast to our statement)
+				// despite it giving a warning.
+				((EnhancedMap<EnhancedMapItem>) item.parentMap).remove(item);
 			}
 		}
 	}
 
 	// constructors
 
-	public EnhancedMapItem(EnhancedMap<EnhancedMapItem> parentMap) {
+	public EnhancedMapItem(EnhancedMap<? extends EnhancedMapItem> parentMap) {
 		this.parentMap = parentMap;
 	}
 

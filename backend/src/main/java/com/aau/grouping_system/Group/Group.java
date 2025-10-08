@@ -16,7 +16,8 @@ public class Group extends EnhancedMapItem {
 	private String groupEmail;
 	private Student[] joinRequests;
 
-	public Group(EnhancedMap<EnhancedMapItem> parentMap, Supervisor supervisor, Project project, String groupEmail,
+	public Group(EnhancedMap<? extends EnhancedMapItem> parentMap, Supervisor supervisor, Project project,
+			String groupEmail,
 			int maxStudents, int maxRequests) {
 		super(parentMap);
 		this.supervisor = supervisor;

@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.Sessions.Session;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
