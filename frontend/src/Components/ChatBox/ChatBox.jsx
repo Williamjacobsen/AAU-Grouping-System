@@ -10,6 +10,11 @@ export default function ChatBox() {
     const socket = new SockJS("http://localhost:8080/ws");
     stompClient.current = Stomp.over(socket);
 
+		stompClient.current.debug = () => {};
+
+		stompClient.current.heartbeat.outgoing = 20000; // Client sends
+    stompClient.current.heartbeat.incoming = 10000; // Client expects responses
+
     stompClient.current.connect(
       { username: username },
       () => {
