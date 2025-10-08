@@ -32,7 +32,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Autowired // needed for spring boot to auto inject.
 	// @Lazy, just means that it will be initalized when needed, instead of at
-	// startup.
+	// startup, it is also required for some reason.
 	public void setMessageBrokerTaskScheduler(@Lazy TaskScheduler taskScheduler) {
 		this.messageBrokerTaskScheduler = taskScheduler;
 	}
@@ -59,21 +59,23 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// TODO: Should the other channels also have a heartbeat
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(new ChannelInterceptor() {
 			@Override
 			public Message<?> preSend(Message<?> message, MessageChannel channel) {
-				StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(
-						message, StompHeaderAccessor.class);
+				StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
 
-				if (StompCommand.CONNECT.equals(accessor.getCommand())) {
+				if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
 					String username = accessor.getFirstNativeHeader("username");
+
 					if (username != null) {
 						accessor.setUser(() -> username);
 						System.out.println("User connected: " + username);
 					}
 				}
+
 				return message;
 			}
 		});

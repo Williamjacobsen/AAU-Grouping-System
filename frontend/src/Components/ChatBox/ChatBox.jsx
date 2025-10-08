@@ -58,9 +58,9 @@ export default function ChatBox() {
   }, [username]);
 
   return (
-    <div className="p-8">
-      <h1 className="text-2xl font-bold">WebSocket Test</h1>
-      <p className="mt-2 text-gray-600">Check the console for messages</p>
+    <div>
+      <h1>WebSocket Test</h1>
+      <p>Check the console for messages</p>
     </div>
   );
 }
