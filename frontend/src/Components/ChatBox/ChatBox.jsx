@@ -2,70 +2,103 @@ import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
 
-export default function ChatBox() {
-  const stompClient = useRef(null);
-	const [username] = useState("user" + Math.floor(Math.random() * 1000));
+class Messaging {
+  constructor(url, sender) {
+    this.url = url;
+    this.sender = sender;
+    this.stompClient = null;
+    this.subscriptions = [];
+  }
 
-  useEffect(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
-    stompClient.current = Stomp.over(socket);
+  connect(onConnected, onError) {
+    this.stompClient = Stomp.over(() => new SockJS(this.url));
 
-		stompClient.current.debug = () => {};
+    this.stompClient.debug = () => {};
+    this.stompClient.heartbeat.outgoing = 20000;
+    this.stompClient.heartbeat.incoming = 10000;
 
-		stompClient.current.heartbeat.outgoing = 20000; 
-    stompClient.current.heartbeat.incoming = 10000;
-
-    stompClient.current.connect(
-      { username: username },
+    this.stompClient.connect(
+      { username: this.sender },
       () => {
         console.log("Connected to WebSocket");
-
-        stompClient.current.subscribe("/group/1/messages", (message) => {
-          console.log("Received:", JSON.parse(message.body));
-        });
-
-				stompClient.current.subscribe("/user/private/reply", (message) => {
-          console.log("Private message:", JSON.parse(message.body));
-        });
-
-        stompClient.current.send(
-          "/group/1/send",
-          {},
-          JSON.stringify({
-            content: "Hello from React",
-            sender: username,
-          })
-        );
-
-				setTimeout(() => {
-          console.log("Sending private message...");
-          stompClient.current.send(
-            "/private/send",
-            {},
-            JSON.stringify({
-              content: "This is a private message",
-              sender: username,
-            })
-          );
-        }, 2000);
+        if (onConnected) onConnected();
       },
       (error) => {
         console.error("Connection error:", error);
+        if (onError) onError(error);
       }
     );
+  }
+
+  subscribe(destination, callback) {
+    if (this.stompClient && this.stompClient.connected) {
+      const subscription = this.stompClient.subscribe(
+        destination,
+        (message) => {
+          callback(JSON.parse(message.body));
+        }
+      );
+      this.subscriptions.push(subscription);
+      return subscription;
+    }
+  }
+
+  send(destination, message) {
+    if (this.stompClient && this.stompClient.connected) {
+      this.stompClient.send(destination, {}, JSON.stringify(message));
+    }
+  }
+
+  disconnect() {
+    if (this.stompClient) {
+      this.subscriptions.forEach((subscription) => subscription.unsubscribe());
+      this.subscriptions = [];
+      this.stompClient.disconnect();
+      console.log("Disconnected");
+    }
+  }
+}
+
+export default function ChatBox() {
+  const messaging = useRef(null);
+  const username = "My username";
+
+  useEffect(() => {
+    messaging.current = new Messaging("http://localhost:8080/ws", username);
+
+    messaging.current.connect(() => {
+      messaging.current.subscribe("/group/1/messages", (message) => {
+        console.log("Received:", message);
+      });
+
+      messaging.current.subscribe("/user/private/reply", (message) => {
+        console.log("Private message:", message);
+      });
+
+      messaging.current.send("/group/1/send", {
+        content: "Hello from React",
+        sender: username,
+      });
+
+      setTimeout(() => {
+        console.log("Sending private message...");
+        messaging.current.send("/private/send", {
+          content: "This is a private message",
+          sender: username,
+        });
+      }, 2000);
+    });
 
     return () => {
-      if (stompClient.current) {
-        stompClient.current.disconnect();
-        console.log("Disconnected");
+      if (messaging.current) {
+        messaging.current.disconnect();
       }
     };
-  }, [username]);
+  }, []);
 
   return (
     <div>
       <h1>WebSocket Test</h1>
-      <p>Check the console for messages</p>
     </div>
   );
 }
