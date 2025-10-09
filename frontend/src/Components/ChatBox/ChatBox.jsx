@@ -62,6 +62,7 @@ class Messaging {
 export default function ChatBox() {
   const messaging = useRef(null);
   const username = "My username";
+	const [target, setTarget] = useState(username);
 
   useEffect(() => {
     messaging.current = new Messaging("http://localhost:8080/ws", username);
@@ -80,11 +81,12 @@ export default function ChatBox() {
         sender: username,
       });
 
-      setTimeout(() => {
+      setInterval(() => {
         console.log("Sending private message...");
         messaging.current.send("/private/send", {
           content: "This is a private message",
           sender: username,
+					target: target,
         });
       }, 2000);
     });
@@ -94,7 +96,7 @@ export default function ChatBox() {
         messaging.current.disconnect();
       }
     };
-  }, []);
+  }, [target]);
 
   return (
     <div>
