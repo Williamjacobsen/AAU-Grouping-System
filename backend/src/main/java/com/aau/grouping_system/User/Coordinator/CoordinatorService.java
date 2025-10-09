@@ -1,4 +1,4 @@
-package com.aau.grouping_system.EnhancedMap.User.Coordinator;
+package com.aau.grouping_system.User.Coordinator;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.aau.grouping_system.Database.Database;
 
 // TODO: REMOVE THIS
-import com.aau.grouping_system.EnhancedMap.Session.Session;
-import com.aau.grouping_system.EnhancedMap.User.Student.Student;
+import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.Student.Student;
 
 @Service
 public class CoordinatorService {

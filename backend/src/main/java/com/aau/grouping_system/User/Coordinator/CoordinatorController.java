@@ -1,4 +1,4 @@
-package com.aau.grouping_system.EnhancedMap.User.Coordinator;
+package com.aau.grouping_system.User.Coordinator;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

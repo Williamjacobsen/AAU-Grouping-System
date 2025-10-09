@@ -1,9 +1,9 @@
-package com.aau.grouping_system.EnhancedMap.User.Student;
+package com.aau.grouping_system.User.Student;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
-import com.aau.grouping_system.EnhancedMap.User.User;
-import com.aau.grouping_system.EnhancedMap.Session.Session;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Session.Session;
 
 public class Student extends User {
 

@@ -1,4 +1,4 @@
-package com.aau.grouping_system.EnhancedMap.User;
+package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;

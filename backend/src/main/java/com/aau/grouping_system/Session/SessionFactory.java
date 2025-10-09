@@ -1,8 +1,8 @@
-package com.aau.grouping_system.EnhancedMap.Session;
+package com.aau.grouping_system.Session;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
-import com.aau.grouping_system.EnhancedMap.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class SessionFactory {
 	public static Session create(EnhancedMap<EnhancedMapItem> parentMap,
