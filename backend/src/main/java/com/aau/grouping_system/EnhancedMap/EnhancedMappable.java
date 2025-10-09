@@ -5,11 +5,11 @@ public class EnhancedMappable {
 	/// If the ID is negative, it means it is unassigned.
 	int mapId = -1;
 
-	int getMapID() {
+	public int getMapID() {
 		return this.mapId;
 	}
 
-	void setMapID(Integer id) {
+	public void setMapID(Integer id) {
 		this.mapId = id;
 	}
 }

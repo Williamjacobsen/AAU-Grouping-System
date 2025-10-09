@@ -17,13 +17,10 @@ import java.util.Map;
 @RequestMapping("/auth")
 public class AuthController {
 
-	private final Database db;
-	private final PasswordEncoder passwordEncoder;
+	private final AuthService service;
 
-	
-	public AuthController(Database db, PasswordEncoder passwordEncoder) {
-		this.db = db;
-		this.passwordEncoder = passwordEncoder;
+	public AuthController(AuthService authService, Database db, PasswordEncoder passwordEncoder) {
+		this.service = authService;
 	}
 
 	@PostMapping("/login")
@@ -32,39 +29,27 @@ public class AuthController {
 		String email = body.get("email");
 		String password = body.get("password");
 
-		
-		Coordinator user = null;
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllEntries().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				user = existingCoordinator;
-				break;
-			}
+		Coordinator user = service.findByEmail(email);
+
+		if (service.isEmailExisting(email) || !service.isPasswordCorrect(password, user)) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED) // 401 error
+					.body("Invalid email or password");
 		}
 
-		// Hvis emailen ikke eksistere eller adg.koden er forkert, så sendes der en 401 error response
-		if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
-		}
+		service.invalidateOldSession(request);
+		service.createNewSession(request, user);
 
-		// getSession tjekker om der eksistere en session i HttpSession objektet
-		HttpSession oldSession = request.getSession(false);
-		if (oldSession != null)
-			oldSession.invalidate();
-		HttpSession session = request.getSession(true);
-		session.setMaxInactiveInterval(86400); // 1 dag
-		// Gemmer nøglen "user" i session objektet.
-		session.setAttribute("user", user);
-
-		return ResponseEntity.ok("Logged in, user: " + user.getName());
+		return ResponseEntity
+				.ok("Logged in, user: " + user.getName());
 	}
 
 	@PostMapping("/logout")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
 
-		HttpSession session = request.getSession(false);
-		if (session != null)
-			session.invalidate();
-		return ResponseEntity.ok("Logged out");
+		service.invalidateOldSession(request);
+		return ResponseEntity
+				.ok("Logged out"); // 200 ok
 	}
 
 	@GetMapping("/me")
@@ -72,16 +57,20 @@ public class AuthController {
 
 		HttpSession session = request.getSession(false);
 		if (session == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED) // 401 error
+					.body(null);
 		}
 
 		Coordinator user = (Coordinator) session.getAttribute("user");
 
-		// Hvis brugeren findes, så retuneres brugerens info som et JSON obj.
 		if (user != null) {
-			return ResponseEntity.ok(user);
+			return ResponseEntity
+					.ok(user); // info om user returneres som JSON obj.
 		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		return ResponseEntity
+				.status(HttpStatus.UNAUTHORIZED) // 401 error
+				.body(null);
 	}
 
 }
