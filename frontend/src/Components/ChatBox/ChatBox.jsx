@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import SockJS from "sockjs-client";
 import { Stomp } from "@stomp/stompjs";
+import { useAppState } from "../../AppStateContext";
 
-class Messaging {
+class ChatSystem {
   constructor(url, sender) {
     this.url = url;
     this.sender = sender;
@@ -63,9 +64,13 @@ export default function ChatBox() {
   const messaging = useRef(null);
   const username = "My username";
 	const [target, setTarget] = useState(username);
+	const { groups, students } = useAppState();
 
   useEffect(() => {
-    messaging.current = new Messaging("http://localhost:8080/ws", username);
+		console.log(groups);
+		console.log(students);
+
+    messaging.current = new ChatSystem("http://localhost:8080/ws", username);
 
     messaging.current.connect(() => {
       messaging.current.subscribe("/group/1/messages", (message) => {
@@ -76,19 +81,16 @@ export default function ChatBox() {
         console.log("Private message:", message);
       });
 
-      messaging.current.send("/group/1/send", {
+      messaging.current.send(`/group/1/send`, {
         content: "Hello from React",
         sender: username,
       });
 
-      setInterval(() => {
-        console.log("Sending private message...");
-        messaging.current.send("/private/send", {
-          content: "This is a private message",
-          sender: username,
-					target: target,
-        });
-      }, 2000);
+      messaging.current.send("/private/send", {
+        content: "This is a private message",
+        sender: username,
+				target: target,
+      });
     });
 
     return () => {
@@ -96,7 +98,7 @@ export default function ChatBox() {
         messaging.current.disconnect();
       }
     };
-  }, [target]);
+  });
 
   return (
     <div>

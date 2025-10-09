@@ -9,23 +9,26 @@ import NoPage from "./pages/NoPage/NoPage";
 import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
 import User from "./pages/User/User";
-import ChatBox from "./Components/ChatBox/ChatBox"
+import ChatBox from "./Components/ChatBox/ChatBox";
+import { AppStateProvider } from "./AppStateContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-	<React.StrictMode>
-		<BrowserRouter>
-			<Routes>
-				<Route path="/" element={<Header />}>
-					<Route index element={<About />} />
-					<Route path="/user" element={<User />} />
-					<Route path="/coordinator" element={<Coordinator />} />
-					<Route path="/chatBoxTestRoute" element={<ChatBox />} /> 
-					<Route path="*" element={<NoPage />} />
-				</Route>
-			</Routes>
-		</BrowserRouter>
-	</React.StrictMode>
+  <React.StrictMode>
+    <BrowserRouter>
+      <AppStateProvider>
+        <Routes>
+          <Route path="/" element={<Header />}>
+            <Route index element={<About />} />
+            <Route path="/user" element={<User />} />
+            <Route path="/coordinator" element={<Coordinator />} />
+            <Route path="/chatBoxTestRoute" element={<ChatBox />} />
+            <Route path="*" element={<NoPage />} />
+          </Route>
+        </Routes>
+      </AppStateProvider>
+    </BrowserRouter>
+  </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
