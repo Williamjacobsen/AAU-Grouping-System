@@ -61,14 +61,17 @@ class ChatSystem {
 }
 
 export default function ChatBox() {
+  const [showChatBox, setShowChatBox] = useState(false);
+  const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+
   const messaging = useRef(null);
   const username = "My username";
-	const [target, setTarget] = useState(username);
-	const { groups, students } = useAppState();
+  const [target, setTarget] = useState(username);
+  const { groups, students } = useAppState();
 
   useEffect(() => {
-		console.log(groups);
-		console.log(students);
+    console.log(groups);
+    console.log(students);
 
     messaging.current = new ChatSystem("http://localhost:8080/ws", username);
 
@@ -89,7 +92,7 @@ export default function ChatBox() {
       messaging.current.send("/private/send", {
         content: "This is a private message",
         sender: username,
-				target: target,
+        target: target,
       });
     });
 
@@ -101,8 +104,72 @@ export default function ChatBox() {
   });
 
   return (
-    <div>
-      <h1>WebSocket Test</h1>
-    </div>
+    <>
+      {showChatBox ? (
+        <div
+          style={{
+            border: "solid black 3px",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            position: "fixed",
+            right: "5rem",
+            bottom: 0,
+            width: "60rem",
+            height: "50rem",
+          }}
+        ></div>
+      ) : (
+        <div
+          style={{
+            border: "solid black 3px",
+            borderTopLeftRadius: "10px",
+            borderTopRightRadius: "10px",
+            position: "fixed",
+            right: "5rem",
+            bottom: 0,
+            width: "20rem",
+            height: "4rem",
+						display: "flex"
+          }}
+        >
+          <h4 style={{ paddingLeft: "1rem" }}>
+            Ulæste beskeder:{" "}
+            <span
+              style={{
+                backgroundColor: unreadMessagesCount === 0 ? "" : "red",
+                paddingLeft: "10px",
+                paddingRight: "10px",
+                paddingTop: "5px",
+                paddingBottom: "5px",
+                borderRadius: "100%",
+                fontWeight: "bold",
+                fontSize: "large",
+              }}
+            >
+              {unreadMessagesCount}
+            </span>
+          </h4>
+          <span
+            onClick={() => setShowChatBox(true)}
+            style={{
+              cursor: "pointer",
+              fontSize: "2rem",
+              userSelect: "none",
+							fontWeight: "bold",
+							backgroundColor: "lightgray",
+							position: "relative",
+							left: "3rem",
+							paddingLeft: "10px",
+							paddingRight: "10px",
+							marginTop: "15px",
+							marginBottom: "10px",
+							borderRadius: "100%",
+            }}
+          >
+            ^
+          </span>
+        </div>
+      )}
+    </>
   );
 }
