@@ -22,7 +22,7 @@ public abstract class EnhancedMapItem {
 				// treats generics as invariants, meaning e.g. "Generic<Supertype>"" and
 				// "Generic<Subtype>"" are treated as being completely unrelated. However,
 				// this warning is false in our case, since we know that the Wilcard (the "?"
-				// symbol) extends EnhancedMapItem. So, it's alright to manually downcast like
+				// symbol) extends EnhancedMapItem. So, it's alright to manually upcast like
 				// this (prepending the "(EnhancedMap<EnhancedMapItem>)" cast to our statement)
 				// despite it giving a warning.
 				((EnhancedMap<EnhancedMapItem>) item.parentMap).remove(item);
