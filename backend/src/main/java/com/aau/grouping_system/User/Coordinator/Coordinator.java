@@ -12,8 +12,10 @@ public class Coordinator extends User {
 
 	// constructors
 
-	public Coordinator(EnhancedMap<? extends EnhancedMapItem> parentMap, String email, String password, String name) {
-		super(parentMap, email, password, name);
+	public Coordinator(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList,
+			String email, String password, String name) {
+		super(parentDatabaseMap, parentReferenceList, email, password, name);
 		this.sessions = new EnhancedMapItemReferenceList<>(this);
 	}
 

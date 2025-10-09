@@ -19,8 +19,10 @@ public class Session extends EnhancedMapItem {
 
 	// Constructor
 
-	public Session(EnhancedMap<? extends EnhancedMapItem> parentMap, Coordinator coordinator) {
-		super(parentMap);
+	public Session(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList,
+			Coordinator coordinator) {
+		super(parentDatabaseMap, parentReferenceList);
 		this.coordinator = coordinator;
 		this.supervisors = new EnhancedMapItemReferenceList<>(this);
 		this.students = new EnhancedMapItemReferenceList<>(this);

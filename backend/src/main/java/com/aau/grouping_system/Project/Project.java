@@ -2,6 +2,7 @@ package com.aau.grouping_system.Project;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
 
 public class Project extends EnhancedMapItem {
 	// todo: Fjern "project" fra variabelnavne.
@@ -10,9 +11,11 @@ public class Project extends EnhancedMapItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(EnhancedMap<? extends EnhancedMapItem> parentMap, String projectName, String description,
+	public Project(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList, String projectName,
+			String description,
 			int projectId) {
-		super(parentMap);
+		super(parentDatabaseMap, parentReferenceList);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;

@@ -9,7 +9,7 @@ public class EnhancedMapItemReferenceList<T extends EnhancedMapItem> extends Cop
 	public EnhancedMapItemReferenceList(EnhancedMapItem parentEnhancedMapItem) {
 		// Add this reference list to the list of reference lists under the parent
 		// MapItem.
-		parentEnhancedMapItem.children.add(this);
+		parentEnhancedMapItem.childReferenceLists.add(this);
 	}
 
 }

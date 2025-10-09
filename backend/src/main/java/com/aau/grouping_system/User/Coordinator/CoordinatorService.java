@@ -22,8 +22,7 @@ public class CoordinatorService {
 
 	public void addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		Coordinator newCoordinator = new Coordinator(null, email, passwordHash, name);
-		db.getCoordinators().put(newCoordinator);
+		new Coordinator(db.getCoordinators(), null, email, passwordHash, name);
 	}
 
 	public void modifyEmail(String newEmail, Integer coordinatorId) {

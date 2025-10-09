@@ -2,6 +2,7 @@ package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.EnhancedMap.EnhancedMap;
 import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
 
 public abstract class User extends EnhancedMapItem {
 
@@ -22,8 +23,10 @@ public abstract class User extends EnhancedMapItem {
 
 	// constructors
 
-	public User(EnhancedMap<? extends EnhancedMapItem> parentMap, String email, String passwordHash, String name) {
-		super(parentMap);
+	public User(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList,
+			String email, String passwordHash, String name) {
+		super(parentDatabaseMap, parentReferenceList);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;

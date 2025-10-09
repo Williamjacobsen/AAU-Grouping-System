@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,7 +14,8 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
 import com.aau.grouping_system.User.Student.Student;
 
-public class databaseTest {
+@SpringBootTest
+public class DatabaseTest {
 
 	Database db;
 	PasswordEncoder passwordEncoder;
@@ -28,76 +30,57 @@ public class databaseTest {
 		coordinatorService = new CoordinatorService(db, passwordEncoder);
 
 		// Add 2 coordinators
-		coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorEPassword0", "coordinatorName0");
-		coordinatorService.addCoordinator("coordinatorEEmail1", "coordinatorEPassword1", "coordinatorName1");
-		Coordinator coordinator0 = db.getCoordinators().getItem(0);
-		Coordinator coordinator1 = db.getCoordinators().getItem(1);
+		coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorPassword0", "coordinatorName0");
+		coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1");
+		Coordinator c0 = db.getCoordinators().getItem(0);
+		Coordinator c1 = db.getCoordinators().getItem(1);
 
 		// Add 3 sessions
-		// Create objects
-		Session session0coordinator0 = new Session(db.getSessions(), coordinator0);
-		Session session1coordinator0 = new Session(db.getSessions(), coordinator0);
-		Session session2coordinator1 = new Session(db.getSessions(), coordinator1);
-		// Save in database
-		db.getSessions().put(session0coordinator0);
-		db.getSessions().put(session1coordinator0);
-		db.getSessions().put(session2coordinator1);
-		// Declare parent
-		coordinator0.sessions.add(session0coordinator0);
-		coordinator0.sessions.add(session1coordinator0);
-		coordinator1.sessions.add(session2coordinator1);
+		Session s0c0 = new Session(db.getSessions(), c0.sessions, c0);
+		Session s1c0 = new Session(db.getSessions(), c0.sessions, c0);
+		Session s2c1 = new Session(db.getSessions(), c1.sessions, c1);
 
 		// Add 6 students
-		// Create objects
-		Student student0session0 = new Student(db.getStudents(), "studentEmail0", "studentPassword0", "studentName0",
-				session0coordinator0);
-		Student student1session0 = new Student(db.getStudents(), "studentEmail1", "studentPassword1", "studentName1",
-				session0coordinator0);
-		Student student2session1 = new Student(db.getStudents(), "studentEmail2", "studentPassword2", "studentName2",
-				session1coordinator0);
-		Student student3session1 = new Student(db.getStudents(), "studentEmail3", "studentPassword3", "studentName3",
-				session1coordinator0);
-		Student student4session2 = new Student(db.getStudents(), "studentEmail4", "studentPassword4", "studentName4",
-				session2coordinator1);
-		Student student5session2 = new Student(db.getStudents(), "studentEmail5", "studentPassword5", "studentName5",
-				session2coordinator1);
-		// Save in database
-		db.getStudents().put(student0session0);
-		db.getStudents().put(student1session0);
-		db.getStudents().put(student2session1);
-		db.getStudents().put(student3session1);
-		db.getStudents().put(student4session2);
-		db.getStudents().put(student5session2);
-		// Declare parent
-		session0coordinator0.students.add(student0session0);
-		session0coordinator0.students.add(student1session0);
-		session1coordinator0.students.add(student2session1);
-		session1coordinator0.students.add(student3session1);
-		session2coordinator1.students.add(student4session2);
-		session2coordinator1.students.add(student5session2);
+		new Student(db.getStudents(), s0c0.students, "studentEmail0", "studentPassword0", "studentName0", s0c0);
+		new Student(db.getStudents(), s0c0.students, "studentEmail1", "studentPassword1", "studentName1", s0c0);
+		new Student(db.getStudents(), s1c0.students, "studentEmail2", "studentPassword2", "studentName2", s1c0);
+		new Student(db.getStudents(), s1c0.students, "studentEmail3", "studentPassword3", "studentName3", s1c0);
+		new Student(db.getStudents(), s2c1.students, "studentEmail4", "studentPassword4", "studentName4", s2c1);
+		new Student(db.getStudents(), s2c1.students, "studentEmail5", "studentPassword5", "studentName5", s2c1);
 	}
 
 	@Test
 	void databaseShouldBeFilled() {
-		assertEquals(db.getCoordinators().getAllItems().size(), 2);
-		assertEquals(db.getSessions().getAllItems().size(), 3);
-		assertEquals(db.getStudents().getAllItems().size(), 6);
+		// Check map sizes
+		assertEquals(2, db.getCoordinators().getAllItems().size());
+		assertEquals(3, db.getSessions().getAllItems().size());
+		assertEquals(6, db.getStudents().getAllItems().size());
+		// Check coordinator emails
+		assertEquals("coordinatorEmail0", db.getCoordinators().getItem(0).getEmail());
+		assertEquals("coordinatorEmail1", db.getCoordinators().getItem(1).getEmail());
+		// Check student emails
+		assertEquals("studentEmail0", db.getStudents().getItem(0).getEmail());
+		assertEquals("studentEmail1", db.getStudents().getItem(1).getEmail());
+		assertEquals("studentEmail2", db.getStudents().getItem(2).getEmail());
+		assertEquals("studentEmail3", db.getStudents().getItem(3).getEmail());
+		assertEquals("studentEmail4", db.getStudents().getItem(4).getEmail());
+		assertEquals("studentEmail5", db.getStudents().getItem(5).getEmail());
 	}
 
 	@Test
 	void deletingDatabaseItemShouldDeleteChildItems() {
 		// Before deletion
-		assertEquals(db.getCoordinators().getAllItems().size(), 2);
-		assertEquals(db.getSessions().getAllItems().size(), 3);
-		assertEquals(db.getStudents().getAllItems().size(), 6);
+		assertEquals(2, db.getCoordinators().getAllItems().size());
+		assertEquals(3, db.getSessions().getAllItems().size());
+		assertEquals(6, db.getStudents().getAllItems().size());
 
 		// Remove coordinator at ID = 0
-		Coordinator coordinator0 = db.getCoordinators().getItem(0);
-		db.getCoordinators().remove(coordinator0);
+		Coordinator c0 = db.getCoordinators().getItem(0);
+		db.getCoordinators().remove(c0);
 
 		// After deletion
-		assertEquals(db.getCoordinators().getAllItems().size(), 1);
-		assertEquals(db.getSessions().getAllItems().size(), 1);
-		assertEquals(db.getStudents().getAllItems().size(), 2);
+		assertEquals(1, db.getCoordinators().getAllItems().size());
+		assertEquals(1, db.getSessions().getAllItems().size());
+		assertEquals(2, db.getStudents().getAllItems().size());
 	}
 }
