@@ -1,15 +1,21 @@
 package com.aau.grouping_system.Project;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
 
-public class Project extends EnhancedMappable {
+public class Project extends EnhancedMapItem {
 	// todo: Fjern "project" fra variabelnavne.
 	private String projectName;
 	private String description;
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(String projectName, String description, int projectId) {
+	public Project(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList, String projectName,
+			String description,
+			int projectId) {
+		super(parentDatabaseMap, parentReferenceList);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;

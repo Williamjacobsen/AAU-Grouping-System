@@ -1,13 +1,22 @@
 package com.aau.grouping_system.User.Supervisor;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMap;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
+import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
 public class Supervisor extends User {
 
+	Session session;
+
 	// constructors
 
-	public Supervisor(String email, String passwordHash, String name) {
-		super(email, passwordHash, name);
+	public Supervisor(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
+			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList,
+			String email, String passwordHash, String name, Session session) {
+		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
+		this.session = session;
 	}
 
 	// abstract method overrides
