@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aau.grouping_system.Database.Database;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController // singleton bean
 @RequestMapping("/coordinator")
@@ -82,15 +80,5 @@ public class CoordinatorController {
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Password has been changed.");
-	}
-
-	// TODO: Remove this
-	@GetMapping("/test")
-	public ResponseEntity<String> test() {
-		service.test();
-
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body("Test successful.");
 	}
 }
