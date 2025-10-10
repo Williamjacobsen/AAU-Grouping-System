@@ -124,7 +124,29 @@ export default function ChatBox() {
             }}
           >
             {/* Header */}
-            <div style={{ backgroundColor: "#e2e8f0", paddingBottom: "2rem" }}>
+            <div
+              style={{
+                backgroundColor: "#e2e8f0",
+                paddingBottom: "2rem",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                paddingLeft: "2rem",
+                paddingRight: "2.5rem",
+              }}
+            >
+              <h4
+                style={{
+                  margin: 0,
+                  padding: 0,
+                  fontWeight: 600,
+                  fontSize: "18px",
+                  position: "relative",
+                  top: "1rem",
+                }}
+              >
+                Chat Messages
+              </h4>
               <span
                 onClick={() => setShowChatBox(false)}
                 style={{
@@ -144,10 +166,10 @@ export default function ChatBox() {
                   lineHeight: 1,
                   transform: "translateY(-1px)",
                   position: "relative",
-                  left: "3rem",
                   top: "1rem",
                   boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
                   transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                  userSelect: "none",
                 }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.transform = "scale(1.05)";
@@ -167,7 +189,7 @@ export default function ChatBox() {
                     fontWeight: 400,
                   }}
                 >
-                  v
+                  x
                 </p>
               </span>
             </div>
@@ -214,6 +236,39 @@ export default function ChatBox() {
                   >
                     Some kinda name
                   </h4>
+                  <span
+                    style={{
+                      cursor: "pointer",
+                      userSelect: "none",
+                      fontWeight: "bold",
+                      fontSize: "1.5rem",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: "32px",
+                      height: "32px",
+                      borderRadius: "50%",
+                      backgroundColor: "white",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                      position: "absolute",
+                      right: "2rem",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "scale(1.05)";
+                      e.currentTarget.style.boxShadow =
+                        "0 4px 10px rgba(0,0,0,0.15)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "scale(1)";
+                      e.currentTarget.style.boxShadow =
+                        "0 2px 6px rgba(0,0,0,0.1)";
+                    }}
+                  >
+                    <p style={{ transform: "translateY(-5%)" }}>
+                      &gt; {/* This symbol: > */}
+                    </p>
+                  </span>
                 </div>
               </div>
               {/* Chat area */}
