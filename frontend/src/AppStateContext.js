@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 const AppStateContext = createContext(null);
 
 export function AppStateProvider({ children }) {
-  const [students, setStudents] = useState(["user_1", "user_2"]);
+  const [students, setStudents] = useState(["student 1", "student 2"]);
   const [groups, setGroups] = useState(["group 1", "group 2"]);
   const [projects, setProjects] = useState(["project 1", "project 2"]);
 
