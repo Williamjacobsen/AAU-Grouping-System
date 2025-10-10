@@ -13,16 +13,14 @@ export default function User() {
 					</label>
 				</div>
 				<div className="input">
-					<label className="label"> Password:
+					<label className="label"> Password
 						<input type="password" placeholder = "******" />
 					</label>
 				</div>
 			</div>
 			<div className="submit-container">
-				<div className="log-in"> Log In
-				</div>
-				<div className="sign-up"> Sign Up
-				</div>
+				<button className="log-in"> Log In </button>
+				<button className="sign-up"> Sign Up </button>
 				<div className="forgot-password"> Forgot password?
 				</div>
 			</div>

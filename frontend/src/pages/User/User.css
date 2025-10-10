@@ -2,9 +2,10 @@
 	border: 3px solid #f1f1f1;
 	width: 300px;
 	padding: 20px;
-	border-radius: 5px;
+	border-radius: 8px;
 	margin: 100px auto;
 	text-align: center;
+	background-color: rgb(241, 241, 241);
 }
 
 .header-text {
@@ -17,13 +18,13 @@
 .text {
 	text-align: left;
 	margin-bottom: 10px;
-	
+	font-weight: bold;
 }
 
 input[type=email],input[type=password] {
 	text-align: left;
 	width: 85%;
-	padding: 10;
+	padding: 10px;
 	margin: 8px 0;
 	display: inline-block;
 	border: 1px solid #ccc;
@@ -31,18 +32,30 @@ input[type=email],input[type=password] {
 
 .label {
 	display: block;
-
-}
-
-.submit-container{
-	color: blue;
-	
+	margin-top: 10px;
 }
 
 .log-in {
-	color: green;
+	background-color: black;
+	color: white;
+	font-size: 14px;
+	font: bold;
+	padding: 3px 10px;
+	font-family: sans-serif;
+	border-top-left-radius: 5px;
+	border-bottom-left-radius: 5px;
 
 }
 .sign-up {
-	color: red;
+	background-color: white;
+	color: black;
+	font-size: 14px;
+	font: bold;
+	padding: 3px 10px;
+	border-top-right-radius: 5px;
+	border-bottom-right-radius: 5px;
+}
+
+.forgot-password {
+	font-size: 14px;
 }
