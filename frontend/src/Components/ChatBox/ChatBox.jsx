@@ -106,18 +106,121 @@ export default function ChatBox() {
   return (
     <>
       {showChatBox ? (
-        <div
-          style={{
-            border: "solid black 3px",
-            borderTopLeftRadius: "10px",
-            borderTopRightRadius: "10px",
-            position: "fixed",
-            right: "5rem",
-            bottom: 0,
-            width: "60rem",
-            height: "50rem",
-          }}
-        ></div>
+        <>
+          {/* Chat box when open */}
+          <div
+            style={{
+              border: "1px solid #e5e7eb",
+              borderTopLeftRadius: "10px",
+              borderTopRightRadius: "10px",
+              position: "fixed",
+              right: "5rem",
+              bottom: 0,
+              width: "60rem",
+              height: "50rem",
+              backgroundColor: "#f9fafb",
+              boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Header */}
+            <div style={{ backgroundColor: "#e2e8f0", paddingBottom: "2rem" }}>
+              <span
+                onClick={() => setShowChatBox(false)}
+                style={{
+                  cursor: "pointer",
+                  userSelect: "none",
+                  fontWeight: "bold",
+                  fontSize: "2rem",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "40px",
+                  height: "40px",
+                  borderRadius: "50%",
+                  backgroundColor: "white",
+                  boxSizing: "border-box",
+                  padding: 0,
+                  lineHeight: 1,
+                  transform: "translateY(-1px)",
+                  position: "relative",
+                  left: "3rem",
+                  top: "1rem",
+                  boxShadow: "0 2px 6px rgba(0,0,0,0.15)",
+                  transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.05)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 10px rgba(0,0,0,0.2)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow =
+                    "0 2px 6px rgba(0,0,0,0.15)";
+                }}
+              >
+                <p
+                  style={{
+                    position: "relative",
+                    bottom: "4px",
+                    fontWeight: 400,
+                  }}
+                >
+                  v
+                </p>
+              </span>
+            </div>
+            {/* Main area */}
+            <div
+              style={{
+                backgroundColor: "#f9fafb",
+                width: "100%",
+                height: "93%",
+                position: "relative",
+              }}
+            >
+              {/* Sidebar */}
+              <div
+                style={{
+                  backgroundColor: "white",
+                  position: "relative",
+                  width: "40%",
+                  height: "100%",
+                  borderRight: "2px solid #e5e7eb",
+                }}
+              >
+                {/* Each name box */}
+                <div
+                  style={{
+                    backgroundColor: "#f1f5f9",
+                    position: "relative",
+                    width: "100%",
+                    minHeight: "5rem",
+                    marginBottom: "0.5rem",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    borderBottom: "1px solid #e5e7eb",
+                  }}
+                >
+                  <h4
+                    style={{
+                      margin: 0,
+                      fontSize: "20px",
+                      fontWeight: 600,
+                      transform: "translateY(-10%) translateX(-5%)",
+                    }}
+                  >
+                    Some kinda name
+                  </h4>
+                </div>
+              </div>
+              {/* Chat area */}
+              <div></div>
+            </div>
+          </div>
+        </>
       ) : (
         <div
           style={{
@@ -129,7 +232,7 @@ export default function ChatBox() {
             bottom: 0,
             width: "20rem",
             height: "4rem",
-						display: "flex"
+            display: "flex",
           }}
         >
           <h4 style={{ paddingLeft: "1rem" }}>
@@ -155,15 +258,15 @@ export default function ChatBox() {
               cursor: "pointer",
               fontSize: "2rem",
               userSelect: "none",
-							fontWeight: "bold",
-							backgroundColor: "lightgray",
-							position: "relative",
-							left: "3rem",
-							paddingLeft: "10px",
-							paddingRight: "10px",
-							marginTop: "15px",
-							marginBottom: "10px",
-							borderRadius: "100%",
+              fontWeight: "bold",
+              backgroundColor: "lightgray",
+              position: "relative",
+              left: "3rem",
+              paddingLeft: "10px",
+              paddingRight: "10px",
+              marginTop: "15px",
+              marginBottom: "10px",
+              borderRadius: "100%",
             }}
           >
             ^
