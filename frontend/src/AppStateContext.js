@@ -10,7 +10,7 @@ export function AppStateProvider({ children }) {
   const [chatRooms, setChatRooms] = useState(["General"]);
   useEffect(() => {
     setChatRooms(["General", ...projects, ...groups, ...students]);
-  }, [groups, projects]);
+  }, [projects, groups, students]);
 
   const value = {
     groups,
