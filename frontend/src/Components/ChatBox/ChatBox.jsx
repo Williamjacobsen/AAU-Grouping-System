@@ -101,7 +101,7 @@ export default function ChatBox() {
         messaging.current.disconnect();
       }
     };
-  });
+  }, []);
 
   return (
     <>
@@ -214,6 +214,7 @@ export default function ChatBox() {
                 {/* Each chat room / student box */}
                 {chatRooms.map((chatRoom) => (
                   <div
+                    key={chatRoom}
                     style={{
                       backgroundColor: "#f1f5f9",
                       position: "relative",
@@ -360,7 +361,7 @@ export default function ChatBox() {
                 e.currentTarget.style.boxShadow = "0 2px 6px rgba(0,0,0,0.15)";
               }}
             >
-              <p style={{transform: "translateY(5%)"}}>^</p>
+              <p style={{ transform: "translateY(5%)" }}>^</p>
             </span>
           </div>
         </>
