@@ -55,9 +55,11 @@ public class DatabaseTest {
 		assertEquals(2, db.getCoordinators().getAllItems().size());
 		assertEquals(3, db.getSessions().getAllItems().size());
 		assertEquals(6, db.getStudents().getAllItems().size());
+
 		// Check coordinator emails
 		assertEquals("coordinatorEmail0", db.getCoordinators().getItem(0).getEmail());
 		assertEquals("coordinatorEmail1", db.getCoordinators().getItem(1).getEmail());
+
 		// Check student emails
 		assertEquals("studentEmail0", db.getStudents().getItem(0).getEmail());
 		assertEquals("studentEmail1", db.getStudents().getItem(1).getEmail());

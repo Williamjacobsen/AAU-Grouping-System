@@ -22,8 +22,7 @@ export default function StudentTable({ students }) {
 		const columns = [];
 		// TODO: Add column showning/hiding
 		columns.push(createColumn("Name", students.map(student => student.name)));
-		columns.push(createColumn("1st priority", students.map(student => student.questionnaire.projectPriority1)));
-		columns.push(createColumn("Group number", students.map(student => student.group.number)));
+		columns.push(createColumn("Group", students.map(student => student.group.number)));
 		columns.push(createColumn("Group project", students.map(student => student.group.project)));
 		return columns;
 	}

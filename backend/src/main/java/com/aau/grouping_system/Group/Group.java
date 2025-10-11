@@ -1,13 +1,13 @@
 package com.aau.grouping_system.Group;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMap;
-import com.aau.grouping_system.EnhancedMap.EnhancedMapItem;
-import com.aau.grouping_system.EnhancedMap.EnhancedMapItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.DatabaseMapItem;
+import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-public class Group extends EnhancedMapItem {
+public class Group extends DatabaseMapItem {
 
 	// todo: Use lists instead of arrays.
 
@@ -17,8 +17,8 @@ public class Group extends EnhancedMapItem {
 	private String groupEmail;
 	private Student[] joinRequests;
 
-	public Group(EnhancedMap<? extends EnhancedMapItem> parentDatabaseMap,
-			EnhancedMapItemReferenceList<? extends EnhancedMapItem> parentReferenceList, Supervisor supervisor,
+	public Group(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
+			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList, Supervisor supervisor,
 			Project project,
 			String groupEmail,
 			int maxStudents, int maxRequests) {

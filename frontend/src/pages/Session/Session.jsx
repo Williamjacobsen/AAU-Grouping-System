@@ -50,6 +50,8 @@ export default function Session() {
 	// methods
 
 	function toFilter(students) {
+		// The function is named "toFilter" instead of just "filter", because  
+		// it doesn't modify the original array, but instead returns a modified clone.
 		if (searchFilter !== "") {
 			return students.filter(item => {
 				// TODO: Add more student properties to include in the search for

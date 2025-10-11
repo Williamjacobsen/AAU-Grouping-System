@@ -1,10 +1,10 @@
-package com.aau.grouping_system.EnhancedMap;
+package com.aau.grouping_system.Database;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EnhancedMap<T extends EnhancedMapItem> {
+public class DatabaseMap<T extends DatabaseMapItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();
 	private AtomicInteger idGenerator = new AtomicInteger();
