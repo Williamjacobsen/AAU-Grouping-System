@@ -1,22 +1,27 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
+/**
+ * @returns An object {isLoading, session}.
+ * - isLoading is a useState boolean.
+ * - session is a useState Session.
+ */
 export default function useGetSession(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);
-  const [session, setSession] = useState(null);
+	const [session, setSession] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        setSession(await requestSession(sessionId));
-        setIsLoading(false);
-      } catch (error) {
-        alert(error);
-      }
-    })();
-  }, []);
+	useEffect(() => {
+		(async () => {
+			try {
+				setSession(await requestSession(sessionId));
+				setIsLoading(false);
+			} catch (error) {
+				alert(error);
+			}
+		})();
+	}, []);
 
-  return [isLoading, session];
+	return { isLoading, session };
 }
 
 async function requestSession(sessionId) {

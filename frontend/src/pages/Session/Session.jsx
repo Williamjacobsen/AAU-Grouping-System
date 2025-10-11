@@ -11,7 +11,7 @@ export default function Session() {
 	const { id: sessionId } = useParams();
 
 	// TODO: Add a proper hook instead of this mock data
-	// DO NOT REMOVE THIS!: const [isLoadingSession, session] = useGetSession(sessionId);
+	// DO NOT REMOVE THIS!: const {isLoadingSession, session} = useGetSession(sessionId);
 	const session = {};
 	session.students = [];
 	session.students.push({ id: 0, email: "boris@gmail.com", name: "Boris", questionnaire: { projectPriority1: "Project B", projectPriority2: "..." }, group: { number: "...", project: "..." } });

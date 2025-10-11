@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 
 /**
  * @returns An object {toFiltered, SearchFilterInput}.
@@ -19,10 +19,10 @@ export default function useStudentFiltering() {
 			// TODO: Add more student properties to include in the search for
 			if (item.name?.toLowerCase().includes(caseInsensitiveSearchFilter)
 				|| item.email?.toLowerCase().includes(caseInsensitiveSearchFilter)
-				|| item.questionnaire.projectPriority1?.toLowerCase().includes(caseInsensitiveSearchFilter)
-				|| item.questionnaire.projectPriority2?.toLowerCase().includes(caseInsensitiveSearchFilter)
-				|| item.group.number?.toLowerCase().includes(caseInsensitiveSearchFilter)
-				|| item.group.project?.toLowerCase().includes(caseInsensitiveSearchFilter)) {
+				|| item.questionnaire?.projectPriority1?.toLowerCase().includes(caseInsensitiveSearchFilter)
+				|| item.questionnaire?.projectPriority2?.toLowerCase().includes(caseInsensitiveSearchFilter)
+				|| item.group?.number?.toLowerCase().includes(caseInsensitiveSearchFilter)
+				|| item.group?.project?.toLowerCase().includes(caseInsensitiveSearchFilter)) {
 				return true;
 			} else { return false; }
 		});

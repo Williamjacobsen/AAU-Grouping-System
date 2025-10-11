@@ -10,10 +10,10 @@ describe(useGetSession.name, function () {
 		// Simplified mock session
 		const mockSession = {
 			ID: 10, students:
-				[
-					{ email: "Student A email", name: "Student A name" },
-					{ email: "Student B email", name: "Student B name" }
-				]
+			[
+				{ email: "Student A email", name: "Student A name" },
+				{ email: "Student B email", name: "Student B name" }
+			]
 		}; 
 
 		// Mock next HTTP response
@@ -26,20 +26,16 @@ describe(useGetSession.name, function () {
 
 		// Render hook
 		const { result } = renderHook(() => useGetSession());
-		
-		// Functions for getting individual hooks from result
-		function getIsLoading() { return result.current[0]; }
-		function getSession() { return result.current[1]; }
 
 		// Check hook states at initialization
-    expect(getIsLoading()).toBe(true);
-    expect(getSession()).toBeNull();
+    expect(result.current.isLoading).toBe(true);
+    expect(result.current.session).toBeNull();
 
 		// Wait for hooks to fetch HTTP response, then check hook states
     await waitFor(function () {
-      expect(result.current[0]).toBe(false);
-			expect(getSession()).toEqual(mockSession);
-			expect(getSession().students[1].name).toEqual("Student B name")
+      expect(result.current.isLoading).toBe(false);
+			expect(result.current.session).toEqual(mockSession);
+			expect(result.current.session.students[1].name).toEqual("Student B name")
     });
   })
 })
