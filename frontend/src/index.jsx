@@ -11,7 +11,6 @@ import About from "./pages/About/About";
 import User from "./pages/User/User";
 import Session from "./pages/Session/Session";
 
-
 export default function App() {
 	return (
 		<React.StrictMode>
@@ -29,7 +28,6 @@ export default function App() {
 		</React.StrictMode>
 	);
 }
-	
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(<App />);

@@ -1,26 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import StudentTable from "./StudentTable";
 import useGetSession from "./useGetSession";
+import useStudentSorting from "./useStudentSorting";
+import useStudentFiltering from "./useStudentFiltering";
 
 export default function Session() {
-
-	// enums
-
-	const sortingModeEnum = Object.freeze({
-		groupAscending: "groupAscending",
-		groupDescending: "groupDescending",
-		nameAscending: "nameAscending",
-		nameDescending: "nameDescending",
-	});
-	
-	// hooks
 
 	const { id: sessionId } = useParams();
 
 	// TODO: Add a proper hook instead of this mock data
-	// DO NOT REMOVE THIS! const [isLoadingSession, session] = useGetSession(sessionId);
+	// DO NOT REMOVE THIS!: const [isLoadingSession, session] = useGetSession(sessionId);
 	const session = {};
 	session.students = [];
 	session.students.push({ id: 0, email: "boris@gmail.com", name: "Boris", questionnaire: { projectPriority1: "Project B", projectPriority2: "..." }, group: { number: "...", project: "..." } });
@@ -29,84 +20,36 @@ export default function Session() {
 	session.students.push({ id: 3, email: "abe@gmail.com", name: "Abe", questionnaire: { projectPriority1: "Project C", projectPriority2: "Project A" }, group: { number: "1", project: "Project A" } });
 
 	const [allStudents, setAllStudents] = useState(null);
-
 	useEffect(() => {
 		setAllStudents(session.students);
 	}, []);
 
-	const [visibleStudents, setVisibleStudents] = useState(null);
-	const [sortingMode, setSortingMode] = useState(sortingModeEnum.groupDescending);
-	const [searchFilter, setSearchFilter] = useState(""); 
-
-	useEffect(() => {
-		if (allStudents !== null) {
-			let newArray = allStudents;
-			newArray = toFilter(newArray);
-			sort(newArray);
-			setVisibleStudents(newArray);
-		}
-	}, [allStudents, sortingMode, searchFilter]);
-
-	// methods
-
-	function toFilter(students) {
-		// The function is named "toFilter" instead of just "filter", because  
-		// it doesn't modify the original array, but instead returns a modified clone.
-		if (searchFilter !== "") {
-			return students.filter(item => {
-				// TODO: Add more student properties to include in the search for
-				if (item.name.includes(searchFilter)
-					|| item.email.includes(searchFilter)
-					|| item.questionnaire.projectPriority1.includes(searchFilter)
-					|| item.questionnaire.projectPriority2.includes(searchFilter)
-					|| item.group.number.includes(searchFilter)
-					|| item.group.project.includes(searchFilter)) {
-					return true;
-				}
-				else {
-					return false;
-				}
-			})
-		}
-		return students;
-	}
-
-	function sort(students) {
-		// Comparison functions
-		function compareGroups(a, b) { return a.group.number.localeCompare(b.group.number); }
-		function compareNames(a, b) { return a.name.localeCompare(b.name); }
-
-		// Default sorting
-		students.sort((a, b) => compareNames(a, b))
-		students.sort((a, b) => compareGroups(b, a))
-
-		// User-selected sorting mode
-		students.sort((a, b) => {
-			switch (sortingMode) {
-				case sortingModeEnum.groupAscending:
-					return compareGroups(a, b);
-				case sortingModeEnum.groupDescending:
-					return compareGroups(b, a);
-				case sortingModeEnum.nameAscending:
-					return compareNames(a, b);
-				case sortingModeEnum.nameDescending:
-					return compareNames(b, a);
-				default: 
-					return compareGroups(a, b);
-			}
-		});
-	}
+	const { toSorted, SortingDropdown } = useStudentSorting();
+	const { toFiltered, SearchFilterInput } = useStudentFiltering();
 	
-	// return
+	const visibleStudents = useMemo(() => {
 
-	// DO NOT REMOVE THIS! if (isLoadingSession) {
+		if (allStudents === null) return null;
+		
+		let result = allStudents;
+		result = toFiltered(result);
+		result = toSorted(result);
+
+		return result;
+	}, [allStudents, toSorted, toFiltered]);
+
+	// DO NOT REMOVE THIS!: if (isLoadingSession) {
   //   return <>Loading session information...</>;
   // }
 
 	return (
 		<>
+			<SearchFilterInput/>
+			<SortingDropdown />
 			<StudentTable students={visibleStudents}/>
 		</>
 	) 
+
+	// 
 
 }
