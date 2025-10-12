@@ -1,286 +1,144 @@
 import React, { useState } from 'react';
 
-// Code does not call any backend.
 export default function SessionSetupPage() {
-	// Session information
-	const [sessionName, setSessionName] = useState('');
-	const [description, setDescription] = useState('');
+  const [sessionName, setSessionName] = useState('');
+  const [description, setDescription] = useState('');
+  const [coordinatorName, setCoordinatorName] = useState('');
+  const [numberOfParticipants, setNumberOfParticipants] = useState('');
+  const [maxGroupSize, setMaxGroupSize] = useState('');
+  const [minGroupSize, setMinGroupSize] = useState('');
+  const [groupRounding, setGroupRounding] = useState('none');
+  const [studentEmails, setStudentEmails] = useState('');
+  const [supervisorDetails, setSupervisorDetails] = useState('');
+  const [questionnaireDeadline, setQuestionnaireDeadline] = useState('');
+  const [initialProjects, setInitialProjects] = useState('');
+  const [optionalQuestion, setOptionalQuestion] = useState('');
+  const [sendOnlyNew, setSendOnlyNew] = useState(true);
 
-		// Questions / mandatory session setup fields
-		// Replace the single 'mandatoryQuestion' with explicit required fields
-		const [coordinatorName, setCoordinatorName] = useState('');
-		const [numberOfParticipants, setNumberOfParticipants] = useState('');
-		const [maxGroupSize, setMaxGroupSize] = useState('');
-		const [minGroupSize, setMinGroupSize] = useState('');
-		const [groupRounding, setGroupRounding] = useState('none');
-		// Comma- or newline-separated emails for students
-		const [studentEmails, setStudentEmails] = useState('');
-		// Supervisors: expected simple structured text per-line (email,maxGroups)
-		const [supervisorDetails, setSupervisorDetails] = useState('');
-		const [questionnaireDeadline, setQuestionnaireDeadline] = useState('');
-		const [initialProjects, setInitialProjects] = useState('');
-		// Keep optional question field
-		const [optionalQuestion, setOptionalQuestion] = useState('');
+  const handleSave = (e) => {
+    e.preventDefault();
+    const payload = {
+      sessionName: sessionName.trim(),
+      description: description.trim(),
+      mandatory: {
+        coordinatorName,
+        numberOfParticipants: Number(numberOfParticipants) || null,
+        maxGroupSize: Number(maxGroupSize) || null,
+        minGroupSize: Number(minGroupSize) || null,
+        groupRounding,
+        studentEmails: studentEmails.split(/[,\n]+/).map((s) => s.trim()).filter(Boolean),
+        supervisorDetails: supervisorDetails.split(/[,\n]+/).map((s) => s.trim()).filter(Boolean),
+        questionnaireDeadline: questionnaireDeadline || null,
+        initialProjects: initialProjects.split(/[,\n]+/).map((s) => s.trim()).filter(Boolean),
+      },
+      optional: optionalQuestion.trim() || null,
+      meta: { createdAt: new Date().toISOString() },
+    };
+    console.log('Saving session setup:', payload);
+    alert('Session saved');
+  };
 
-	// Checkbox for sending login codes only to newly added participants
-	const [sendOnlyNew, setSendOnlyNew] = useState(true);
+  const handleSendCodes = () => {
+    if (!sessionName.trim()) return alert('Please enter a session name first.');
+    const msg = sendOnlyNew
+      ? `Sending login codes only to new participants for '${sessionName}'.`
+      : `Sending login codes to all participants for '${sessionName}'.`;
+    console.log(msg);
+    alert(msg);
+  };
 
-	// Handle saving the session setup
-	const handleSave = (e) => {
-		e && e.preventDefault();
-		// Build payload representing current setup
-			const payload = {
-				sessionName: sessionName.trim(),
-				description: description.trim(),
-				mandatory: {
-					coordinatorName: coordinatorName.trim(),
-					numberOfParticipants: numberOfParticipants ? Number(numberOfParticipants) : null,
-					maxGroupSize: maxGroupSize ? Number(maxGroupSize) : null,
-					minGroupSize: minGroupSize ? Number(minGroupSize) : null,
-					groupRounding: groupRounding,
-					studentEmails: studentEmails.split(/[,\n]+/).map(s => s.trim()).filter(Boolean),
-					supervisorDetails: supervisorDetails
-						.split(/[,\n]+/)
-						.map(s => s.trim())
-						.filter(Boolean),
-					questionnaireDeadline: questionnaireDeadline || null,
-					initialProjects: initialProjects
-						.split(/[,\n]+/)
-						.map(s => s.trim())
-						.filter(Boolean),
-				},
-				optional: optionalQuestion.trim() || null,
-				meta: {
-					createdAt: new Date().toISOString(),
-				},
-			};
+  const handleReset = () => {
+    [
+      setSessionName,
+      setDescription,
+      setCoordinatorName,
+      setNumberOfParticipants,
+      setMaxGroupSize,
+      setMinGroupSize,
+      setStudentEmails,
+      setSupervisorDetails,
+      setQuestionnaireDeadline,
+      setInitialProjects,
+      setOptionalQuestion,
+    ].forEach((fn) => fn(''));
+    setGroupRounding('none');
+    setSendOnlyNew(true);
+  };
 
-		console.log('Saving session setup:', payload);
-		// Basic confirmation to the user
-		alert('Session saved');
-	};
+  return (
+    <div>
+      <h2>Session Setup</h2>
+      <form onSubmit={handleSave}>
+        {[
+          ['Session Name*', sessionName, setSessionName, 'text', 'e.g. Fall 2025 P3', true],
+          ['Coordinator Name*', coordinatorName, setCoordinatorName, 'text', 'Name of coordinator', true],
+          ['Description', description, setDescription, 'textarea', '', false],
+          ['Number of Students*', numberOfParticipants, setNumberOfParticipants, 'number', 'e.g. 120', true],
+          ['Max Group Size*', maxGroupSize, setMaxGroupSize, 'number', 'e.g. 4', true],
+          ['Min Group Size', minGroupSize, setMinGroupSize, 'number', 'e.g. 2', false],
+        ].map(([label, val, setter, type, ph, req], i) => (
+          <label key={i}>
+            {label}
+            <br />
+            {type === 'textarea' ? (
+              <textarea value={val} onChange={(e) => setter(e.target.value)} rows={3} placeholder={ph} />
+            ) : (
+              <input
+                type={type}
+                value={val}
+                onChange={(e) => setter(e.target.value)}
+                required={req}
+                placeholder={ph}
+                min={type === 'number' ? 1 : undefined}
+              />
+            )}
+            <br />
+          </label>
+        ))}
 
-	// Handle sending login codes. Behavior depends on the checkbox.
-	const handleSendCodes = () => {
-		if (!sessionName.trim()) {
-			alert('Please enter a session name before sending codes.');
-			return;
-		}
+        <label>
+          Group Rounding
+          <br />
+          <select value={groupRounding} onChange={(e) => setGroupRounding(e.target.value)}>
+            <option value="none">No rounding</option>
+            <option value="round_up">Round up</option>
+            <option value="round_down">Round down</option>
+          </select>
+        </label>
 
-		if (sendOnlyNew) {
-			console.log(`Sending login codes only to newly added participants for session '${sessionName}'.`);
-			alert('Login codes sent to newly added participants');
-		} else {
-			console.log(`Sending login codes to ALL participants for session '${sessionName}'.`);
-			alert('Login codes sent to all participants (simulated)');
-		}
-	};
+        {[
+          ['Emails of Students*', studentEmails, setStudentEmails, 'e.g. s1@aau.dk, s2@aau.dk'],
+          ['Supervisors (email,maxGroups)*', supervisorDetails, setSupervisorDetails, 'super1@aau.dk,2'],
+          ['Questionnaire Deadline', questionnaireDeadline, setQuestionnaireDeadline, '', 'datetime-local'],
+          ['Initial Projects', initialProjects, setInitialProjects, 'Project A, Project B'],
+          ['Optional Question', optionalQuestion, setOptionalQuestion, 'Anything else?'],
+        ].map(([label, val, setter, ph, type = 'textarea'], i) => (
+          <label key={label}>
+            <br />
+            {label}
+            <br />
+            {type === 'datetime-local' ? (
+              <input type="datetime-local" value={val} onChange={(e) => setter(e.target.value)} />
+            ) : (
+              <textarea value={val} onChange={(e) => setter(e.target.value)} rows={3} placeholder={ph} />
+            )}
+          </label>
+        ))}
 
-	// Reset all form fields
-	const handleReset = () => {
-		setSessionName('');
-		setDescription('');
-		setCoordinatorName('');
-		setNumberOfParticipants('');
-		setMaxGroupSize('');
-		setMinGroupSize('');
-		setGroupRounding('none');
-		setStudentEmails('');
-		setSupervisorDetails('');
-		setQuestionnaireDeadline('');
-		setInitialProjects('');
-		setOptionalQuestion('');
-		setSendOnlyNew(true);
-	};
+        <br />
+        <button type="submit">Save Changes</button>
+      </form>
 
-	return (
-		<div>
-			{/* Session Information Section */}
-			<h2>Session setup</h2>
-			<form onSubmit={handleSave}>
-				<div>
-					<label>
-						Session Name (required)
-						<br />
-						<input
-							type="text"
-							value={sessionName}
-							onChange={(e) => setSessionName(e.target.value)}
-							required
-							placeholder="e.g. Fall 2025 P3"
-						/>
-					</label>
-				</div>
-				<div>
-								<label>
-									Coordinator name (required)
-									<br />
-									<input
-										type="text"
-										value={coordinatorName}
-										onChange={(e) => setCoordinatorName(e.target.value)}
-										required
-										placeholder="Name of the coordinator"
-									/>
-								</label>
-							</div>
-
-						{/* Mandatory session fields (replaces the single generic mandatory question) */}
-						<fieldset>
-							<legend>Mandatory questions</legend>
-
-							<div>
-								<label>
-									Number of students (required)
-									<br />
-									<input
-										type="number"
-										min={1}
-										value={numberOfParticipants}
-										onChange={(e) => setNumberOfParticipants(e.target.value)}
-										required
-										placeholder="e.g. 120"
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Max group size (required)
-									<br />
-									<input
-										type="number"
-										min={1}
-										value={maxGroupSize}
-										onChange={(e) => setMaxGroupSize(e.target.value)}
-										required
-										placeholder="e.g. 4"
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Min group size (optional)
-									<br />
-									<input
-										type="number"
-										min={1}
-										value={minGroupSize}
-										onChange={(e) => setMinGroupSize(e.target.value)}
-										placeholder="e.g. 2"
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Group size rounding
-									<br />
-									<select value={groupRounding} onChange={(e) => setGroupRounding(e.target.value)}>
-										<option value="none">No rounding</option>
-										<option value="round_up">Round up</option>
-										<option value="round_down">Round down</option>
-									</select>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Emails of students
-									<br />
-									<textarea
-										value={studentEmails}
-										onChange={(e) => setStudentEmails(e.target.value)}
-										rows={5}
-										required
-										placeholder="student1@student.aau.dk, student2@student.aau.dk"
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Supervisor details (email, maxGroups)
-									<br />
-									<textarea
-										value={supervisorDetails}
-										onChange={(e) => setSupervisorDetails(e.target.value)}
-										rows={4}
-										required
-										placeholder={"super1@example.com,2\nsuper2@example.com,1"}
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Student questionnaire submission deadline (optional)
-									<br />
-									<input
-										type="datetime-local"
-										value={questionnaireDeadline}
-										onChange={(e) => setQuestionnaireDeadline(e.target.value)}
-									/>
-								</label>
-							</div>
-
-							<div>
-								<label>
-									Initial projects (optional)
-									<br />
-									<textarea
-										value={initialProjects}
-										onChange={(e) => setInitialProjects(e.target.value)}
-										rows={3}
-										placeholder="Project A, Project B"
-									/>
-								</label>
-							</div>
-
-						</fieldset>
-
-						{/* Optional question still available */}
-						<div>
-							<label>
-								Optional Question
-								<br />
-								<input
-									type="text"
-									value={optionalQuestion}
-									onChange={(e) => setOptionalQuestion(e.target.value)}
-									placeholder="Anything else?"
-								/>
-							</label>
-						</div>
-
-				{/* Save Changes */}
-				<div style={{ marginTop: 12 }}>
-					<button type="submit">Save Changes</button>
-				</div>
-			</form>
-
-			{/* Send Login Codes */}
-			<div style={{ marginTop: 18 }}>
-				<label>
-					<input
-						type="checkbox"
-						checked={sendOnlyNew}
-						onChange={(e) => setSendOnlyNew(e.target.checked)}
-					/>
-					{' '}Send only to newly added participants
-				</label>
-
-				<div style={{ marginTop: 8 }}>
-					<button type="button" onClick={handleSendCodes}>Send Login Codes</button>
-				</div>
-			</div>
-
-			{/* Reset button */}
-			<div style={{ marginTop: 18 }}>
-				<button type="button" onClick={handleReset}>Reset</button>
-			</div>
-		</div>
-	);
+      <hr />
+      <label>
+        <input type="checkbox" checked={sendOnlyNew} onChange={(e) => setSendOnlyNew(e.target.checked)} /> Send only
+        to newly added participants
+      </label>
+      <br />
+      <button onClick={handleSendCodes}>Send Login Codes</button>
+      <button onClick={handleReset} style={{ marginLeft: 8 }}>
+        Reset
+      </button>
+    </div>
+  );
 }
-
