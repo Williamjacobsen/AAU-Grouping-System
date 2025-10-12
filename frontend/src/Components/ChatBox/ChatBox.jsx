@@ -88,12 +88,12 @@ export default function ChatBox() {
       });
 
       messaging.current.send(`/group/1/send`, {
-        content: "Hello from React",
+        content: "Group test message",
         sender: username,
       });
 
       messaging.current.send("/private/send", {
-        content: "This is a private message",
+        content: "This is a private test message",
         sender: username,
         target: target,
       });
