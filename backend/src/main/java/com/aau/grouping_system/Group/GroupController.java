@@ -6,31 +6,28 @@ import org.springframework.web.bind.annotation.*;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Student.Student;
 
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
 
-	// Store this in db? db is not used? or make GroupRepository file for its data?
-	private final Map<Long, Group> groups = new ConcurrentHashMap<>();
-	private final Map<Long, Student> students = new ConcurrentHashMap<>();
 	private final Database db;
+	private final GroupService groupService;
 
-	public GroupController(Database db) {
+	public GroupController(Database db, GroupService groupService) {
 		this.db = db;
+		this.groupService = groupService;
 	}
 
 	@PostMapping("/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
-			@PathVariable Long groupId,
-			@PathVariable Long studentId) {
+			@PathVariable Integer groupId,
+			@PathVariable Integer studentId) {
 
-		// User authority validation
-
-		Group group = groups.get(groupId);
-		Student student = students.get(studentId);
+		Group group = db.getGroups().getEntry(groupId);
+		Student student = db.getStudents().getEntry(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -41,7 +38,7 @@ public class GroupController {
 		}
 
 		try {
-			group.acceptJoinRequest(student);
+			groupService.acceptJoinRequest(groupId, student);
 			return ResponseEntity.ok("Join request accepted successfully");
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("Failed to accept request: " + e.getMessage());
@@ -49,8 +46,8 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<Student[]> getJoinRequests(@PathVariable Long groupId) {
-		Group group = groups.get(groupId);
+	public ResponseEntity<List<Student>> getJoinRequests(@PathVariable Integer groupId) {
+		Group group = db.getGroups().getEntry(groupId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -61,11 +58,11 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/request-join/{studentId}")
 	public ResponseEntity<String> requestToJoin(
-			@PathVariable Long groupId,
-			@PathVariable Long studentId) {
+			@PathVariable Integer groupId,
+			@PathVariable Integer studentId) {
 
-		Group group = groups.get(groupId);
-		Student student = students.get(studentId);
+		Group group = db.getGroups().getEntry(groupId);
+		Student student = db.getStudents().getEntry(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -76,7 +73,7 @@ public class GroupController {
 		}
 
 		try {
-			group.requestToJoin(student);
+			groupService.requestToJoin(groupId, student);
 			return ResponseEntity.ok("Join request submitted successfully");
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("Failed to submit request: " + e.getMessage());
@@ -84,8 +81,8 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<Group> getGroup(@PathVariable Long groupId) {
-		Group group = groups.get(groupId);
+	public ResponseEntity<Group> getGroup(@PathVariable Integer groupId) {
+		Group group = db.getGroups().getEntry(groupId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -95,7 +92,65 @@ public class GroupController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Map<Long, Group>> getAllGroups() {
-		return ResponseEntity.ok(groups);
+	public ResponseEntity<Map<Integer, Group>> getAllGroups() {
+		return ResponseEntity.ok(db.getGroups().getAllEntries());
+	}
+
+	@PostMapping
+	public ResponseEntity<Group> createGroup(@RequestBody Group group) {
+		try {
+			db.getGroups().put(group);
+			return ResponseEntity.ok(group);
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().build();
+		}
+	}
+
+	@PostMapping("/{groupId}/join/{studentId}")
+	public ResponseEntity<String> joinGroup(
+			@PathVariable Integer groupId,
+			@PathVariable Integer studentId) {
+
+		Group group = db.getGroups().getEntry(groupId);
+		Student student = db.getStudents().getEntry(studentId);
+
+		if (group == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		if (student == null) {
+			return ResponseEntity.badRequest().body("Student not found");
+		}
+
+		try {
+			groupService.joinGroup(groupId, student);
+			return ResponseEntity.ok("Successfully joined the group");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Failed to join group: " + e.getMessage());
+		}
+	}
+
+	@PostMapping("/{groupId}/leave/{studentId}")
+	public ResponseEntity<String> leaveGroup(
+			@PathVariable Integer groupId,
+			@PathVariable Integer studentId) {
+
+		Group group = db.getGroups().getEntry(groupId);
+		Student student = db.getStudents().getEntry(studentId);
+
+		if (group == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		if (student == null) {
+			return ResponseEntity.badRequest().body("Student not found");
+		}
+
+		try {
+			groupService.leaveGroup(groupId, student);
+			return ResponseEntity.ok("Successfully left the group");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("Failed to leave group: " + e.getMessage());
+		}
 	}
 }

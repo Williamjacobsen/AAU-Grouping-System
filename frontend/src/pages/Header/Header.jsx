@@ -15,6 +15,9 @@ export default function Header() {
 						<Link to="/user">Profile</Link>
 					</li>
 					<li>
+						<Link to="/sessions">Sessions</Link>
+					</li>
+					<li>
 						<Link to="/user/sessions">*NOT IMPLEMENTED*</Link>
 					</li>
 				</ul>

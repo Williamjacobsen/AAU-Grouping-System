@@ -1,79 +1,31 @@
 package com.aau.grouping_system.Group;
 
+import com.aau.grouping_system.EnhancedMap.EnhancedMappable;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-public class Group {
+import java.util.ArrayList;
+import java.util.List;
 
-	// todo: Use lists instead of arrays.
+public class Group extends EnhancedMappable {
 
 	private Supervisor supervisor;
-	private Student[] students;
+	private List<Student> students;
 	private Project project;
 	private String groupEmail;
-	private Student[] joinRequests;
+	private List<Student> joinRequests;
+	private int maxStudents;
+	private int maxRequests;
 
 	public Group(Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
 		this.supervisor = supervisor;
 		this.project = project;
 		this.groupEmail = groupEmail;
-		this.students = new Student[maxStudents];
-		this.joinRequests = new Student[maxRequests];
-	}
-
-	public void joinGroup(Student student) {
-		for (Student s : students) {
-			if (s != null && s.equals(student)) {
-				throw new IllegalStateException("Student is already in the group");
-			}
-		}
-
-		for (int i = 0; i < students.length; i++) {
-			if (students[i] == null) {
-				students[i] = student;
-				return;
-			}
-		}
-	}
-
-	public void leaveGroup(Student student) {
-		for (int i = 0; i < students.length; i++) {
-			if (students[i] != null && students[i].equals(student)) {
-				students[i] = null;
-				return;
-			}
-		}
-	}
-
-	public void requestToJoin(Student student) {
-		if (student == null) {
-			throw new IllegalArgumentException("Student cannot be null");
-		}
-
-		for (Student s : joinRequests) {
-			if (s != null && s.equals(student)) {
-				throw new IllegalStateException("Student already has a pending request");
-			}
-		}
-
-		for (int i = 0; i < joinRequests.length; i++) {
-			if (joinRequests[i] == null) {
-				joinRequests[i] = student;
-				System.out.println(student.getName() + " requested to join.");
-				return;
-			}
-		}
-	}
-
-	public void acceptJoinRequest(Student student) {
-		for (int i = 0; i < joinRequests.length; i++) {
-			if (joinRequests[i] != null && joinRequests[i].equals(student)) {
-				joinRequests[i] = null;
-				joinGroup(student);
-				return;
-			}
-		}
+		this.maxStudents = maxStudents;
+		this.maxRequests = maxRequests;
+		this.students = new ArrayList<>();
+		this.joinRequests = new ArrayList<>();
 	}
 
 	public Supervisor getSupervisor() {
@@ -84,7 +36,7 @@ public class Group {
 		this.supervisor = supervisor;
 	}
 
-	public Student[] getStudents() {
+	public List<Student> getStudents() {
 		return students;
 	}
 
@@ -104,7 +56,23 @@ public class Group {
 		this.groupEmail = groupEmail;
 	}
 
-	public Student[] getJoinRequests() {
+	public List<Student> getJoinRequests() {
 		return joinRequests;
+	}
+
+	public int getMaxStudents() {
+		return maxStudents;
+	}
+
+	public void setMaxStudents(int maxStudents) {
+		this.maxStudents = maxStudents;
+	}
+
+	public int getMaxRequests() {
+		return maxRequests;
+	}
+
+	public void setMaxRequests(int maxRequests) {
+		this.maxRequests = maxRequests;
 	}
 }
