@@ -63,12 +63,15 @@ class ChatSystem {
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+  const [selectedChatRoom, setSelectedChatRoom] = useState(null);
+  const [messageInput, setMessageInput] = useState("");
 
   const messaging = useRef(null);
   const username = "My username";
   const [target, setTarget] = useState(username);
   const { students, chatRooms } = useAppState();
 
+	// WEBSOCKET DEMO:
   useEffect(() => {
     console.log(chatRooms);
     console.log(students);
@@ -103,6 +106,44 @@ export default function ChatBox() {
     };
   }, []);
 
+	// DEMO DATA:
+  const messages = {
+    "student 1": [
+      {
+        id: 1,
+        sender: "student 1",
+        text: "Yo my boi",
+        time: "10:30",
+      },
+      {
+        id: 2,
+        sender: "my names jeff",
+        text: "test",
+        time: "10:32",
+      },
+      {
+        id: 3,
+        sender: "student 1",
+        text: "gg",
+        time: "10:33",
+      },
+    ],
+    "student 2": [
+      {
+        id: 1,
+        sender: "stundet 2",
+        text: "Hvornår skal opgaven afleveres?",
+        time: "11:15",
+      },
+      {
+        id: 2,
+        sender: "Gerry the G",
+        text: "Opgaven skal afleveres på fredag",
+        time: "11:20",
+      },
+    ],
+  };
+
   return (
     <>
       {showChatBox ? (
@@ -126,7 +167,7 @@ export default function ChatBox() {
             {/* Header */}
             <div
               style={{
-                backgroundColor: "#e2e8f0",
+                backgroundColor: "#dae4f1ff",
                 paddingBottom: "2rem",
                 display: "flex",
                 alignItems: "center",
@@ -199,6 +240,7 @@ export default function ChatBox() {
                 width: "100%",
                 height: "93%",
                 position: "relative",
+                display: "flex",
               }}
             >
               {/* Sidebar */}
@@ -206,7 +248,7 @@ export default function ChatBox() {
                 style={{
                   backgroundColor: "white",
                   position: "relative",
-                  width: "40%",
+                  width: "30vw",
                   height: "100%",
                   borderRight: "2px solid #e5e7eb",
                 }}
@@ -215,8 +257,10 @@ export default function ChatBox() {
                 {chatRooms.map((chatRoom) => (
                   <div
                     key={chatRoom}
+                    onClick={() => setSelectedChatRoom(chatRoom)}
                     style={{
-                      backgroundColor: "#f1f5f9",
+                      backgroundColor:
+                        selectedChatRoom === chatRoom ? "#dbeafe" : "#f1f5f9",
                       position: "relative",
                       width: "100%",
                       minHeight: "5rem",
@@ -225,6 +269,18 @@ export default function ChatBox() {
                       justifyContent: "center",
                       alignItems: "center",
                       borderBottom: "1px solid #e5e7eb",
+                      transition: "background-color 0.15s ease",
+                      cursor: "pointer",
+                    }}
+                    onMouseEnter={(e) => {
+                      if (selectedChatRoom !== chatRoom) {
+                        e.currentTarget.style.backgroundColor = "#e2e8f0";
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (selectedChatRoom !== chatRoom) {
+                        e.currentTarget.style.backgroundColor = "#f1f5f9";
+                      }
                     }}
                   >
                     <h4
@@ -279,7 +335,68 @@ export default function ChatBox() {
                 ))}
               </div>
               {/* Chat area */}
-              <div></div>
+              <div
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
+                {selectedChatRoom ? (
+                  <>
+                    {/* Chat header */}
+                    <div
+                      style={{
+                        backgroundColor: "#f1f5f9",
+                        position: "relative",
+                        width: "100%",
+                        height: "4rem",
+                        borderBottom: "2px solid #e5e7eb",
+                        display: "flex",
+                        alignItems: "center",
+                        paddingLeft: "2rem",
+                      }}
+                    >
+                      <h4
+                        style={{
+                          fontSize: "18px",
+                          fontWeight: 600,
+                          color: "#0f172a",
+                        }}
+                      >
+                        {selectedChatRoom}
+                      </h4>
+                    </div>
+                    {/* Chat Messages */}
+                    <div>
+                      <p>dawda</p>
+                      <p>dawdad</p>
+                    </div>
+                  </>
+                ) : (
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      height: "100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <p
+                      style={{
+                        fontSize: "16px",
+                        color: "#64748b",
+                        fontWeight: 500,
+												transform: "translateY(-100%)"
+                      }}
+                    >
+                      Vælg en chat for at se beskeder
+                    </p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </>
