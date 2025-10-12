@@ -1,17 +1,22 @@
 package com.aau.grouping_system.User.Coordinator;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMap;
-import com.aau.grouping_system.Sessions.Session;
+import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.DatabaseMapItem;
+import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	public EnhancedMap<Session> sessions = new EnhancedMap<>();
+	public DatabaseMapItemReferenceList<Session> sessions;
 
 	// constructors
 
-	public Coordinator(String email, String password, String name) {
-		super(email, password, name);
+	public Coordinator(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
+			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList,
+			String email, String password, String name) {
+		super(parentDatabaseMap, parentReferenceList, email, password, name);
+		this.sessions = new DatabaseMapItemReferenceList<>(this);
 	}
 
 	// abstract method overrides

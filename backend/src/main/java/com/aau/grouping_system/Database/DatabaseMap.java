@@ -1,24 +1,25 @@
-package com.aau.grouping_system.EnhancedMap;
+package com.aau.grouping_system.Database;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class EnhancedMap<T extends EnhancedMappable> {
+public class DatabaseMap<T extends DatabaseMapItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();
 	private AtomicInteger idGenerator = new AtomicInteger();
 
 	// public methods
 
-	public void put(T mappable) {
+	public void put(T item) {
 		int id = getNewId();
-		mappable.setMapID(id);
-		map.put(id, mappable);
+		item.setMapId(id);
+		map.put(id, item);
 	}
 
-	public void remove(T mappable) {
-		map.remove(mappable.getMapID());
+	public void remove(T item) {
+		item.removeChildren();
+		map.remove(item.getMapId());
 	}
 
 	// private methods
@@ -29,7 +30,7 @@ public class EnhancedMap<T extends EnhancedMappable> {
 
 		while (map.get(idGenerator.get()) != null) {
 
-			if (idGenerator.get() <= Integer.MAX_VALUE - 1) {
+			if (idGenerator.get() >= Integer.MAX_VALUE - 1) {
 				if (hasLoopedOnce) {
 					throw new IllegalStateException("A valid new ID cannot be found because the Map is completely full.");
 				} else {
@@ -46,11 +47,11 @@ public class EnhancedMap<T extends EnhancedMappable> {
 
 	// getters & setters
 
-	public T getEntry(Integer id) {
+	public T getItem(Integer id) {
 		return map.get(id);
 	}
 
-	public Map<Integer, T> getAllEntries() {
+	public Map<Integer, T> getAllItems() {
 		return map;
 	}
 
