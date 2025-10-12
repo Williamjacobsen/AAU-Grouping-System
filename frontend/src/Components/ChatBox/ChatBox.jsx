@@ -144,6 +144,27 @@ export default function ChatBox() {
     ],
   };
 
+  const handleSendMessage = () => {
+    if (!messageInput.trim() || !selectedChatRoom) return;
+
+    if (selectedChatRoom.startsWith("student")) {
+      // TODO: find a better way of indentifing if its a student (maybe check based on context/appState)
+      messaging.current.send("/private/send", {
+        content: messageInput,
+        sender: username,
+        target: selectedChatRoom,
+      });
+    } else {
+      const groupId = selectedChatRoom;
+      messaging.current.send(`/group/${groupId}/send`, {
+        content: messageInput,
+        sender: username,
+      });
+    }
+
+    setMessageInput("");
+  };
+
   return (
     <>
       {showChatBox ? (
@@ -456,11 +477,18 @@ export default function ChatBox() {
                         display: "flex",
                         alignItems: "center",
                         padding: "0 1rem",
-												gap: "1rem"
+                        gap: "1rem",
                       }}
                     >
                       <input
                         type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && messageInput.trim()) {
+                            handleSendMessage();
+                          }
+                        }}
                         placeholder="Skriv en besked..."
                         style={{
                           flex: 1,
@@ -483,6 +511,7 @@ export default function ChatBox() {
                         }}
                       />
                       <button
+                        onClick={() => handleSendMessage()}
                         style={{
                           backgroundColor: "#3b82f6",
                           color: "white",
