@@ -68,7 +68,6 @@ export default function ChatBox() {
 
   const messaging = useRef(null);
   const username = "My username";
-  const [target, setTarget] = useState(username);
   const { students, chatRooms } = useAppState();
 
   // WEBSOCKET DEMO:
@@ -95,7 +94,7 @@ export default function ChatBox() {
       messaging.current.send("/private/send", {
         content: "This is a private test message",
         sender: username,
-        target: target,
+        target: username,
       });
     });
 
@@ -104,6 +103,7 @@ export default function ChatBox() {
         messaging.current.disconnect();
       }
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // DEMO DATA:
@@ -148,7 +148,7 @@ export default function ChatBox() {
     if (!messageInput.trim() || !selectedChatRoom) return;
 
     if (selectedChatRoom.startsWith("student")) {
-      // TODO: find a better way of indentifing if its a student (maybe check based on context/appState)
+      // TODO: find a better way of indentifing if its a student (maybe check based on context/appState or maybe add a type)
       messaging.current.send("/private/send", {
         content: messageInput,
         sender: username,
