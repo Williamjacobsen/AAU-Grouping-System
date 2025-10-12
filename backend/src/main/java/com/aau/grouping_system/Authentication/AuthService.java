@@ -24,14 +24,6 @@ public class AuthService {
 
 	// methodes
 
-	public boolean isEmailExisting(String email) {
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllEntries().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				return true;
-			}
-		}
-		return false;
-	}
 
 	public boolean isPasswordCorrect(String password, Coordinator user) {
 		if (passwordEncoder.matches(password, user.getPasswordHash())) {

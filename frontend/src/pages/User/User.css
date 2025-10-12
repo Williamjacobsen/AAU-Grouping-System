@@ -21,7 +21,7 @@
 	font-weight: bold;
 }
 
-input[type=email],input[type=password] {
+input[type=email],input[type=password], input[type=text] {
 	text-align: left;
 	width: 85%;
 	padding: 10px;
@@ -35,15 +35,15 @@ input[type=email],input[type=password] {
 	margin-top: 10px;
 }
 
-.log-in {
+.sign-in {
 	background-color: black;
 	color: white;
 	font-size: 14px;
 	font: bold;
 	padding: 3px 10px;
 	font-family: sans-serif;
-	border-top-left-radius: 5px;
-	border-bottom-left-radius: 5px;
+	border-radius: 5px;
+	margin-right: 10px;
 
 }
 .sign-up {
@@ -52,10 +52,19 @@ input[type=email],input[type=password] {
 	font-size: 14px;
 	font: bold;
 	padding: 3px 10px;
-	border-top-right-radius: 5px;
-	border-bottom-right-radius: 5px;
+	border-radius: 5px;
 }
 
 .forgot-password {
 	font-size: 14px;
+}
+
+.error-box {
+	color: red;
+	font-weight: bold;
+	background: rgb(253, 184, 184);
+	padding: 4px;
+	width: 90%;
+	margin-top: 5px;
+	border-radius: 4px;
 }

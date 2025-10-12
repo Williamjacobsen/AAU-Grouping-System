@@ -1,5 +1,12 @@
 package com.aau.grouping_system.Authentication;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
@@ -9,10 +16,11 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+
 
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
@@ -31,7 +39,7 @@ public class AuthController {
 
 		Coordinator user = service.findByEmail(email);
 
-		if (service.isEmailExisting(email) || !service.isPasswordCorrect(password, user)) {
+		if (user == null || !service.isPasswordCorrect(password, user)) {
 			return ResponseEntity
 					.status(HttpStatus.UNAUTHORIZED) // 401 error
 					.body("Invalid email or password");
