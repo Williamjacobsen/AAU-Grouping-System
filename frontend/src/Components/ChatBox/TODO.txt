@@ -1,0 +1,5 @@
+1. actually send a message to backend via the frontend ui.
+2. save the message in the database.
+3. allow users the load messages that was previously send.
+4. maybe (if i want to) add an @somebody functionality.
+5. maybe (if i want to) allow for editing and delting your messages.
