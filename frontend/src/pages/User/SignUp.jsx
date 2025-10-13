@@ -20,7 +20,7 @@ export default function SignUp() {
 		})
 			.then(async (response) => {
 				if (response.ok) {
-					navigate("/about");
+					navigate("/");
 				} else {
 					const errorMessage = await response.text();
 					setError(errorMessage);
