@@ -10,6 +10,7 @@ import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
 import User from "./pages/User/User";
 import Session from "./pages/Session/Session";
+import SessionSetupPage from "./pages/SessionSetupPage/SessionSetupPage";
 
 export default function App() {
 	return (
@@ -22,6 +23,7 @@ export default function App() {
 						<Route path="/coordinator" element={<Coordinator />} />
 						<Route path="/session/:id" element={<Session />}/>
 						<Route path="*" element={<NoPage />} />
+						<Route path="/session-setup" element={<SessionSetupPage />} />
 					</Route>
 				</Routes>
 			</BrowserRouter>
