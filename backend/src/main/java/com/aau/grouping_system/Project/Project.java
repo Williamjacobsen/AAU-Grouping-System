@@ -5,29 +5,28 @@ import com.aau.grouping_system.Database.item.DatabaseItem;
 import com.aau.grouping_system.Database.item.ItemReferenceList;
 
 public class Project extends DatabaseItem {
-	// todo: Fjern "project" fra variabelnavne.
-	private String projectName;
+	private String name;
 	private String description;
-	private int projectId;
-	// todo: Tilføj user
+	private int id;
+	private int user;
 
 	public Project(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
 			ItemReferenceList<? extends DatabaseItem> parentReferenceList, String projectName,
 			String description,
 			int projectId) {
 		super(parentDatabaseMap, parentReferenceList);
-		this.projectName = projectName;
+		this.name = projectName;
 		this.description = description;
-		this.projectId = projectId;
+		this.id = projectId;
 	}
 
 	// Getters and setters
 	public String getProjectName() {
-		return projectName;
+		return name;
 	}
 
 	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+		this.name = projectName;
 	}
 
 	public String getDescription() {
@@ -39,10 +38,18 @@ public class Project extends DatabaseItem {
 	}
 
 	public int getProjectId() {
-		return projectId;
+		return id;
 	}
 
 	public void setProjectId(int projectId) {
-		this.projectId = projectId;
+		this.id = projectId;
+	}
+
+	public int getUserId() {
+		return user;
+	}
+
+	public void setUserId(int projectUser) {
+		this.id = user;
 	}
 }
