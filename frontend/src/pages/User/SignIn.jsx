@@ -25,8 +25,8 @@ export default function SignIn() {
 					setError(errorMessage);                    
 				}
 			})
-			.catch(() => {
-				setError("Network error");  
+			.catch((e) => {
+				setError(e.message);  
 			})
 		}
 

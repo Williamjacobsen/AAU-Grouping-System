@@ -1,7 +1,16 @@
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-// fetch user info with /me
+export default function() {
 
-// display name, role and etc.
+	
+		// fetch user info with GET /auth/me
+	
+		// display name, role and etc.
 
-// add modify buttons and log out button.
+		// add modify buttons and log out button.
+	
+}
+
+
 

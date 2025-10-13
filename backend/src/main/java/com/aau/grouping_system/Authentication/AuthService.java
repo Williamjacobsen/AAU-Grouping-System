@@ -31,9 +31,10 @@ public class AuthService {
 		}
 		return false;
 	}
+	
 
 	public Coordinator findByEmail(String email) {
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllEntries().values()) {
+		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
 			if (existingCoordinator.getEmail().equals(email)) {
 				return existingCoordinator;
 			}

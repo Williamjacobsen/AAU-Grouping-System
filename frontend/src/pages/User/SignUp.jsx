@@ -27,7 +27,7 @@ export default function SignUp() {
 				}
 			})
 			.catch(() => {
-				setError("Network error");
+				setError("Error: Check your network");
 			})
 	}
 
