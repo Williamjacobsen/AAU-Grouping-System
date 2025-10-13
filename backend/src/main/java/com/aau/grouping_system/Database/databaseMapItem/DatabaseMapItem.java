@@ -1,6 +1,8 @@
-package com.aau.grouping_system.Database;
+package com.aau.grouping_system.Database.databaseMapItem;
 
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.aau.grouping_system.Database.DatabaseMap;
 
 public abstract class DatabaseMapItem {
 
@@ -14,7 +16,7 @@ public abstract class DatabaseMapItem {
 	@SuppressWarnings("unchecked") // Because the type safety violation warning isn't true here.
 	public void removeChildren() {
 		for (DatabaseMapItemReferenceList<? extends DatabaseMapItem> childReferenceList : childReferenceLists) {
-			for (DatabaseMapItem childReference : childReferenceList) {
+			for (DatabaseMapItem childReference : childReferenceList.referenceList) {
 				// This "technically" violates type safety (if @SuppressWarnings("unchecked")
 				// wasn't here, we would get a warning), since Java can't know whether the items
 				// inside "EnhancedMapItemReferenceList<? extends EnhancedMapItem>" actually are
@@ -38,9 +40,12 @@ public abstract class DatabaseMapItem {
 	@SuppressWarnings("unchecked") // Because the type safety violation warning isn't true here.
 	public DatabaseMapItem(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
 			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList) {
+
 		this.parentDatabaseMap = parentDatabaseMap;
+
 		// Add to parent map in database
 		((DatabaseMap<DatabaseMapItem>) parentDatabaseMap).put(this);
+
 		// Declare as parent EnhancedMapItem's child
 		if (parentReferenceList != null) {
 			((DatabaseMapItemReferenceList<DatabaseMapItem>) parentReferenceList).add(this);

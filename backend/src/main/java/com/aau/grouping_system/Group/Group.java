@@ -1,8 +1,8 @@
 package com.aau.grouping_system.Group;
 
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseMapItem;
-import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItem;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItemReferenceList;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
