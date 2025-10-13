@@ -5,6 +5,7 @@ import StudentTable from "./StudentTable";
 import useGetSession from "./useGetSession";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
+import JsonExportImport from "../../components/JsonExportImport";
 
 export default function Session() {
 
@@ -44,6 +45,7 @@ export default function Session() {
 
 	return (
 		<>
+			<JsonExportImport getData={() => allStudents} setData={setAllStudents} filenamePrefix={`session-${sessionId}`} />
 			<SearchFilterInput/>
 			<SortingDropdown />
 			<StudentTable students={visibleStudents}/>
