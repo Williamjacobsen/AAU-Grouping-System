@@ -1,9 +1,10 @@
 package com.aau.grouping_system.Session;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 @Service
@@ -16,15 +17,17 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db.getSessions(), coordinator.sessions, coordinator);
+		return SessionFactory.create(db.getSessions(), coordinator.sessions, db, coordinator);
 	}
 
 	public Session getSession(Integer sessionId) {
 		return db.getSessions().getItem(sessionId);
 	}
 
-	public ItemReferenceList<Session> getSessionsByCoordinator(Coordinator coordinator) {
-		return coordinator.sessions;
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
+		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems();
 	}
 
 	public boolean deleteSession(Integer sessionId, Coordinator coordinator) {

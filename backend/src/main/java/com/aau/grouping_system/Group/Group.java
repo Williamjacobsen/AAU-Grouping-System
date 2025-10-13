@@ -1,8 +1,8 @@
 package com.aau.grouping_system.Group;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseReferences;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
@@ -20,10 +20,10 @@ public class Group extends DatabaseItem {
 	private int maxStudents;
 	private int maxRequests;
 
-	public Group(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public Group(DatabaseMap<? extends DatabaseItem> parentMap,
+			DatabaseReferences parentReferences,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
-		super(parentDatabaseMap, parentReferenceList);
+		super(parentMap, parentReferences);
 		this.supervisor = supervisor;
 		this.project = project;
 		this.groupEmail = groupEmail;

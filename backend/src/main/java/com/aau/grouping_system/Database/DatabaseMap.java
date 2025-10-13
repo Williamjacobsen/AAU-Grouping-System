@@ -4,11 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.aau.grouping_system.Database.item.DatabaseItem;
-
-/// Functions as a ConcurrentHashMap, but with the additional functionality to
-/// handle ID generation and to handle our hierarchy (child/parent relationships)
-/// of saved database items (for example Coordinators, Sessions, Students, etc.).
+/// Functions as a ConcurrentHashMap that also handles IDs and hierarchy
+/// (child/parent relations) of items.
 public class DatabaseMap<T extends DatabaseItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();
@@ -38,8 +35,8 @@ public class DatabaseMap<T extends DatabaseItem> {
 
 		boolean hasLoopedOnce = false;
 
+		// Ensure ID isn't already used
 		while (map.get(idGenerator.get()) != null) {
-
 			if (idGenerator.get() >= Integer.MAX_VALUE - 1) {
 				if (hasLoopedOnce) {
 					throw new IllegalStateException("A valid new ID cannot be found because the Map is completely full.");
@@ -48,7 +45,6 @@ public class DatabaseMap<T extends DatabaseItem> {
 					idGenerator.set(0);
 				}
 			}
-
 			idGenerator.incrementAndGet();
 		}
 

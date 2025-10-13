@@ -51,13 +51,16 @@ public class Database {
 	@PostConstruct
 	public void init() {
 
-		Coordinator c0 = new Coordinator(coordinators, null, "CoordinatorA@example.com", "PasswordHashA", "CoordinatorA");
-		Coordinator c1 = new Coordinator(coordinators, null, "CoordinatorB@example.com", "PasswordHashB", "CoordinatorB");
-		Coordinator c2 = new Coordinator(coordinators, null, "CoordinatorC@example.com", "PasswordHashC", "CoordinatorC");
+		Coordinator c0 = new Coordinator(coordinators, null, this, "CoordinatorA@example.com", "PasswordHashA",
+				"CoordinatorA");
+		Coordinator c1 = new Coordinator(coordinators, null, this, "CoordinatorB@example.com", "PasswordHashB",
+				"CoordinatorB");
+		Coordinator c2 = new Coordinator(coordinators, null, this, "CoordinatorC@example.com", "PasswordHashC",
+				"CoordinatorC");
 
-		Session s0 = new Session(sessions, c0.sessions, c0);
-		Session s1 = new Session(sessions, c0.sessions, c0);
-		Session s2 = new Session(sessions, c1.sessions, c1);
+		Session s0 = new Session(sessions, c0.sessions, this, c0);
+		Session s1 = new Session(sessions, c0.sessions, this, c0);
+		Session s2 = new Session(sessions, c1.sessions, this, c1);
 
 		Student st0 = new Student(students, s0.students, "Student0@example.com", "PasswordHash0", "Student0", s0);
 		Student st1 = new Student(students, s0.students, "Student1@example.com", "PasswordHash1", "Student1", s0);
@@ -66,6 +69,5 @@ public class Database {
 		Student st4 = new Student(students, s1.students, "Student4@example.com", "PasswordHash4", "Student4", s1);
 		Student st5 = new Student(students, s2.students, "Student5@example.com", "PasswordHash5", "Student5", s2);
 		Student st6 = new Student(students, s2.students, "Student6@example.com", "PasswordHash6", "Student6", s2);
-
 	}
 }
