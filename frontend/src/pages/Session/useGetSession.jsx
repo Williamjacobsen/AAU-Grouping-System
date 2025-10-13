@@ -21,27 +21,28 @@ export default function useGetSession(sessionId) {
 		})();
 	}, []);
 
+	async function requestSession(sessionId) {
+		try {
+			const response = await fetch(
+				`http://localhost:8080/session/:${sessionId}/get`,
+				{
+					method: "GET",
+					credentials: "include", // Ensures cookies are sent with the request
+				}
+			);
+
+			const data = await response.json();
+			if (!response.ok) {
+				return Promise.reject(data.error);
+			}
+			
+			return data.session;
+		}
+		catch (error) {
+			return Promise.reject(error);
+		}
+	}
+
 	return { isLoading, session };
 }
 
-async function requestSession(sessionId) {
-  try {
-    const response = await fetch(
-      `http://localhost:8080/session/:${sessionId}/get`,
-      {
-        method: "GET",
-        credentials: "include", // Ensures cookies are sent with the request
-      }
-    );
-
-    const data = await response.json();
-    if (!response.ok) {
-      return Promise.reject(data.error);
-		}
-		
-		return data.session;
-	}
-	catch (error) {
-    return Promise.reject(error);
-  }
-}

@@ -1,5 +1,3 @@
-
-
 import React, { useMemo, memo } from "react";
 
 const StudentTable = memo(({ students }) => {

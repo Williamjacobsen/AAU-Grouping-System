@@ -1,8 +1,8 @@
 package com.aau.grouping_system.Project;
 
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseMapItem;
-import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItem;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItemReferenceList;
 
 public class Project extends DatabaseMapItem {
 	// todo: Fjern "project" fra variabelnavne.
