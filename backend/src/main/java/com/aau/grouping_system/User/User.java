@@ -1,8 +1,8 @@
 package com.aau.grouping_system.User;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseReferences;
 
 public abstract class User extends DatabaseItem {
 
@@ -23,10 +23,9 @@ public abstract class User extends DatabaseItem {
 
 	// constructors
 
-	public User(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseReferences parentReferences,
 			String email, String passwordHash, String name) {
-		super(parentDatabaseMap, parentReferenceList);
+		super(parentMap, parentReferences);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;

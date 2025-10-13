@@ -7,7 +7,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.aau.grouping_system.Database.item.ItemReferenceList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -59,26 +58,13 @@ public class SessionController {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		ItemReferenceList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
-		return ResponseEntity.ok(sessions.getReferenceList());
+		CopyOnWriteArrayList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
+		return ResponseEntity.ok(sessions);
 	}
-
-	// TODO: old code (remove this):
-	// @GetMapping
-	// public ResponseEntity<Map<Integer, Session>>
-	// getAllSessions(HttpServletRequest request) {
-	// Coordinator coordinator = getCurrentCoordinator(request);
-	// if (coordinator == null) {
-	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-	// }
-
-	// DatabaseMap<Session> sessions =
-	// sessionPageService.getSessionsByCoordinator(coordinator);
-	// return ResponseEntity.ok(sessions.getAllItems());
-	// }
 
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

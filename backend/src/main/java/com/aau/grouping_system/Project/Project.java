@@ -1,8 +1,8 @@
 package com.aau.grouping_system.Project;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseReferences;
 
 public class Project extends DatabaseItem {
 	// todo: Fjern "project" fra variabelnavne.
@@ -11,11 +11,11 @@ public class Project extends DatabaseItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList, String projectName,
+	public Project(DatabaseMap<? extends DatabaseItem> parentMap,
+			DatabaseReferences parentReferences, String projectName,
 			String description,
 			int projectId) {
-		super(parentDatabaseMap, parentReferenceList);
+		super(parentMap, parentReferences);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;
