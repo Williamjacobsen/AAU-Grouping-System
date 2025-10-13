@@ -36,8 +36,6 @@ export default function useGetSessionStudents(sessionId) {
 				return Promise.reject(data.error);
 			}
 			
-			console.log("test: " + data[0].email)
-			
 			return data;
 		}
 		catch (error) {

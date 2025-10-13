@@ -36,7 +36,4 @@ export default function Status() {
 			<StudentTable students={visibleStudents}/>
 		</>
 	) 
-
-	// 
-
 }
