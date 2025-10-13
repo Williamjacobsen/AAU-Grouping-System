@@ -1,14 +1,32 @@
 package com.aau.grouping_system.User;
 
-public class User {
+import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItem;
+import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItemReferenceList;
+
+public abstract class User extends DatabaseMapItem {
 
 	private String email;
 	private String passwordHash;
 	private String name;
 
+	public enum Role {
+		UNDEFINED,
+		COORDINATOR,
+		SUPERVISOR,
+		STUDENT
+	}
+
+	// abstract methods
+
+	public abstract Role getRole();
+
 	// constructors
 
-	public User(String email, String passwordHash, String name) {
+	public User(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
+			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList,
+			String email, String passwordHash, String name) {
+		super(parentDatabaseMap, parentReferenceList);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;
@@ -39,5 +57,4 @@ public class User {
 	public void setName(String name) {
 		this.name = name;
 	}
-
 }

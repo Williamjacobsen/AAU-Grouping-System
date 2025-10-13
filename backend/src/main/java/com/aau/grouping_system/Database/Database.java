@@ -1,28 +1,48 @@
 package com.aau.grouping_system.Database;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.springframework.stereotype.Component;
 
+import com.aau.grouping_system.Group.Group;
+import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 @Component // so we can do dependency injection
 public class Database {
 
-	private final Map<Integer, Coordinator> coordinators = new ConcurrentHashMap<>();
-	private final AtomicInteger idGenerator = new AtomicInteger();
+	private final DatabaseMap<Coordinator> coordinators = new DatabaseMap<>();
+	private final DatabaseMap<Session> sessions = new DatabaseMap<>();
+	private final DatabaseMap<Supervisor> supervisors = new DatabaseMap<>();
+	private final DatabaseMap<Student> students = new DatabaseMap<>();
+	private final DatabaseMap<Project> projects = new DatabaseMap<>();
+	private final DatabaseMap<Group> groups = new DatabaseMap<>();
 
-	public int saveCoordinator(Coordinator coordinator) {
-		int id = idGenerator.incrementAndGet();
-		coordinator.setDatabaseID(id);
-		coordinators.put(id, coordinator);
-		return id;
+	// getters & setters
+
+	public DatabaseMap<Coordinator> getCoordinators() {
+		return coordinators;
 	}
 
-	public Map<Integer, Coordinator> getAllCoordinators() {
-		return coordinators;
+	public DatabaseMap<Session> getSessions() {
+		return sessions;
+	}
+
+	public DatabaseMap<Supervisor> getSupervisors() {
+		return supervisors;
+	}
+
+	public DatabaseMap<Student> getStudents() {
+		return students;
+	}
+
+	public DatabaseMap<Project> getProjects() {
+		return projects;
+	}
+
+	public DatabaseMap<Group> getGroups() {
+		return groups;
 	}
 
 }

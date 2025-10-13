@@ -9,7 +9,9 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 public class SecurityConfig {
-	// test (filterChain skal slettes)
+	// TODO: filterChain should be deleted at some point. We have it right now
+	// because else CSRF does not allow us to send requests to the backend because
+	// of the we have Spring Boot Security as a project dependency.
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http

@@ -38,7 +38,7 @@ public class AuthController {
 		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i
 		// variablen
 		Coordinator user = null;
-		for (Coordinator existingCoordinator : db.getAllCoordinators().values()) {
+		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
 			if (existingCoordinator.getEmail().equals(email)) {
 				user = existingCoordinator;
 				break;
