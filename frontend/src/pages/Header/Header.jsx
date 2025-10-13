@@ -26,7 +26,7 @@ export default function Header() {
 				</ul>
 				<ul>
 					<li>
-						<Link to={`/session/:${latestSession.id}`}>Status</Link>
+						<Link to={`/session/${latestSession.id}`}>Status</Link>
 					</li>
 					<li>
 						<b>Session</b>: {latestSession.name}
