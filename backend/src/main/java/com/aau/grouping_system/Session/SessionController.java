@@ -1,13 +1,13 @@
-package com.aau.grouping_system.SessionPage;
+package com.aau.grouping_system.Session;
 
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.aau.grouping_system.EnhancedMap.EnhancedMap;
-import com.aau.grouping_system.Sessions.Session;
+import com.aau.grouping_system.Database.item.ItemReferenceList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,11 +15,11 @@ import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/sessions")
-public class SessionPageController {
+public class SessionController {
 
-	private final SessionPageService sessionPageService;
+	private final SessionService sessionPageService;
 
-	public SessionPageController(SessionPageService sessionPageService) {
+	public SessionController(SessionService sessionPageService) {
 		this.sessionPageService = sessionPageService;
 	}
 
@@ -32,7 +32,8 @@ public class SessionPageController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
+	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request,
+			HttpServletRequest httpRequest) {
 		Coordinator coordinator = getCurrentCoordinator(httpRequest);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -52,15 +53,29 @@ public class SessionPageController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Map<Integer, Session>> getAllSessions(HttpServletRequest request) {
+	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		EnhancedMap<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
-		return ResponseEntity.ok(sessions.getAllEntries());
+		ItemReferenceList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
+		return ResponseEntity.ok(sessions.getReferenceList());
 	}
+
+	// TODO: old code (remove this):
+	// @GetMapping
+	// public ResponseEntity<Map<Integer, Session>>
+	// getAllSessions(HttpServletRequest request) {
+	// Coordinator coordinator = getCurrentCoordinator(request);
+	// if (coordinator == null) {
+	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	// }
+
+	// DatabaseMap<Session> sessions =
+	// sessionPageService.getSessionsByCoordinator(coordinator);
+	// return ResponseEntity.ok(sessions.getAllItems());
+	// }
 
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {

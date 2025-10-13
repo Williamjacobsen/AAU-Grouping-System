@@ -4,9 +4,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItem;
+import com.aau.grouping_system.Database.item.DatabaseItem;
 
-public class DatabaseMap<T extends DatabaseMapItem> {
+public class DatabaseMap<T extends DatabaseItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();
 	private AtomicInteger idGenerator = new AtomicInteger();
@@ -15,13 +15,18 @@ public class DatabaseMap<T extends DatabaseMapItem> {
 
 	public void put(T item) {
 		int id = getNewId();
-		item.setMapId(id);
+		item.setId(id);
 		map.put(id, item);
 	}
 
 	public void remove(T item) {
 		item.removeChildren();
-		map.remove(item.getMapId());
+		map.remove(item.getId());
+	}
+
+	public void remove(int id) {
+		T item = getItem(id);
+		remove(item);
 	}
 
 	// private methods

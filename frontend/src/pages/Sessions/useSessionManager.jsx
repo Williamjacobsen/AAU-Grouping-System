@@ -16,10 +16,7 @@ export default function useSessionManager() {
 
 			if (response.ok) {
 				const data = await response.json();
-				const sessionArray = Object.entries(data).map(([id, session]) => ({
-					id: parseInt(id),
-					...session,
-				}));
+				const sessionArray = data;
 				setSessions(sessionArray);
 			} else if (response.status === 401) {
 				setError("You must be logged in to view sessions.");

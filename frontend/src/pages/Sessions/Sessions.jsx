@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useSessionManager from "./useSessionManager";
-import "./SessionPage.css";
+import "./Sessions.css";
 
-export default function SessionPage() {
+export default function Sessions() {
 	const [newSessionName, setNewSessionName] = useState("");
 	const navigate = useNavigate();
 	

@@ -6,7 +6,7 @@ import useGetSession from "./useGetSession";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
 
-export default function Session() {
+export default function Status() {
 
 	const { id: sessionId } = useParams();
 
