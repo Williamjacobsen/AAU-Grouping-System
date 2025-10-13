@@ -14,8 +14,8 @@ public class Coordinator extends User {
 
 	public Coordinator(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
 			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
-			String email, String password, String name) {
-		super(parentDatabaseMap, parentReferenceList, email, password, name);
+			String email, String passwordHash, String name) {
+		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
 		this.sessions = new ItemReferenceList<>(this);
 	}
 

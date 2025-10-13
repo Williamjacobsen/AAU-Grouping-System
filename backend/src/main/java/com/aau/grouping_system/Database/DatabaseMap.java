@@ -6,6 +6,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import com.aau.grouping_system.Database.item.DatabaseItem;
 
+/// Functions as a ConcurrentHashMap, but with the additional functionality to
+/// handle ID generation and to handle our hierarchy (child/parent relationships)
+/// of saved database items (for example Coordinators, Sessions, Students, etc.).
 public class DatabaseMap<T extends DatabaseItem> {
 
 	private final Map<Integer, T> map = new ConcurrentHashMap<>();

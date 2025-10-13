@@ -22,9 +22,12 @@ export default function useGetSession(sessionId) {
 	}, []);
 
 	async function requestSession(sessionId) {
+		
+
 		try {
 			const response = await fetch(
-				`http://localhost:8080/session/:${sessionId}/get`,
+				// TODO: NOT FINISHED YET 
+				`http://localhost:8080/sessions/test`,
 				{
 					method: "GET",
 					credentials: "include", // Ensures cookies are sent with the request
@@ -36,7 +39,7 @@ export default function useGetSession(sessionId) {
 				return Promise.reject(data.error);
 			}
 			
-			return data.session;
+			return data;
 		}
 		catch (error) {
 			return Promise.reject(error);

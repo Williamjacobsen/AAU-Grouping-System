@@ -2,6 +2,8 @@ package com.aau.grouping_system.Database.item;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/// Contains a list of DatabaseItems. For example, a Session has an
+/// ItemReferenceList of Students that belong to it.
 public class ItemReferenceList<T extends DatabaseItem> {
 
 	// Since adding and removing DatabaseMapItems is solely handled

@@ -4,11 +4,22 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.aau.grouping_system.Database.DatabaseMap;
 
+/// Upon creation, classes that extend DatabaseItem automatically add themselves
+/// to the database and setup their hierarchy of child and parent DatabaseItems.
+/// For example, each Coordinator item in the map of Coordinators in the database
+/// has a list of Sessions as children, and each Session has a list of Students
+/// and so on.
 public abstract class DatabaseItem {
 
-	/// If the ID is negative, it means it is unassigned.
+	/// The item's ID in the database map in which the item is stored. If the ID is
+	/// negative, it means it is unassigned.
 	private int id = -1;
+	/// The database map in which the item is stored.
 	protected DatabaseMap<? extends DatabaseItem> parentDatabaseMap;
+	/// An item may have children which should be deleted when the item itself is
+	/// deleted. For example, if a Session is deleted, its list of Students, list of
+	/// Supervisors, list of Groups, etc. must also be deleted. In other words,
+	/// Session must store a list of lists of child item references.
 	protected CopyOnWriteArrayList<ItemReferenceList<? extends DatabaseItem>> childReferenceLists = new CopyOnWriteArrayList<ItemReferenceList<? extends DatabaseItem>>();
 
 	// public methods

@@ -63,22 +63,9 @@ public class SessionController {
 		return ResponseEntity.ok(sessions.getReferenceList());
 	}
 
-	// TODO: old code (remove this):
-	// @GetMapping
-	// public ResponseEntity<Map<Integer, Session>>
-	// getAllSessions(HttpServletRequest request) {
-	// Coordinator coordinator = getCurrentCoordinator(request);
-	// if (coordinator == null) {
-	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-	// }
-
-	// DatabaseMap<Session> sessions =
-	// sessionPageService.getSessionsByCoordinator(coordinator);
-	// return ResponseEntity.ok(sessions.getAllItems());
-	// }
-
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

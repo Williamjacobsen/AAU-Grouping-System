@@ -20,9 +20,9 @@ public class CoordinatorService {
 
 	// public methods
 
-	public void addCoordinator(String email, String password, String name) {
+	public Coordinator addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		new Coordinator(db.getCoordinators(), null, email, passwordHash, name);
+		return new Coordinator(db.getCoordinators(), null, email, passwordHash, name);
 	}
 
 	public void modifyEmail(String newEmail, Integer coordinatorId) {
