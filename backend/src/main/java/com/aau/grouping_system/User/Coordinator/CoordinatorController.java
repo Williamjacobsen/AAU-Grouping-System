@@ -56,14 +56,8 @@ public class CoordinatorController {
 	@PostMapping("/modifyEmail")
 	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		String newEmail = body.get("newEmail");
-		HttpSession session = request.getSession(false);
-		Coordinator loggedInUser = (Coordinator) session.getAttribute("user");
-
-		if (session == null || loggedInUser == null)
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body("You must be logged in.");
+		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
+		String newEmail = request.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
 			return ResponseEntity
@@ -71,8 +65,7 @@ public class CoordinatorController {
 					.body("Error: Inputted email is already used by another coordinator.");
 		}
 
-		Integer coordinatorID = loggedInUser.getMapID();
-		service.modifyEmail(newEmail, coordinatorID);
+		service.modifyEmail(newEmail, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
@@ -82,17 +75,10 @@ public class CoordinatorController {
 	@PostMapping("/modifyPassword")
 	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		String newPassword = body.get("newPassword");
-		HttpSession session = request.getSession(false);
-		Coordinator loggedInUser = (Coordinator) session.getAttribute("user");
+		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
+		String newPassword = request.get("newPassword");
 
-		if (session == null || loggedInUser == null)
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body("You must be logged in.");
-
-		Integer coordinatorID = loggedInUser.getMapID();
-		service.modifyPassword(newPassword, coordinatorID);
+		service.modifyPassword(newPassword, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

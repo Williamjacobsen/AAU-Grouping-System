@@ -1,0 +1,108 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+
+		// Start servers
+		{
+      "label": "backend-bootrun",
+      "type": "shell",
+      "command": "./gradlew bootRun",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "group": "start",
+        "panel": "shared"
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+			"hide": true,
+    },
+    {
+      "label": "backend-continuous-build", 
+      "type": "shell",
+      "command": "./gradlew classes --continuous --parallel",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "group": "start",
+        "panel": "shared"
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+			"hide": true,
+    },
+    {
+      "label": "start-backend",
+      "dependsOn": [
+        "backend-bootrun",
+        "backend-continuous-build"
+      ],
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+		{
+      "label": "start-frontend",
+      "type": "shell",
+      "command": "npm start",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+				"group": "start",
+        "panel": "shared"
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+		{
+      "label": "start-fullstack",
+      "dependsOn": [
+        "start-backend",
+        "start-frontend"
+      ],
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+
+		// Update packages
+    {
+      "label": "update-packages",
+      "type": "shell",
+      "command": "npm install",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+
+		// Run tests
+    {
+      "label": "test-backend",
+      "type": "shell",
+      "command": "./gradlew test",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "presentation": {
+        "group": "test",
+				"panel": "shared",
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+    {
+      "label": "test-frontend",
+      "type": "shell",
+      "command": "npm test",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "presentation": {
+        "group": "test",
+				"panel": "shared",
+      },
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+    {
+      "label": "test-fullstack",
+      "dependsOn": ["test-backend", "test-frontend"],
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+    },
+  ]
+}

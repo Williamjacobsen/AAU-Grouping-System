@@ -4,8 +4,14 @@ import { Outlet, Link } from "react-router-dom";
 import "./Header.css";
 
 export default function Header() {
+
+	// TODO: Add proper hooks
+	const latestSession = {};
+	latestSession.name = "testSessionName"; 
+	latestSession.id = "0"; 
+
 	return (
-		<div>
+		<>
 			<div className="header sticky">
 				<ul>
 					<li>
@@ -14,12 +20,17 @@ export default function Header() {
 					<li>
 						<Link to="/sign-in">Profile</Link>
 					</li>
+				</ul>
+				<ul>
 					<li>
-						<Link to="/user/sessions">*NOT IMPLEMENTED*</Link>
+						<Link to={`/session/:${latestSession.id}`}>Status</Link>
+					</li>
+					<li>
+						<b>Session</b>: {latestSession.name}
 					</li>
 				</ul>
 			</div>
 			<Outlet />
-		</div>
+		</>
 	);
 }
