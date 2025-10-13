@@ -1,8 +1,8 @@
-package com.aau.grouping_system.Database.databaseMapItem;
+package com.aau.grouping_system.Database.item;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class DatabaseMapItemReferenceList<T extends DatabaseMapItem> {
+public class ItemReferenceList<T extends DatabaseItem> {
 
 	// Since adding and removing DatabaseMapItems is solely handled
 	// by the DatabaseMapItem class, we only want it to be able to
@@ -30,10 +30,16 @@ public class DatabaseMapItemReferenceList<T extends DatabaseMapItem> {
 
 	// constructors
 
-	public DatabaseMapItemReferenceList(DatabaseMapItem parentEnhancedMapItem) {
+	public ItemReferenceList(DatabaseItem parentEnhancedMapItem) {
 		// Add this reference list to the list of reference lists under the parent
 		// MapItem.
 		parentEnhancedMapItem.childReferenceLists.add(this);
+	}
+
+	// getters & setters
+
+	public CopyOnWriteArrayList<T> getReferenceList() {
+		return referenceList;
 	}
 
 }

@@ -9,7 +9,8 @@ import NoPage from "./pages/NoPage/NoPage";
 import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
 import User from "./pages/User/User";
-import Session from "./pages/Session/Session";
+import Status from "./pages/Status/Status";
+import Sessions from "./pages/Sessions/Sessions";
 
 export default function App() {
 	return (
@@ -20,7 +21,8 @@ export default function App() {
 						<Route index element={<About />} />
 						<Route path="/user" element={<User />} />
 						<Route path="/coordinator" element={<Coordinator />} />
-						<Route path="/session/:id" element={<Session />}/>
+						<Route path="/sessions" element={<Sessions />}/>
+						<Route path="/session/:id" element={<Status />}/>
 						<Route path="*" element={<NoPage />} />
 					</Route>
 				</Routes>

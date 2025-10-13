@@ -1,22 +1,22 @@
-package com.aau.grouping_system.Database.databaseMapItem;
+package com.aau.grouping_system.Database.item;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.aau.grouping_system.Database.DatabaseMap;
 
-public abstract class DatabaseMapItem {
+public abstract class DatabaseItem {
 
 	/// If the ID is negative, it means it is unassigned.
-	private int mapId = -1;
-	protected DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap;
-	protected CopyOnWriteArrayList<DatabaseMapItemReferenceList<? extends DatabaseMapItem>> childReferenceLists = new CopyOnWriteArrayList<DatabaseMapItemReferenceList<? extends DatabaseMapItem>>();
+	private int id = -1;
+	protected DatabaseMap<? extends DatabaseItem> parentDatabaseMap;
+	protected CopyOnWriteArrayList<ItemReferenceList<? extends DatabaseItem>> childReferenceLists = new CopyOnWriteArrayList<ItemReferenceList<? extends DatabaseItem>>();
 
 	// public methods
 
 	@SuppressWarnings("unchecked") // Because the type safety violation warning isn't true here.
 	public void removeChildren() {
-		for (DatabaseMapItemReferenceList<? extends DatabaseMapItem> childReferenceList : childReferenceLists) {
-			for (DatabaseMapItem childReference : childReferenceList.referenceList) {
+		for (ItemReferenceList<? extends DatabaseItem> childReferenceList : childReferenceLists) {
+			for (DatabaseItem childReference : childReferenceList.referenceList) {
 				// This "technically" violates type safety (if @SuppressWarnings("unchecked")
 				// wasn't here, we would get a warning), since Java can't know whether the items
 				// inside "EnhancedMapItemReferenceList<? extends EnhancedMapItem>" actually are
@@ -27,7 +27,7 @@ public abstract class DatabaseMapItem {
 				// symbol) extends EnhancedMapItem. So, it's alright to manually upcast like
 				// this (prepending the "(EnhancedMap<EnhancedMapItem>)" cast to our statement)
 				// despite it giving a warning.
-				((DatabaseMap<DatabaseMapItem>) childReference.parentDatabaseMap).remove(childReference);
+				((DatabaseMap<DatabaseItem>) childReference.parentDatabaseMap).remove(childReference);
 			}
 		}
 	}
@@ -38,28 +38,28 @@ public abstract class DatabaseMapItem {
 	/// parent EnhancedMap in the database, 2) adds the item to its parent
 	/// reference list.
 	@SuppressWarnings("unchecked") // Because the type safety violation warning isn't true here.
-	public DatabaseMapItem(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
-			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList) {
+	public DatabaseItem(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
+			ItemReferenceList<? extends DatabaseItem> parentReferenceList) {
 
 		this.parentDatabaseMap = parentDatabaseMap;
 
 		// Add to parent map in database
-		((DatabaseMap<DatabaseMapItem>) parentDatabaseMap).put(this);
+		((DatabaseMap<DatabaseItem>) parentDatabaseMap).put(this);
 
 		// Declare as parent EnhancedMapItem's child
 		if (parentReferenceList != null) {
-			((DatabaseMapItemReferenceList<DatabaseMapItem>) parentReferenceList).add(this);
+			((ItemReferenceList<DatabaseItem>) parentReferenceList).add(this);
 		}
 	}
 
 	// getters & setters
 
-	public int getMapId() {
-		return this.mapId;
+	public int getId() {
+		return this.id;
 	}
 
-	public void setMapId(Integer id) {
-		this.mapId = id;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 }

@@ -1,8 +1,8 @@
 package com.aau.grouping_system.User.Supervisor;
 
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItem;
-import com.aau.grouping_system.Database.databaseMapItem.DatabaseMapItemReferenceList;
+import com.aau.grouping_system.Database.item.DatabaseItem;
+import com.aau.grouping_system.Database.item.ItemReferenceList;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
@@ -12,8 +12,8 @@ public class Supervisor extends User {
 
 	// constructors
 
-	public Supervisor(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
-			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList,
+	public Supervisor(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
+			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
 			String email, String passwordHash, String name, Session session) {
 		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
 		this.session = session;
