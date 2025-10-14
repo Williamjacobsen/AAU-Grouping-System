@@ -2,7 +2,7 @@ package com.aau.grouping_system.Project;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseReferences;
+import com.aau.grouping_system.Database.DatabaseIdList;
 
 public class Project extends DatabaseItem {
 	// todo: Fjern "project" fra variabelnavne.
@@ -12,7 +12,7 @@ public class Project extends DatabaseItem {
 	// todo: Tilføj user
 
 	public Project(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseReferences parentReferences, String projectName,
+			DatabaseIdList parentReferences, String projectName,
 			String description,
 			int projectId) {
 		super(parentMap, parentReferences);

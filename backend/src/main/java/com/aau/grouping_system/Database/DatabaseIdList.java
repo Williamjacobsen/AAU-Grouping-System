@@ -3,7 +3,7 @@ package com.aau.grouping_system.Database;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /// Contains a list of IDs of a database items and its parent database map.
-public class DatabaseReferences {
+public class DatabaseIdList {
 
 	// Use package-private access modifier here, because only DatabaseItem is
 	// allowed access, since it handles adding and removing items in the database.
@@ -21,9 +21,9 @@ public class DatabaseReferences {
 
 	// constructors
 
-	public DatabaseReferences(DatabaseMap<? extends DatabaseItem> map, DatabaseItem parentItem) {
+	public DatabaseIdList(DatabaseMap<? extends DatabaseItem> map, DatabaseItem parentItem) {
 		this.map = map;
-		parentItem.childLists.add(this);
+		parentItem.children.add(this);
 	}
 
 	// getters & setters
