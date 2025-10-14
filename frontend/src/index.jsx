@@ -23,7 +23,6 @@ export default function App() {
 						<Route path="/sign-in" element={<SignIn />} />
 						<Route path="/sign-up" element={<SignUp />} />
 						<Route path="/profile" element={<Profile />} />
-						<Route path="/coordinator" element={<Coordinator />} />
 						<Route path="/sessions" element={<Sessions />}/>
 						<Route path="/session/:id" element={<Status />}/>
 						<Route path="*" element={<NoPage />} />

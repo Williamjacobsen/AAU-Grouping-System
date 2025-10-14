@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { useAuthCheck } from "../User/UseAuthCheck";
 
 import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../utils/useGetSessionStudents";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
+
 
 export default function Status() {
 
@@ -13,6 +15,7 @@ export default function Status() {
 	const { isloading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
+	
 
 	const visibleStudents = useMemo(() => {
 
@@ -28,7 +31,7 @@ export default function Status() {
 	if (isLoadingStudents) {
     return <>Loading session information...</>;
   }
-
+ 
 	return (
 		<>
 			<SearchFilterInput/>

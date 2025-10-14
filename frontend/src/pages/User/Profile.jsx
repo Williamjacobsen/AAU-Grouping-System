@@ -1,18 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthCheck } from "./UseAuthCheck";
 import "./User.css";
 
 export default function Profile() {
 
 	const navigate = useNavigate();
 
-	const [name, setName] = useState("");
-	const [email, setEmail] = useState("");
-	const [role, setRole] = useState("Coordinator"); //todo: implementere setRole, så det ikke er hard coded
-
+	const [role, setRole] = useState("Coordinator"); 
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
+	const { user } = useAuthCheck();
+  if (!user) return null;     
 
 	const handleEmailChange = () => {
 		fetch("http://localhost:8080/coordinator/modifyEmail", {
@@ -81,8 +81,8 @@ export default function Profile() {
 				</div>
 			)}
 			<div className="text">
-				<p><b>Name:</b> {name}</p>
-				<p><b>Email:</b> {email}</p>
+				<p><b>Name:</b> {user.name}</p>
+				<p><b>Email:</b> {user.email}</p>
 				<p><b>Role:</b> {role}</p>
 			</div>
 

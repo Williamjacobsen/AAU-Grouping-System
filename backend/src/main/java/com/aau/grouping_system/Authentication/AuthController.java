@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,7 +62,7 @@ public class AuthController {
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<Coordinator> me(HttpServletRequest request) {
+	public ResponseEntity<User> me(HttpServletRequest request) {
 
 		HttpSession session = request.getSession(false);
 		if (session == null) {
@@ -70,7 +71,7 @@ public class AuthController {
 					.body(null);
 		}
 
-		Coordinator user = (Coordinator) session.getAttribute("user");
+		User user = (User) session.getAttribute("user");
 
 		if (user != null) {
 			return ResponseEntity

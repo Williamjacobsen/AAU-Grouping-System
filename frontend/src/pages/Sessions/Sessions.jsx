@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthCheck } from "../User/UseAuthCheck";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
@@ -14,6 +15,10 @@ export default function Sessions() {
 		createSession,
 		deleteSession
 	} = useSessionManager();
+
+	const { user } = useAuthCheck();
+ 	if (!user) return null; 
+     
 
 	const handleCreateSession = async (e) => {
 		e.preventDefault();
