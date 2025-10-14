@@ -7,12 +7,11 @@ export default function Profile() {
 
 	const navigate = useNavigate();
 
-	const [role, setRole] = useState("Coordinator"); 
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
 	const { user, loading } = useAuthCheck();
-	
+
 	if (loading) return <>Checking authentication...</>;
   if (!user) return null;     
 
@@ -85,7 +84,7 @@ export default function Profile() {
 			<div className="text">
 				<p><b>Name:</b> {user.name}</p>
 				<p><b>Email:</b> {user.email}</p>
-				<p><b>Role:</b> {role}</p>
+				<p><b>Role:</b> {user.role}</p>
 			</div>
 
 			<hr />
