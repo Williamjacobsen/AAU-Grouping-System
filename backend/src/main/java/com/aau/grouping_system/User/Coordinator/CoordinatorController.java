@@ -11,13 +11,8 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.aau.grouping_system.Database.Database;
-
 import jakarta.servlet.http.HttpServletRequest;
 
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
@@ -26,7 +21,7 @@ public class CoordinatorController {
 
 	// constructors
 
-	public CoordinatorController(CoordinatorService coordinatorService, Database db, PasswordEncoder passwordEncoder) {
+	public CoordinatorController(CoordinatorService coordinatorService) {
 		this.service = coordinatorService;
 	}
 
@@ -61,7 +56,7 @@ public class CoordinatorController {
 			.status(HttpStatus.UNAUTHORIZED)
 			.body("Not logged in");
 		}
-		Integer coordinatorId = user.getMapId();
+		Integer coordinatorId = user.getId();
 		String newEmail = body.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
@@ -86,7 +81,7 @@ public class CoordinatorController {
 			.status(HttpStatus.UNAUTHORIZED)
 			.body("Not logged in");
 		}
-		Integer coordinatorId = user.getMapId();
+		Integer coordinatorId = user.getId();
 		String newPassword = body.get("newPassword");
 
 		service.modifyPassword(newPassword, coordinatorId);

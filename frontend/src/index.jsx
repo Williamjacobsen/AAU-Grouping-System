@@ -2,7 +2,6 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import Coordinator from "./pages/coordinator/coordinator";
 import "./index.css";
 
 import NoPage from "./pages/NoPage/NoPage";
@@ -11,7 +10,8 @@ import About from "./pages/About/About";
 import SignIn from "./pages/User/SignIn";
 import SignUp from "./pages/User/SignUp";
 import Profile from "./pages/User/Profile";
-import Session from "./pages/Session/Session";
+import Status from "./pages/Status/Status";
+import Sessions from "./pages/Sessions/Sessions";
 
 export default function App() {
 	return (
@@ -24,7 +24,8 @@ export default function App() {
 						<Route path="/sign-up" element={<SignUp />} />
 						<Route path="/profile" element={<Profile />} />
 						<Route path="/coordinator" element={<Coordinator />} />
-						<Route path="/session/:id" element={<Session />}/>
+						<Route path="/sessions" element={<Sessions />}/>
+						<Route path="/session/:id" element={<Status />}/>
 						<Route path="*" element={<NoPage />} />
 					</Route>
 				</Routes>
