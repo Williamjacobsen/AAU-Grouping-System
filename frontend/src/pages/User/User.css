@@ -68,3 +68,14 @@ input[type=email],input[type=password], input[type=text] {
 	margin-top: 5px;
 	border-radius: 4px;
 }
+
+
+.succes-box {
+	color: green;
+	font-weight: bold;
+	background: rgb(176, 255, 176);
+	padding: 4px;
+	width: 90%;
+	margin-top: 5px;
+	border-radius: 4px;
+}

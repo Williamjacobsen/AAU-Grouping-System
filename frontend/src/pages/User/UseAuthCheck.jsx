@@ -29,5 +29,5 @@ export function useAuthCheck() {
       });
   }, [navigate]);
 
-  return { user, loading };
+  return { user, loading, setUser };
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthCheck } from "./UseAuthCheck";
 import "./User.css";
@@ -10,7 +10,8 @@ export default function Profile() {
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
-	const { user, loading } = useAuthCheck();
+	const [succes, setSucces] = useState("");
+	const { user, loading, setUser } = useAuthCheck();
 
 	if (loading) return <>Checking authentication...</>;
   if (!user) return null;     
@@ -25,9 +26,13 @@ export default function Profile() {
 			.then(async (response) => {
 				if (response.ok) {
 					navigate("/profile");
+					setSucces("Email updated succesfully")
+					setError("");
+					setUser(prev => ({ ...prev, email: newEmail }));
 				} else {
 					const errorMessage = await response.text();
 					setError(errorMessage);
+					setSucces("")
 				}
 			})
 			.catch((e) => {
@@ -45,9 +50,13 @@ export default function Profile() {
 			.then(async (response) => {
 				if (response.ok) {
 					navigate("/profile");
+					setSucces("Password updated succesfully");
+					setError("");
+					setUser(prev => ({ ...prev, password: newPassword }));
 				} else {
 					const errorMessage = await response.text();
 					setError(errorMessage);
+					setSucces("");
 				}
 			})
 			.catch((e) => {
@@ -79,6 +88,11 @@ export default function Profile() {
 			{error && (
 				<div className="error-box">
 					{error}
+				</div>
+			)}
+			{succes && (
+				<div className="succes-box">
+					{succes}
 				</div>
 			)}
 			<div className="text">
