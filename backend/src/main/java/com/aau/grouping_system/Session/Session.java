@@ -3,28 +3,28 @@ package com.aau.grouping_system.Session;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseReferences;
+import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
 	private Coordinator coordinator;
-	public DatabaseReferences supervisors;
-	public DatabaseReferences students;
-	public DatabaseReferences projects;
-	public DatabaseReferences groups;
+	public DatabaseIdList supervisors;
+	public DatabaseIdList students;
+	public DatabaseIdList projects;
+	public DatabaseIdList groups;
 
 	// Constructor
 
 	public Session(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseReferences parentReferences, Database db,
+			DatabaseIdList parentReferences, Database db,
 			Coordinator coordinator) {
 		super(parentMap, parentReferences);
 		this.coordinator = coordinator;
-		this.supervisors = new DatabaseReferences(db.getSupervisors(), this);
-		this.students = new DatabaseReferences(db.getStudents(), this);
-		this.projects = new DatabaseReferences(db.getProjects(), this);
-		this.groups = new DatabaseReferences(db.getGroups(), this);
+		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
+		this.students = new DatabaseIdList(db.getStudents(), this);
+		this.projects = new DatabaseIdList(db.getProjects(), this);
+		this.groups = new DatabaseIdList(db.getGroups(), this);
 	}
 
 	// Getters og setters
@@ -37,35 +37,35 @@ public class Session extends DatabaseItem {
 		this.coordinator = coordinator;
 	}
 
-	public DatabaseReferences getSupervisors() {
+	public DatabaseIdList getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(DatabaseReferences supervisors) {
+	public void setSupervisors(DatabaseIdList supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public DatabaseReferences getStudents() {
+	public DatabaseIdList getStudents() {
 		return students;
 	}
 
-	public void setStudents(DatabaseReferences students) {
+	public void setStudents(DatabaseIdList students) {
 		this.students = students;
 	}
 
-	public DatabaseReferences getProjects() {
+	public DatabaseIdList getProjects() {
 		return projects;
 	}
 
-	public void setProjects(DatabaseReferences projects) {
+	public void setProjects(DatabaseIdList projects) {
 		this.projects = projects;
 	}
 
-	public DatabaseReferences getGroups() {
+	public DatabaseIdList getGroups() {
 		return groups;
 	}
 
-	public void setGroups(DatabaseReferences groups) {
+	public void setGroups(DatabaseIdList groups) {
 		this.groups = groups;
 	}
 

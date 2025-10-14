@@ -8,12 +8,12 @@ public abstract class DatabaseItem {
 
 	private int id = -1;
 	protected DatabaseMap<? extends DatabaseItem> parent;
-	protected CopyOnWriteArrayList<DatabaseReferences> childLists = new CopyOnWriteArrayList<>();
+	protected CopyOnWriteArrayList<DatabaseIdList> children = new CopyOnWriteArrayList<>();
 
-	// public methods
+	// package-private methods
 
-	public void removeChildren() {
-		for (DatabaseReferences childList : childLists) {
+	void removeChildren() {
+		for (DatabaseIdList childList : children) {
 			for (Integer childId : childList.ids) {
 				childList.map.remove(childId);
 			}
@@ -24,7 +24,7 @@ public abstract class DatabaseItem {
 
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
-	public DatabaseItem(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseReferences parentReferences) {
+	public DatabaseItem(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences) {
 
 		this.parent = parentMap;
 

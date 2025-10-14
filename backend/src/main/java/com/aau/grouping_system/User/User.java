@@ -2,7 +2,7 @@ package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseReferences;
+import com.aau.grouping_system.Database.DatabaseIdList;
 
 public abstract class User extends DatabaseItem {
 
@@ -23,7 +23,7 @@ public abstract class User extends DatabaseItem {
 
 	// constructors
 
-	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseReferences parentReferences,
+	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
 			String email, String passwordHash, String name) {
 		super(parentMap, parentReferences);
 		this.email = email;
