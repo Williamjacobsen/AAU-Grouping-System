@@ -9,6 +9,7 @@ class ChatSystem {
     this.sender = sender;
     this.stompClient = null;
     this.subscriptions = [];
+    this.pendingAcks = new Map();
   }
 
   connect(onConnected, onError) {
@@ -22,6 +23,17 @@ class ChatSystem {
       { username: this.sender },
       () => {
         console.log("Connected to WebSocket");
+
+        this.subscribe("/user/queue/acks", (ack) => {
+          const id = ack?.messageId;
+          const resolve = id && this.pendingAcks.get(id);
+          if (resolve) {
+            resolve();
+            this.pendingAcks.delete(id);
+						console.log(`Ack - messageId: ${id}`)
+          }
+        });
+
         if (onConnected) onConnected();
       },
       (error) => {
@@ -44,10 +56,30 @@ class ChatSystem {
     }
   }
 
-  send(destination, message) {
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.send(destination, {}, JSON.stringify(message));
+  send(destination, message, timeoutMs = 5000) {
+    if (!this.stompClient?.connected) {
+      return Promise.reject(new Error("STOMP not connected"));
     }
+
+    const clientMessageId = `message-${Date.now()}-${Math.random().toString().slice(2)}`;
+
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        this.pendingAcks.delete(clientMessageId);
+        reject(new Error("No ack (timeout)"));
+      }, timeoutMs);
+
+      this.pendingAcks.set(clientMessageId, () => {
+        clearTimeout(timeout);
+        resolve();
+      });
+
+      this.stompClient.send(
+        destination,
+        {},
+        JSON.stringify({ ...message, clientMessageId })
+      );
+    });
   }
 
   disconnect() {
@@ -103,7 +135,7 @@ export default function ChatBox() {
         messaging.current.disconnect();
       }
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // DEMO DATA:
@@ -144,25 +176,26 @@ export default function ChatBox() {
     ],
   };
 
-  const handleSendMessage = () => {
-    if (!messageInput.trim() || !selectedChatRoom) return;
+  const handleSendMessage = async () => {
+    const content = messageInput.trim();
+    if (!content || !selectedChatRoom) return;
 
-    if (selectedChatRoom.startsWith("student")) {
-      // TODO: find a better way of indentifing if its a student (maybe check based on context/appState or maybe add a type)
-      messaging.current.send("/private/send", {
-        content: messageInput,
-        sender: username,
-        target: selectedChatRoom,
-      });
-    } else {
-      const groupId = selectedChatRoom;
-      messaging.current.send(`/group/${groupId}/send`, {
-        content: messageInput,
-        sender: username,
-      });
-    }
+    const direct = selectedChatRoom.startsWith("student");
+    const destination = direct
+      ? "/private/send"
+      : `/group/${selectedChatRoom}/send`;
+    const payload = direct
+      ? { content, sender: username, target: selectedChatRoom }
+      : { content, sender: username };
 
     setMessageInput("");
+
+    try {
+      await messaging.current.send(destination, payload);
+    } catch (e) {
+      console.error("Failed to send:", e);
+      // TODO: undo if failed
+    }
   };
 
   return (

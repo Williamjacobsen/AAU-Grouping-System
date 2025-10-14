@@ -50,7 +50,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		// The server sends a heartbeat every 10 seconds and expects a response from the
 		// client every 20 seconds.
 		// This is to prevent stale session from hogging up the backend resources.
-		registry.enableSimpleBroker("/group", "/private")
+		registry.enableSimpleBroker("/group", "/private", "/queue")
 				.setHeartbeatValue(new long[] { 10_000, 20_000 })
 				.setTaskScheduler(this.messageBrokerTaskScheduler);
 		//registry.setApplicationDestinationPrefixes("/chat");
