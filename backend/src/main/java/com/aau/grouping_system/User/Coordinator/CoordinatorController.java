@@ -16,9 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.aau.grouping_system.Database.Database;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
@@ -56,8 +55,14 @@ public class CoordinatorController {
 	@PostMapping("/modifyEmail")
 	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
-		String newEmail = request.get("newEmail");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+			.status(HttpStatus.UNAUTHORIZED)
+			.body("Not logged in");
+		}
+		Integer coordinatorId = user.getMapId();
+		String newEmail = body.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
 			return ResponseEntity
@@ -75,8 +80,14 @@ public class CoordinatorController {
 	@PostMapping("/modifyPassword")
 	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
-		String newPassword = request.get("newPassword");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+			.status(HttpStatus.UNAUTHORIZED)
+			.body("Not logged in");
+		}
+		Integer coordinatorId = user.getMapId();
+		String newPassword = body.get("newPassword");
 
 		service.modifyPassword(newPassword, coordinatorId);
 

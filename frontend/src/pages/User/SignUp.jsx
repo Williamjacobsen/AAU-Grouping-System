@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -20,7 +20,7 @@ export default function SignUp() {
 		})
 			.then(async (response) => {
 				if (response.ok) {
-					navigate("/");
+					navigate("/profile");
 				} else {
 					const errorMessage = await response.text();
 					setError(errorMessage);

@@ -19,7 +19,7 @@ export default function SignIn() {
 		})
 			.then(async (response) => {
 				if (response.ok) {
-					navigate("/");  
+					navigate("/profile");  
 				} else {
 					const errorMessage = await response.text();  
 					setError(errorMessage);                    
