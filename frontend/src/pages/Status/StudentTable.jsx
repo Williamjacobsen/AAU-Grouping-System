@@ -1,5 +1,3 @@
-
-
 import React, { useMemo, memo } from "react";
 
 const StudentTable = memo(({ students }) => {
@@ -10,8 +8,8 @@ const StudentTable = memo(({ students }) => {
 		
     return [
       createColumn("Name", students.map(student => student.name)),
-      createColumn("Group", students.map(student => student.group.number)),
-      createColumn("Group project", students.map(student => student.group.project))
+      createColumn("Group", students.map(student => student.group?.number)),
+      createColumn("Group project", students.map(student => student.group?.project))
 		];
 		
 		function createColumn(columnName, values) {

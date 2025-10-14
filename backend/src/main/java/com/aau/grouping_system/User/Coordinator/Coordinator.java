@@ -1,22 +1,22 @@
 package com.aau.grouping_system.User.Coordinator;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseMapItem;
-import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
-import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	public DatabaseMapItemReferenceList<Session> sessions;
+	public DatabaseIdList sessions;
 
 	// constructors
 
-	public Coordinator(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
-			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList,
-			String email, String password, String name) {
-		super(parentDatabaseMap, parentReferenceList, email, password, name);
-		this.sessions = new DatabaseMapItemReferenceList<>(this);
+	public Coordinator(DatabaseMap<? extends DatabaseItem> parentMap,
+			DatabaseIdList parentReferences, Database db,
+			String email, String passwordHash, String name) {
+		super(parentMap, parentReferences, email, passwordHash, name);
+		this.sessions = new DatabaseIdList(db.getSessions(), this);
 	}
 
 	// abstract method overrides

@@ -1,33 +1,30 @@
 package com.aau.grouping_system.Session;
 
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseMapItem;
-import com.aau.grouping_system.Database.DatabaseMapItemReferenceList;
-import com.aau.grouping_system.Group.Group;
-import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-public class Session extends DatabaseMapItem {
+public class Session extends DatabaseItem {
 
 	private Coordinator coordinator;
-	public DatabaseMapItemReferenceList<Supervisor> supervisors;
-	public DatabaseMapItemReferenceList<Student> students;
-	public DatabaseMapItemReferenceList<Project> projects;
-	public DatabaseMapItemReferenceList<Group> groups;
+	public DatabaseIdList supervisors;
+	public DatabaseIdList students;
+	public DatabaseIdList projects;
+	public DatabaseIdList groups;
 
 	// Constructor
 
-	public Session(DatabaseMap<? extends DatabaseMapItem> parentDatabaseMap,
-			DatabaseMapItemReferenceList<? extends DatabaseMapItem> parentReferenceList,
+	public Session(DatabaseMap<? extends DatabaseItem> parentMap,
+			DatabaseIdList parentReferences, Database db,
 			Coordinator coordinator) {
-		super(parentDatabaseMap, parentReferenceList);
+		super(parentMap, parentReferences);
 		this.coordinator = coordinator;
-		this.supervisors = new DatabaseMapItemReferenceList<>(this);
-		this.students = new DatabaseMapItemReferenceList<>(this);
-		this.projects = new DatabaseMapItemReferenceList<>(this);
-		this.groups = new DatabaseMapItemReferenceList<>(this);
+		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
+		this.students = new DatabaseIdList(db.getStudents(), this);
+		this.projects = new DatabaseIdList(db.getProjects(), this);
+		this.groups = new DatabaseIdList(db.getGroups(), this);
 	}
 
 	// Getters og setters
@@ -40,35 +37,35 @@ public class Session extends DatabaseMapItem {
 		this.coordinator = coordinator;
 	}
 
-	public DatabaseMapItemReferenceList<Supervisor> getSupervisors() {
+	public DatabaseIdList getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(DatabaseMapItemReferenceList<Supervisor> supervisors) {
+	public void setSupervisors(DatabaseIdList supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public DatabaseMapItemReferenceList<Student> getStudents() {
+	public DatabaseIdList getStudents() {
 		return students;
 	}
 
-	public void setStudents(DatabaseMapItemReferenceList<Student> students) {
+	public void setStudents(DatabaseIdList students) {
 		this.students = students;
 	}
 
-	public DatabaseMapItemReferenceList<Project> getProjects() {
+	public DatabaseIdList getProjects() {
 		return projects;
 	}
 
-	public void setProjects(DatabaseMapItemReferenceList<Project> projects) {
+	public void setProjects(DatabaseIdList projects) {
 		this.projects = projects;
 	}
 
-	public DatabaseMapItemReferenceList<Group> getGroups() {
+	public DatabaseIdList getGroups() {
 		return groups;
 	}
 
-	public void setGroups(DatabaseMapItemReferenceList<Group> groups) {
+	public void setGroups(DatabaseIdList groups) {
 		this.groups = groups;
 	}
 
