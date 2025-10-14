@@ -11,12 +11,12 @@ import useStudentFiltering from "./useStudentFiltering";
 export default function Status() {
 
 	const { id: sessionId } = useParams();
+	const { user, loading: authLoading } = useAuthCheck();
 
 	const { isloading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
 	
-
 	const visibleStudents = useMemo(() => {
 
 		if (!allStudents) return null;
@@ -27,6 +27,9 @@ export default function Status() {
 
 		return result;
 	}, [allStudents, toSorted, toFiltered]);
+
+	if (authLoading) return <>Checking authentication...</>;
+  if (!user) return null;
 
 	if (isLoadingStudents) {
     return <>Loading session information...</>;

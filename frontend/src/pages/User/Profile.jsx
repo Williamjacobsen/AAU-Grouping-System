@@ -11,7 +11,9 @@ export default function Profile() {
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
-	const { user } = useAuthCheck();
+	const { user, loading } = useAuthCheck();
+	
+	if (loading) return <>Checking authentication...</>;
   if (!user) return null;     
 
 	const handleEmailChange = () => {

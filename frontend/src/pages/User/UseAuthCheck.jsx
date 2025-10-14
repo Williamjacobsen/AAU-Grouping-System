@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useAuthCheck() {
-
+	
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
@@ -23,7 +24,10 @@ export function useAuthCheck() {
       .catch(() => {
         navigate("/sign-in");
       })
+      .finally(() => {
+        setLoading(false);
+      });
   }, [navigate]);
 
-  return { user };
+  return { user, loading };
 }

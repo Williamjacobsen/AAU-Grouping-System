@@ -16,7 +16,9 @@ export default function Sessions() {
 		deleteSession
 	} = useSessionManager();
 
-	const { user } = useAuthCheck();
+	const { user, loading: authLoading } = useAuthCheck();
+	
+	if (authLoading) return <>Checking authentication...</>;
  	if (!user) return null; 
      
 
