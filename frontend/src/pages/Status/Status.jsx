@@ -18,8 +18,6 @@ export default function Status() {
 
 		if (!allStudents) return null;
 
-		console.log(allStudents);
-
 		let result = allStudents;
 		result = toFiltered(result);
 		result = toSorted(result);
