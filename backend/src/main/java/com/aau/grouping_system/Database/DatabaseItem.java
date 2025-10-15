@@ -6,7 +6,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /// DatabaseItem()"), this adds itself to its parent map in the database.
 public abstract class DatabaseItem {
 
-	private int id = -1;
+	private String id;
 	protected DatabaseMap<? extends DatabaseItem> parent;
 	protected CopyOnWriteArrayList<DatabaseIdList> children = new CopyOnWriteArrayList<>();
 
@@ -14,7 +14,7 @@ public abstract class DatabaseItem {
 
 	void removeChildren() {
 		for (DatabaseIdList childList : children) {
-			for (Integer childId : childList.ids) {
+			for (String childId : childList.ids) {
 				childList.map.remove(childId);
 			}
 		}
@@ -39,11 +39,11 @@ public abstract class DatabaseItem {
 
 	// getters & setters
 
-	public int getId() {
+	public String getId() {
 		return this.id;
 	}
 
-	public void setId(Integer id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

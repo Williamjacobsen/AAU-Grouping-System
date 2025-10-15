@@ -1,6 +1,7 @@
 package com.aau.grouping_system.Database;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -8,13 +9,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 /// (child/parent relations) of items.
 public class DatabaseMap<T extends DatabaseItem> {
 
-	private final Map<Integer, T> map = new ConcurrentHashMap<>();
-	private AtomicInteger idGenerator = new AtomicInteger();
+	private final Map<String, T> map = new ConcurrentHashMap<>();
 
 	// public methods
 
 	public void put(T item) {
-		int id = getNewId();
+		String id = getNewId();
 		item.setId(id);
 		map.put(id, item);
 	}
@@ -24,40 +24,32 @@ public class DatabaseMap<T extends DatabaseItem> {
 		map.remove(item.getId());
 	}
 
-	public void remove(int id) {
+	public void remove(String id) {
 		T item = getItem(id);
 		remove(item);
 	}
 
 	// private methods
 
-	private int getNewId() {
+	private String getNewId() {
 
-		boolean hasLoopedOnce = false;
+		String id = UUID.randomUUID().toString();
 
 		// Ensure ID isn't already used
-		while (map.get(idGenerator.get()) != null) {
-			if (idGenerator.get() >= Integer.MAX_VALUE - 1) {
-				if (hasLoopedOnce) {
-					throw new IllegalStateException("A valid new ID cannot be found because the Map is completely full.");
-				} else {
-					hasLoopedOnce = true;
-					idGenerator.set(0);
-				}
-			}
-			idGenerator.incrementAndGet();
+		while (map.get(id) != null) {
+			id = UUID.randomUUID().toString();
 		}
 
-		return idGenerator.get();
+		return id;
 	}
 
 	// getters & setters
 
-	public T getItem(Integer id) {
+	public T getItem(String id) {
 		return map.get(id);
 	}
 
-	public Map<Integer, T> getAllItems() {
+	public Map<String, T> getAllItems() {
 		return map;
 	}
 

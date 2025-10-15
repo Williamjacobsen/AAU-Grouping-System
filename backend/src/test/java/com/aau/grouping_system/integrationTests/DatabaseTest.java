@@ -2,6 +2,9 @@ package com.aau.grouping_system.integrationTests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,6 +24,10 @@ public class DatabaseTest {
 	PasswordEncoder passwordEncoder;
 	CoordinatorService coordinatorService;
 
+	ArrayList<Coordinator> coordinators = new ArrayList<>();
+	ArrayList<Session> sessions = new ArrayList<>();
+	ArrayList<Student> students = new ArrayList<>();
+
 	@BeforeEach
 	void fillDatabase() {
 
@@ -30,23 +37,35 @@ public class DatabaseTest {
 		coordinatorService = new CoordinatorService(db, passwordEncoder);
 
 		// Add 2 coordinators
-		coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorPassword0", "coordinatorName0");
-		coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1");
-		Coordinator c0 = db.getCoordinators().getItem(0);
-		Coordinator c1 = db.getCoordinators().getItem(1);
+		coordinators
+				.add(coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorPassword0", "coordinatorName0"));
+		coordinators
+				.add(coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1"));
 
 		// Add 3 sessions
-		Session s0c0 = new Session(db.getSessions(), c0.sessions, db, c0);
-		Session s1c0 = new Session(db.getSessions(), c0.sessions, db, c0);
-		Session s2c1 = new Session(db.getSessions(), c1.sessions, db, c1);
+		sessions.add(new Session(db.getSessions(), coordinators.get(0).sessions, db, coordinators.get(0)));
+		sessions.add(new Session(db.getSessions(), coordinators.get(0).sessions, db, coordinators.get(0)));
+		sessions.add(new Session(db.getSessions(), coordinators.get(1).sessions, db, coordinators.get(1)));
 
 		// Add 6 students
-		new Student(db.getStudents(), s0c0.students, "studentEmail0", "studentPassword0", "studentName0", s0c0);
-		new Student(db.getStudents(), s0c0.students, "studentEmail1", "studentPassword1", "studentName1", s0c0);
-		new Student(db.getStudents(), s1c0.students, "studentEmail2", "studentPassword2", "studentName2", s1c0);
-		new Student(db.getStudents(), s1c0.students, "studentEmail3", "studentPassword3", "studentName3", s1c0);
-		new Student(db.getStudents(), s2c1.students, "studentEmail4", "studentPassword4", "studentName4", s2c1);
-		new Student(db.getStudents(), s2c1.students, "studentEmail5", "studentPassword5", "studentName5", s2c1);
+		students
+				.add(new Student(db.getStudents(), sessions.get(0).students, "studentEmail0", "studentPassword0",
+						"studentName0", sessions.get(0)));
+		students
+				.add(new Student(db.getStudents(), sessions.get(0).students, "studentEmail1", "studentPassword1",
+						"studentName1", sessions.get(0)));
+		students
+				.add(new Student(db.getStudents(), sessions.get(1).students, "studentEmail2", "studentPassword2",
+						"studentName2", sessions.get(1)));
+		students
+				.add(new Student(db.getStudents(), sessions.get(1).students, "studentEmail3", "studentPassword3",
+						"studentName3", sessions.get(1)));
+		students
+				.add(new Student(db.getStudents(), sessions.get(2).students, "studentEmail4", "studentPassword4",
+						"studentName4", sessions.get(2)));
+		students
+				.add(new Student(db.getStudents(), sessions.get(2).students, "studentEmail5", "studentPassword5",
+						"studentName5", sessions.get(2)));
 	}
 
 	@Test
@@ -57,16 +76,16 @@ public class DatabaseTest {
 		assertEquals(6, db.getStudents().getAllItems().size());
 
 		// Check coordinator emails
-		assertEquals("coordinatorEmail0", db.getCoordinators().getItem(0).getEmail());
-		assertEquals("coordinatorEmail1", db.getCoordinators().getItem(1).getEmail());
+		assertEquals("coordinatorEmail0", coordinators.get(0).getEmail());
+		assertEquals("coordinatorEmail1", coordinators.get(1).getEmail());
 
 		// Check student emails
-		assertEquals("studentEmail0", db.getStudents().getItem(0).getEmail());
-		assertEquals("studentEmail1", db.getStudents().getItem(1).getEmail());
-		assertEquals("studentEmail2", db.getStudents().getItem(2).getEmail());
-		assertEquals("studentEmail3", db.getStudents().getItem(3).getEmail());
-		assertEquals("studentEmail4", db.getStudents().getItem(4).getEmail());
-		assertEquals("studentEmail5", db.getStudents().getItem(5).getEmail());
+		assertEquals("studentEmail0", students.get(0).getEmail());
+		assertEquals("studentEmail1", students.get(1).getEmail());
+		assertEquals("studentEmail2", students.get(2).getEmail());
+		assertEquals("studentEmail3", students.get(3).getEmail());
+		assertEquals("studentEmail4", students.get(4).getEmail());
+		assertEquals("studentEmail5", students.get(5).getEmail());
 	}
 
 	@Test
@@ -76,9 +95,8 @@ public class DatabaseTest {
 		assertEquals(3, db.getSessions().getAllItems().size());
 		assertEquals(6, db.getStudents().getAllItems().size());
 
-		// Remove coordinator at ID = 0
-		Coordinator c0 = db.getCoordinators().getItem(0);
-		db.getCoordinators().remove(c0);
+		// Remove the first coordinator
+		db.getCoordinators().remove(coordinators.get(0));
 
 		// After deletion
 		assertEquals(1, db.getCoordinators().getAllItems().size());

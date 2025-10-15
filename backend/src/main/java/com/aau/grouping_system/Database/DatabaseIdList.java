@@ -9,13 +9,13 @@ public class DatabaseIdList {
 	// allowed access, since it handles adding and removing items in the database.
 
 	DatabaseMap<? extends DatabaseItem> map;
-	CopyOnWriteArrayList<Integer> ids = new CopyOnWriteArrayList<Integer>();
+	CopyOnWriteArrayList<String> ids = new CopyOnWriteArrayList<String>();
 
-	void add(Integer id) {
+	void add(String id) {
 		ids.add(id);
 	}
 
-	void remove(Integer id) {
+	void remove(String id) {
 		ids.remove(id);
 	}
 
@@ -28,13 +28,13 @@ public class DatabaseIdList {
 
 	// getters & setters
 
-	public CopyOnWriteArrayList<Integer> getIds() {
+	public CopyOnWriteArrayList<String> getIds() {
 		return ids;
 	}
 
 	public CopyOnWriteArrayList<? extends DatabaseItem> getItems() {
 		CopyOnWriteArrayList<DatabaseItem> objects = new CopyOnWriteArrayList<>();
-		for (Integer id : ids) {
+		for (String id : ids) {
 			DatabaseItem item = map.getItem(id);
 			objects.add(item);
 		}

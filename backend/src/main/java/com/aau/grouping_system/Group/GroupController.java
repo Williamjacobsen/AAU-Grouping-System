@@ -23,8 +23,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
-			@PathVariable Integer groupId,
-			@PathVariable Integer studentId) {
+			@PathVariable String groupId,
+			@PathVariable String studentId) {
 
 		Group group = db.getGroups().getItem(groupId);
 		Student student = db.getStudents().getItem(studentId);
@@ -46,7 +46,7 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<List<Student>> getJoinRequests(@PathVariable Integer groupId) {
+	public ResponseEntity<List<Student>> getJoinRequests(@PathVariable String groupId) {
 		Group group = db.getGroups().getItem(groupId);
 
 		if (group == null) {
@@ -58,8 +58,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/request-join/{studentId}")
 	public ResponseEntity<String> requestToJoin(
-			@PathVariable Integer groupId,
-			@PathVariable Integer studentId) {
+			@PathVariable String groupId,
+			@PathVariable String studentId) {
 
 		Group group = db.getGroups().getItem(groupId);
 		Student student = db.getStudents().getItem(studentId);
@@ -81,7 +81,7 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<Group> getGroup(@PathVariable Integer groupId) {
+	public ResponseEntity<Group> getGroup(@PathVariable String groupId) {
 		Group group = db.getGroups().getItem(groupId);
 
 		if (group == null) {
@@ -92,7 +92,7 @@ public class GroupController {
 	}
 
 	@GetMapping
-	public ResponseEntity<Map<Integer, Group>> getAllGroups() {
+	public ResponseEntity<Map<String, Group>> getAllGroups() {
 		return ResponseEntity.ok(db.getGroups().getAllItems());
 	}
 
@@ -108,8 +108,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(
-			@PathVariable Integer groupId,
-			@PathVariable Integer studentId) {
+			@PathVariable String groupId,
+			@PathVariable String studentId) {
 
 		Group group = db.getGroups().getItem(groupId);
 		Student student = db.getStudents().getItem(studentId);
@@ -132,8 +132,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
-			@PathVariable Integer groupId,
-			@PathVariable Integer studentId) {
+			@PathVariable String groupId,
+			@PathVariable String studentId) {
 
 		Group group = db.getGroups().getItem(groupId);
 		Student student = db.getStudents().getItem(studentId);

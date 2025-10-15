@@ -20,7 +20,7 @@ public class SessionService {
 		return SessionFactory.create(db.getSessions(), coordinator.sessions, db, coordinator);
 	}
 
-	public Session getSession(Integer sessionId) {
+	public Session getSession(String sessionId) {
 		return db.getSessions().getItem(sessionId);
 	}
 
@@ -30,7 +30,7 @@ public class SessionService {
 		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems();
 	}
 
-	public boolean deleteSession(Integer sessionId, Coordinator coordinator) {
+	public boolean deleteSession(String sessionId, Coordinator coordinator) {
 		if (!hasPermission(sessionId, coordinator)) {
 			return false;
 		}
@@ -39,7 +39,7 @@ public class SessionService {
 		return true;
 	}
 
-	public boolean hasPermission(Integer sessionId, Coordinator coordinator) {
+	public boolean hasPermission(String sessionId, Coordinator coordinator) {
 		Session session = db.getSessions().getItem(sessionId);
 		return session != null && session.getCoordinator().equals(coordinator);
 	}
