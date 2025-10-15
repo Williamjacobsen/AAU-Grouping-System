@@ -10,6 +10,7 @@ import About from "./pages/About/About";
 import User from "./pages/User/User";
 import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
+import Projects from "./pages/Projects/Projects";
 
 export default function App() {
 	return (
@@ -20,7 +21,8 @@ export default function App() {
 						<Route index element={<About />} />
 						<Route path="/user" element={<User />} />
 						<Route path="/sessions" element={<Sessions />}/>
-						<Route path="/session/:id" element={<Status />}/>
+						<Route path="/session/:id" element={<Status />} />
+						<Route path="/session/:id/projects" element={<Projects />}/>
 						<Route path="*" element={<NoPage />} />
 					</Route>
 				</Routes>
