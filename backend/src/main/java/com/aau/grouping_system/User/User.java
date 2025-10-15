@@ -1,34 +1,59 @@
 package com.aau.grouping_system.User;
 
-public class User {
+import com.aau.grouping_system.Database.DatabaseItem;
+import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.DatabaseIdList;
 
-    private String id;
-    private String name;
+public abstract class User extends DatabaseItem {
 
-    public User() {
-    }
+	private String email;
+	private String passwordHash;
+	private String name;
 
-    public User(String id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+	public enum Role {
+		UNDEFINED,
+		COORDINATOR,
+		SUPERVISOR,
+		STUDENT
+	}
 
-    // getters & setters
-    public String getId() {
-        return id;
-    }
+	// abstract methods
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public abstract Role getRole();
 
-    public String getName() {
-        return name;
-    }
+	// constructors
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+			String email, String passwordHash, String name) {
+		super(parentMap, parentReferences);
+		this.email = email;
+		this.passwordHash = passwordHash;
+		this.name = name;
+	}
+
+	// getters & setters
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getPasswordHash() {
+		return passwordHash;
+	}
+
+	public void setPasswordHash(String passwordHash) {
+		this.passwordHash = passwordHash;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }
-
-

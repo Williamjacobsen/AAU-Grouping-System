@@ -1,0 +1,10 @@
+{
+	"java.compile.nullAnalysis.mode": "automatic",
+	// Indent styling
+	"editor.tabSize": 2,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	// Make project rebuild automatically (to allow for IntelliSense when creating new files)
+	"java.autobuild.enabled": true,
+	"java.configuration.updateBuildConfiguration": "automatic",
+}
