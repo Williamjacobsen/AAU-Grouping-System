@@ -9,8 +9,6 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-import jakarta.annotation.PostConstruct;
-
 @Component // so we can do dependency injection
 public class Database {
 
@@ -45,29 +43,5 @@ public class Database {
 
 	public DatabaseMap<Group> getGroups() {
 		return groups;
-	}
-
-	// Fill database with example data
-	@PostConstruct
-	public void init() {
-
-		Coordinator c0 = new Coordinator(coordinators, null, this, "CoordinatorA@example.com", "PasswordHashA",
-				"CoordinatorA");
-		Coordinator c1 = new Coordinator(coordinators, null, this, "CoordinatorB@example.com", "PasswordHashB",
-				"CoordinatorB");
-		Coordinator c2 = new Coordinator(coordinators, null, this, "CoordinatorC@example.com", "PasswordHashC",
-				"CoordinatorC");
-
-		Session s0 = new Session(sessions, c0.sessions, this, c0);
-		Session s1 = new Session(sessions, c0.sessions, this, c0);
-		Session s2 = new Session(sessions, c1.sessions, this, c1);
-
-		Student st0 = new Student(students, s0.students, "Student0@example.com", "PasswordHash0", "Student0", s0);
-		Student st1 = new Student(students, s0.students, "Student1@example.com", "PasswordHash1", "Student1", s0);
-		Student st2 = new Student(students, s0.students, "Student2@example.com", "PasswordHash2", "Student2", s0);
-		Student st3 = new Student(students, s1.students, "Student3@example.com", "PasswordHash3", "Student3", s1);
-		Student st4 = new Student(students, s1.students, "Student4@example.com", "PasswordHash4", "Student4", s1);
-		Student st5 = new Student(students, s2.students, "Student5@example.com", "PasswordHash5", "Student5", s2);
-		Student st6 = new Student(students, s2.students, "Student6@example.com", "PasswordHash6", "Student6", s2);
 	}
 }
