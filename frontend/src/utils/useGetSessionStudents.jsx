@@ -3,31 +3,31 @@ import React, { useState, useEffect } from "react";
 /**
  * @returns An object {isLoading, session}.
  * - isLoading is a useState boolean.
- * - session is a useState Session.
+ * - students is a useState Student array.
  */
-export default function useGetSession(sessionId) {
+export default function useGetSessionStudents(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);
-	const [session, setSession] = useState(null);
+	const [students, setStudents] = useState(null);
 
 	useEffect(() => {
 		(async () => {
 			try {
-				setSession(await requestSession(sessionId));
+				setStudents(await requestSessionStudents(sessionId));
 				setIsLoading(false);
 			} catch (error) {
 				alert(error);
 			}
 		})();
-	}, []);
+	}, [sessionId]);
 
-	async function requestSession(sessionId) {
+	async function requestSessionStudents(sessionId) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/session/:${sessionId}/get`,
+				`http://localhost:8080/student/${sessionId}`,
 				{
 					method: "GET",
-					credentials: "include", // Ensures cookies are sent with the request
+					credentials: "include",
 				}
 			);
 
@@ -36,13 +36,13 @@ export default function useGetSession(sessionId) {
 				return Promise.reject(data.error);
 			}
 			
-			return data.session;
+			return data;
 		}
 		catch (error) {
 			return Promise.reject(error);
 		}
 	}
 
-	return { isLoading, session };
+	return { isLoading, students };
 }
 

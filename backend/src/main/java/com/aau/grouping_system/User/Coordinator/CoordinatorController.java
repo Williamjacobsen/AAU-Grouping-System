@@ -10,10 +10,6 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.aau.grouping_system.Database.Database;
-
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
@@ -22,7 +18,7 @@ public class CoordinatorController {
 
 	// constructors
 
-	public CoordinatorController(CoordinatorService coordinatorService, Database db, PasswordEncoder passwordEncoder) {
+	public CoordinatorController(CoordinatorService coordinatorService) {
 		this.service = coordinatorService;
 	}
 

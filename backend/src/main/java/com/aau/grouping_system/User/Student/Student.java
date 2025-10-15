@@ -1,9 +1,9 @@
 package com.aau.grouping_system.User.Student;
 
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.Session.Session;
 
 public class Student extends User {
@@ -12,10 +12,9 @@ public class Student extends User {
 
 	// constructors
 
-	public Student(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public Student(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
 			String email, String passwordHash, String name, Session session) {
-		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
+		super(parentMap, parentReferences, email, passwordHash, name);
 		this.session = session;
 	}
 

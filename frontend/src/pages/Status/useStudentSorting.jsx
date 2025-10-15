@@ -21,8 +21,8 @@ export default function useStudentSorting() {
 		if (!students || students.length === 0) return students;
 
 		// Comparison functions
-		function compareGroups(a, b) { return a.group.number.localeCompare(b.group.number); }
-		function compareNames(a, b) { return a.name.localeCompare(b.name); }
+		function compareGroups(a, b) { return a.group?.number?.localeCompare(b.group?.number); }
+		function compareNames(a, b) { return a.name?.localeCompare(b.name); }
 
 		// Create a copy of the array to avoid mutation
 		const sortedStudents = [...students];

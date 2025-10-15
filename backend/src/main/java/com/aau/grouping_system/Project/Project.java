@@ -1,32 +1,33 @@
 package com.aau.grouping_system.Project;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseIdList;
 
 public class Project extends DatabaseItem {
-	private String name;
+	// todo: Fjern "project" fra variabelnavne.
+	private String projectName;
 	private String description;
-	private int id;
-	private int user;
+	private int projectId;
+	// todo: Tilføj user
 
-	public Project(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList, String projectName,
+	public Project(DatabaseMap<? extends DatabaseItem> parentMap,
+			DatabaseIdList parentReferences, String projectName,
 			String description,
 			int projectId) {
-		super(parentDatabaseMap, parentReferenceList);
-		this.name = projectName;
+		super(parentMap, parentReferences);
+		this.projectName = projectName;
 		this.description = description;
-		this.id = projectId;
+		this.projectId = projectId;
 	}
 
 	// Getters and setters
 	public String getProjectName() {
-		return name;
+		return projectName;
 	}
 
 	public void setProjectName(String projectName) {
-		this.name = projectName;
+		this.projectName = projectName;
 	}
 
 	public String getDescription() {
@@ -38,18 +39,10 @@ public class Project extends DatabaseItem {
 	}
 
 	public int getProjectId() {
-		return id;
+		return projectId;
 	}
 
 	public void setProjectId(int projectId) {
-		this.id = projectId;
-	}
-
-	public int getUserId() {
-		return user;
-	}
-
-	public void setUserId(int projectUser) {
-		this.id = user;
+		this.projectId = projectId;
 	}
 }

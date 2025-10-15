@@ -36,9 +36,9 @@ public class DatabaseTest {
 		Coordinator c1 = db.getCoordinators().getItem(1);
 
 		// Add 3 sessions
-		Session s0c0 = new Session(db.getSessions(), c0.sessions, c0);
-		Session s1c0 = new Session(db.getSessions(), c0.sessions, c0);
-		Session s2c1 = new Session(db.getSessions(), c1.sessions, c1);
+		Session s0c0 = new Session(db.getSessions(), c0.sessions, db, c0);
+		Session s1c0 = new Session(db.getSessions(), c0.sessions, db, c0);
+		Session s2c1 = new Session(db.getSessions(), c1.sessions, db, c1);
 
 		// Add 6 students
 		new Student(db.getStudents(), s0c0.students, "studentEmail0", "studentPassword0", "studentName0", s0c0);
