@@ -30,7 +30,7 @@ class ChatSystem {
           if (resolve) {
             resolve();
             this.pendingAcks.delete(id);
-						console.log(`Ack - messageId: ${id}`)
+            console.log(`Ack - messageId: ${id}`);
           }
         });
 
@@ -61,7 +61,9 @@ class ChatSystem {
       return Promise.reject(new Error("STOMP not connected"));
     }
 
-    const clientMessageId = `message-${Date.now()}-${Math.random().toString().slice(2)}`;
+    const clientMessageId = `message-${Date.now()}-${Math.random()
+      .toString()
+      .slice(2)}`;
 
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -101,6 +103,24 @@ export default function ChatBox() {
   const messaging = useRef(null);
   const username = "My username";
   const { students, chatRooms } = useAppState();
+
+  useEffect(() => {
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/group/${selectedChatRoom}/messages/get/all`
+        );
+        const data = await response.json();
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+
+    if (selectedChatRoom) {
+      fetchMessages();
+    }
+  }, [selectedChatRoom]);
 
   // WEBSOCKET DEMO:
   useEffect(() => {

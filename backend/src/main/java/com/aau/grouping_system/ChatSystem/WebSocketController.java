@@ -32,6 +32,8 @@ public class WebSocketController {
 	 * {sender: "student 2", content: "bla"},
 	 * ],
 	 * }
+	 * 
+	 * In Group, to delete, just do groupMessages.remove(groupName)
 	 */
 
 	private final SimpMessagingTemplate messagingTemplate;
