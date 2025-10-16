@@ -8,7 +8,6 @@ export default function Project() {
 
 	const { id: sessionId } = useParams(); // Get session ID from URL
 	const { isloading: isLoadingProjects, projects: allProjects } = useGetSessionProjects(sessionId); // Get projects from backend
-
 	if (isLoadingProjects) {
     return <>Fetching projects from database...</>;
   }

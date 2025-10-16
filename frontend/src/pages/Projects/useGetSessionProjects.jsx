@@ -6,30 +6,26 @@ import React, { useState, useEffect } from "react";
  * - projects is a useState Project array.
  */
 export default function useGetSessionProjects(sessionId) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [projects, setProjects] = useState(null);
 
-	const [isLoading, setIsLoading] = useState(true);
-	const [projects, setProjects] = useState(null);
+  useEffect(() => {
+    if (sessionId == null) return;
 
-	useEffect(() => {
-		(async () => {
-			try {
-				// TODO: Opdater "projects"-variablen via "requestSessionProjects()"-funktionen
-				// TODO: Opdater "isLoading"-variablen
-			} catch (error) {
-				alert(error);
-			}
-		})();
-	}, [sessionId]);
+    (async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/project/getSessionProjects/${sessionId}`);
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
-	async function requestSessionProjects(sessionId) {
-		try {
-			// TODO: Return en liste af Projects, som du har fået via en fetch request til backenden.
-		}
-		catch (error) {
-			return Promise.reject(error);
-		}
-	}
+        const data = await response.json();
+        setProjects(data);
+      } catch (error) {
+        console.error("Error fetching session projects:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    })();
+  }, [sessionId]);
 
-	return { isLoading, projects };
+  return {isLoading, projects};
 }
-
