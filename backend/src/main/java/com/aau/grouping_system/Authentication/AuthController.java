@@ -7,17 +7,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 
 import java.util.Map;
 
@@ -28,41 +24,42 @@ public class AuthController {
 
 	private final AuthService service;
 
-	public AuthController(AuthService authService, Database db, PasswordEncoder passwordEncoder) {
+	public AuthController(AuthService authService) {
 		this.service = authService;
 	}
 
-	@PostMapping("/login")
+	@PostMapping("/signIn")
 	public ResponseEntity<String> login(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		String email = body.get("email");
+		String email = body.get("emailOrId");
 		String password = body.get("password");
+		User.Role role = User.Role.valueOf(body.get("role"));
 
-		Coordinator user = service.findByEmail(email);
+		User user = service.findByEmailOrId(email, role);
 
 		if (user == null || !service.isPasswordCorrect(password, user)) {
 			return ResponseEntity
 					.status(HttpStatus.UNAUTHORIZED) // 401 error
-					.body("Invalid email or password");
+					.body("Invalid email/id or password");
 		}
 
 		service.invalidateOldSession(request);
 		service.createNewSession(request, user);
 
 		return ResponseEntity
-				.ok("Logged in, user: " + user.getName());
+				.ok("Signed in, user: " + user.getEmail());
 	}
 
-	@PostMapping("/logout")
+	@PostMapping("/signOut")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
 
 		service.invalidateOldSession(request);
 		return ResponseEntity
-				.ok("Logged out"); // 200 ok
+				.ok("Signed out"); // 200 ok
 	}
 
-	@GetMapping("/me")
-	public ResponseEntity<User> me(HttpServletRequest request) {
+	@GetMapping("/getUser")
+	public ResponseEntity<User> getUser(HttpServletRequest request) {
 
 		HttpSession session = request.getSession(false);
 		if (session == null) {
@@ -73,13 +70,14 @@ public class AuthController {
 
 		User user = (User) session.getAttribute("user");
 
-		if (user != null) {
+		if (user == null) {
 			return ResponseEntity
-					.ok(user); // info om user returneres som JSON obj.
+					.status(HttpStatus.UNAUTHORIZED) // 401 error
+					.body(null);
 		}
+
 		return ResponseEntity
-				.status(HttpStatus.UNAUTHORIZED) // 401 error
-				.body(null);
+				.ok(user); // info om user returneres som JSON obj.
 	}
 
 }

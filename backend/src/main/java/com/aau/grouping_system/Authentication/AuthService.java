@@ -1,6 +1,7 @@
 package com.aau.grouping_system.Authentication;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,22 +25,26 @@ public class AuthService {
 
 	// methodes
 
-
-	public boolean isPasswordCorrect(String password, Coordinator user) {
-		if (passwordEncoder.matches(password, user.getPasswordHash())) {
-			return true;
-		}
-		return false;
+	public boolean isPasswordCorrect(String password, User user) {
+		return passwordEncoder.matches(password, user.getPasswordHash());
 	}
-	
 
-	public Coordinator findByEmail(String email) {
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				return existingCoordinator;
-			}
+	public User findByEmailOrId(String emailOrId, User.Role role) {
+		switch (role) {
+			case User.Role.COORDINATOR:
+				for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
+					if (coordinator.getEmail().equals(emailOrId)) {
+						return coordinator;
+					}
+				}
+				return null;
+			case User.Role.SUPERVISOR:
+				return db.getSupervisors().getItem(Integer.parseInt(emailOrId));
+			case User.Role.STUDENT:
+				return db.getStudents().getItem(Integer.parseInt(emailOrId));
+			default:
+				return null;
 		}
-		return null;
 	}
 
 	public void invalidateOldSession(HttpServletRequest request) {
@@ -48,10 +53,10 @@ public class AuthService {
 			oldSession.invalidate();
 	}
 
-	public void createNewSession(HttpServletRequest request, Coordinator user) {
+	public void createNewSession(HttpServletRequest request, User user) {
 		HttpSession session = request.getSession(true);
-		session.setMaxInactiveInterval(86400); // 1 dag
-		// Gemmer nøglen "user" i session objektet.
+		session.setMaxInactiveInterval(86400); // 1 day
+		// Save the key "user" in the HttpSession object.
 		session.setAttribute("user", user);
 	}
 

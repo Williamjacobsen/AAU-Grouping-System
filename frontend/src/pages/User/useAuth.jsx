@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function useAuthCheck() {
+export function useAuth() {
 	
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -9,7 +9,7 @@ export function useAuthCheck() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch("http://localhost:8080/auth/me", {
+    fetch("http://localhost:8080/auth/getUser", {
       method: "GET",
       credentials: "include",
     })

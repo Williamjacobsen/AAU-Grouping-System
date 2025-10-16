@@ -1,6 +1,6 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthCheck } from "./UseAuthCheck";
+import { useAuth } from "./useAuth";
 import "./User.css";
 
 export default function Profile() {
@@ -11,10 +11,10 @@ export default function Profile() {
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
-	const { user, loading, setUser } = useAuthCheck();
+	const { user, loading: loadingAuth, setUser } = useAuth();
 
-	if (loading) return <>Checking authentication...</>;
-  if (!user) return null;     
+	if (loadingAuth) return <>Checking authentication...</>;
+	if (!user) return null;
 
 	const handleEmailChange = () => {
 		fetch("http://localhost:8080/coordinator/modifyEmail", {
@@ -65,7 +65,7 @@ export default function Profile() {
 	};
 
 	const handleLogout = () => {
-		fetch("http://localhost:8080/auth/logout", {
+		fetch("http://localhost:8080/auth/signOut", {
 			method: "POST",
 			credentials: "include"
 		})
