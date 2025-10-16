@@ -13,7 +13,6 @@ const ProjectsTable = memo(({ projects }) => {
           <th>{project.description}</th>
         </tr>
       ))}
-      TODO: Lav en tabel over "projects"-variablen.
     </table>
   );
 });
