@@ -31,7 +31,7 @@ public class StudentController {
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionsStudents(@PathVariable String sessionId,
 			HttpServletRequest request) {
 
-		Session session = db.getSessions().getItem(sessionId);
+		Session session = db.getData().getSessions().getItem(sessionId);
 		if (session == null) {
 			return ResponseEntity.notFound().build();
 		}

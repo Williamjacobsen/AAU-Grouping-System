@@ -21,10 +21,10 @@ public class Session extends DatabaseItem {
 			Coordinator coordinator) {
 		super(parentMap, parentReferences);
 		this.coordinator = coordinator;
-		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
-		this.students = new DatabaseIdList(db.getStudents(), this);
-		this.projects = new DatabaseIdList(db.getProjects(), this);
-		this.groups = new DatabaseIdList(db.getGroups(), this);
+		this.supervisors = new DatabaseIdList(db.getData().getSupervisors(), this);
+		this.students = new DatabaseIdList(db.getData().getStudents(), this);
+		this.projects = new DatabaseIdList(db.getData().getProjects(), this);
+		this.groups = new DatabaseIdList(db.getData().getGroups(), this);
 	}
 
 	// Getters og setters

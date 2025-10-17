@@ -1,10 +1,11 @@
 package com.aau.grouping_system.Database;
 
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /// Items stored in the maps in the database. Upon creation ("new
 /// DatabaseItem()"), this adds itself to its parent map in the database.
-public abstract class DatabaseItem {
+public abstract class DatabaseItem implements Serializable {
 
 	private String id;
 	protected DatabaseMap<? extends DatabaseItem> parent;

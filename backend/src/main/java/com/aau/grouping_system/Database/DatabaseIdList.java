@@ -1,9 +1,10 @@
 package com.aau.grouping_system.Database;
 
+import java.io.Serializable;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /// Contains a list of IDs of a database items and its parent database map.
-public class DatabaseIdList {
+public class DatabaseIdList implements Serializable {
 
 	// Use package-private access modifier here, because only DatabaseItem is
 	// allowed access, since it handles adding and removing items in the database.

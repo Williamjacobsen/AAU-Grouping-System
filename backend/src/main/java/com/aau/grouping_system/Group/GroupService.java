@@ -7,10 +7,10 @@ import com.aau.grouping_system.User.Student.Student;
 @Service
 public class GroupService {
 
-	private final Database database;
+	private final Database db;
 
-	public GroupService(Database database) {
-		this.database = database;
+	public GroupService(Database db) {
+		this.db = db;
 	}
 
 	private void logGroupActivity(String activity, Student student, String groupId) {
@@ -18,7 +18,7 @@ public class GroupService {
 	}
 
 	public void joinGroup(String groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+		Group group = db.getData().getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -36,7 +36,7 @@ public class GroupService {
 	}
 
 	public void leaveGroup(String groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+		Group group = db.getData().getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -46,7 +46,7 @@ public class GroupService {
 	}
 
 	public void requestToJoin(String groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+		Group group = db.getData().getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -68,7 +68,7 @@ public class GroupService {
 	}
 
 	public void acceptJoinRequest(String groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+		Group group = db.getData().getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}

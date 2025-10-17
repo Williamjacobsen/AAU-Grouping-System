@@ -1,13 +1,13 @@
 package com.aau.grouping_system.Database;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /// Functions as a ConcurrentHashMap that also handles IDs and hierarchy
 /// (child/parent relations) of items.
-public class DatabaseMap<T extends DatabaseItem> {
+public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
 	private final Map<String, T> map = new ConcurrentHashMap<>();
 

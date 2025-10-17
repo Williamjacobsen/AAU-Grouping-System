@@ -16,7 +16,7 @@ public class Coordinator extends User {
 			DatabaseIdList parentReferences, Database db,
 			String email, String passwordHash, String name) {
 		super(parentMap, parentReferences, email, passwordHash, name);
-		this.sessions = new DatabaseIdList(db.getSessions(), this);
+		this.sessions = new DatabaseIdList(db.getData().getSessions(), this);
 	}
 
 	// abstract method overrides
