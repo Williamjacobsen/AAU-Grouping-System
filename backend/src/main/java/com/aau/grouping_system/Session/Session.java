@@ -14,12 +14,11 @@ public class Session extends DatabaseItem {
 	public DatabaseIdList projects;
 	public DatabaseIdList groups;
 
-	// Constructor
+	// constructor
 
-	public Session(DatabaseMap<? extends DatabaseItem> databaseMap,
-			DatabaseIdList parentItemChildIdList, Database db,
+	public Session(Database db, DatabaseIdList parentItemChildIdList,
 			Coordinator coordinator) {
-		super(databaseMap, parentItemChildIdList);
+		super(db, parentItemChildIdList);
 		this.coordinator = coordinator;
 		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
 		this.students = new DatabaseIdList(db.getStudents(), this);
@@ -27,7 +26,14 @@ public class Session extends DatabaseItem {
 		this.groups = new DatabaseIdList(db.getGroups(), this);
 	}
 
-	// Getters og setters
+	// abstract method overrides
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getSessions();
+	}
+
+	// getters & setters
 
 	public Coordinator getCoordinator() {
 		return coordinator;

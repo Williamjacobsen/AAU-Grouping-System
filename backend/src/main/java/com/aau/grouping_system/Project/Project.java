@@ -2,6 +2,7 @@ package com.aau.grouping_system.Project;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseIdList;
 
 public class Project extends DatabaseItem {
@@ -11,14 +12,17 @@ public class Project extends DatabaseItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(DatabaseMap<? extends DatabaseItem> databaseMap,
-			DatabaseIdList parentItemChildIdList, String projectName,
-			String description,
-			int projectId) {
-		super(databaseMap, parentItemChildIdList);
+	public Project(Database db, DatabaseIdList parentItemChildIdList,
+			String projectName, String description, int projectId) {
+		super(db, parentItemChildIdList);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;
+	}
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getProjects();
 	}
 
 	// Getters and setters

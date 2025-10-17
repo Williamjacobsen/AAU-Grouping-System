@@ -21,13 +21,19 @@ public abstract class DatabaseItem implements Serializable {
 		}
 	}
 
+	// abstract methods
+
+	/// Each DatabaseItem subclass has their own map in the database dedicated only
+	/// to their class, so each of them must specify which map this is.
+	protected abstract DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db);
+
 	// constructors
 
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
-	public DatabaseItem(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseIdList parentItemChildIds) {
+	public DatabaseItem(Database db, DatabaseIdList parentItemChildIds) {
 
-		this.databaseMap = databaseMap;
+		this.databaseMap = getDatabaseMap(db);
 
 		// Add item to parent map in database
 		((DatabaseMap<DatabaseItem>) databaseMap).put(this);

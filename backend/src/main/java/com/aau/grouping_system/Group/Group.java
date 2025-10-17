@@ -2,36 +2,42 @@ package com.aau.grouping_system.Group;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Group extends DatabaseItem {
 
 	private Supervisor supervisor;
-	private List<Student> students;
+	private CopyOnWriteArrayList<Student> students;
 	private Project project;
 	private String groupEmail;
-	private List<Student> joinRequests;
+	private CopyOnWriteArrayList<Student> joinRequests;
 	private int maxStudents;
 	private int maxRequests;
 
-	public Group(DatabaseMap<? extends DatabaseItem> databaseMap,
-			DatabaseIdList parentItemChildIdList,
+	public Group(Database db, DatabaseIdList parentItemChildIdList,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
-		super(databaseMap, parentItemChildIdList);
+		super(db, parentItemChildIdList);
 		this.supervisor = supervisor;
 		this.project = project;
 		this.groupEmail = groupEmail;
 		this.maxStudents = maxStudents;
 		this.maxRequests = maxRequests;
-		this.students = new ArrayList<>();
-		this.joinRequests = new ArrayList<>();
+		this.students = new CopyOnWriteArrayList<>();
+		this.joinRequests = new CopyOnWriteArrayList<>();
 	}
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getGroups();
+	}
+
+	// getters & setters
 
 	public Supervisor getSupervisor() {
 		return supervisor;
@@ -41,7 +47,7 @@ public class Group extends DatabaseItem {
 		this.supervisor = supervisor;
 	}
 
-	public List<Student> getStudents() {
+	public CopyOnWriteArrayList<Student> getStudents() {
 		return students;
 	}
 
@@ -61,7 +67,7 @@ public class Group extends DatabaseItem {
 		this.groupEmail = groupEmail;
 	}
 
-	public List<Student> getJoinRequests() {
+	public CopyOnWriteArrayList<Student> getJoinRequests() {
 		return joinRequests;
 	}
 
@@ -80,4 +86,5 @@ public class Group extends DatabaseItem {
 	public void setMaxRequests(int maxRequests) {
 		this.maxRequests = maxRequests;
 	}
+
 }

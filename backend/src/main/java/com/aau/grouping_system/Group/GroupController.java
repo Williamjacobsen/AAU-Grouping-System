@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Student.Student;
 
-import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @RequestMapping("/groups")
@@ -46,7 +46,7 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<List<Student>> getJoinRequests(@PathVariable String groupId) {
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(@PathVariable String groupId) {
 		Group group = db.getGroups().getItem(groupId);
 
 		if (group == null) {

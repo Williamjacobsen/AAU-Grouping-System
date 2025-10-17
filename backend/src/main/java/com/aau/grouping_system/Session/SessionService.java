@@ -17,7 +17,7 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db.getSessions(), coordinator.sessions, db, coordinator);
+		return SessionFactory.create(db, coordinator.sessions, coordinator);
 	}
 
 	public Session getSession(String sessionId) {

@@ -12,14 +12,18 @@ public class Coordinator extends User {
 
 	// constructors
 
-	public Coordinator(DatabaseMap<? extends DatabaseItem> databaseMap,
-			DatabaseIdList parentItemChildIdList, Database db,
+	public Coordinator(Database db, DatabaseIdList parentItemChildIdList,
 			String email, String passwordHash, String name) {
-		super(databaseMap, parentItemChildIdList, email, passwordHash, name);
+		super(db, parentItemChildIdList, email, passwordHash, name);
 		this.sessions = new DatabaseIdList(db.getSessions(), this);
 	}
 
 	// abstract method overrides
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getCoordinators();
+	}
 
 	@Override
 	public Role getRole() {
