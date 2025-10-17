@@ -99,6 +99,7 @@ export default function ChatBox() {
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [messageInput, setMessageInput] = useState("");
+  const [messagesByRoom, setMessagesByRoom] = useState({});
 
   const messaging = useRef(null);
   const username = "My username";
@@ -112,6 +113,10 @@ export default function ChatBox() {
         );
         const data = await response.json();
         console.log(data);
+        setMessagesByRoom((prev) => ({
+          ...prev,
+          [selectedChatRoom]: Array.isArray(data) ? data : [],
+        }));
       } catch (error) {
         console.error("Error fetching messages:", error);
       }
@@ -159,42 +164,15 @@ export default function ChatBox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // DEMO DATA:
-  const messages = {
-    "student 1": [
-      {
-        id: 1,
-        sender: "student 1",
-        text: "Yo my boi",
-        time: "10:30",
-      },
-      {
-        id: 2,
-        sender: username,
-        text: "test",
-        time: "10:32",
-      },
-      {
-        id: 3,
-        sender: "student 1",
-        text: "gg",
-        time: "10:33",
-      },
-    ],
-    "student 2": [
-      {
-        id: 1,
-        sender: "stundet 2",
-        text: "What 9 + 10?",
-        time: "11:15",
-      },
-      {
-        id: 2,
-        sender: username,
-        text: "21",
-        time: "11:20",
-      },
-    ],
+  const getTime = () => {
+    const now = new Date();
+    const time = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
+      2,
+      "0"
+    )}-${String(now.getDate()).padStart(2, "0")} ${String(
+      now.getHours()
+    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+    return time;
   };
 
   const handleSendMessage = async () => {
@@ -209,6 +187,21 @@ export default function ChatBox() {
       ? { content, sender: username, target: selectedChatRoom }
       : { content, sender: username };
 
+    setMessagesByRoom((prev) => {
+      const prevMessages = prev[selectedChatRoom] ?? [];
+      return {
+        ...prev,
+        [selectedChatRoom]: [
+          ...prevMessages,
+          {
+            id: prevMessages.length,
+            content: messageInput,
+            sender: username,
+            time: getTime(),
+          },
+        ],
+      };
+    });
     setMessageInput("");
 
     try {
@@ -218,6 +211,8 @@ export default function ChatBox() {
       // TODO: undo if failed
     }
   };
+
+  const roomMessages = messagesByRoom[selectedChatRoom] ?? [];
 
   return (
     <>
@@ -452,7 +447,7 @@ export default function ChatBox() {
                         backgroundColor: "#f9fafb",
                       }}
                     >
-                      {messages[selectedChatRoom]?.map((message) => (
+                      {roomMessages.map((message) => (
                         <div
                           key={message.id}
                           style={{
@@ -501,7 +496,7 @@ export default function ChatBox() {
                                 lineHeight: 1.5,
                               }}
                             >
-                              {message.text}
+                              {message.content}
                             </p>
                             <p
                               style={{
