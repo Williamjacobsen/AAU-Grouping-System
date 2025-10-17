@@ -160,25 +160,6 @@ export default function ChatBox() {
           };
         });
       });
-
-      messaging.current.subscribe("/group/1/messages", (message) => {
-        console.log("Received:", message);
-      });
-
-      messaging.current.subscribe("/user/private/reply", (message) => {
-        console.log("Private message:", message);
-      });
-
-      messaging.current.send(`/group/1/send`, {
-        content: "Group test message",
-        sender: username,
-      });
-
-      messaging.current.send("/private/send", {
-        content: "This is a private test message",
-        sender: username,
-        target: username,
-      });
     });
 
     return () => {
@@ -189,22 +170,11 @@ export default function ChatBox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const getTime = () => {
-    const now = new Date();
-    const time = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}-${String(now.getDate()).padStart(2, "0")} ${String(
-      now.getHours()
-    ).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-    return time;
-  };
-
   const handleSendMessage = async () => {
     const content = messageInput.trim();
     if (!content || !selectedChatRoom) return;
 
-    const direct = selectedChatRoom.startsWith("student");
+    const direct = selectedChatRoom.startsWith("student"); // TODO
     const destination = direct
       ? "/private/send"
       : `/group/${selectedChatRoom}/send`;
