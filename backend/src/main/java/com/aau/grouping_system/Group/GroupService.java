@@ -18,7 +18,7 @@ public class GroupService {
 	}
 
 	public void joinGroup(String groupId, Student student) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -36,7 +36,7 @@ public class GroupService {
 	}
 
 	public void leaveGroup(String groupId, Student student) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -46,7 +46,7 @@ public class GroupService {
 	}
 
 	public void requestToJoin(String groupId, Student student) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -68,7 +68,7 @@ public class GroupService {
 	}
 
 	public void acceptJoinRequest(String groupId, Student student) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}

@@ -12,9 +12,9 @@ public class Supervisor extends User {
 
 	// constructors
 
-	public Supervisor(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+	public Supervisor(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseIdList parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
-		super(parentMap, parentReferences, email, passwordHash, name);
+		super(databaseMap, parentItemChildIdList, email, passwordHash, name);
 		this.session = session;
 	}
 

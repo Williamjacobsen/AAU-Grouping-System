@@ -10,7 +10,7 @@ import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 public class DatabaseData implements Serializable {
-	
+
 	private final DatabaseMap<Coordinator> coordinators = new DatabaseMap<>();
 	private final DatabaseMap<Session> sessions = new DatabaseMap<>();
 	private final DatabaseMap<Supervisor> supervisors = new DatabaseMap<>();
@@ -20,27 +20,27 @@ public class DatabaseData implements Serializable {
 
 	// getters & setters
 
-	public DatabaseMap<Coordinator> getCoordinators() {
+	DatabaseMap<Coordinator> getCoordinators() {
 		return coordinators;
 	}
 
-	public DatabaseMap<Session> getSessions() {
+	DatabaseMap<Session> getSessions() {
 		return sessions;
 	}
 
-	public DatabaseMap<Supervisor> getSupervisors() {
+	DatabaseMap<Supervisor> getSupervisors() {
 		return supervisors;
 	}
 
-	public DatabaseMap<Student> getStudents() {
+	DatabaseMap<Student> getStudents() {
 		return students;
 	}
 
-	public DatabaseMap<Project> getProjects() {
+	DatabaseMap<Project> getProjects() {
 		return projects;
 	}
 
-	public DatabaseMap<Group> getGroups() {
+	DatabaseMap<Group> getGroups() {
 		return groups;
 	}
 }

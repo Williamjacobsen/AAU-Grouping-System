@@ -16,15 +16,15 @@ public class Session extends DatabaseItem {
 
 	// Constructor
 
-	public Session(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences, Database db,
+	public Session(DatabaseMap<? extends DatabaseItem> databaseMap,
+			DatabaseIdList parentItemChildIdList, Database db,
 			Coordinator coordinator) {
-		super(parentMap, parentReferences);
+		super(databaseMap, parentItemChildIdList);
 		this.coordinator = coordinator;
-		this.supervisors = new DatabaseIdList(db.getData().getSupervisors(), this);
-		this.students = new DatabaseIdList(db.getData().getStudents(), this);
-		this.projects = new DatabaseIdList(db.getData().getProjects(), this);
-		this.groups = new DatabaseIdList(db.getData().getGroups(), this);
+		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
+		this.students = new DatabaseIdList(db.getStudents(), this);
+		this.projects = new DatabaseIdList(db.getProjects(), this);
+		this.groups = new DatabaseIdList(db.getGroups(), this);
 	}
 
 	// Getters og setters

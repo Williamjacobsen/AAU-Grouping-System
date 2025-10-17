@@ -20,10 +20,10 @@ public class Group extends DatabaseItem {
 	private int maxStudents;
 	private int maxRequests;
 
-	public Group(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences,
+	public Group(DatabaseMap<? extends DatabaseItem> databaseMap,
+			DatabaseIdList parentItemChildIdList,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
-		super(parentMap, parentReferences);
+		super(databaseMap, parentItemChildIdList);
 		this.supervisor = supervisor;
 		this.project = project;
 		this.groupEmail = groupEmail;

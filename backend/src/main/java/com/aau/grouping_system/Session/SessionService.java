@@ -17,11 +17,11 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db.getData().getSessions(), coordinator.sessions, db, coordinator);
+		return SessionFactory.create(db.getSessions(), coordinator.sessions, db, coordinator);
 	}
 
 	public Session getSession(String sessionId) {
-		return db.getData().getSessions().getItem(sessionId);
+		return db.getSessions().getItem(sessionId);
 	}
 
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
@@ -35,12 +35,12 @@ public class SessionService {
 			return false;
 		}
 
-		db.getData().getSessions().remove(sessionId);
+		db.getSessions().remove(sessionId);
 		return true;
 	}
 
 	public boolean hasPermission(String sessionId, Coordinator coordinator) {
-		Session session = db.getData().getSessions().getItem(sessionId);
+		Session session = db.getSessions().getItem(sessionId);
 		return session != null && session.getCoordinator().equals(coordinator);
 	}
 }

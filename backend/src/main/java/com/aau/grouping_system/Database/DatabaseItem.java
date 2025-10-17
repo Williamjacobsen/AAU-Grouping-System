@@ -8,15 +8,15 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class DatabaseItem implements Serializable {
 
 	private String id;
-	protected DatabaseMap<? extends DatabaseItem> parent;
-	protected CopyOnWriteArrayList<DatabaseIdList> children = new CopyOnWriteArrayList<>();
+	protected DatabaseMap<? extends DatabaseItem> databaseMap;
+	protected CopyOnWriteArrayList<DatabaseIdList> childIds = new CopyOnWriteArrayList<>();
 
 	// package-private methods
 
 	void removeChildren() {
-		for (DatabaseIdList childList : children) {
+		for (DatabaseIdList childList : childIds) {
 			for (String childId : childList.ids) {
-				childList.map.remove(childId);
+				childList.databaseMap.remove(childId);
 			}
 		}
 	}
@@ -25,16 +25,16 @@ public abstract class DatabaseItem implements Serializable {
 
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
-	public DatabaseItem(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences) {
+	public DatabaseItem(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseIdList parentItemChildIds) {
 
-		this.parent = parentMap;
+		this.databaseMap = databaseMap;
 
 		// Add item to parent map in database
-		((DatabaseMap<DatabaseItem>) parentMap).put(this);
+		((DatabaseMap<DatabaseItem>) databaseMap).put(this);
 
 		// Add item to parent item's references
-		if (parentReferences != null) {
-			parentReferences.add(this.id);
+		if (parentItemChildIds != null) {
+			parentItemChildIds.add(this.id);
 		}
 	}
 

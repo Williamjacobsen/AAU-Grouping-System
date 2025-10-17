@@ -11,11 +11,11 @@ public class Project extends DatabaseItem {
 	private int projectId;
 	// todo: Tilføj user
 
-	public Project(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences, String projectName,
+	public Project(DatabaseMap<? extends DatabaseItem> databaseMap,
+			DatabaseIdList parentItemChildIdList, String projectName,
 			String description,
 			int projectId) {
-		super(parentMap, parentReferences);
+		super(databaseMap, parentItemChildIdList);
 		this.projectName = projectName;
 		this.description = description;
 		this.projectId = projectId;

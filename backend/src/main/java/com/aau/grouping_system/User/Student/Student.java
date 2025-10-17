@@ -12,9 +12,9 @@ public class Student extends User {
 
 	// constructors
 
-	public Student(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+	public Student(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseIdList parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
-		super(parentMap, parentReferences, email, passwordHash, name);
+		super(databaseMap, parentItemChildIdList, email, passwordHash, name);
 		this.session = session;
 	}
 

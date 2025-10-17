@@ -22,20 +22,20 @@ public class CoordinatorService {
 
 	public Coordinator addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		return new Coordinator(db.getData().getCoordinators(), null, db, email, passwordHash, name);
+		return new Coordinator(db.getCoordinators(), null, db, email, passwordHash, name);
 	}
 
 	public void modifyEmail(String newEmail, String coordinatorId) {
-		db.getData().getCoordinators().getItem(coordinatorId).setEmail(newEmail);
+		db.getCoordinators().getItem(coordinatorId).setEmail(newEmail);
 	}
 
 	public void modifyPassword(String newPassword, String coordinatorId) {
 		String passwordHash = passwordEncoder.encode(newPassword);
-		db.getData().getCoordinators().getItem(coordinatorId).setPasswordHash(passwordHash);
+		db.getCoordinators().getItem(coordinatorId).setPasswordHash(passwordHash);
 	}
 
 	public boolean isEmailDuplicate(String email) {
-		for (Coordinator existingCoordinator : db.getData().getCoordinators().getAllItems().values()) {
+		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
 			if (existingCoordinator.getEmail().equals(email)) {
 				return true;
 			}

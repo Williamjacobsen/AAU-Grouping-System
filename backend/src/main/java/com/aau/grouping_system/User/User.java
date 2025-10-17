@@ -23,9 +23,9 @@ public abstract class User extends DatabaseItem {
 
 	// constructors
 
-	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+	public User(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseIdList parentItemChildIdList,
 			String email, String passwordHash, String name) {
-		super(parentMap, parentReferences);
+		super(databaseMap, parentItemChildIdList);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;

@@ -26,8 +26,8 @@ public class GroupController {
 			@PathVariable String groupId,
 			@PathVariable String studentId) {
 
-		Group group = db.getData().getGroups().getItem(groupId);
-		Student student = db.getData().getStudents().getItem(studentId);
+		Group group = db.getGroups().getItem(groupId);
+		Student student = db.getStudents().getItem(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -47,7 +47,7 @@ public class GroupController {
 
 	@GetMapping("/{groupId}/requests")
 	public ResponseEntity<List<Student>> getJoinRequests(@PathVariable String groupId) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -61,8 +61,8 @@ public class GroupController {
 			@PathVariable String groupId,
 			@PathVariable String studentId) {
 
-		Group group = db.getData().getGroups().getItem(groupId);
-		Student student = db.getData().getStudents().getItem(studentId);
+		Group group = db.getGroups().getItem(groupId);
+		Student student = db.getStudents().getItem(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -82,7 +82,7 @@ public class GroupController {
 
 	@GetMapping("/{groupId}")
 	public ResponseEntity<Group> getGroup(@PathVariable String groupId) {
-		Group group = db.getData().getGroups().getItem(groupId);
+		Group group = db.getGroups().getItem(groupId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -93,13 +93,13 @@ public class GroupController {
 
 	@GetMapping
 	public ResponseEntity<Map<String, Group>> getAllGroups() {
-		return ResponseEntity.ok(db.getData().getGroups().getAllItems());
+		return ResponseEntity.ok(db.getGroups().getAllItems());
 	}
 
 	@PostMapping
 	public ResponseEntity<Group> createGroup(@RequestBody Group group) {
 		try {
-			db.getData().getGroups().put(group);
+			db.getGroups().put(group);
 			return ResponseEntity.ok(group);
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().build();
@@ -111,8 +111,8 @@ public class GroupController {
 			@PathVariable String groupId,
 			@PathVariable String studentId) {
 
-		Group group = db.getData().getGroups().getItem(groupId);
-		Student student = db.getData().getStudents().getItem(studentId);
+		Group group = db.getGroups().getItem(groupId);
+		Student student = db.getStudents().getItem(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();
@@ -135,8 +135,8 @@ public class GroupController {
 			@PathVariable String groupId,
 			@PathVariable String studentId) {
 
-		Group group = db.getData().getGroups().getItem(groupId);
-		Student student = db.getData().getStudents().getItem(studentId);
+		Group group = db.getGroups().getItem(groupId);
+		Student student = db.getStudents().getItem(studentId);
 
 		if (group == null) {
 			return ResponseEntity.notFound().build();

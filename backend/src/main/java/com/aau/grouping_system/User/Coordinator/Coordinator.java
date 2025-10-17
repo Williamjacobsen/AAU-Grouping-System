@@ -12,11 +12,11 @@ public class Coordinator extends User {
 
 	// constructors
 
-	public Coordinator(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences, Database db,
+	public Coordinator(DatabaseMap<? extends DatabaseItem> databaseMap,
+			DatabaseIdList parentItemChildIdList, Database db,
 			String email, String passwordHash, String name) {
-		super(parentMap, parentReferences, email, passwordHash, name);
-		this.sessions = new DatabaseIdList(db.getData().getSessions(), this);
+		super(databaseMap, parentItemChildIdList, email, passwordHash, name);
+		this.sessions = new DatabaseIdList(db.getSessions(), this);
 	}
 
 	// abstract method overrides

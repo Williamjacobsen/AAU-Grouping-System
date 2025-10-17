@@ -9,7 +9,7 @@ public class DatabaseIdList implements Serializable {
 	// Use package-private access modifier here, because only DatabaseItem is
 	// allowed access, since it handles adding and removing items in the database.
 
-	DatabaseMap<? extends DatabaseItem> map;
+	DatabaseMap<? extends DatabaseItem> databaseMap;
 	CopyOnWriteArrayList<String> ids = new CopyOnWriteArrayList<String>();
 
 	void add(String id) {
@@ -22,9 +22,9 @@ public class DatabaseIdList implements Serializable {
 
 	// constructors
 
-	public DatabaseIdList(DatabaseMap<? extends DatabaseItem> map, DatabaseItem parentItem) {
-		this.map = map;
-		parentItem.children.add(this);
+	public DatabaseIdList(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseItem parentItem) {
+		this.databaseMap = databaseMap;
+		parentItem.childIds.add(this);
 	}
 
 	// getters & setters
@@ -36,7 +36,7 @@ public class DatabaseIdList implements Serializable {
 	public CopyOnWriteArrayList<? extends DatabaseItem> getItems() {
 		CopyOnWriteArrayList<DatabaseItem> objects = new CopyOnWriteArrayList<>();
 		for (String id : ids) {
-			DatabaseItem item = map.getItem(id);
+			DatabaseItem item = databaseMap.getItem(id);
 			objects.add(item);
 		}
 		return objects;
