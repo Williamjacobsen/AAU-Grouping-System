@@ -122,7 +122,6 @@ export default function ChatBox() {
     }
   }, [selectedChatRoom]);
 
-  // WEBSOCKET DEMO:
   useEffect(() => {
     console.log(chatRooms);
     console.log(students);
@@ -130,6 +129,8 @@ export default function ChatBox() {
     messaging.current = new ChatSystem("http://localhost:8080/ws", username);
 
     messaging.current.connect(() => {
+      // TODO: subscribe to all chatrooms.
+
       messaging.current.subscribe("/group/1/messages", (message) => {
         console.log("Received:", message);
       });

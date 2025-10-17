@@ -1,5 +1,5 @@
-1. save the message in the database.
-2. allow users the load messages that was previously send.
-3. maybe (if i want to) add an @somebody functionality.
-4. maybe (if i want to) allow for editing and delting your messages.
-5. maybe (if i want to) allow for shift+enter for a new line.
+1. Load all messages for a chatroom.
+2. Show messages loaded.
+3. On send, add to messages.
+4. Make sure, that the user is subscribed to all chatrooms.
+5. Alert if a message failed to send.

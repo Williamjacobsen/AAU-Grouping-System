@@ -1,6 +1,8 @@
 package com.aau.grouping_system.ChatSystem;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class WebSocketController {
 
-	public record groupMessage(String content, String sender) {
+	public record groupMessage(Integer id, String content, String sender, String time) {
 	};
 
 	public final ConcurrentHashMap<String, Deque<groupMessage>> groupMessages = new ConcurrentHashMap<>();
@@ -38,6 +40,8 @@ public class WebSocketController {
 
 	private final SimpMessagingTemplate messagingTemplate;
 
+	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
 	public WebSocketController(SimpMessagingTemplate messagingTemplate) {
 		this.messagingTemplate = messagingTemplate;
 	}
@@ -51,7 +55,7 @@ public class WebSocketController {
 
 		groupMessages
 				.computeIfAbsent(groupId, _ -> new ConcurrentLinkedDeque<>())
-				.add(new groupMessage(message.content(), message.sender()));
+				.add(new groupMessage(groupMessages.get(groupId).size(), message.content(), message.sender(), LocalDateTime.now().format(FORMATTER)));
 
 		messagingTemplate.convertAndSend(
 				"/group/" + groupId + "/messages",
