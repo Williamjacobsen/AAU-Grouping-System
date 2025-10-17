@@ -134,7 +134,32 @@ export default function ChatBox() {
     messaging.current = new ChatSystem("http://localhost:8080/ws", username);
 
     messaging.current.connect(() => {
-      // TODO: subscribe to all chatrooms.
+      chatRooms.forEach((roomName) => {
+        messaging.current.subscribe(`/group/${roomName}/messages`, (message) => {
+          console.log(`Received message in group ${roomName}:`, message);
+
+          setMessagesByRoom((prev) => {
+            const prevMessages = prev[roomName] ?? [];
+            return {
+              ...prev,
+              [roomName]: [...prevMessages, message],
+            };
+          });
+        });
+      });
+
+      messaging.current.subscribe("/user/private/reply", (message) => {
+        console.log("Private message:", message);
+
+        const from = message.sender || "unknown";
+        setMessagesByRoom((prev) => {
+          const prevMessages = prev[from] ?? [];
+          return {
+            ...prev,
+            [from]: [...prevMessages, message],
+          };
+        });
+      });
 
       messaging.current.subscribe("/group/1/messages", (message) => {
         console.log("Received:", message);
@@ -187,21 +212,9 @@ export default function ChatBox() {
       ? { content, sender: username, target: selectedChatRoom }
       : { content, sender: username };
 
-    setMessagesByRoom((prev) => {
-      const prevMessages = prev[selectedChatRoom] ?? [];
-      return {
-        ...prev,
-        [selectedChatRoom]: [
-          ...prevMessages,
-          {
-            id: prevMessages.length,
-            content: messageInput,
-            sender: username,
-            time: getTime(),
-          },
-        ],
-      };
-    });
+		// no need to add the message to the messages state,
+		// the client is subscribed to a websocket for this chat room,
+		// so the subscription, adds it.
     setMessageInput("");
 
     try {

@@ -53,13 +53,17 @@ public class WebSocketController {
 	public void sendMessage(@DestinationVariable String groupId, Message message, Principal principal) {
 		System.out.println("Received group message from: " + (principal != null ? principal.getName() : "UNKNOWN"));
 
-		groupMessages
-				.computeIfAbsent(groupId, _ -> new ConcurrentLinkedDeque<>())
-				.add(new groupMessage(groupMessages.get(groupId).size(), message.content(), message.sender(), LocalDateTime.now().format(FORMATTER)));
+		Deque<groupMessage> deque = groupMessages.computeIfAbsent(groupId, k -> new ConcurrentLinkedDeque<>());
 
-		messagingTemplate.convertAndSend(
-				"/group/" + groupId + "/messages",
-				new Message(message.content(), message.sender(), null, message.clientMessageId()));
+		groupMessage formattedMessage = new groupMessage(
+				deque.size(),
+				message.content(),
+				message.sender(),
+				LocalDateTime.now().format(FORMATTER));
+
+		deque.add(formattedMessage);
+
+		messagingTemplate.convertAndSend("/group/" + groupId + "/messages", formattedMessage);
 
 		sendAckToUser(principal, groupId, null, message.clientMessageId());
 	}

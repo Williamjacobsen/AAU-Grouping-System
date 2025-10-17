@@ -7,7 +7,9 @@ export function AppStateProvider({ children }) {
   const [groups, setGroups] = useState(["group 1", "group 2"]);
   const [projects, setProjects] = useState(["project 1", "project 2"]);
 
-  const [chatRooms, setChatRooms] = useState(["General"]);
+  const [chatRooms, setChatRooms] = useState(() => 
+    ["General", ...projects, ...groups, ...students]
+  ); 
   useEffect(() => {
     setChatRooms(["General", ...projects, ...groups, ...students]);
   }, [projects, groups, students]);
