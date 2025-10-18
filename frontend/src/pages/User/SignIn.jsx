@@ -17,24 +17,23 @@ export default function SignIn() {
 	const [role, setRole] = useState(userRoleEnum.COORDINATOR);
 	const [error, setError] = useState("");
 
-	const handleSignIn = () => {
-		fetch("http://localhost:8080/auth/signIn", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ emailOrId, password, role }),
-			credentials: "include"
-		})
-		.then(async (response) => {
+	const handleSignIn = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/auth/signIn", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ emailOrId, password, role }),
+				credentials: "include"
+			})
 			if (response.ok) {
-				navigate("/profile");  
+				navigate("/profile");
 			} else {
-				const errorMessage = await response.text();  
-				setError(errorMessage);                    
+				const error = await response.text();
+				setError(error);
 			}
-		})
-		.catch((e) => {
-			setError(e.message);  
-		})
+		} catch (e) {
+			setError(e.message);
+		}
 	}
 
 	return (
@@ -64,7 +63,7 @@ export default function SignIn() {
 						}
 						{role !== userRoleEnum.COORDINATOR &&
 							<>
-								ID
+								User ID
 								<input type="emailOrId" onChange={(e) => setEmailOrId(e.target.value)} placeholder="283fsdklajhfo23ljfd" />
 							</>
 						}
@@ -91,4 +90,3 @@ export default function SignIn() {
 		</div>
 	);
 }
-	

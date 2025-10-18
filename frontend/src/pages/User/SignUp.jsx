@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "./useAuth";
 import "./User.css";
 
 export default function SignUp() {
@@ -11,24 +12,23 @@ export default function SignUp() {
 	const [name, setName] = useState("");
 	const [error, setError] = useState("");
 
-	const handleSignUp = () => {
-		fetch("http://localhost:8080/coordinator/signUp", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ email, password, name}),
-			credentials: "include"
-		})
-			.then(async (response) => {
-				if (response.ok) {
-					navigate("/profile");
-				} else {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-				}
+	const handleSignUp = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/coordinator/signUp", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email, password, name }),
+				credentials: "include"
 			})
-			.catch((e) => {
-				setError(e);
-			})
+			if (response.ok) {
+				navigate("/profile");
+			} else {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+			}
+		} catch (e) {
+			setError(e.message);
+		}
 	}
 
 	return (

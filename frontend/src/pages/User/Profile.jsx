@@ -16,70 +16,67 @@ export default function Profile() {
 	if (loadingAuth) return <>Checking authentication...</>;
 	if (!user) return null;
 
-	const handleEmailChange = () => {
-		fetch("http://localhost:8080/coordinator/modifyEmail", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ newEmail }),
-			credentials: "include"
-		})
-			.then(async (response) => {
-				if (response.ok) {
-					navigate("/profile");
-					setSucces("Email updated succesfully")
-					setError("");
-					setUser(prev => ({ ...prev, email: newEmail }));
-				} else {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-					setSucces("")
-				}
+	const handleEmailChange = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/coordinator/modifyEmail", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ newEmail }),
+				credentials: "include"
 			})
-			.catch((e) => {
-				setError(e.message);
-			})
+			if (response.ok) {
+				navigate("/profile");
+				setSucces("Email updated succesfully")
+				setError("");
+				setUser(prev => ({ ...prev, email: newEmail }));
+			} else {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				setSucces("")
+			}
+		} catch (e) {
+			setError(e.message);
+		}
 	};
 
-	const handlePasswordChange = () => {
-		fetch("http://localhost:8080/coordinator/modifyPassword", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ newPassword }),
-			credentials: "include"
-		})
-			.then(async (response) => {
-				if (response.ok) {
-					navigate("/profile");
-					setSucces("Password updated succesfully");
-					setError("");
-					setUser(prev => ({ ...prev, password: newPassword }));
-				} else {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-					setSucces("");
-				}
+	const handlePasswordChange = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/coordinator/modifyPassword", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ newPassword }),
+				credentials: "include"
 			})
-			.catch((e) => {
-				setError(e.message);
-			})
+			if (response.ok) {
+				navigate("/profile");
+				setSucces("Password updated succesfully");
+				setError("");
+				setUser(prev => ({ ...prev, password: newPassword }));
+			} else {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				setSucces("");
+			}
+		} catch (e) {
+			setError(e.message);
+		}
 	};
 
-	const handleLogout = () => {
-		fetch("http://localhost:8080/auth/signOut", {
-			method: "POST",
-			credentials: "include"
-		})
-			.then(async (response) => {
-				if (response.ok) {
-					navigate("/sign-in");
-				} else {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-				}
+	const handleLogout = async () => {
+		try {
+			const response = await fetch("http://localhost:8080/auth/signOut", {
+				method: "POST",
+				credentials: "include"
 			})
-			.catch((e) => {
-				setError(e.message);
-			})
+			if (response.ok) {
+				navigate("/sign-in");
+			} else {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+			}
+		} catch (e) {
+			setError(e.message);
+		}
 	};
 
 	return (
