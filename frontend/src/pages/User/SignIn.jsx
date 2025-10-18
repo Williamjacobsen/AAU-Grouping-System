@@ -6,6 +6,8 @@ export default function SignIn() {
 
 	const navigate = useNavigate();
 
+	// obejct.freeze: makes the object immutable
+	// useMemo: used to remember the userRole, so it dosnt have to re-render (unless its dependecies change)
 	const userRoleEnum = useMemo(() => Object.freeze({
 		COORDINATOR: "COORDINATOR",
 		SUPERVISOR: "SUPERVISOR",
