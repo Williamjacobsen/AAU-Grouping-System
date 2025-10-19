@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { handleSignIn } from "./useAuth";
 import "./User.css";
 
 export default function SignIn() {
@@ -18,25 +19,6 @@ export default function SignIn() {
 	const [emailOrId, setEmailOrId] = useState("");
 	const [role, setRole] = useState(userRoleEnum.COORDINATOR);
 	const [error, setError] = useState("");
-
-	const handleSignIn = async () => {
-		try {
-			const response = await fetch("http://localhost:8080/auth/signIn", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ emailOrId, password, role }),
-				credentials: "include"
-			})
-			if (response.ok) {
-				navigate("/profile");
-			} else {
-				const error = await response.text();
-				setError(error);
-			}
-		} catch (e) {
-			setError(e.message);
-		}
-	}
 
 	return (
 		<div className="container">
@@ -79,7 +61,7 @@ export default function SignIn() {
 				</div>
 			</div>
 			<div className="submit-container">
-				<button className="sign-in" onClick={handleSignIn}>
+				<button className="sign-in" onClick={() => handleSignIn(password, emailOrId, role, setError, navigate)}>
 					Sign In
 				</button>
 				<button className="sign-up" onClick={() => navigate("/sign-up")}>
