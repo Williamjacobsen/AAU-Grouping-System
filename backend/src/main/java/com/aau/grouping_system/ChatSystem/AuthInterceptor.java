@@ -8,7 +8,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
 
-// TODO: Figure out why this is running
+// TODO: Figure out why this is not running
 
 public class AuthInterceptor implements HandshakeInterceptor {
 

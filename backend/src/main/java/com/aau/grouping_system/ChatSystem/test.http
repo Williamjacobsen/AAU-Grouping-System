@@ -1,6 +1,0 @@
-@host = http://localhost:8080
-@groupId = group 1
-
-GET {{host}}/group/{{groupId}}/messages/get/all
-Accept: application/json
-

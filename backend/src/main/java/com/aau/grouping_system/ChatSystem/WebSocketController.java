@@ -99,7 +99,7 @@ public class WebSocketController {
 				"/private/reply",
 				formattedMessage);
 
-		// This is not the best approch, i should add the message for the sender client side, when ack is received.
+		// This is not the best approach, i should add the message for the sender client side, when ack is received.
 		messagingTemplate.convertAndSendToUser(
 			message.sender(),
 			"/private/reply",

@@ -2,7 +2,6 @@ package com.aau.grouping_system.Group;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-//import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Student.Student;
@@ -20,11 +19,9 @@ public class Group extends DatabaseItem {
 	private List<Student> joinRequests;
 	private int maxStudents;
 	private int maxRequests;
-	//public final DatabaseIdList messages;
 
 	public Group(DatabaseMap<? extends DatabaseItem> parentMap,
 			DatabaseIdList parentReferences,
-			//Database db,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
 		super(parentMap, parentReferences);
 		this.supervisor = supervisor;
@@ -34,9 +31,6 @@ public class Group extends DatabaseItem {
 		this.maxRequests = maxRequests;
 		this.students = new ArrayList<>();
 		this.joinRequests = new ArrayList<>();
-		//this.messages = new DatabaseIdList(db.getGroupMessages(), this); // By Will to Jesp: I assume im creating an "array"
-																																			// of child id's that belong to this object,
-																																			// right?
 	}
 
 	public Supervisor getSupervisor() {

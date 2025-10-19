@@ -22,8 +22,6 @@ public class Database {
 	private final DatabaseMap<Student> students = new DatabaseMap<>();
 	private final DatabaseMap<Project> projects = new DatabaseMap<>();
 	private final DatabaseMap<Group> groups = new DatabaseMap<>();
-	//private final DatabaseMap<GroupMessage> groupsMessages = new DatabaseMap<>();
-	//private final DatabaseMap<PrivateMessage> privateMessages = new DatabaseMap<>();
 
 	// getters & setters
 
