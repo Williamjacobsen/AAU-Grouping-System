@@ -1,2 +1,7 @@
 1. Refactor (make different files, maybe use more OOP concepts).
-2. Input validation.
+2. Make it sorted.
+3. Update unread count.
+4. Bug fix: UI max scale if message is too long.
+5. Fix: map over students to check if they are a student instead. 
+6. Make it start at the bottom of the messages so user dont have to scoll.
+7. Input validation.
