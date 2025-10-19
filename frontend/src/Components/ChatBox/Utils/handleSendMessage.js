@@ -7,7 +7,6 @@ const handleSendMessage = async (
   setMessageInput,
   chatSystem,
   setMessagesByRoom,
-	students,
 ) => {
   const content = messageInput.trim();
   if (!content || !selectedChatRoom) return;

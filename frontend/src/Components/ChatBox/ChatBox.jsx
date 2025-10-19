@@ -10,6 +10,7 @@ import Header from "./UI/Header";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
+  const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({});
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [messageInput, setMessageInput] = useState("");
@@ -83,6 +84,7 @@ export default function ChatBox() {
               setMessageInput={setMessageInput}
               chatSystem={chatSystem}
               setMessagesByRoom={setMessagesByRoom}
+							students={students}
             />
           </div>
         </div>
