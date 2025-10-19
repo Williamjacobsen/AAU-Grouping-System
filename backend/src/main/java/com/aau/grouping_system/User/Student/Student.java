@@ -3,7 +3,7 @@ package com.aau.grouping_system.User.Student;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseReferences;
+import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.Session.Session;
 
 public class Student extends User {
@@ -12,7 +12,7 @@ public class Student extends User {
 
 	// constructors
 
-	public Student(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseReferences parentReferences,
+	public Student(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
 			String email, String passwordHash, String name, Session session) {
 		super(parentMap, parentReferences, email, passwordHash, name);
 		this.session = session;

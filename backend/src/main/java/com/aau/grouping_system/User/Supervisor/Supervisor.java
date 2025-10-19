@@ -2,7 +2,7 @@ package com.aau.grouping_system.User.Supervisor;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseReferences;
+import com.aau.grouping_system.Database.DatabaseIdList;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
@@ -12,7 +12,7 @@ public class Supervisor extends User {
 
 	// constructors
 
-	public Supervisor(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseReferences parentReferences,
+	public Supervisor(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
 			String email, String passwordHash, String name, Session session) {
 		super(parentMap, parentReferences, email, passwordHash, name);
 		this.session = session;

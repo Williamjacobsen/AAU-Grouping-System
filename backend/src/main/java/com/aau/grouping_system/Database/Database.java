@@ -69,5 +69,13 @@ public class Database {
 		Student st4 = new Student(students, s1.students, "Student4@example.com", "PasswordHash4", "Student4", s1);
 		Student st5 = new Student(students, s2.students, "Student5@example.com", "PasswordHash5", "Student5", s2);
 		Student st6 = new Student(students, s2.students, "Student6@example.com", "PasswordHash6", "Student6", s2);
+
+		Project p0 = new Project(projects, s0.projects, "Project name 0", "Project description 0");
+		Project p1 = new Project(projects, s0.projects, "Project name 1", "Project description 1");
+		Project p2 = new Project(projects, s0.projects, "Project name 2", "Project description 2");
+		Project p3 = new Project(projects, s0.projects, "Project name 3", "Project description 3");
+		Project p4 = new Project(projects, s1.projects, "Project name 4", "Project description 4");
+		Project p5 = new Project(projects, s1.projects, "Project name 5", "Project description 5");
+
 	}
 }
