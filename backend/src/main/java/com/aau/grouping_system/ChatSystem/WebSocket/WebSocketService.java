@@ -49,7 +49,7 @@ public class WebSocketService {
 	}
 
 	public void sendGroupMessage(String groupId, Message message, Principal principal) {
-		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message);
+		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message, groupMessages);
 
 		ws.convertAndSend("/group/" + groupId + "/messages", formattedMessage);
 
@@ -59,7 +59,7 @@ public class WebSocketService {
 	public void sendPrivateMessage(Message message, Principal principal) {
 		String key = getConversationKey(message.sender(), message.target());
 
-		MessageDatabaseFormat formattedMessage = addToDatabase(key, message);
+		MessageDatabaseFormat formattedMessage = addToDatabase(key, message, privateMessages);
 
 		ws.convertAndSendToUser(
 				message.target(),
@@ -76,8 +76,8 @@ public class WebSocketService {
 		sendAckToUser(principal, null, message.target(), message.clientMessageId());
 	}
 
-	private MessageDatabaseFormat addToDatabase(String key, Message message) {
-		Deque<MessageDatabaseFormat> deque = groupMessages.computeIfAbsent(key, _ -> new ConcurrentLinkedDeque<>());
+	private MessageDatabaseFormat addToDatabase(String key, Message message, ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> database) {
+		Deque<MessageDatabaseFormat> deque = database.computeIfAbsent(key, _ -> new ConcurrentLinkedDeque<>());
 
 		MessageDatabaseFormat formattedMessage = new MessageDatabaseFormat(
 				deque.size(),
