@@ -1,4 +1,3 @@
-1. Make it work for private messages too.
-2. Alert if a message failed to send.
-3. Refactor (make different files, maybe use more OOP concepts).
-4. Input validation.
+1. Alert if a message failed to send.
+2. Refactor (make different files, maybe use more OOP concepts).
+3. Input validation.
