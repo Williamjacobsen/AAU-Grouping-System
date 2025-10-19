@@ -1,4 +1,4 @@
-package com.aau.grouping_system.ChatSystem;
+package com.aau.grouping_system.Config;
 
 import java.util.Map;
 
