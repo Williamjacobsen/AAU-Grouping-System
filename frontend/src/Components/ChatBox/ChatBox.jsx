@@ -194,7 +194,8 @@ export default function ChatBox() {
       await messaging.current.send(destination, payload);
     } catch (e) {
       console.error("Failed to send:", e);
-      // TODO: undo if failed
+			alert("Failed to send your message. Please check your connection and try again.");
+			setMessagesByRoom({});
     }
   };
 

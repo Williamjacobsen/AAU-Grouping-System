@@ -1,3 +1,2 @@
-1. Alert if a message failed to send.
-2. Refactor (make different files, maybe use more OOP concepts).
-3. Input validation.
+1. Refactor (make different files, maybe use more OOP concepts).
+2. Input validation.
