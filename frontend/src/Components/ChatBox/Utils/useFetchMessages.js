@@ -1,10 +1,11 @@
 import { useEffect } from "react";
+import isDirectRoom from "./isDirectRoom";
 
 function useFetchMessages(setMessagesByRoom, selectedChatRoom, username) {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const isDirect = selectedChatRoom.startsWith("student"); // TODO: improve this check
+        const isDirect = isDirectRoom(selectedChatRoom); 
         const url = isDirect
           ? `http://localhost:8080/private/${username}/${selectedChatRoom}/messages/get/all`
           : `http://localhost:8080/group/${selectedChatRoom}/messages/get/all`;

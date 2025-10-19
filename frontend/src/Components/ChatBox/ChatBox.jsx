@@ -54,6 +54,8 @@ export default function ChatBox() {
             backgroundColor: "#f9fafb",
             boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
             overflow: "hidden",
+            display: "flex",
+            flexDirection: "column",
           }}
         >
           <Header setShowChatBox={setShowChatBox} />
@@ -61,9 +63,11 @@ export default function ChatBox() {
             style={{
               backgroundColor: "#f9fafb",
               width: "100%",
+              flex: 1,
               height: "93%",
               position: "relative",
               display: "flex",
+              overflow: "hidden",
             }}
           >
             <Sidebar

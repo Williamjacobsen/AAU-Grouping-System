@@ -6,6 +6,7 @@ export default function InputField({
   username,
   chatSystem,
   setMessagesByRoom,
+	students
 }) {
   return (
     <div
@@ -35,7 +36,8 @@ export default function InputField({
               username,
               setMessageInput,
               chatSystem,
-              setMessagesByRoom
+              setMessagesByRoom,
+							students
             );
           }
         }}
@@ -68,7 +70,8 @@ export default function InputField({
             username,
             setMessageInput,
             chatSystem,
-            setMessagesByRoom
+            setMessagesByRoom,
+						students
           )
         }
         style={{

@@ -11,7 +11,8 @@ export default function ChatArea({
   messageInput,
   setMessageInput,
 	chatSystem,
-	setMessagesByRoom
+	setMessagesByRoom,
+	students
 }) {
   return (
     <div
@@ -32,6 +33,7 @@ export default function ChatArea({
             username={username}
             chatSystem={chatSystem}
             setMessagesByRoom={setMessagesByRoom}
+						students={students}
           />
         </>
       ) : (

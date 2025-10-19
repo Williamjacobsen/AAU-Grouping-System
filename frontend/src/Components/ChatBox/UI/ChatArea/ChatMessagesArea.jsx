@@ -1,4 +1,14 @@
+import { useRef, useEffect } from "react";
+
 export default function ChatMessagesArea({ roomMessages, username }) {
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [roomMessages]);
+
   return (
     <div
       style={{
@@ -8,6 +18,7 @@ export default function ChatMessagesArea({ roomMessages, username }) {
         overflowY: "auto",
         padding: "1.5rem",
         backgroundColor: "#f9fafb",
+        wordBreak: "break-word",
       }}
     >
       {roomMessages.map((message) => (
@@ -68,6 +79,7 @@ export default function ChatMessagesArea({ roomMessages, username }) {
           </div>
         </div>
       ))}
+      <div ref={messagesEndRef} />
     </div>
   );
 }

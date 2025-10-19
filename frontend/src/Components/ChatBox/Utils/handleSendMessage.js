@@ -1,15 +1,18 @@
+import isDirectRoom from "./isDirectRoom";
+
 const handleSendMessage = async (
   messageInput,
   selectedChatRoom,
   username,
   setMessageInput,
   chatSystem,
-  setMessagesByRoom
+  setMessagesByRoom,
+	students,
 ) => {
   const content = messageInput.trim();
   if (!content || !selectedChatRoom) return;
 
-  const isDirect = selectedChatRoom.startsWith("student"); // TODO
+  const isDirect = isDirectRoom(selectedChatRoom);
   const destination = isDirect
     ? "/private/send"
     : `/group/${selectedChatRoom}/send`;
