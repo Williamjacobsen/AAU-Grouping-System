@@ -1,5 +1,4 @@
-1. Load all messages for a chatroom.
-2. Show messages loaded.
-3. On send, add to messages.
-4. Make sure, that the user is subscribed to all chatrooms.
-5. Alert if a message failed to send.
+1. Make it work for private messages too.
+2. Alert if a message failed to send.
+3. Refactor (make different files, maybe use more OOP concepts).
+4. Input validation.

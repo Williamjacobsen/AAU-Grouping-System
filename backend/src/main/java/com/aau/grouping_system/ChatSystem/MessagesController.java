@@ -15,8 +15,15 @@ public class MessagesController {
 	}
 
 	@GetMapping("/group/{groupId}/messages/get/all")
-	public Deque<WebSocketController.groupMessage> getGroupMessage(@PathVariable String groupId) {
+	public Deque<WebSocketController.MessageDatabaseFormat> getGroupMessage(@PathVariable String groupId) {
 		return webSocketController.groupMessages.get(groupId);
 	}
 
+	@GetMapping("/private/{user1}/{user2}/messages/get/all")
+	public Deque<WebSocketController.MessageDatabaseFormat> getPrivateMessages(
+			@PathVariable String user1, 
+			@PathVariable String user2) {
+		String conversationKey = WebSocketController.getConversationKey(user1, user2);
+		return webSocketController.privateMessages.get(conversationKey);
+	}
 }

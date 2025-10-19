@@ -108,9 +108,12 @@ export default function ChatBox() {
   useEffect(() => {
     const fetchMessages = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/group/${selectedChatRoom}/messages/get/all`
-        );
+        const isDirect = selectedChatRoom.startsWith("student"); // TODO: improve this check
+        const url = isDirect
+          ? `http://localhost:8080/private/${username}/${selectedChatRoom}/messages/get/all`
+          : `http://localhost:8080/group/${selectedChatRoom}/messages/get/all`;
+
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         setMessagesByRoom((prev) => ({
@@ -135,29 +138,29 @@ export default function ChatBox() {
 
     messaging.current.connect(() => {
       chatRooms.forEach((roomName) => {
-        messaging.current.subscribe(`/group/${roomName}/messages`, (message) => {
-          console.log(`Received message in group ${roomName}:`, message);
+        messaging.current.subscribe(
+          `/group/${roomName}/messages`,
+          (message) => {
+            console.log(`Received message in group ${roomName}:`, message);
 
-          setMessagesByRoom((prev) => {
-            const prevMessages = prev[roomName] ?? [];
-            return {
-              ...prev,
-              [roomName]: [...prevMessages, message],
-            };
-          });
-        });
+            setMessagesByRoom((prev) => {
+              const prevMessages = prev[roomName] ?? [];
+              return {
+                ...prev,
+                [roomName]: [...prevMessages, message],
+              };
+            });
+          }
+        );
       });
 
       messaging.current.subscribe("/user/private/reply", (message) => {
         console.log("Private message:", message);
 
-        const from = message.sender || "unknown";
+        const conversationKey = message.sender === username ? message.target : message.sender;
         setMessagesByRoom((prev) => {
-          const prevMessages = prev[from] ?? [];
-          return {
-            ...prev,
-            [from]: [...prevMessages, message],
-          };
+          const prevMessages = prev[conversationKey] ?? [];
+          return { ...prev, [conversationKey]: [...prevMessages, message] };
         });
       });
     });
@@ -174,17 +177,17 @@ export default function ChatBox() {
     const content = messageInput.trim();
     if (!content || !selectedChatRoom) return;
 
-    const direct = selectedChatRoom.startsWith("student"); // TODO
-    const destination = direct
+    const isDirect = selectedChatRoom.startsWith("student"); // TODO
+    const destination = isDirect
       ? "/private/send"
       : `/group/${selectedChatRoom}/send`;
-    const payload = direct
+    const payload = isDirect
       ? { content, sender: username, target: selectedChatRoom }
       : { content, sender: username };
 
-		// no need to add the message to the messages state,
-		// the client is subscribed to a websocket for this chat room,
-		// so the subscription, adds it.
+    // no need to add the message to the messages state,
+    // the client is subscribed to a websocket for this chat room,
+    // so the subscription, adds it.
     setMessageInput("");
 
     try {
