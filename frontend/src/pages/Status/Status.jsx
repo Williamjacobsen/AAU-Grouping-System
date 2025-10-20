@@ -1,18 +1,20 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 
 import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../utils/useGetSessionStudents";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
+import useStudentColumns from "./useStudentColumns";
 
 export default function Status() {
 
 	const { id: sessionId } = useParams();
 
-	const { isloading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
+	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
+	const { selectedColumns, ColumnsSelector } = useStudentColumns();
 
 	const visibleStudents = useMemo(() => {
 
@@ -35,7 +37,8 @@ export default function Status() {
 		<>
 			<SearchFilterInput/>
 			<SortingDropdown />
-			<StudentTable students={visibleStudents}/>
+			<ColumnsSelector />
+			<StudentTable students={visibleStudents} columnDefs={selectedColumns} />
 		</>
-	) 
+	);
 }

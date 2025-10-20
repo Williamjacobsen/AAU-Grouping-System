@@ -1,24 +1,33 @@
 import React, { useMemo, memo } from "react";
 
-const StudentTable = memo(({ students }) => {
 
-	const columns = useMemo(() => {
-		
-		if (!students || students.length === 0) return null;
-		
+const StudentTable = memo(({ students, columnDefs }) => {
+
+  const columns = useMemo(() => {
+    if (!students || students.length === 0) return null;
+
+    // If columnDefs is provided (array of { label, accessor }), use it.
+    if (columnDefs && Array.isArray(columnDefs) && columnDefs.length > 0) {
+      return columnDefs.map(def => ({
+        name: def.label ?? def.name,
+        rows: students.map(def.accessor)
+      }));
+    }
+
+    // Default columns
     return [
       createColumn("Name", students.map(student => student.name)),
       createColumn("Group", students.map(student => student.group?.number)),
       createColumn("Group project", students.map(student => student.group?.project))
-		];
-		
-		function createColumn(columnName, values) {
-			return {
-				name: columnName,
-				rows: values
-			};
-		}
-  }, [students]);
+    ];
+
+    function createColumn(columnName, values) {
+      return {
+        name: columnName,
+        rows: values
+      };
+    }
+  }, [students, columnDefs]);
 
   if (!columns || columns.length === 0) {
     return <div>List of students is empty.</div>;
