@@ -7,7 +7,7 @@ import ProjectsTable from "./ProjectsTable";
 export default function Project() {
 
 	const { id: sessionId } = useParams(); // Get session ID from URL
-	const { isloading: isLoadingProjects, projects: allProjects } = useGetSessionProjects(sessionId); // Get projects from backend
+	const { isloading: isLoadingProjects, projects: allProjects } = useGetSessionProjects(sessionId); // hook, fetch projects from backend
 	if (isLoadingProjects) {
     return <>Fetching projects from database...</>;
   }
