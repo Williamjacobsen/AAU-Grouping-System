@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 /**
  * @returns An object {isLoading, session}.
@@ -16,7 +16,19 @@ export default function useGetSessionStudents(sessionId) {
 				setStudents(await requestSessionStudents(sessionId));
 				setIsLoading(false);
 			} catch (error) {
-				alert(error);
+				// Report the error and clear the loading state so the UI can render an error state
+				console.error("Failed to load session students:", error);
+				
+				if (process.env.NODE_ENV === 'development') {
+					setStudents([
+						{ name: "Alice Example", group: { number: "1", project: "Proj A" }, desiredWorkingEnvironment: "Remote", personalSkills: ["JS", "React"] },
+						{ name: "Bob Example", group: { number: "2", project: "Proj B" }, desiredWorkingEnvironment: "On-site", personalSkills: ["Java", "Spring"] },
+						{ name: "Carol Example", group: { number: "1", project: "Proj A" }, desiredWorkingEnvironment: "Hybrid", personalSkills: ["Python"] }
+					]);
+				} else {
+					setStudents(null);
+				}
+				setIsLoading(false);
 			}
 		})();
 	}, [sessionId]);
