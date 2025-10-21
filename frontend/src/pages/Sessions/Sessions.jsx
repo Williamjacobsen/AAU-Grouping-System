@@ -37,7 +37,7 @@ export default function Sessions() {
 	};
 
 	const openSession = (sessionId) => {
-		navigate(`/status/${sessionId}`);
+		navigate(`/session/${sessionId}/status`);
 	};
 
 	const editSetup = (sessionId) => {

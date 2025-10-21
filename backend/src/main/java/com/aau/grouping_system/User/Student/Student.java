@@ -3,22 +3,28 @@ package com.aau.grouping_system.User.Student;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildList;
 import com.aau.grouping_system.Session.Session;
 
 public class Student extends User {
 
-	Session session;
+	private String sessionId;
 
 	// constructors
 
-	public Student(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+	public Student(Database db, DatabaseItemChildList parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
-		super(parentMap, parentReferences, email, passwordHash, name);
-		this.session = session;
+		super(db, parentItemChildIdList, email, passwordHash, name);
+		this.sessionId = session.getId();
 	}
 
 	// abstract method overrides
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getStudents();
+	}
 
 	@Override
 	public Role getRole() {

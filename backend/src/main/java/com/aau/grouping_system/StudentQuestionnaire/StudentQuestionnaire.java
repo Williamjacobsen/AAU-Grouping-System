@@ -1,53 +1,103 @@
 package com.aau.grouping_system.StudentQuestionnaire;
 
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StudentQuestionnaire {
 
-    private String studentName;
-    private int previousSessionTeammates;
-    private int projectPriorities;
-    private int desiredGroupMembers;
-    private int desiredGroupSize;
-    private String workingEnvironment;
-    private String specialNeeds;
-    private List<String> personalSkills;
-    private List<String> academicInterests;
-    private String otherComments;
+	private String studentName;
+	private int previousSessionTeammates;
+	private int projectPriorities;
+	private int desiredGroupMembers;
+	private int desiredGroupSize;
+	private String workingEnvironment;
+	private String specialNeeds;
+	private CopyOnWriteArrayList<String> personalSkills;
+	private CopyOnWriteArrayList<String> academicInterests;
+	private String otherComments;
 
-    public StudentQuestionnaire(String studentName) {
-        this.studentName = studentName;
-    }
+	public StudentQuestionnaire(String studentName) {
+		this.studentName = studentName;
+	}
 
-    // Getters and setters
-    public String getStudentName() { return studentName; }
-    public void setStudentName(String studentName) { this.studentName = studentName; }
+	// Getters and setters
 
-    public int getPreviousSessionTeammates() { return previousSessionTeammates; }
-    public void setPreviousSessionTeammates(int n) { this.previousSessionTeammates = n; }
+	public String getStudentName() {
+		return studentName;
+	}
 
-    public int getProjectPriorities() { return projectPriorities; }
-    public void setProjectPriorities(int n) { this.projectPriorities = n; }
+	public void setStudentName(String studentName) {
+		this.studentName = studentName;
+	}
 
-    public int getDesiredGroupMembers() { return desiredGroupMembers; }
-    public void setDesiredGroupMembers(int n) { this.desiredGroupMembers = n; }
+	public int getPreviousSessionTeammates() {
+		return previousSessionTeammates;
+	}
 
-    public int getDesiredGroupSize() { return desiredGroupSize; }
-    public void setDesiredGroupSize(int n) { this.desiredGroupSize = n; }
+	public void setPreviousSessionTeammates(int n) {
+		this.previousSessionTeammates = n;
+	}
 
-    public String getWorkingEnvironment() { return workingEnvironment; }
-    public void setWorkingEnvironment(String s) { this.workingEnvironment = s; }
+	public int getProjectPriorities() {
+		return projectPriorities;
+	}
 
-    public String getSpecialNeeds() { return specialNeeds; }
-    public void setSpecialNeeds(String s) { this.specialNeeds = s; }
+	public void setProjectPriorities(int n) {
+		this.projectPriorities = n;
+	}
 
-    public List<String> getPersonalSkills() { return personalSkills; }
-    public void setPersonalSkills(List<String> skills) { this.personalSkills = skills; }
+	public int getDesiredGroupMembers() {
+		return desiredGroupMembers;
+	}
 
-    public List<String> getAcademicInterests() { return academicInterests; }
-    public void setAcademicInterests(List<String> interests) { this.academicInterests = interests; }
+	public void setDesiredGroupMembers(int n) {
+		this.desiredGroupMembers = n;
+	}
 
-    public String getOtherComments() { return otherComments; }
-    public void setOtherComments(String s) { this.otherComments = s; }
+	public int getDesiredGroupSize() {
+		return desiredGroupSize;
+	}
+
+	public void setDesiredGroupSize(int n) {
+		this.desiredGroupSize = n;
+	}
+
+	public String getWorkingEnvironment() {
+		return workingEnvironment;
+	}
+
+	public void setWorkingEnvironment(String s) {
+		this.workingEnvironment = s;
+	}
+
+	public String getSpecialNeeds() {
+		return specialNeeds;
+	}
+
+	public void setSpecialNeeds(String s) {
+		this.specialNeeds = s;
+	}
+
+	public CopyOnWriteArrayList<String> getPersonalSkills() {
+		return personalSkills;
+	}
+
+	public void setPersonalSkills(CopyOnWriteArrayList<String> skills) {
+		this.personalSkills = skills;
+	}
+
+	public CopyOnWriteArrayList<String> getAcademicInterests() {
+		return academicInterests;
+	}
+
+	public void setAcademicInterests(CopyOnWriteArrayList<String> interests) {
+		this.academicInterests = interests;
+	}
+
+	public String getOtherComments() {
+		return otherComments;
+	}
+
+	public void setOtherComments(String s) {
+		this.otherComments = s;
+	}
 }
-

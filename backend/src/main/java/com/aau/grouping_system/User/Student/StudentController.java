@@ -28,7 +28,7 @@ public class StudentController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/getSessionStudents/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable Integer sessionId,
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable String sessionId,
 			HttpServletRequest request) {
 
 		Session session = db.getSessions().getItem(sessionId);
@@ -36,7 +36,7 @@ public class StudentController {
 			return ResponseEntity.notFound().build();
 		}
 
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.students.getItems();
+		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.students.getItems(db);
 
 		return ResponseEntity.ok(students);
 	}

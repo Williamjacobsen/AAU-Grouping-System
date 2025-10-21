@@ -61,10 +61,9 @@ public class SessionController {
 		CopyOnWriteArrayList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
-	
 
 	@GetMapping("/{sessionId}")
-	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
 
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
@@ -84,7 +83,7 @@ public class SessionController {
 	}
 
 	@DeleteMapping("/{sessionId}")
-	public ResponseEntity<String> deleteSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -99,7 +98,7 @@ public class SessionController {
 	}
 
 	@PostMapping("/{sessionId}/open")
-	public ResponseEntity<String> openSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+	public ResponseEntity<String> openSession(@PathVariable String sessionId, HttpServletRequest request) {
 		Coordinator coordinator = getCurrentCoordinator(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

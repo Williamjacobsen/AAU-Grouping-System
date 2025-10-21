@@ -1,6 +1,5 @@
 package com.aau.grouping_system.User.Coordinator;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -53,10 +52,10 @@ public class CoordinatorController {
 		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
 		if (user == null) {
 			return ResponseEntity
-			.status(HttpStatus.UNAUTHORIZED)
-			.body("Not logged in");
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
 		}
-		Integer coordinatorId = user.getId();
+		String coordinatorId = user.getId();
 		String newEmail = body.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
@@ -78,10 +77,10 @@ public class CoordinatorController {
 		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
 		if (user == null) {
 			return ResponseEntity
-			.status(HttpStatus.UNAUTHORIZED)
-			.body("Not logged in");
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
 		}
-		Integer coordinatorId = user.getId();
+		String coordinatorId = user.getId();
 		String newPassword = body.get("newPassword");
 
 		service.modifyPassword(newPassword, coordinatorId);
