@@ -5,11 +5,6 @@ import "./Header.css";
 
 export default function Header() {
 
-	// TODO: Add proper hooks
-	const latestSession = {};
-	latestSession.name = "testSessionName"; 
-	latestSession.id = "0"; 
-
 	return (
 		<>
 			<div className="header sticky">
@@ -22,17 +17,6 @@ export default function Header() {
 					</li>
 					<li>
 						<Link to="/sessions">Sessions</Link>
-					</li>
-				</ul>
-				<ul>
-					<li>
-						<Link to={`/session/${latestSession.id}`}>Status</Link>
-					</li>
-					<li>
-						<Link to={`/session/${latestSession.id}/projects`}>Projects</Link>
-					</li>
-					<li>
-						<b>Session</b>: {latestSession.name}
 					</li>
 				</ul>
 			</div>

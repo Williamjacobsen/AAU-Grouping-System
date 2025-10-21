@@ -8,22 +8,25 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
-	private String coordinatorId;
 	public DatabaseItemChildList supervisors;
 	public DatabaseItemChildList students;
 	public DatabaseItemChildList projects;
 	public DatabaseItemChildList groups;
 
+	public String coordinatorId;
+	public String name;
+
 	// constructor
 
 	public Session(Database db, DatabaseItemChildList parentItemChildIdList,
-			Coordinator coordinator) {
+			Coordinator coordinator, String name) {
 		super(db, parentItemChildIdList);
 		this.coordinatorId = coordinator.getId();
 		this.supervisors = new DatabaseItemChildList(db.getSupervisors(), this);
 		this.students = new DatabaseItemChildList(db.getStudents(), this);
 		this.projects = new DatabaseItemChildList(db.getProjects(), this);
 		this.groups = new DatabaseItemChildList(db.getGroups(), this);
+		this.name = name;
 	}
 
 	// abstract method overrides
@@ -39,8 +42,12 @@ public class Session extends DatabaseItem {
 		return coordinatorId;
 	}
 
-	public void setCoordinator(String coordinatorId) {
-		this.coordinatorId = coordinatorId;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public DatabaseItemChildList getSupervisors() {

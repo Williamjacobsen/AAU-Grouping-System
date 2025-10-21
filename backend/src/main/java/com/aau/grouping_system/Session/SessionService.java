@@ -17,7 +17,7 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db, coordinator.sessions, coordinator);
+		return SessionFactory.create(db, coordinator.sessions, coordinator, sessionName);
 	}
 
 	public Session getSession(String sessionId) {
@@ -41,7 +41,7 @@ public class SessionService {
 
 	public boolean hasPermission(String sessionId, Coordinator coordinator) {
 		Session session = db.getSessions().getItem(sessionId);
-		return session != null && session.getCoordinatorId().equals(coordinator);
+		return session != null && session.getCoordinatorId().equals(coordinator.getId());
 	}
 
 	public boolean isAuthorized(Coordinator coordinator, String sessionId) {

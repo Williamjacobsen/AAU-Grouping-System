@@ -42,9 +42,9 @@ public class DatabaseTest {
 				.add(coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1"));
 
 		// Add 3 sessions
-		sessions.add(new Session(db, coordinators.get(0).sessions, coordinators.get(0)));
-		sessions.add(new Session(db, coordinators.get(0).sessions, coordinators.get(0)));
-		sessions.add(new Session(db, coordinators.get(1).sessions, coordinators.get(1)));
+		sessions.add(new Session(db, coordinators.get(0).sessions, coordinators.get(0), "sessionName0"));
+		sessions.add(new Session(db, coordinators.get(0).sessions, coordinators.get(0), "sessionName1"));
+		sessions.add(new Session(db, coordinators.get(1).sessions, coordinators.get(1), "sessionName2"));
 
 		// Add 6 students
 		students.add(new Student(db, sessions.get(0).students, "studentEmail0", "studentPassword0", "studentName0",

@@ -6,7 +6,7 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class SessionFactory {
 	public static Session create(Database db, DatabaseItemChildList parentReferences,
-			Coordinator coordinator) {
-		return new Session(db, parentReferences, coordinator);
+			Coordinator coordinator, String name) {
+		return new Session(db, parentReferences, coordinator, name);
 	}
 }

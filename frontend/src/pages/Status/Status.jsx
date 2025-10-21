@@ -10,7 +10,7 @@ import useStudentFiltering from "./useStudentFiltering";
 
 export default function Status() {
 
-	const { id: sessionId } = useParams();
+	const { sessionId } = useParams();
 	const { user, loading: loadingAuth } = useAuth();
 
 	const { isloading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
