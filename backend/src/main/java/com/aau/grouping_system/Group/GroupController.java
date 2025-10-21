@@ -53,7 +53,9 @@ public class GroupController {
 			return ResponseEntity.notFound().build();
 		}
 
-		return ResponseEntity.ok(group.getJoinRequests());
+		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
+
+		return ResponseEntity.ok(joinRequestStudents);
 	}
 
 	@PostMapping("/{groupId}/request-join/{studentId}")

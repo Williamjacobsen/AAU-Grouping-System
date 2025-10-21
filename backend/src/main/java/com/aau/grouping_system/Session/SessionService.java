@@ -27,7 +27,7 @@ public class SessionService {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
-		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems();
+		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems(db);
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
@@ -35,13 +35,13 @@ public class SessionService {
 			return false;
 		}
 
-		db.getSessions().remove(sessionId);
+		db.getSessions().remove(db, sessionId);
 		return true;
 	}
 
 	public boolean hasPermission(String sessionId, Coordinator coordinator) {
 		Session session = db.getSessions().getItem(sessionId);
-		return session != null && session.getCoordinator().equals(coordinator);
+		return session != null && session.getCoordinatorId().equals(coordinator);
 	}
 
 	public boolean isAuthorized(Coordinator coordinator, String sessionId) {

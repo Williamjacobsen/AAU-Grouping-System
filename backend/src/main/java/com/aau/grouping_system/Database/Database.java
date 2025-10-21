@@ -24,6 +24,10 @@ public class Database {
 		return data;
 	}
 
+	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {
+		return data.getMap(id);
+	}
+
 	public DatabaseMap<Coordinator> getCoordinators() {
 		return data.getCoordinators();
 	}

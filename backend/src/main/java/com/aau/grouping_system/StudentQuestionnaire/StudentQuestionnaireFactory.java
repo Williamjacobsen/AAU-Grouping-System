@@ -1,6 +1,6 @@
 package com.aau.grouping_system.StudentQuestionnaire;
 
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class StudentQuestionnaireFactory {
 
@@ -12,8 +12,8 @@ public class StudentQuestionnaireFactory {
 			int desiredGroupSize,
 			String workingEnvironment,
 			String specialNeeds,
-			List<String> personalSkills,
-			List<String> academicInterests,
+			CopyOnWriteArrayList<String> personalSkills,
+			CopyOnWriteArrayList<String> academicInterests,
 			String otherComments) {
 		StudentQuestionnaire questionnaire = new StudentQuestionnaire(studentName);
 		questionnaire.setPreviousSessionTeammates(previousSessionTeammates);

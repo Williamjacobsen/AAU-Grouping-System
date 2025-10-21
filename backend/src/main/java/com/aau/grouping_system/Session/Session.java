@@ -3,27 +3,27 @@ package com.aau.grouping_system.Session;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.DatabaseItemChildList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
-	private Coordinator coordinator;
-	public DatabaseIdList supervisors;
-	public DatabaseIdList students;
-	public DatabaseIdList projects;
-	public DatabaseIdList groups;
+	private String coordinatorId;
+	public DatabaseItemChildList supervisors;
+	public DatabaseItemChildList students;
+	public DatabaseItemChildList projects;
+	public DatabaseItemChildList groups;
 
 	// constructor
 
-	public Session(Database db, DatabaseIdList parentItemChildIdList,
+	public Session(Database db, DatabaseItemChildList parentItemChildIdList,
 			Coordinator coordinator) {
 		super(db, parentItemChildIdList);
-		this.coordinator = coordinator;
-		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
-		this.students = new DatabaseIdList(db.getStudents(), this);
-		this.projects = new DatabaseIdList(db.getProjects(), this);
-		this.groups = new DatabaseIdList(db.getGroups(), this);
+		this.coordinatorId = coordinator.getId();
+		this.supervisors = new DatabaseItemChildList(db.getSupervisors(), this);
+		this.students = new DatabaseItemChildList(db.getStudents(), this);
+		this.projects = new DatabaseItemChildList(db.getProjects(), this);
+		this.groups = new DatabaseItemChildList(db.getGroups(), this);
 	}
 
 	// abstract method overrides
@@ -35,43 +35,43 @@ public class Session extends DatabaseItem {
 
 	// getters & setters
 
-	public Coordinator getCoordinator() {
-		return coordinator;
+	public String getCoordinatorId() {
+		return coordinatorId;
 	}
 
-	public void setCoordinator(Coordinator coordinator) {
-		this.coordinator = coordinator;
+	public void setCoordinator(String coordinatorId) {
+		this.coordinatorId = coordinatorId;
 	}
 
-	public DatabaseIdList getSupervisors() {
+	public DatabaseItemChildList getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(DatabaseIdList supervisors) {
+	public void setSupervisors(DatabaseItemChildList supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public DatabaseIdList getStudents() {
+	public DatabaseItemChildList getStudents() {
 		return students;
 	}
 
-	public void setStudents(DatabaseIdList students) {
+	public void setStudents(DatabaseItemChildList students) {
 		this.students = students;
 	}
 
-	public DatabaseIdList getProjects() {
+	public DatabaseItemChildList getProjects() {
 		return projects;
 	}
 
-	public void setProjects(DatabaseIdList projects) {
+	public void setProjects(DatabaseItemChildList projects) {
 		this.projects = projects;
 	}
 
-	public DatabaseIdList getGroups() {
+	public DatabaseItemChildList getGroups() {
 		return groups;
 	}
 
-	public void setGroups(DatabaseIdList groups) {
+	public void setGroups(DatabaseItemChildList groups) {
 		this.groups = groups;
 	}
 

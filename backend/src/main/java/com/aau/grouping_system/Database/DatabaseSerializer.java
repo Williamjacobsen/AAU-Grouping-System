@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Coordinator.CoordinatorService;
 import com.aau.grouping_system.User.Student.Student;
 
 import jakarta.annotation.PostConstruct;
@@ -13,12 +14,14 @@ import java.io.*;
 @Component
 public class DatabaseSerializer {
 
-	private static final String saveFileName = "saveFiles/databaseDataSaveFile.ser";
+	private static final String saveFileName = "databaseDataSaveFile.ser";
 
 	private final Database db;
+	private final CoordinatorService coordinatorService;
 
-	public DatabaseSerializer(Database db) {
+	public DatabaseSerializer(Database db, CoordinatorService coordinatorService) {
 		this.db = db;
+		this.coordinatorService = coordinatorService;
 	}
 
 	public void saveDatabase() {
@@ -63,30 +66,32 @@ public class DatabaseSerializer {
 	@SuppressWarnings("unused") // To suppress warnings about unused code.
 	private void fillDatabaseWithExampleData() {
 
-		Coordinator c0 = new Coordinator(db, null, "c0", "c0", "Coordinator0");
-		Coordinator c1 = new Coordinator(db, null, "c1", "c1", "Coordinator1");
-		Coordinator c2 = new Coordinator(db, null, "c2", "c2", "Coordinator2");
-		Coordinator c3 = new Coordinator(db, null, "c3", "c3", "Coordinator3");
+		Coordinator c1 = coordinatorService.addCoordinator("c1", "c1", "Coordinator 1");
+		Coordinator c2 = coordinatorService.addCoordinator("c2", "c2", "Coordinator 2");
+		Coordinator c3 = coordinatorService.addCoordinator("c3", "c3", "Coordinator 3");
+		Coordinator c4 = coordinatorService.addCoordinator("c4", "c4", "Coordinator 4");
 
-		Session s0 = new Session(db, c0.sessions, c0);
-		Session s1 = new Session(db, c0.sessions, c0);
+		Session s1 = new Session(db, c1.sessions, c1);
 		Session s2 = new Session(db, c1.sessions, c1);
+		Session s3 = new Session(db, c2.sessions, c2);
 
-		Student st0 = new Student(db, s0.students, "s0", "s0", "Student0", s0);
-		Student st1 = new Student(db, s0.students, "s1", "s2", "Student1", s0);
-		Student st2 = new Student(db, s0.students, "s2", "s2", "Student2", s0);
-		Student st3 = new Student(db, s1.students, "s3", "s3", "Student3", s1);
-		Student st4 = new Student(db, s1.students, "s4", "s4", "Student4", s1);
-		Student st5 = new Student(db, s2.students, "s5", "s5", "Student5", s2);
-		Student st6 = new Student(db, s2.students, "s6", "s6", "Student6", s2);
+		Student st1 = new Student(db, s1.students, "s1", "s2", "Student 1", s1);
+		Student st2 = new Student(db, s1.students, "s2", "s2", "Student 2", s1);
+		Student st3 = new Student(db, s1.students, "s3", "s3", "Student 3", s1);
+		Student st4 = new Student(db, s2.students, "s4", "s4", "Student 4", s2);
+		Student st5 = new Student(db, s2.students, "s5", "s5", "Student 5", s2);
+		Student st6 = new Student(db, s3.students, "s6", "s6", "Student 6", s3);
+		Student st7 = new Student(db, s3.students, "s7", "s7", "Student 7", s3);
 	}
 
 	@PostConstruct
 	public void init() throws FileNotFoundException, IOException, ClassNotFoundException {
-		System.out.println("Loading database...");
-		loadDatabase();
-		System.out.println("Saving database...");
-		saveDatabase();
+		// System.out.println("Loading database...");
+		// loadDatabase();
+		// System.out.println("Saving database...");
+		// saveDatabase();
+		fillDatabaseWithExampleData();
+
 		// TODO: remove this:
 		for (Session session : db.getData().getSessions().getAllItems().values()) {
 			System.out.println("session.getId = " + session.getId());

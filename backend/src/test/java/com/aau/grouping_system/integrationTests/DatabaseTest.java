@@ -36,8 +36,10 @@ public class DatabaseTest {
 		coordinatorService = new CoordinatorService(db, passwordEncoder);
 
 		// Add 2 coordinators
-		coordinators.add(coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorPassword0", "coordinatorName0"));
-		coordinators.add(coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1"));
+		coordinators
+				.add(coordinatorService.addCoordinator("coordinatorEmail0", "coordinatorPassword0", "coordinatorName0"));
+		coordinators
+				.add(coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1"));
 
 		// Add 3 sessions
 		sessions.add(new Session(db, coordinators.get(0).sessions, coordinators.get(0)));
@@ -45,12 +47,18 @@ public class DatabaseTest {
 		sessions.add(new Session(db, coordinators.get(1).sessions, coordinators.get(1)));
 
 		// Add 6 students
-		students.add(new Student(db, sessions.get(0).students, "studentEmail0", "studentPassword0", "studentName0", sessions.get(0)));
-		students.add(new Student(db, sessions.get(0).students, "studentEmail1", "studentPassword1", "studentName1", sessions.get(0)));
-		students.add(new Student(db, sessions.get(1).students, "studentEmail2", "studentPassword2", "studentName2", sessions.get(1)));
-		students.add(new Student(db, sessions.get(1).students, "studentEmail3", "studentPassword3", "studentName3", sessions.get(1)));
-		students.add(new Student(db, sessions.get(2).students, "studentEmail4", "studentPassword4", "studentName4", sessions.get(2)));
-		students.add(new Student(db, sessions.get(2).students, "studentEmail5", "studentPassword5", "studentName5", sessions.get(2)));
+		students.add(new Student(db, sessions.get(0).students, "studentEmail0", "studentPassword0", "studentName0",
+				sessions.get(0)));
+		students.add(new Student(db, sessions.get(0).students, "studentEmail1", "studentPassword1", "studentName1",
+				sessions.get(0)));
+		students.add(new Student(db, sessions.get(1).students, "studentEmail2", "studentPassword2", "studentName2",
+				sessions.get(1)));
+		students.add(new Student(db, sessions.get(1).students, "studentEmail3", "studentPassword3", "studentName3",
+				sessions.get(1)));
+		students.add(new Student(db, sessions.get(2).students, "studentEmail4", "studentPassword4", "studentName4",
+				sessions.get(2)));
+		students.add(new Student(db, sessions.get(2).students, "studentEmail5", "studentPassword5", "studentName5",
+				sessions.get(2)));
 	}
 
 	@Test
@@ -81,7 +89,7 @@ public class DatabaseTest {
 		assertEquals(6, db.getStudents().getAllItems().size());
 
 		// Remove the first coordinator
-		db.getCoordinators().remove(coordinators.get(0));
+		db.getCoordinators().remove(db, coordinators.get(0));
 
 		// After deletion
 		assertEquals(1, db.getCoordinators().getAllItems().size());

@@ -3,33 +3,32 @@ package com.aau.grouping_system.Group;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.DatabaseItemChildList;
 import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Group extends DatabaseItem {
 
-	private Supervisor supervisor;
-	private CopyOnWriteArrayList<Student> students;
-	private Project project;
+	private String supervisorId;
+	private CopyOnWriteArrayList<String> studentIds;
+	private String projectId;
 	private String groupEmail;
-	private CopyOnWriteArrayList<Student> joinRequests;
+	private CopyOnWriteArrayList<String> joinRequestStudentIds;
 	private int maxStudents;
 	private int maxRequests;
 
-	public Group(Database db, DatabaseIdList parentItemChildIdList,
+	public Group(Database db, DatabaseItemChildList parentItemChildIdList,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
 		super(db, parentItemChildIdList);
-		this.supervisor = supervisor;
-		this.project = project;
+		this.supervisorId = supervisor.getId();
+		this.projectId = project.getId();
 		this.groupEmail = groupEmail;
 		this.maxStudents = maxStudents;
 		this.maxRequests = maxRequests;
-		this.students = new CopyOnWriteArrayList<>();
-		this.joinRequests = new CopyOnWriteArrayList<>();
+		this.studentIds = new CopyOnWriteArrayList<>();
+		this.joinRequestStudentIds = new CopyOnWriteArrayList<>();
 	}
 
 	@Override
@@ -39,24 +38,24 @@ public class Group extends DatabaseItem {
 
 	// getters & setters
 
-	public Supervisor getSupervisor() {
-		return supervisor;
+	public String getSupervisorId() {
+		return supervisorId;
 	}
 
-	public void setSupervisor(Supervisor supervisor) {
-		this.supervisor = supervisor;
+	public void setSupervisorId(String supervisorId) {
+		this.supervisorId = supervisorId;
 	}
 
-	public CopyOnWriteArrayList<Student> getStudents() {
-		return students;
+	public CopyOnWriteArrayList<String> getStudentIds() {
+		return studentIds;
 	}
 
-	public Project getProject() {
-		return project;
+	public String getProjectId() {
+		return projectId;
 	}
 
-	public void setProject(Project project) {
-		this.project = project;
+	public void setProject(String projectId) {
+		this.projectId = projectId;
 	}
 
 	public String getGroupEmail() {
@@ -67,8 +66,8 @@ public class Group extends DatabaseItem {
 		this.groupEmail = groupEmail;
 	}
 
-	public CopyOnWriteArrayList<Student> getJoinRequests() {
-		return joinRequests;
+	public CopyOnWriteArrayList<String> getJoinRequestStudentIds() {
+		return joinRequestStudentIds;
 	}
 
 	public int getMaxStudents() {
