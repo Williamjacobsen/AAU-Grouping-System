@@ -1,12 +1,9 @@
 package com.aau.grouping_system.ChatSystem.Messages;
 
-import java.security.Principal;
 import java.util.Deque;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService;

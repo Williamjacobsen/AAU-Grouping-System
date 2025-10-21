@@ -1,8 +1,6 @@
 package com.aau.grouping_system.ChatSystem.Messages;
 
-import java.security.Principal;
 import java.util.Deque;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
