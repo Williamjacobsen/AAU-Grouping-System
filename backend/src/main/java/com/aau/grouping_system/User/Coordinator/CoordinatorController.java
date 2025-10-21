@@ -10,6 +10,8 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
@@ -45,11 +47,16 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> request) {
-		// todo: Credentials validation
+	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		String coordinatorId = request.get("coordinatorId");
-		String newEmail = request.get("newEmail");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
+		}
+		String coordinatorId = user.getId();
+		String newEmail = body.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
 			return ResponseEntity
@@ -65,11 +72,16 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> request) {
-		// todo: Credentials validation
+	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		String coordinatorId = request.get("coordinatorId");
-		String newPassword = request.get("newPassword");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
+		}
+		String coordinatorId = user.getId();
+		String newPassword = body.get("newPassword");
 
 		service.modifyPassword(newPassword, coordinatorId);
 

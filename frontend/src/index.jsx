@@ -7,9 +7,12 @@ import "./index.css";
 import NoPage from "./pages/NoPage/NoPage";
 import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
-import User from "./pages/User/User";
+import SignIn from "./pages/User/SignIn";
+import SignUp from "./pages/User/SignUp";
+import Profile from "./pages/User/Profile";
 import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
+import Projects from "./pages/Projects/Projects";
 
 export default function App() {
 	return (
@@ -18,9 +21,12 @@ export default function App() {
 				<Routes>
 					<Route path="/" element={<Header />}>
 						<Route index element={<About />} />
-						<Route path="/user" element={<User />} />
+						<Route path="/sign-in" element={<SignIn />} />
+						<Route path="/sign-up" element={<SignUp />} />
+						<Route path="/profile" element={<Profile />} />
 						<Route path="/sessions" element={<Sessions />}/>
-						<Route path="/session/:id" element={<Status />}/>
+						<Route path="/session/:id" element={<Status />} />
+						<Route path="/session/:id/projects" element={<Projects />}/>
 						<Route path="*" element={<NoPage />} />
 					</Route>
 				</Routes>
@@ -36,3 +42,7 @@ root.render(<App />);
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+
+
+					

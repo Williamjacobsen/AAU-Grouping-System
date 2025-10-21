@@ -18,7 +18,7 @@ export default function Header() {
 						<Link to="/">About</Link>
 					</li>
 					<li>
-						<Link to="/user">Profile</Link>
+						<Link to="/profile">Profile</Link>
 					</li>
 					<li>
 						<Link to="/sessions">Sessions</Link>
@@ -27,6 +27,9 @@ export default function Header() {
 				<ul>
 					<li>
 						<Link to={`/session/${latestSession.id}`}>Status</Link>
+					</li>
+					<li>
+						<Link to={`/session/${latestSession.id}/projects`}>Projects</Link>
 					</li>
 					<li>
 						<b>Session</b>: {latestSession.name}

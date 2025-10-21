@@ -6,18 +6,17 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseIdList;
 
 public class Project extends DatabaseItem {
-	// todo: Fjern "project" fra variabelnavne.
-	private String projectName;
+
+	private String name;
 	private String description;
-	private int projectId;
-	// todo: Tilføj user
+
+	// constructors
 
 	public Project(Database db, DatabaseIdList parentItemChildIdList,
-			String projectName, String description, int projectId) {
+			String name, String description) {
 		super(db, parentItemChildIdList);
-		this.projectName = projectName;
+		this.name = name;
 		this.description = description;
-		this.projectId = projectId;
 	}
 
 	@Override
@@ -25,13 +24,14 @@ public class Project extends DatabaseItem {
 		return db.getProjects();
 	}
 
-	// Getters and setters
-	public String getProjectName() {
-		return projectName;
+	// getters & setters
+
+	public String getName() {
+		return name;
 	}
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -40,13 +40,5 @@ public class Project extends DatabaseItem {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public int getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
 	}
 }

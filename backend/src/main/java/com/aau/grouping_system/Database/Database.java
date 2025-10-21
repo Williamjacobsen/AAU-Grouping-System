@@ -47,4 +47,5 @@ public class Database {
 	public DatabaseMap<Group> getGroups() {
 		return data.getGroups();
 	}
+
 }

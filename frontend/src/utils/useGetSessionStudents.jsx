@@ -24,7 +24,7 @@ export default function useGetSessionStudents(sessionId) {
 	async function requestSessionStudents(sessionId) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/student/${sessionId}`,
+				`http://localhost:8080/student/getSessionStudents/${sessionId}`,
 				{
 					method: "GET",
 					credentials: "include",

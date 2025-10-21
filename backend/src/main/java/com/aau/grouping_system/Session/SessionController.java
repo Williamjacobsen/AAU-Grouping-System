@@ -61,6 +61,7 @@ public class SessionController {
 		CopyOnWriteArrayList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
+	
 
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
