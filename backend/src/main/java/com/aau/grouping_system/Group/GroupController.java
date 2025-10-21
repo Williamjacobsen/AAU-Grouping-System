@@ -96,16 +96,6 @@ public class GroupController {
 		return ResponseEntity.ok(db.getGroups().getAllItems());
 	}
 
-	@PostMapping
-	public ResponseEntity<Group> createGroup(@RequestBody Group group) {
-		try {
-			db.getGroups().put(group);
-			return ResponseEntity.ok(group);
-		} catch (Exception e) {
-			return ResponseEntity.badRequest().build();
-		}
-	}
-
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(
 			@PathVariable String groupId,

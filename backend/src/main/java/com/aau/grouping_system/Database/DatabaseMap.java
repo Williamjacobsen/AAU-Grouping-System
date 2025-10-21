@@ -13,12 +13,6 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
 	// public methods
 
-	public void put(T item) {
-		String id = getNewId();
-		item.setId(id);
-		map.put(id, item);
-	}
-
 	public void remove(T item) {
 		item.removeChildren();
 		map.remove(item.getId());
@@ -27,6 +21,14 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 	public void remove(String id) {
 		T item = getItem(id);
 		remove(item);
+	}
+
+	// package-private methods
+
+	void put(T item) {
+		String id = getNewId();
+		item.setId(id);
+		map.put(id, item);
 	}
 
 	// private methods

@@ -1,7 +1,6 @@
 package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseIdList;
 

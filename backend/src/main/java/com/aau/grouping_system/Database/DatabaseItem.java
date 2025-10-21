@@ -8,8 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class DatabaseItem implements Serializable {
 
 	private String id;
-	protected DatabaseMap<? extends DatabaseItem> databaseMap;
-	protected CopyOnWriteArrayList<DatabaseIdList> childIds = new CopyOnWriteArrayList<>();
+	private DatabaseMap<? extends DatabaseItem> databaseMap;
+	CopyOnWriteArrayList<DatabaseIdList> childIds = new CopyOnWriteArrayList<>();
 
 	// package-private methods
 
