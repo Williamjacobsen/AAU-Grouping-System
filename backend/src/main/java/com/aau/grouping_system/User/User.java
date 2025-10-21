@@ -11,10 +11,9 @@ public abstract class User extends DatabaseItem {
 	private String name;
 
 	public enum Role {
-		UNDEFINED,
 		COORDINATOR,
 		SUPERVISOR,
-		STUDENT
+		STUDENT;
 	}
 
 	// abstract methods

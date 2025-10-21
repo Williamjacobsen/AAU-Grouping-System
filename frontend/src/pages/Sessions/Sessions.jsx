@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../User/useAuth";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
@@ -14,6 +15,11 @@ export default function Sessions() {
 		createSession,
 		deleteSession
 	} = useSessionManager();
+
+	const { user, loading: loadingAuth } = useAuth();
+	
+	if (loadingAuth) return <>Checking authentication...</>;
+	if (!user) return null;
 
 	const handleCreateSession = async (e) => {
 		e.preventDefault();
