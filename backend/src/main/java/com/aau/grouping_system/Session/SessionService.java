@@ -44,7 +44,7 @@ public class SessionService {
 		return session != null && session.getCoordinator().equals(coordinator);
 	}
 
-	public boolean isAuthorized(Coordinator coordinator, Integer sessionId) {
+	public boolean isAuthorized(Coordinator coordinator, String sessionId) {
 		return coordinator != null && hasPermission(sessionId, coordinator);
 	}
 }

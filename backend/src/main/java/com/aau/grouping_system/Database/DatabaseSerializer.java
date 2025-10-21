@@ -51,7 +51,8 @@ public class DatabaseSerializer {
 			throw new RuntimeException(
 					"Error loading database data from save file: Save file is a not of the (newest) type of DatabaseData.");
 		} catch (FileNotFoundException exception) {
-			// TODO: This should be updated before product deployment. But it's fine here in the prototyping stage.
+			// TODO: This should be updated before product deployment. But it's fine here in
+			// the prototyping stage.
 			System.out.println("No database data save file found. Reverting to default data.");
 			fillDatabaseWithExampleData();
 		} catch (IOException exception) {
@@ -62,22 +63,22 @@ public class DatabaseSerializer {
 	@SuppressWarnings("unused") // To suppress warnings about unused code.
 	private void fillDatabaseWithExampleData() {
 
-		Coordinator c0 = new Coordinator(db, null, "Coordinator0@example.com", "PasswordHash0", "Coordinator0");
-		Coordinator c1 = new Coordinator(db, null, "Coordinator1@example.com", "PasswordHash1", "Coordinator1");
-		Coordinator c2 = new Coordinator(db, null, "Coordinator2@example.com", "PasswordHash2", "Coordinator2");
-		Coordinator c3 = new Coordinator(db, null, "Coordinator3@example.com", "PasswordHash3", "Coordinator3");
+		Coordinator c0 = new Coordinator(db, null, "c0", "c0", "Coordinator0");
+		Coordinator c1 = new Coordinator(db, null, "c1", "c1", "Coordinator1");
+		Coordinator c2 = new Coordinator(db, null, "c2", "c2", "Coordinator2");
+		Coordinator c3 = new Coordinator(db, null, "c3", "c3", "Coordinator3");
 
 		Session s0 = new Session(db, c0.sessions, c0);
 		Session s1 = new Session(db, c0.sessions, c0);
 		Session s2 = new Session(db, c1.sessions, c1);
 
-		Student st0 = new Student(db, s0.students, "Student0@example.com", "PasswordHash0", "Student0", s0);
-		Student st1 = new Student(db, s0.students, "Student1@example.com", "PasswordHash1", "Student1", s0);
-		Student st2 = new Student(db, s0.students, "Student2@example.com", "PasswordHash2", "Student2", s0);
-		Student st3 = new Student(db, s1.students, "Student3@example.com", "PasswordHash3", "Student3", s1);
-		Student st4 = new Student(db, s1.students, "Student4@example.com", "PasswordHash4", "Student4", s1);
-		Student st5 = new Student(db, s2.students, "Student5@example.com", "PasswordHash5", "Student5", s2);
-		Student st6 = new Student(db, s2.students, "Student6@example.com", "PasswordHash6", "Student6", s2);
+		Student st0 = new Student(db, s0.students, "s0", "s0", "Student0", s0);
+		Student st1 = new Student(db, s0.students, "s1", "s2", "Student1", s0);
+		Student st2 = new Student(db, s0.students, "s2", "s2", "Student2", s0);
+		Student st3 = new Student(db, s1.students, "s3", "s3", "Student3", s1);
+		Student st4 = new Student(db, s1.students, "s4", "s4", "Student4", s1);
+		Student st5 = new Student(db, s2.students, "s5", "s5", "Student5", s2);
+		Student st6 = new Student(db, s2.students, "s6", "s6", "Student6", s2);
 	}
 
 	@PostConstruct

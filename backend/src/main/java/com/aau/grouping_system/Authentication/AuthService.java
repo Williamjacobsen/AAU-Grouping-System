@@ -40,9 +40,9 @@ public class AuthService {
 				}
 				return null;
 			case User.Role.SUPERVISOR:
-				return db.getSupervisors().getItem(Integer.parseInt(emailOrId));
+				return db.getSupervisors().getItem(emailOrId);
 			case User.Role.STUDENT:
-				return db.getStudents().getItem(Integer.parseInt(emailOrId));
+				return db.getStudents().getItem(emailOrId);
 			default:
 				return null;
 		}
