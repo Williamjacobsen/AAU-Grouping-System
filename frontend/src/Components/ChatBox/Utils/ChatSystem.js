@@ -54,6 +54,11 @@ class ChatSystem {
     }
   }
 
+  publish(destination, body) {
+    if (!this.stompClient?.connected) return;
+    this.stompClient.send(destination, {}, JSON.stringify(body));
+  }
+
   send(destination, message, timeoutMs = 5000) {
     if (!this.stompClient?.connected) {
       return Promise.reject(new Error("STOMP not connected"));

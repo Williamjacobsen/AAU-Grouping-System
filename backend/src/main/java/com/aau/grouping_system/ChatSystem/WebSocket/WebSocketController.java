@@ -29,8 +29,22 @@ public class WebSocketController {
 		System.out.println("Private message from " + (principal != null ? principal.getName() : "UNKNOWN")
 				+ " to " + message.target());
 
-		webSocketService.sendPrivateMessage(message, principal);	
+		webSocketService.sendPrivateMessage(message, principal);
 
 		System.out.println("Sent private message to: " + message.target());
 	}
+
+	public record ReadUpToPayload(String conversationKey, String username, int upToMessageId) {
+	}
+
+	@MessageMapping("/group/{groupId}/readUpTo")
+	public void readUpToGroup(@DestinationVariable String groupId, ReadUpToPayload payload, Principal principal) {
+		webSocketService.markReadUpTo(groupId, payload.username(), payload.upToMessageId(), true);
+	}
+
+	@MessageMapping("/private/readUpTo")
+	public void readUpToPrivate(ReadUpToPayload payload, Principal principal) {
+		webSocketService.markReadUpTo(payload.conversationKey(), payload.username(), payload.upToMessageId(), false);
+	}
+
 }

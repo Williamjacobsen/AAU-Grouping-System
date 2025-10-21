@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -20,22 +21,29 @@ public class WebSocketService {
 	public record Message(String content, String sender, String target, String clientMessageId) {
 	}
 
-	public record MessageDatabaseFormat(Integer id, String content, String sender, String target, String time) {
+	public record MessageDatabaseFormat(Integer id, String content, String sender, String target, String time,
+			long timestamp) {
 	};
 
 	public final ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> groupMessages = new ConcurrentHashMap<>();
 	public final ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> privateMessages = new ConcurrentHashMap<>();
+
 	/*
 	 * Looks like this:
 	 * {
 	 * "group 1": [
-	 * {id: 0, target: null, sender: "student 2", content: "bla bla bla", time: "2025-10-19 20:20"},
-	 * {id: 1, target: null, sender: "student 1", content: "bla bla", time: "2025-10-19 20:25"},
+	 * {id: 0, target: null, sender: "student 2", content: "bla bla bla", time:
+	 * "2025-10-19 20:20", timestamp: 1739961600000},
+	 * {id: 1, target: null, sender: "student 1", content: "bla bla", time:
+	 * "2025-10-19 20:25", timestamp: 1739961900000},
 	 * ],
 	 * "group 2": [
-	 * {id: 0, target: null, sender: "student 1", content: "bla bla", time: "2025-10-19 20:20"},
-	 * {id: 1, target: null, sender: "student 3", content: "bla bla bla", time: "2025-10-19 20:25"},
-	 * {id: 2, target: null, sender: "student 2", content: "bla", time: "2025-10-19 20:30"},
+	 * {id: 0, target: null, sender: "student 1", content: "bla bla", time:
+	 * "2025-10-19 20:20", timestamp: 1739961600000},
+	 * {id: 1, target: null, sender: "student 3", content: "bla bla bla", time:
+	 * "2025-10-19 20:25", timestamp: 1739961900000},
+	 * {id: 2, target: null, sender: "student 2", content: "bla", time:
+	 * "2025-10-19 20:30", timestamp: 1739962200000},
 	 * ],
 	 * }
 	 * 
@@ -44,12 +52,32 @@ public class WebSocketService {
 
 	private final SimpMessagingTemplate ws;
 
+	private final ConcurrentHashMap<String, AtomicInteger> groupNextId = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, AtomicInteger> privateNextId = new ConcurrentHashMap<>();
+
+	private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> groupLastRead = new ConcurrentHashMap<>();
+	private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> privateLastRead = new ConcurrentHashMap<>();
+
+	/**
+	 * Last read id (student 1 in group 1, has read the message of id 10 etc)
+	 * 
+	 * {
+	 * "group1": {
+	 * "student1": 10,
+	 * "student2": 7
+	 * },
+	 * "group2": {
+	 * "student3": 15
+	 * }
+	 * }
+	 */
+
 	public WebSocketService(SimpMessagingTemplate ws) {
 		this.ws = ws;
 	}
 
 	public void sendGroupMessage(String groupId, Message message, Principal principal) {
-		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message, groupMessages);
+		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message, groupMessages, groupNextId, groupLastRead);
 
 		ws.convertAndSend("/group/" + groupId + "/messages", formattedMessage);
 
@@ -59,7 +87,8 @@ public class WebSocketService {
 	public void sendPrivateMessage(Message message, Principal principal) {
 		String key = getConversationKey(message.sender(), message.target());
 
-		MessageDatabaseFormat formattedMessage = addToDatabase(key, message, privateMessages);
+		MessageDatabaseFormat formattedMessage = addToDatabase(key, message, privateMessages, privateNextId,
+				privateLastRead);
 
 		ws.convertAndSendToUser(
 				message.target(),
@@ -76,19 +105,56 @@ public class WebSocketService {
 		sendAckToUser(principal, null, message.target(), message.clientMessageId());
 	}
 
-	private MessageDatabaseFormat addToDatabase(String key, Message message, ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> database) {
+	private MessageDatabaseFormat addToDatabase(
+			String key,
+			Message message,
+			ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> database,
+			ConcurrentHashMap<String, AtomicInteger> idCounters,
+			ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> lastReadMap) {
+
 		Deque<MessageDatabaseFormat> deque = database.computeIfAbsent(key, _ -> new ConcurrentLinkedDeque<>());
+		int id = idCounters.computeIfAbsent(key, _ -> new AtomicInteger(0)).getAndIncrement();
 
 		MessageDatabaseFormat formattedMessage = new MessageDatabaseFormat(
-				deque.size(),
+				id,
 				message.content(),
 				message.sender(),
 				message.target(),
-				LocalDateTime.now().format(FORMATTER));
+				LocalDateTime.now().format(FORMATTER),
+				System.currentTimeMillis());
 
 		deque.add(formattedMessage);
 
+		lastReadMap.computeIfAbsent(key, _ -> new ConcurrentHashMap<>())
+				.merge(message.sender(), id, Math::max);
+
 		return formattedMessage;
+	}
+
+
+	// TODO: add logging for bug fixing
+	public void markReadUpTo(String conversationKey, String username, int upToMessageId, boolean isGroup) {
+		if (username == null || username.isEmpty())
+			return;
+
+		var map = isGroup ? groupLastRead : privateLastRead;
+		var lastReadForConversation = map.computeIfAbsent(conversationKey, _ -> new ConcurrentHashMap<>());
+
+		lastReadForConversation.merge(username, upToMessageId, Math::max);
+	}
+
+	public int getUnreadCount(String conversationKey, String username, boolean isGroup) {
+		var database = isGroup ? groupMessages : privateMessages;
+		var deque = database.get(conversationKey);
+		if (deque == null || deque.isEmpty())
+			return 0;
+
+		int maxId = deque.peekLast().id();
+		var lastReadMap = (isGroup ? groupLastRead : privateLastRead)
+				.getOrDefault(conversationKey, new ConcurrentHashMap<>());
+		int lastRead = lastReadMap.getOrDefault(username, -1);
+
+		return Math.max(0, (maxId - lastRead));
 	}
 
 	// Make sure that "student1" -> "student2" and "student2" -> "student1" has

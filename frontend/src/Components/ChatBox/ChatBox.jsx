@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useAppState } from "../../AppStateContext";
 import ChatSystem from "./Utils/ChatSystem";
 import useFetchMessages from "./Utils/useFetchMessages";
@@ -7,10 +7,11 @@ import HiddenChatBox from "./UI/HiddenChatBox";
 import ChatArea from "./UI/ChatArea/ChatArea";
 import Sidebar from "./UI/Sidebar";
 import Header from "./UI/Header";
+import sendReadReceipt from "./Utils/sendReadReceipt";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
-  const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({});
+  const [lastReadByRoom, setLastReadByRoom] = useState({}); // { [room]: { [user]: lastReadId }
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [messageInput, setMessageInput] = useState("");
@@ -37,7 +38,30 @@ export default function ChatBox() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const roomMessages = messagesByRoom[selectedChatRoom] ?? [];
+  const roomMessages = useMemo(
+    () => messagesByRoom[selectedChatRoom] ?? [],
+    [messagesByRoom, selectedChatRoom]
+  );
+
+  useEffect(() => {
+    if (!selectedChatRoom) return;
+    sendReadReceipt(selectedChatRoom, username, roomMessages, chatSystem);
+  }, [selectedChatRoom, roomMessages, username]);
+
+  /* === FOR TESTING === */
+  useEffect(() => {
+    (async () => {
+      try {
+        const response = await fetch(`/group/${encodeURIComponent("group 1")}/unread/${encodeURIComponent(username)}`);
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const text = await response.text();
+        console.log("Unread count:", Number(text));
+      } catch (err) {
+        console.error("Unread fetch failed:", err);
+      }
+    })();
+  }, []);
 
   return (
     <>
@@ -84,7 +108,7 @@ export default function ChatBox() {
               setMessageInput={setMessageInput}
               chatSystem={chatSystem}
               setMessagesByRoom={setMessagesByRoom}
-							students={students}
+              students={students}
             />
           </div>
         </div>

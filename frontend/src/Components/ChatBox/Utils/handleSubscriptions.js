@@ -2,9 +2,9 @@ function handleSubscriptions(
   chatRooms,
   chatSystem,
   setMessagesByRoom,
-  username
+  username,
 ) {
-  chatRooms.forEach((roomName) => {
+  chatRooms.forEach((roomName) => { // TODO: chatRoom include students, which it shouldn't.
     chatSystem.current.subscribe(`/group/${roomName}/messages`, (message) => {
       console.log(`Received message in group ${roomName}:`, message);
 
