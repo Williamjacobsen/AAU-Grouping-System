@@ -91,11 +91,6 @@ public class DatabaseSerializer {
 		// System.out.println("Saving database...");
 		// saveDatabase();
 		fillDatabaseWithExampleData();
-
-		// TODO: remove this:
-		for (Session session : db.getData().getSessions().getAllItems().values()) {
-			System.out.println("session.getId = " + session.getId());
-		}
 	}
 
 }
