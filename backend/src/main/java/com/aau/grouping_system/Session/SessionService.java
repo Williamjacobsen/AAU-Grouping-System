@@ -35,7 +35,7 @@ public class SessionService {
 			return false;
 		}
 
-		db.getSessions().remove(db, sessionId);
+		db.getSessions().cascadeRemove(db, sessionId);
 		return true;
 	}
 

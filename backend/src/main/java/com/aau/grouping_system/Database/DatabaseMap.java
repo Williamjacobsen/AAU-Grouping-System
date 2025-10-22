@@ -6,58 +6,40 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/// Functions as a ConcurrentHashMap that also handles IDs and hierarchy
-/// (child/parent relations) of items.
+/// A map using UUIDs and capable of cascade deletion.
 public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
-	private Integer id; // TODO: Implement ID!
-
+	private Integer id;
 	private final ConcurrentHashMap<String, T> map = new ConcurrentHashMap<>();
 
-	// constructors
-
+	/// Automatically adds this to the list of maps in the database.
 	public DatabaseMap(ConcurrentHashMap<Integer, DatabaseMap<? extends DatabaseItem>> maps, AtomicInteger idGenerator) {
 		this.id = idGenerator.incrementAndGet();
 		maps.put(id, this);
 	}
 
-	// public methods
-
-	public void remove(Database db, T item) {
-		item.removeChildren(db);
-		map.remove(item.getId());
-	}
-
-	public void remove(Database db, String id) {
+	public void cascadeRemove(Database db, String id) {
 		T item = getItem(id);
-		remove(db, item);
+		item.cascadeRemoveChildren(db);
+		item.disconnectFromParent(db);
+		map.remove(id);
 	}
 
-	// package-private methods
+	public void cascadeRemove(Database db, T item) {
+		cascadeRemove(db, item.getId());
+	}
 
-	void put(T item) {
-		String id = getNewId();
+	void add(T item) {
+		String id = getNewItemId();
 		item.setId(id);
 		map.put(id, item);
 	}
 
-	// private methods
-
-	private String getNewId() {
-
-		String id = UUID.randomUUID().toString();
-
-		// Ensure ID isn't already used
-		while (map.get(id) != null) {
+	private String getNewItemId() {
+		String id;
+		do {
 			id = UUID.randomUUID().toString();
-		}
-
-		return id;
-	}
-
-	// getters & setters
-
-	public Integer getId() {
+		} while (map.get(id) != null);
 		return id;
 	}
 
@@ -75,6 +57,10 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
 	public ConcurrentHashMap<String, T> getAllItems() {
 		return map;
+	}
+
+	Integer getId() {
+		return id;
 	}
 
 }

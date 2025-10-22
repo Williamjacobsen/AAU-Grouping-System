@@ -14,14 +14,12 @@ public class Database {
 
 	private DatabaseData data = new DatabaseData();
 
-	// getters & setters
+	DatabaseData getData() {
+		return data;
+	}
 
 	void setData(DatabaseData data) {
 		this.data = data;
-	}
-
-	DatabaseData getData() {
-		return data;
 	}
 
 	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {

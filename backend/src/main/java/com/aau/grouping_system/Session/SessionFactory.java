@@ -1,11 +1,11 @@
 package com.aau.grouping_system.Session;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildList;
+import com.aau.grouping_system.Database.DatabaseItemChildSubgroup;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class SessionFactory {
-	public static Session create(Database db, DatabaseItemChildList parentReferences,
+	public static Session create(Database db, DatabaseItemChildSubgroup parentReferences,
 			Coordinator coordinator, String name) {
 		return new Session(db, parentReferences, coordinator, name);
 	}
