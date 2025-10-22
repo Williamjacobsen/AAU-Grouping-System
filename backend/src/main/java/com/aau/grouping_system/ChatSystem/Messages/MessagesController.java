@@ -1,12 +1,14 @@
 package com.aau.grouping_system.ChatSystem.Messages;
 
 import java.util.Deque;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService;
+
 
 @RestController
 public class MessagesController {
@@ -28,18 +30,9 @@ public class MessagesController {
 		return messagesService.getAllPrivateMessages(user1, user2);
 	}
 
-	@GetMapping("/group/{groupId}/unread/{username}")
-	public int getGroupUnread(
-			@PathVariable String groupId,
-			@PathVariable String username) {
-		return messagesService.getGroupUnreadCount(groupId, username);
-	}
-
-	@GetMapping("/private/{user1}/{user2}/unread/{username}")
-	public int getPrivateUnread(
-			@PathVariable String user1,
-			@PathVariable String user2,
-			@PathVariable String username) {
-		return messagesService.getPrivateUnreadCount(user1, user2, username);
+	@GetMapping("/user/{username}/messages/unread/get/all")
+	public ConcurrentHashMap<String, Integer> getAllUnreadMessages(@PathVariable String username) {
+		System.out.println(String.format("Received Get: /user/%s/messages/unread/get/all", username));
+		return messagesService.getAllUnreadMessages(username);
 	}
 }

@@ -11,7 +11,7 @@ import sendReadReceipt from "./Utils/sendReadReceipt";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
-  const [lastReadByRoom, setLastReadByRoom] = useState({}); // { [room]: { [user]: lastReadId }
+  const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({}); // TODO: Do for all: // { [room1]: int, [room2]: int }
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [messageInput, setMessageInput] = useState("");
@@ -48,20 +48,20 @@ export default function ChatBox() {
     sendReadReceipt(selectedChatRoom, username, roomMessages, chatSystem);
   }, [selectedChatRoom, roomMessages, username]);
 
-  /* === FOR TESTING === */
-  useEffect(() => {
-    (async () => {
-      try {
-        const response = await fetch(`/group/${encodeURIComponent("group 1")}/unread/${encodeURIComponent(username)}`);
+	async function getUnreadMessagesStatus() {
+		await fetch(`http://localhost:8080/user/${username}/messages/unread/get/all`)
+			.then((response) => response.json())
+			.then((json) => {
+				console.log(json);
+				setUnreadMessagesByRoom(json ?? {});
+				setUnreadMessagesCount(Object.values(json).reduce((a, n) => a + n, 0))
+			})
+			.catch((error) => console.error(error));
+	}
 
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const text = await response.text();
-        console.log("Unread count:", Number(text));
-      } catch (err) {
-        console.error("Unread fetch failed:", err);
-      }
-    })();
-  }, []);
+	useEffect(() => {
+		getUnreadMessagesStatus()
+	}, [])
 
   return (
     <>
