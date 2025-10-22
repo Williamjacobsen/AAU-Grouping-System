@@ -1,13 +1,9 @@
-import sortChatRooms from "../Utils/sortChatRooms";
-
 export default function Sidebar({
   chatRooms,
   selectedChatRoom,
   setSelectedChatRoom,
 	unreadMessagesByRoom,
 }) {
-	const rooms = sortChatRooms(chatRooms, unreadMessagesByRoom);
-
   return (
     <div
       style={{
@@ -19,7 +15,7 @@ export default function Sidebar({
       }}
     >
       {/* Each chat room / student box */}
-      {rooms.map((chatRoom) => (
+      {chatRooms.map((chatRoom) => (
         <div
           key={chatRoom}
           onClick={() => setSelectedChatRoom(chatRoom)}

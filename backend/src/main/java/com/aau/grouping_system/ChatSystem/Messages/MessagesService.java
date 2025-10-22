@@ -52,8 +52,24 @@ public class MessagesService {
 			result.put(key, getPrivateUnreadCount(key, username));
 		}	
 
-		System.out.println(result.toString());
+		return result;
+	}
 
+	public ConcurrentHashMap<String, Long> getChatRoomLastActivityTimestamps(String username) {
+		ConcurrentHashMap<String, Long> result = new ConcurrentHashMap<>();
+		
+		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.groupMessages.entrySet()) {
+			String key = groupEntry.getKey();
+
+			result.put(key, webSocketService.groupMessages.get(key).peekLast().timestamp());
+		}	
+
+		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
+			String key = groupEntry.getKey();
+
+			result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());		
+		}
+		
 		return result;
 	}
 }

@@ -9,18 +9,21 @@ import Sidebar from "./UI/Sidebar";
 import Header from "./UI/Header";
 import sendReadReceipt from "./Utils/sendReadReceipt";
 import getUnreadMessagesCounters from "./Utils/getUnreadMessagesCounters";
+import getLastChatRoomActivityCounters from "./Utils/getLastChatRoomActivityCounters"
+import sortChatRooms from "./Utils/sortChatRooms"
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
   const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({}); // TODO: Do for all: // { [room1]: int, [room2]: int }
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
+	const [lastActivityByRoom, setLastActivityByRoom] = useState({});
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
   const [messageInput, setMessageInput] = useState("");
   const [messagesByRoom, setMessagesByRoom] = useState({});
 
   const chatSystem = useRef(null);
-  const username = "My username4";
-  const { students, chatRooms } = useAppState();
+  const username = "My username";
+  const { projects, groups, students, chatRooms } = useAppState();
 
   useFetchMessages(setMessagesByRoom, selectedChatRoom, username);
 
@@ -51,7 +54,13 @@ export default function ChatBox() {
 
 	useEffect(() => {
 		getUnreadMessagesCounters(username, setUnreadMessagesByRoom, setUnreadMessagesCount)
+		getLastChatRoomActivityCounters(username, setLastActivityByRoom)
 	}, [])
+
+	const orderedChatRooms = useMemo(
+    () => sortChatRooms(chatRooms, unreadMessagesByRoom, lastActivityByRoom, {projects, groups, students}),
+    [chatRooms, unreadMessagesByRoom, lastActivityByRoom]
+  );
 
   return (
     <>
@@ -86,7 +95,7 @@ export default function ChatBox() {
             }}
           >
             <Sidebar
-              chatRooms={chatRooms}
+              chatRooms={orderedChatRooms}
               selectedChatRoom={selectedChatRoom}
               setSelectedChatRoom={setSelectedChatRoom}
 							unreadMessagesByRoom={unreadMessagesByRoom}

@@ -35,4 +35,10 @@ public class MessagesController {
 		System.out.println(String.format("Received Get: /user/%s/messages/unread/get/all", username));
 		return messagesService.getAllUnreadMessages(username);
 	}
+
+	@GetMapping("/user/{username}/messages/all/most-recent-timestamps")
+	public ConcurrentHashMap<String, Long> getChatRoomLastActivityTimestamps(@PathVariable String username) {
+		System.out.println(String.format("Received Get: /messages/most-recent-timestamp/get/all", username));
+		return messagesService.getChatRoomLastActivityTimestamps(username);
+	}
 }
