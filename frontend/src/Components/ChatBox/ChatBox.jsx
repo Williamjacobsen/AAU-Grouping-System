@@ -8,6 +8,7 @@ import ChatArea from "./UI/ChatArea/ChatArea";
 import Sidebar from "./UI/Sidebar";
 import Header from "./UI/Header";
 import sendReadReceipt from "./Utils/sendReadReceipt";
+import getUnreadMessagesCounters from "./Utils/getUnreadMessagesCounters";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
@@ -48,19 +49,8 @@ export default function ChatBox() {
     sendReadReceipt(selectedChatRoom, username, roomMessages, chatSystem);
   }, [selectedChatRoom, roomMessages, username]);
 
-	async function getUnreadMessagesStatus() {
-		await fetch(`http://localhost:8080/user/${username}/messages/unread/get/all`)
-			.then((response) => response.json())
-			.then((json) => {
-				console.log(json);
-				setUnreadMessagesByRoom(json ?? {});
-				setUnreadMessagesCount(Object.values(json).reduce((a, n) => a + n, 0))
-			})
-			.catch((error) => console.error(error));
-	}
-
 	useEffect(() => {
-		getUnreadMessagesStatus()
+		getUnreadMessagesCounters(username, setUnreadMessagesByRoom, setUnreadMessagesCount)
 	}, [])
 
   return (
