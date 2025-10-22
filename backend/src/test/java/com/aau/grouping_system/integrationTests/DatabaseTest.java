@@ -89,7 +89,7 @@ public class DatabaseTest {
 		assertEquals(6, db.getStudents().getAllItems().size());
 
 		// Remove the first coordinator
-		db.getCoordinators().remove(db, coordinators.get(0));
+		db.getCoordinators().cascadeRemove(db, coordinators.get(0));
 
 		// After deletion
 		assertEquals(1, db.getCoordinators().getAllItems().size());

@@ -3,7 +3,7 @@ package com.aau.grouping_system.Project;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildList;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public class Project extends DatabaseItem {
 
@@ -12,7 +12,7 @@ public class Project extends DatabaseItem {
 
 	// constructors
 
-	public Project(Database db, DatabaseItemChildList parentItemChildIdList,
+	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String name, String description) {
 		super(db, parentItemChildIdList);
 		this.name = name;

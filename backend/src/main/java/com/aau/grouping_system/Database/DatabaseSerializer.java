@@ -12,6 +12,7 @@ import jakarta.annotation.PostConstruct;
 import java.io.*;
 
 @Component
+/// A component that handles saving and loading the database.
 public class DatabaseSerializer {
 
 	private static final String saveFileName = "databaseDataSaveFile.ser";
@@ -31,7 +32,7 @@ public class DatabaseSerializer {
 		// disposees of its resources.)
 		try (FileOutputStream fileOutput = new FileOutputStream(saveFileName)) {
 			try (ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput)) {
-				// Write datbase data to file
+				// Write database data to file
 				objectOutput.writeObject(db.getData());
 			}
 		} catch (IOException exception) {
@@ -86,6 +87,7 @@ public class DatabaseSerializer {
 
 	@PostConstruct
 	public void init() throws FileNotFoundException, IOException, ClassNotFoundException {
+		// TODO: Make use of the loading and saving methods.
 		// System.out.println("Loading database...");
 		// loadDatabase();
 		// System.out.println("Saving database...");
