@@ -7,21 +7,21 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class DatabaseItem implements Serializable {
 
 	private String id;
-	private CopyOnWriteArrayList<DatabaseItemChildSubgroup> childSubgroups = new CopyOnWriteArrayList<>();
-	private DatabaseItemChildSubgroup parentItemChildSubgroup = null;
+	private CopyOnWriteArrayList<DatabaseItemChildGroup> childGroups = new CopyOnWriteArrayList<>();
+	private DatabaseItemChildGroup parentItemChildGroup = null;
 
-	/// Automatically adds this to its map and parent item's appropriate
-	/// child subgroup.
+	/// Automatically adds this to its map and to its parent item's appropriate
+	/// child group.
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here despite Java's invariance of generics.
-	public DatabaseItem(Database db, DatabaseItemChildSubgroup parentItemChildSubgroup) {
+	public DatabaseItem(Database db, DatabaseItemChildGroup parentItemChildGroup) {
 		// Add item to its map
 		((DatabaseMap<DatabaseItem>) getDatabaseMap(db)).add((DatabaseItem) this);
 
-		// Add item to its parent item's child subgroup
-		if (parentItemChildSubgroup != null) {
-			this.parentItemChildSubgroup = parentItemChildSubgroup;
-			parentItemChildSubgroup.addChild(this.id);
+		// Add item to its parent item's child group
+		if (parentItemChildGroup != null) {
+			this.parentItemChildGroup = parentItemChildGroup;
+			parentItemChildGroup.addChild(this.id);
 		}
 	}
 
@@ -30,21 +30,21 @@ public abstract class DatabaseItem implements Serializable {
 	protected abstract DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db);
 
 	void cascadeRemoveChildren(Database db) {
-		for (DatabaseItemChildSubgroup childSubgroup : childSubgroups) {
-			for (String childId : childSubgroup.getChildIds()) {
-				db.getMap(childSubgroup.getMapId()).cascadeRemove(db, childId);
+		for (DatabaseItemChildGroup childGroup : childGroups) {
+			for (String childId : childGroup.getChildIds()) {
+				db.getMap(childGroup.getMapId()).cascadeRemove(db, childId);
 			}
 		}
 	}
 
 	void disconnectFromParent(Database db) {
-		if (parentItemChildSubgroup != null) {
-			parentItemChildSubgroup.removeChild(this.id);
+		if (parentItemChildGroup != null) {
+			parentItemChildGroup.removeChild(this.id);
 		}
 	}
 
-	void addChildSubgroup(DatabaseItemChildSubgroup childSubgroup) {
-		childSubgroups.add(childSubgroup);
+	void addChildGroup(DatabaseItemChildGroup childGroup) {
+		childGroups.add(childGroup);
 	}
 
 	public String getId() {

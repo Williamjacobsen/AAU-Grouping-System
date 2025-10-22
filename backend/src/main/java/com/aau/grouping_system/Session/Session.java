@@ -3,29 +3,29 @@ package com.aau.grouping_system.Session;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseItemChildSubgroup;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
-	public DatabaseItemChildSubgroup supervisors;
-	public DatabaseItemChildSubgroup students;
-	public DatabaseItemChildSubgroup projects;
-	public DatabaseItemChildSubgroup groups;
+	public DatabaseItemChildGroup supervisors;
+	public DatabaseItemChildGroup students;
+	public DatabaseItemChildGroup projects;
+	public DatabaseItemChildGroup groups;
 
 	public String coordinatorId;
 	public String name;
 
 	// constructor
 
-	public Session(Database db, DatabaseItemChildSubgroup parentItemChildIdList,
+	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Coordinator coordinator, String name) {
 		super(db, parentItemChildIdList);
 		this.coordinatorId = coordinator.getId();
-		this.supervisors = new DatabaseItemChildSubgroup(db.getSupervisors(), this);
-		this.students = new DatabaseItemChildSubgroup(db.getStudents(), this);
-		this.projects = new DatabaseItemChildSubgroup(db.getProjects(), this);
-		this.groups = new DatabaseItemChildSubgroup(db.getGroups(), this);
+		this.supervisors = new DatabaseItemChildGroup(db.getSupervisors(), this);
+		this.students = new DatabaseItemChildGroup(db.getStudents(), this);
+		this.projects = new DatabaseItemChildGroup(db.getProjects(), this);
+		this.groups = new DatabaseItemChildGroup(db.getGroups(), this);
 		this.name = name;
 	}
 
@@ -50,35 +50,35 @@ public class Session extends DatabaseItem {
 		this.name = name;
 	}
 
-	public DatabaseItemChildSubgroup getSupervisors() {
+	public DatabaseItemChildGroup getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(DatabaseItemChildSubgroup supervisors) {
+	public void setSupervisors(DatabaseItemChildGroup supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public DatabaseItemChildSubgroup getStudents() {
+	public DatabaseItemChildGroup getStudents() {
 		return students;
 	}
 
-	public void setStudents(DatabaseItemChildSubgroup students) {
+	public void setStudents(DatabaseItemChildGroup students) {
 		this.students = students;
 	}
 
-	public DatabaseItemChildSubgroup getProjects() {
+	public DatabaseItemChildGroup getProjects() {
 		return projects;
 	}
 
-	public void setProjects(DatabaseItemChildSubgroup projects) {
+	public void setProjects(DatabaseItemChildGroup projects) {
 		this.projects = projects;
 	}
 
-	public DatabaseItemChildSubgroup getGroups() {
+	public DatabaseItemChildGroup getGroups() {
 		return groups;
 	}
 
-	public void setGroups(DatabaseItemChildSubgroup groups) {
+	public void setGroups(DatabaseItemChildGroup groups) {
 		this.groups = groups;
 	}
 

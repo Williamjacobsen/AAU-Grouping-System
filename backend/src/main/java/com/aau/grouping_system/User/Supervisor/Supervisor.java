@@ -3,7 +3,7 @@ package com.aau.grouping_system.User.Supervisor;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildSubgroup;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
@@ -13,7 +13,7 @@ public class Supervisor extends User {
 
 	// constructors
 
-	public Supervisor(Database db, DatabaseItemChildSubgroup parentItemChildIdList,
+	public Supervisor(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
 		super(db, parentItemChildIdList, email, passwordHash, name);
 		this.sessionId = session.getId();

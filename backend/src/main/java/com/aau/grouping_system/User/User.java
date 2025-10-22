@@ -2,7 +2,7 @@ package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildSubgroup;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public abstract class User extends DatabaseItem {
 
@@ -22,7 +22,7 @@ public abstract class User extends DatabaseItem {
 
 	// constructors
 
-	public User(Database db, DatabaseItemChildSubgroup parentItemChildIdList,
+	public User(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name) {
 		super(db, parentItemChildIdList);
 		this.email = email;

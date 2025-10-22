@@ -3,7 +3,7 @@ package com.aau.grouping_system.Group;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildSubgroup;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
@@ -19,7 +19,7 @@ public class Group extends DatabaseItem {
 	private int maxStudents;
 	private int maxRequests;
 
-	public Group(Database db, DatabaseItemChildSubgroup parentItemChildIdList,
+	public Group(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
 		super(db, parentItemChildIdList);
 		this.supervisorId = supervisor.getId();
