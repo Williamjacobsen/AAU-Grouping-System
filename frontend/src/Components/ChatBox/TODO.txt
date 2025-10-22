@@ -1,3 +1,1 @@
-1. Make text bold for unread chat rooms.
-2. Make it sorted (order: most recent message send).
-3. Input validation.
+1. Make it sorted (order: most recent message send).

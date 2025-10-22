@@ -6,4 +6,4 @@ export default async function getUnreadMessagesCounters(username, setUnreadMessa
 			setUnreadMessagesCount(Object.values(json).reduce((a, n) => a + n, 0));
 		})
 		.catch((error) => console.error(error));
-	}
+}

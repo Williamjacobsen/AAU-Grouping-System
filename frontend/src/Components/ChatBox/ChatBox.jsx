@@ -19,7 +19,7 @@ export default function ChatBox() {
   const [messagesByRoom, setMessagesByRoom] = useState({});
 
   const chatSystem = useRef(null);
-  const username = "My username";
+  const username = "My username4";
   const { students, chatRooms } = useAppState();
 
   useFetchMessages(setMessagesByRoom, selectedChatRoom, username);
@@ -89,6 +89,7 @@ export default function ChatBox() {
               chatRooms={chatRooms}
               selectedChatRoom={selectedChatRoom}
               setSelectedChatRoom={setSelectedChatRoom}
+							unreadMessagesByRoom={unreadMessagesByRoom}
             />
             <ChatArea
               selectedChatRoom={selectedChatRoom}
