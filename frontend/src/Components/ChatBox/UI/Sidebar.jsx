@@ -2,8 +2,15 @@ export default function Sidebar({
   chatRooms,
   selectedChatRoom,
   setSelectedChatRoom,
-	unreadMessagesByRoom,
+  unreadMessagesByRoom,
+  projects,
+  groups,
+  students,
 }) {
+  const projectSet = new Set(projects);
+  const groupSet = new Set(groups);
+  const studentSet = new Set(students);
+
   return (
     <div
       style={{
@@ -27,7 +34,7 @@ export default function Sidebar({
             minHeight: "5rem",
             marginBottom: "0.5rem",
             display: "flex",
-            justifyContent: "center",
+						gap: "1rem",
             alignItems: "center",
             borderBottom: "1px solid #e5e7eb",
             transition: "background-color 0.15s ease",
@@ -44,15 +51,24 @@ export default function Sidebar({
             }
           }}
         >
+          <p style={{paddingLeft: "1rem"}}>
+            {chatRoom === "General" ? "General:" :
+							projectSet.has(chatRoom)
+              ? "project:"
+              : groupSet.has(chatRoom)
+              ? "group:"
+							: studentSet.has(chatRoom)
+							? "student:"
+              : ""}
+          </p>
           <h4
             style={{
               margin: 0,
-              fontSize: Number(unreadMessagesByRoom[chatRoom]) > 0 ? "20.5px" : "20px",
-              fontWeight: Number(unreadMessagesByRoom[chatRoom]) > 0 ? 700 : 600,
-              position: "relative",
-              right: "2.5rem",
-              transform: "translateY(-10%) translateX(0%)",
-            }}
+              fontSize:
+                Number(unreadMessagesByRoom[chatRoom]) > 0 ? "20.5px" : "20px",
+              fontWeight:
+                Number(unreadMessagesByRoom[chatRoom]) > 0 ? 700 : 600,
+							}}
           >
             {chatRoom}
           </h4>

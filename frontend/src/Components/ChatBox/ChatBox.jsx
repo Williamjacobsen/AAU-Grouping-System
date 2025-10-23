@@ -121,6 +121,9 @@ export default function ChatBox() {
               selectedChatRoom={selectedChatRoom}
               setSelectedChatRoom={setSelectedChatRoom}
               unreadMessagesByRoom={unreadMessagesByRoom}
+							projects={projects}
+							groups={groups}
+							students={students}
             />
             <ChatArea
               selectedChatRoom={selectedChatRoom}
