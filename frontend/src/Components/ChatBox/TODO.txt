@@ -1,2 +1,1 @@
-1. Add search.
-2. Add filters.
+1. Add filters.

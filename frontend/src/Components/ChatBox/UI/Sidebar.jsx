@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export default function Sidebar({
   chatRooms,
   selectedChatRoom,
@@ -7,9 +9,15 @@ export default function Sidebar({
   groups,
   students,
 }) {
+  const [query, setQuery] = useState("");
+
   const projectSet = new Set(projects);
   const groupSet = new Set(groups);
   const studentSet = new Set(students);
+
+  const filteredChatRooms = chatRooms.filter((room) =>
+    room.toLowerCase().includes(query.toLowerCase())
+  );
 
   return (
     <div
@@ -21,8 +29,21 @@ export default function Sidebar({
         borderRight: "2px solid #e5e7eb",
       }}
     >
+      {/* Search */}
+      <input
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search…"
+        style={{
+          padding: "0.7rem 1rem",
+          border: "none",
+					outline: "none",
+					width: "90%",
+					borderBottom: "1px solid #e5e7eb",
+        }}
+      />
       {/* Each chat room / student box */}
-      {chatRooms.map((chatRoom) => (
+      {filteredChatRooms.map((chatRoom) => (
         <div
           key={chatRoom}
           onClick={() => setSelectedChatRoom(chatRoom)}
@@ -34,7 +55,7 @@ export default function Sidebar({
             minHeight: "5rem",
             marginBottom: "0.5rem",
             display: "flex",
-						gap: "1rem",
+            gap: "1rem",
             alignItems: "center",
             borderBottom: "1px solid #e5e7eb",
             transition: "background-color 0.15s ease",
@@ -51,14 +72,15 @@ export default function Sidebar({
             }
           }}
         >
-          <p style={{paddingLeft: "1rem"}}>
-            {chatRoom === "General" ? "General:" :
-							projectSet.has(chatRoom)
+          <p style={{ paddingLeft: "2rem" }}>
+            {chatRoom === "General"
+              ? "General:"
+              : projectSet.has(chatRoom)
               ? "project:"
               : groupSet.has(chatRoom)
               ? "group:"
-							: studentSet.has(chatRoom)
-							? "student:"
+              : studentSet.has(chatRoom)
+              ? "student:"
               : ""}
           </p>
           <h4
@@ -67,8 +89,8 @@ export default function Sidebar({
               fontSize:
                 Number(unreadMessagesByRoom[chatRoom]) > 0 ? "20.5px" : "20px",
               fontWeight:
-                Number(unreadMessagesByRoom[chatRoom]) > 0 ? 700 : 600,
-							}}
+                Number(unreadMessagesByRoom[chatRoom]) > 0 ? 600 : 500,
+            }}
           >
             {chatRoom}
           </h4>
