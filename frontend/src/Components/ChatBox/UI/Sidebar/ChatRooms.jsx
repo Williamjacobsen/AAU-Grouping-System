@@ -1,85 +1,14 @@
-import { useState } from "react";
-
-export default function Sidebar({
-  chatRooms,
-  selectedChatRoom,
+export default function chatRooms({
+  filteredChatRooms,
   setSelectedChatRoom,
-  unreadMessagesByRoom,
-  projects,
-  groups,
-  students,
+  selectedChatRoom,
+  projectSet,
+  groupSet,
+  studentSet,
+	unreadMessagesByRoom
 }) {
-  const [filter, setFilter] = useState("all"); // all | general | projects | groups | students
-  const [query, setQuery] = useState("");
-
-  const projectSet = new Set(projects);
-  const groupSet = new Set(groups);
-  const studentSet = new Set(students);
-
-  const typeOf = (room) =>
-    room === "General"
-      ? "general"
-      : projectSet.has(room)
-      ? "project"
-      : groupSet.has(room)
-      ? "group"
-      : studentSet.has(room)
-      ? "student"
-      : "";
-
-  const filteredChatRooms = chatRooms
-    .filter((room) => room.toLowerCase().includes(query.toLowerCase()))
-    .filter((room) => (filter === "all" ? true : typeOf(room) === filter));
-
   return (
-    <div
-      style={{
-        backgroundColor: "white",
-        position: "relative",
-        width: "35rem",
-        height: "100%",
-        borderRight: "2px solid #e5e7eb",
-      }}
-    >
-			{/* Search & Filter */}
-      <div
-        style={{
-          display: "flex",
-          gap: "0.5rem",
-          padding: "0.7rem 0.8rem",
-          borderBottom: "1px solid #e5e7eb",
-        }}
-      >
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search…"
-          style={{
-            flex: 1,
-            padding: "0.5rem 0.6rem",
-            border: "1px solid #e5e7eb",
-            borderRadius: 4,
-            outline: "none",
-          }}
-        />
-        <select
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          style={{
-            padding: "0.5rem 0.6rem",
-            border: "1px solid #e5e7eb",
-            borderRadius: 4,
-            background: "white",
-          }}
-        >
-          <option value="all">All</option>
-          <option value="general">General</option>
-          <option value="project">Projects</option>
-          <option value="group">Groups</option>
-          <option value="student">Students</option>
-        </select>
-      </div>
-      {/* Each chat room / student box */}
+    <>
       {filteredChatRooms.map((chatRoom) => (
         <div
           key={chatRoom}
@@ -164,6 +93,6 @@ export default function Sidebar({
           </span>
         </div>
       ))}
-    </div>
+    </>
   );
 }

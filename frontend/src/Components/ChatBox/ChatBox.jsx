@@ -5,7 +5,7 @@ import useFetchMessages from "./Utils/useFetchMessages";
 import handleSubscriptions from "./Utils/handleSubscriptions";
 import HiddenChatBox from "./UI/HiddenChatBox";
 import ChatArea from "./UI/ChatArea/ChatArea";
-import Sidebar from "./UI/Sidebar";
+import Sidebar from "./UI//Sidebar/Sidebar";
 import Header from "./UI/Header";
 import sendReadReceipt from "./Utils/sendReadReceipt";
 import getUnreadMessagesCounters from "./Utils/getUnreadMessagesCounters";
