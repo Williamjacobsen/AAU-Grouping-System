@@ -23,8 +23,6 @@ public class StudentController {
 		this.db = db;
 	}
 
-	// requests
-
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/getSessionStudents/{sessionId}")

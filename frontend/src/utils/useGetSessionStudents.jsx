@@ -1,10 +1,5 @@
 import React, { useState, useEffect } from "react";
 
-/**
- * @returns An object {isLoading, session}.
- * - isLoading is a useState boolean.
- * - students is a useState Student array.
- */
 export default function useGetSessionStudents(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);

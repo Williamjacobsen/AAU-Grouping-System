@@ -10,21 +10,16 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 @Service
 public class AuthService {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 
-	// constructer
-
 	public AuthService(Database db, PasswordEncoder passwordEncoder) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 	}
-
-	// methodes
 
 	public boolean isPasswordCorrect(String password, User user) {
 		return passwordEncoder.matches(password, user.getPasswordHash());
@@ -32,16 +27,16 @@ public class AuthService {
 
 	public User findByEmailOrId(String emailOrId, User.Role role) {
 		switch (role) {
-			case User.Role.COORDINATOR:
+			case User.Role.Coordinator:
 				for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
 					if (coordinator.getEmail().equals(emailOrId)) {
 						return coordinator;
 					}
 				}
 				return null;
-			case User.Role.SUPERVISOR:
+			case User.Role.Supervisor:
 				return db.getSupervisors().getItem(emailOrId);
-			case User.Role.STUDENT:
+			case User.Role.Student:
 				return db.getStudents().getItem(emailOrId);
 			default:
 				return null;

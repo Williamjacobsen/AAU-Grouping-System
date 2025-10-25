@@ -6,6 +6,7 @@ import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Student.StudentService;
 
 import jakarta.annotation.PostConstruct;
 
@@ -19,17 +20,19 @@ public class DatabaseSerializer {
 
 	private final Database db;
 	private final CoordinatorService coordinatorService;
+	private final StudentService studentService;
 
-	public DatabaseSerializer(Database db, CoordinatorService coordinatorService) {
+	public DatabaseSerializer(Database db, CoordinatorService coordinatorService, StudentService studentService) {
 		this.db = db;
 		this.coordinatorService = coordinatorService;
+		this.studentService = studentService;
 	}
 
 	public void saveDatabase() {
 		// Open file stream
 		// (Because we're using try-with-resource statements, we don't need to manually
 		// close the stream via "stream.close()" since try-with-resource automatically
-		// disposees of its resources.)
+		// disposee of its resources.)
 		try (FileOutputStream fileOutput = new FileOutputStream(saveFileName)) {
 			try (ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput)) {
 				// Write database data to file
@@ -44,7 +47,7 @@ public class DatabaseSerializer {
 		// Open file stream
 		// (Because we're using try-with-resource statements, we don't need to manually
 		// close the stream via "stream.close()" since try-with-resource automatically
-		// disposees of its resources.)
+		// disposes of its resources.)
 		try (FileInputStream fileInput = new FileInputStream(saveFileName)) {
 			try (ObjectInputStream objectInput = new ObjectInputStream(fileInput)) {
 				// Read and load saved database data
@@ -76,13 +79,23 @@ public class DatabaseSerializer {
 		Session s2 = new Session(db, c1.sessions, c1, "Session name 2");
 		Session s3 = new Session(db, c2.sessions, c2, "Session name 3");
 
-		Student st1 = new Student(db, s1.students, "s1", "s2", "Student name 1", s1);
-		Student st2 = new Student(db, s1.students, "s2", "s2", "Student name 2", s1);
-		Student st3 = new Student(db, s1.students, "s3", "s3", "Student name 3", s1);
-		Student st4 = new Student(db, s2.students, "s4", "s4", "Student name 4", s2);
-		Student st5 = new Student(db, s2.students, "s5", "s5", "Student name 5", s2);
-		Student st6 = new Student(db, s3.students, "s6", "s6", "Student name 6", s3);
-		Student st7 = new Student(db, s3.students, "s7", "s7", "Student name 7", s3);
+		Student st1 = studentService.addStudent(s1, "st1", "st1", "Student name 1");
+		Student st2 = studentService.addStudent(s1, "st2", "st2", "Student name 2");
+		Student st3 = studentService.addStudent(s1, "st3", "st3", "Student name 3");
+		Student st4 = studentService.addStudent(s2, "st4", "st4", "Student name 4");
+		Student st5 = studentService.addStudent(s2, "st5", "st5", "Student name 5");
+		Student st6 = studentService.addStudent(s3, "st6", "st6", "Student name 6");
+		Student st7 = studentService.addStudent(s3, "st7", "st7", "Student name 7");
+
+		// For testing purposes, console log student logins so we can log in as them
+		System.out.println("---- TEST STUDENT LOGINS ----");
+		System.out.println("Student 1 - Password: st1, ID: " + st1.getId());
+		System.out.println("Student 2 - Password: st2, ID: " + st2.getId());
+		System.out.println("Student 3 - Password: st3, ID: " + st3.getId());
+		System.out.println("Student 4 - Password: st4, ID: " + st4.getId());
+		System.out.println("Student 5 - Password: st5, ID: " + st5.getId());
+		System.out.println("Student 6 - Password: st6, ID: " + st6.getId());
+		System.out.println("Student 7 - Password: st7, ID: " + st7.getId());
 	}
 
 	@PostConstruct

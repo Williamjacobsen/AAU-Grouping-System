@@ -27,7 +27,7 @@ public class Coordinator extends User {
 
 	@Override
 	public Role getRole() {
-		return Role.COORDINATOR;
+		return Role.Coordinator;
 	}
 
 }

@@ -11,14 +11,10 @@ public class CoordinatorService {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 
-	// constructors
-
 	public CoordinatorService(Database db, PasswordEncoder passwordEncoder) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 	}
-
-	// public methods
 
 	public Coordinator addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);

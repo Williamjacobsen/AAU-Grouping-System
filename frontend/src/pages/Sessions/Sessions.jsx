@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../User/useAuth";
+import { useGetUser } from "../../utils/useGetUser";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
@@ -16,10 +16,10 @@ export default function Sessions() {
 		deleteSession
 	} = useSessionManager();
 
-	const { user, loading: loadingAuth } = useAuth();
+	const { user, isLoading: isLoadingUser } = useGetUser();
 	
-	if (loadingAuth) return <>Checking authentication...</>;
-	if (!user) return null;
+	if (isLoadingUser) return <>Checking authentication...</>;
+	if (!user) return navigate("/sign-in");
 
 	const handleCreateSession = async (e) => {
 		e.preventDefault();

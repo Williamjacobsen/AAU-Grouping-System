@@ -11,15 +11,11 @@ public class Supervisor extends User {
 
 	private String sessionId;
 
-	// constructors
-
 	public Supervisor(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
 		super(db, parentItemChildIdList, email, passwordHash, name);
 		this.sessionId = session.getId();
 	}
-
-	// abstract method overrides
 
 	@Override
 	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
@@ -28,7 +24,11 @@ public class Supervisor extends User {
 
 	@Override
 	public Role getRole() {
-		return Role.SUPERVISOR;
+		return Role.Supervisor;
+	}
+
+	public String getSessionId() {
+		return sessionId;
 	}
 
 }

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.User;
 
 @Service
 public class SessionService {
@@ -31,7 +32,7 @@ public class SessionService {
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
-		if (!hasPermission(sessionId, coordinator)) {
+		if (!isCoordinatorAuthorized(sessionId, coordinator)) {
 			return false;
 		}
 
@@ -39,12 +40,43 @@ public class SessionService {
 		return true;
 	}
 
-	public boolean hasPermission(String sessionId, Coordinator coordinator) {
-		Session session = db.getSessions().getItem(sessionId);
-		return session != null && session.getCoordinatorId().equals(coordinator.getId());
+	public Boolean isCoordinatorAuthorized(String sessionId, Coordinator coordinator) {
+		if (coordinator == null || !db.getSessions().getItem(sessionId).coordinatorId.equals(coordinator.getId())) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
-	public boolean isAuthorized(Coordinator coordinator, String sessionId) {
-		return coordinator != null && hasPermission(sessionId, coordinator);
+	public Boolean isUserAuthorized(String sessionId, User user) {
+
+		if (user == null) {
+			return false;
+		}
+
+		switch (user.getRole()) {
+			case User.Role.Coordinator:
+				if (!db.getSessions().getItem(sessionId).coordinatorId.equals(user.getId())) {
+					return false;
+				}
+				break;
+			case User.Role.Supervisor:
+				if (!db.getSupervisors().getItem(user.getId()).getSessionId().equals(sessionId)) {
+					return false;
+				}
+				break;
+			case User.Role.Student:
+				if (!db.getStudents().getItem(user.getId()).getSessionId().equals(sessionId)) {
+					System.out.println("------------- STUDENT DENIED");
+					System.out.println("Incoming session id: " + sessionId);
+					System.out.println("Stored   session id: " + db.getStudents().getItem(user.getId()).getSessionId());
+					return false;
+				}
+				break;
+			default:
+				return false;
+		}
+		return true;
 	}
+
 }

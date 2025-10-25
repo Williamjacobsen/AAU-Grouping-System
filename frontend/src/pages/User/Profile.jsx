@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./useAuth";
+import { useGetUser } from "../../utils/useGetUser";
 import "./User.css";
 
 export default function Profile() {
@@ -11,10 +11,10 @@ export default function Profile() {
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
-	const { user, loading: loadingAuth, setUser } = useAuth();
+	const { user, isLoading: isLoadingUser, setUser } = useGetUser();
 
-	if (loadingAuth) return <>Checking authentication...</>;
-	if (!user) return null;
+	if (isLoadingUser) return <>Checking authentication...</>;
+	if (!user) return navigate("/sign-in");;
 
 	const handleEmailChange = async () => {
 		try {
@@ -69,6 +69,7 @@ export default function Profile() {
 				credentials: "include"
 			})
 			if (response.ok) {
+    		window.location.reload(); // Reload the page (to refresh changes, e.g. to the Header)
 				navigate("/sign-in");
 			} else {
 				const errorMessage = await response.text();
