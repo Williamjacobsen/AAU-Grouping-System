@@ -38,7 +38,7 @@ export default function Status() {
 			<SearchFilterInput/>
 			<SortingDropdown />
 			<ColumnsSelector />
-			<StudentTable students={visibleStudents} columnDefs={selectedColumns} />
+				<StudentTable students={visibleStudents} columnDefs={selectedColumns} sessionId={sessionId} />
 		</>
 	);
 }
