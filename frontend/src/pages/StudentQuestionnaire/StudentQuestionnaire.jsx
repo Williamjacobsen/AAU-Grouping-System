@@ -1,6 +1,7 @@
 import React from "react";
 import { useGetUser } from "../../utils/useGetUser";
 import { useGetSessionByParameter } from "../../utils/useGetSession";
+import useGetSessionStudents from "../../utils/useGetSessionStudents";
 
 export default function StudentQuestionnaire() {
 

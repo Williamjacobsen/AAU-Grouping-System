@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
@@ -97,6 +98,27 @@ public class SessionController {
 				.getItems(db);
 
 		return ResponseEntity.ok(supervisors);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getStudents")
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = db.getSessions().getItem(sessionId);
+		if (session == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
+
+		return ResponseEntity.ok(students);
 	}
 
 	@DeleteMapping("/{sessionId}")

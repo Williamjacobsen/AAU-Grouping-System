@@ -1,15 +1,9 @@
 package com.aau.grouping_system.User.Student;
 
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Authentication.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,22 +23,6 @@ public class StudentController {
 		this.db = db;
 		this.studentService = studentService;
 		this.authService = authService;
-	}
-
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
-	@GetMapping("/getSessionStudents/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable String sessionId,
-			HttpServletRequest request) {
-
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
-
-		return ResponseEntity.ok(students);
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")
