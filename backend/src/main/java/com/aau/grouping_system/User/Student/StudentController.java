@@ -42,7 +42,7 @@ public class StudentController {
 			return ResponseEntity.notFound().build();
 		}
 
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.students.getItems(db);
+		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
 
 		return ResponseEntity.ok(students);
 	}

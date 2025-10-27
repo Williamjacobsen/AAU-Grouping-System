@@ -1,5 +1,7 @@
 package com.aau.grouping_system.Session;
 
+import java.time.LocalDateTime;
+
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
@@ -8,15 +10,14 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
-	public DatabaseItemChildGroup supervisors;
-	public DatabaseItemChildGroup students;
-	public DatabaseItemChildGroup projects;
-	public DatabaseItemChildGroup groups;
+	private String coordinatorId;
 
-	public String coordinatorId;
-	public String name;
-
-	// constructor
+	private DatabaseItemChildGroup supervisors;
+	private DatabaseItemChildGroup students;
+	private DatabaseItemChildGroup projects;
+	private DatabaseItemChildGroup groups;
+	private String name;
+	private LocalDateTime questionnaireDeadline;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Coordinator coordinator, String name) {
@@ -29,14 +30,10 @@ public class Session extends DatabaseItem {
 		this.name = name;
 	}
 
-	// abstract method overrides
-
 	@Override
 	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
 		return db.getSessions();
 	}
-
-	// getters & setters
 
 	public String getCoordinatorId() {
 		return coordinatorId;
@@ -80,6 +77,14 @@ public class Session extends DatabaseItem {
 
 	public void setGroups(DatabaseItemChildGroup groups) {
 		this.groups = groups;
+	}
+
+	public LocalDateTime getQuestionnaireDeadline() {
+		return questionnaireDeadline;
+	}
+
+	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) {
+		this.questionnaireDeadline = questionnaireDeadline;
 	}
 
 }
