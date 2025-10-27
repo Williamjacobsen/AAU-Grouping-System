@@ -18,8 +18,8 @@ public class ProjectController {
 
 	private final Database db; // storage in db (final never changes once set)
 
-	// constructors
-
+	// constructor
+	// dependency injection
 	public ProjectController(Database db) {
 		this.db = db;
 	}

@@ -7,7 +7,7 @@ const ProjectsTable = memo(({ projects }) => { //only re-render if data changes 
         <th>Name:</th>
         <th>Description:</th>
       </tr>
-      {projects!==null&&projects.map((project) => ( //check if we have projects to show. ()=> means do this for every project
+      {projects!==null&&projects.map((project) => ( //check if we have projects to show. .map means do this for every project
         <tr>
           <th>{project.name}</th>
           <th>{project.description}</th>
