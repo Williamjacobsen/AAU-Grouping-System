@@ -49,16 +49,14 @@ public class StudentController {
 
 	@PostMapping("/saveQuestionnaireAnswers")
 	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest request,
-			@RequestBody Map<String, String> body) {
+			@RequestBody Student.Questionnaire body) {
 
 		Student student = authService.getStudentByUser(request);
 		if (student == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		String name = body.get("name");
-
-		studentService.saveQuestionnaireAnswers(student, name);
+		studentService.applyQuestionnaireAnswers(student, body);
 
 		return ResponseEntity.ok("Saved questionnaire answers successfully.");
 	}

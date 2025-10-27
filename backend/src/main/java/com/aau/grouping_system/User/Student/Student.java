@@ -13,16 +13,21 @@ import com.aau.grouping_system.Session.Session;
 public class Student extends User {
 
 	private String sessionId;
+	private Questionnaire questionnaire = new Questionnaire();
 
-	private CopyOnWriteArrayList<String> desiredProjectsIds = new CopyOnWriteArrayList<>();
-	private CopyOnWriteArrayList<String> desiredStudentIds = new CopyOnWriteArrayList<>();
-	private Integer desiredGroupSize = null;
-	private WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
-	private WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
-	private String personalSkills = "";
-	private String specialNeeds = "";
-	private String academicInterests = "";
-	private String comments = "";
+	public static class Questionnaire {
+		// public CopyOnWriteArrayList<String> desiredProjectsIds = new
+		// CopyOnWriteArrayList<>();
+		// public CopyOnWriteArrayList<String> desiredStudentIds = new
+		// CopyOnWriteArrayList<>();
+		// public Integer desiredGroupSize = null;
+		// public WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
+		// public WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
+		public String personalSkills = "";
+		public String specialNeeds = "";
+		public String academicInterests = "";
+		public String comments = "";
+	}
 
 	public Student(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
@@ -54,6 +59,14 @@ public class Student extends User {
 
 	public String getSessionId() {
 		return sessionId;
+	}
+
+	public Questionnaire getQuestionnaire() {
+		return questionnaire;
+	}
+
+	public void setQuestionnaire(Questionnaire questionnaire) {
+		this.questionnaire = questionnaire;
 	}
 
 }

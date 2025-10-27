@@ -1,5 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
 import { useGetUser } from "../../utils/useGetUser";
 
 export default function StudentQuestionnaire() {
@@ -15,9 +14,9 @@ export default function StudentQuestionnaire() {
 			event.preventDefault(); // Prevent page from refreshing on submit
 			
 			const formData = new FormData(event.currentTarget);
-			const name = formData.get("name")
-			
-			await requestSaveQuestionnaireAnswers(name);
+			const updatedQuestionnaire = Object.fromEntries(formData);
+
+			await requestSaveQuestionnaireAnswers(updatedQuestionnaire);
 			
 			window.location.reload(); // Reload the page (to refresh changes)
 		} catch (error) {
@@ -25,7 +24,7 @@ export default function StudentQuestionnaire() {
 		}
 	}
 
-	async function requestSaveQuestionnaireAnswers(name) {
+	async function requestSaveQuestionnaireAnswers(updatedQuestionnaire) {
 		try {
 			const response = await fetch(
 				`http://localhost:8080/student/saveQuestionnaireAnswers`,
@@ -35,9 +34,9 @@ export default function StudentQuestionnaire() {
 					headers: {
 						"Content-Type": "application/json",
 					},
-					body: JSON.stringify({
-						name,
-					}),
+					body: JSON.stringify(
+						updatedQuestionnaire
+					),
 				}
 			);
 			
@@ -54,8 +53,20 @@ export default function StudentQuestionnaire() {
 		<>
 			<form onSubmit={saveQuestionnaireAnswers}>
 				<label>
-					Name: 
-					<input name="name" defaultValue={user.name} required maxLength={150} />
+					Personal skills: 
+					<textarea name="personalSkills" defaultValue={user.questionnaire.personalSkills} required maxLength={200} />
+				</label>
+				<label>
+					Special needs: 
+					<textarea name="specialNeeds" defaultValue={user.questionnaire.specialNeeds} required maxLength={200} />
+				</label>
+				<label>
+					Academic interests: 
+					<textarea name="academicInterests" defaultValue={user.questionnaire.academicInterests} required maxLength={200} />
+				</label>
+				<label>
+					Other commens: 
+					<textarea name="comments" defaultValue={user.questionnaire.comments} required maxLength={200} />
 				</label>
 				<input type="submit" value="Apply changes" />
 			</form>
