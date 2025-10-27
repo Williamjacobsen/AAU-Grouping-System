@@ -16,13 +16,14 @@ public class Student extends User {
 	private Questionnaire questionnaire = new Questionnaire();
 
 	public static class Questionnaire {
-		// public CopyOnWriteArrayList<String> desiredProjectsIds = new
-		// CopyOnWriteArrayList<>();
-		// public CopyOnWriteArrayList<String> desiredStudentIds = new
-		// CopyOnWriteArrayList<>();
-		// public Integer desiredGroupSize = null;
-		// public WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
-		// public WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
+		public CopyOnWriteArrayList<String> desiredProjectsIds = new CopyOnWriteArrayList<>();
+		public CopyOnWriteArrayList<String> desiredStudentIds = new CopyOnWriteArrayList<>();
+		/// -1 means no preference
+		public Integer desiredGroupSizeMin = -1;
+		/// -1 means no preference
+		public Integer desiredGroupSizeMax = -1;
+		public WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
+		public WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
 		public String personalSkills = "";
 		public String specialNeeds = "";
 		public String academicInterests = "";
