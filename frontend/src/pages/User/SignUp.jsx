@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { handleSignUp } from "./useAuth";
 import "./User.css";
 
 export default function SignUp() {
@@ -11,6 +10,25 @@ export default function SignUp() {
 	const [email, setEmail] = useState("");
 	const [name, setName] = useState("");
 	const [error, setError] = useState("");
+
+	const handleSignUp = async (password, email, name, setError, navigate) => {
+		try {
+			const response = await fetch("http://localhost:8080/coordinator/signUp", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ email, password, name }),
+				credentials: "include"
+			})
+			if (response.ok) {
+				navigate("/profile");
+			} else {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+			}
+		} catch (e) {
+			setError(e.message);
+		}
+	}
 
 	return (
 
@@ -47,9 +65,9 @@ export default function SignUp() {
 				</button>
 			</div>
 		</div>
-
-
 	);
+	
 
 
 }
+

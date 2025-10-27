@@ -18,20 +18,16 @@ public class CoordinatorController {
 
 	private final CoordinatorService service;
 
-	// constructors
-
 	public CoordinatorController(CoordinatorService coordinatorService) {
 		this.service = coordinatorService;
 	}
 
-	// requests
-
 	@PostMapping("/signUp")
-	public ResponseEntity<String> signUp(@RequestBody Map<String, String> request) {
+	public ResponseEntity<String> signUp(@RequestBody Map<String, String> body) {
 
-		String email = request.get("email");
-		String password = request.get("password");
-		String name = request.get("name");
+		String email = body.get("email");
+		String password = body.get("password");
+		String name = body.get("name");
 
 		if (service.isEmailDuplicate(email)) {
 			return ResponseEntity
@@ -47,7 +43,7 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> body, HttpServletRequest request) {
+	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
 		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
 		if (user == null) {
@@ -72,7 +68,7 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
+	public ResponseEntity<String> modifyPassword(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
 		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
 		if (user == null) {

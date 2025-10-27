@@ -9,11 +9,12 @@ public abstract class User extends DatabaseItem {
 	private String email;
 	private String passwordHash;
 	private String name;
+	private Role role;
 
 	public enum Role {
-		COORDINATOR,
-		SUPERVISOR,
-		STUDENT;
+		Coordinator,
+		Supervisor,
+		Student;
 	}
 
 	// abstract methods
@@ -28,6 +29,7 @@ public abstract class User extends DatabaseItem {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;
+		this.role = getRole();
 	}
 
 	// getters & setters

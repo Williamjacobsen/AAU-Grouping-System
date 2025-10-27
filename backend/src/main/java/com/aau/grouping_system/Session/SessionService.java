@@ -6,14 +6,18 @@ import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Authentication.AuthService;
 
 @Service
 public class SessionService {
 
 	private final Database db;
+	private final AuthService authService;
 
-	public SessionService(Database db) {
+	public SessionService(Database db, AuthService authService) {
 		this.db = db;
+		this.authService = authService;
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
@@ -31,7 +35,7 @@ public class SessionService {
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
-		if (!hasPermission(sessionId, coordinator)) {
+		if (!isUserAuthorizedSession(sessionId, coordinator)) {
 			return false;
 		}
 
@@ -39,12 +43,32 @@ public class SessionService {
 		return true;
 	}
 
-	public boolean hasPermission(String sessionId, Coordinator coordinator) {
-		Session session = db.getSessions().getItem(sessionId);
-		return session != null && session.getCoordinatorId().equals(coordinator.getId());
+	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
+
+		if (user == null || !authService.hasAuthorizedRole(user, authorizedRoles)) {
+			return false;
+		}
+
+		switch (user.getRole()) {
+			case User.Role.Coordinator:
+				return db.getSessions().getItem(sessionId).coordinatorId.equals(user.getId());
+			case User.Role.Supervisor:
+				return db.getSupervisors().getItem(user.getId()).getSessionId().equals(sessionId);
+			case User.Role.Student:
+				return db.getStudents().getItem(user.getId()).getSessionId().equals(sessionId);
+			default:
+				return false;
+		}
 	}
 
-	public boolean isAuthorized(Coordinator coordinator, String sessionId) {
-		return coordinator != null && hasPermission(sessionId, coordinator);
+	public Boolean isUserAuthorizedSession(String sessionId, User user) {
+		User.Role[] authorizedRoles = { User.Role.Coordinator, User.Role.Supervisor, User.Role.Student };
+		return isUserAuthorizedSession(sessionId, user, authorizedRoles);
 	}
+
+	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
+		User.Role[] authorizedRoles = { User.Role.Coordinator };
+		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
+	}
+
 }

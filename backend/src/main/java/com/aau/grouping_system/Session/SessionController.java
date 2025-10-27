@@ -8,6 +8,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,24 +19,20 @@ import jakarta.servlet.http.HttpSession;
 @RequestMapping("/sessions")
 public class SessionController {
 
-	private final SessionService sessionPageService;
+	private final Database db;
+	private final SessionService sessionService;
+	private final AuthService authService;
 
-	public SessionController(SessionService sessionPageService) {
-		this.sessionPageService = sessionPageService;
-	}
-
-	private Coordinator getCurrentCoordinator(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if (session == null) {
-			return null;
-		}
-		return (Coordinator) session.getAttribute("user");
+	public SessionController(Database db, SessionService sessionService, AuthService authService) {
+		this.db = db;
+		this.sessionService = sessionService;
+		this.authService = authService;
 	}
 
 	@PostMapping
 	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request,
 			HttpServletRequest httpRequest) {
-		Coordinator coordinator = getCurrentCoordinator(httpRequest);
+		Coordinator coordinator = authService.getCoordinatorByUser(httpRequest);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -44,7 +43,7 @@ public class SessionController {
 		}
 
 		try {
-			Session newSession = sessionPageService.createSession(sessionName.trim(), coordinator);
+			Session newSession = sessionService.createSession(sessionName.trim(), coordinator);
 			return ResponseEntity.status(HttpStatus.CREATED).body(newSession);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -53,30 +52,26 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		CopyOnWriteArrayList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
+		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
 
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
 
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		Session session = sessionPageService.getSession(sessionId);
+		Session session = sessionService.getSession(sessionId);
 		if (session == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
 		return ResponseEntity.ok(session);
@@ -84,12 +79,12 @@ public class SessionController {
 
 	@DeleteMapping("/{sessionId}")
 	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		boolean deleted = sessionPageService.deleteSession(sessionId, coordinator);
+		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
 			return ResponseEntity.ok("Session deleted successfully");
 		} else {
@@ -97,22 +92,4 @@ public class SessionController {
 		}
 	}
 
-	@PostMapping("/{sessionId}/open")
-	public ResponseEntity<String> openSession(@PathVariable String sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
-
-		Session session = sessionPageService.getSession(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		return ResponseEntity.ok("/status/" + sessionId);
-	}
 }
