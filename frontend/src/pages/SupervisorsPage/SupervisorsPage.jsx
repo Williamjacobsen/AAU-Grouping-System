@@ -176,7 +176,7 @@ export default function SupervisorsPage() {
 			<div className="supervisors-header">
 				<h2>Session Supervisors</h2>
 				<button 
-					className="add-supervisor-btn"
+					className="add-supervisor-button"
 					onClick={() => setShowAddModal(true)}
 				>
 					Add Supervisor
@@ -204,7 +204,7 @@ export default function SupervisorsPage() {
 									<td>{supervisor.email}</td>
 									<td>
 										<button
-											className="remove-btn"
+											className="remove-button"
 											onClick={() => openRemoveModal(supervisor)}
 										>
 											Remove
@@ -223,7 +223,7 @@ export default function SupervisorsPage() {
 					<div className="modal" onClick={(e) => e.stopPropagation()}>
 						<div className="modal-header">
 							<h3>Add Supervisor</h3>
-							<button className="close-btn" onClick={closeModals}>×</button>
+							<button className="close-button" onClick={closeModals}>×</button>
 						</div>
 						<form onSubmit={handleAddSupervisor}>
 							<div className="modal-body">
@@ -241,7 +241,7 @@ export default function SupervisorsPage() {
 							<div className="modal-footer">
 								<button 
 									type="button" 
-									className="cancel-btn" 
+									className="cancel-button" 
 									onClick={closeModals}
 									disabled={addingSupervisor}
 								>
@@ -249,7 +249,7 @@ export default function SupervisorsPage() {
 								</button>
 								<button 
 									type="submit" 
-									className="confirm-btn"
+									className="confirm-button"
 									disabled={addingSupervisor}
 								>
 									{addingSupervisor ? "Adding..." : "Add Supervisor"}
@@ -266,7 +266,7 @@ export default function SupervisorsPage() {
 					<div className="modal" onClick={(e) => e.stopPropagation()}>
 						<div className="modal-header">
 							<h3>Remove Supervisor</h3>
-							<button className="close-btn" onClick={closeModals}>×</button>
+							<button className="close-button" onClick={closeModals}>×</button>
 						</div>
 						<div className="modal-body">
 							<p>
@@ -278,7 +278,7 @@ export default function SupervisorsPage() {
 						<div className="modal-footer">
 							<button 
 								type="button" 
-								className="cancel-btn" 
+								className="cancel-button" 
 								onClick={closeModals}
 								disabled={removingSupervisor}
 							>
@@ -286,7 +286,7 @@ export default function SupervisorsPage() {
 							</button>
 							<button 
 								type="button" 
-								className="danger-btn"
+								className="danger-button"
 								onClick={handleRemoveSupervisor}
 								disabled={removingSupervisor}
 							>

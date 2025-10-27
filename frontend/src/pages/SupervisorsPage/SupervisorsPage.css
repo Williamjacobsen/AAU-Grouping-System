@@ -19,7 +19,7 @@
 	font-size: 24px;
 }
 
-.add-supervisor-btn {
+.add-supervisor-button {
 	background-color: #007bff;
 	color: white;
 	border: none;
@@ -30,7 +30,7 @@
 	transition: background-color 0.3s;
 }
 
-.add-supervisor-btn:hover {
+.add-supervisor-button:hover {
 	background-color: #0056b3;
 }
 
@@ -74,7 +74,7 @@
 	background-color: #f8f9fa;
 }
 
-.remove-btn {
+.remove-button {
 	background-color: #dc3545;
 	color: white;
 	border: none;
@@ -85,7 +85,7 @@
 	transition: background-color 0.3s;
 }
 
-.remove-btn:hover {
+.remove-button:hover {
 	background-color: #c82333;
 }
 
@@ -143,7 +143,7 @@
 	color: #333;
 }
 
-.close-btn {
+.close-button {
 	background: none;
 	border: none;
 	font-size: 24px;
@@ -157,7 +157,7 @@
 	justify-content: center;
 }
 
-.close-btn:hover {
+.close-button:hover {
 	color: #333;
 }
 
@@ -209,7 +209,7 @@
 	border-top: 1px solid #e0e0e0;
 }
 
-.cancel-btn {
+.cancel-button {
 	background-color: #6c757d;
 	color: white;
 	border: none;
@@ -220,11 +220,11 @@
 	transition: background-color 0.3s;
 }
 
-.cancel-btn:hover {
+.cancel-button:hover {
 	background-color: #5a6268;
 }
 
-.confirm-btn {
+.confirm-button {
 	background-color: #007bff;
 	color: white;
 	border: none;
@@ -235,11 +235,11 @@
 	transition: background-color 0.3s;
 }
 
-.confirm-btn:hover {
+.confirm-button:hover {
 	background-color: #0056b3;
 }
 
-.danger-btn {
+.danger-button {
 	background-color: #dc3545;
 	color: white;
 	border: none;
@@ -250,19 +250,19 @@
 	transition: background-color 0.3s;
 }
 
-.danger-btn:hover {
+.danger-button:hover {
 	background-color: #c82333;
 }
 
-.cancel-btn:disabled,
-.confirm-btn:disabled,
-.danger-btn:disabled {
+.cancel-button:disabled,
+.confirm-button:disabled,
+.danger-button:disabled {
 	opacity: 0.6;
 	cursor: not-allowed;
 }
 
-.cancel-btn:disabled:hover,
-.confirm-btn:disabled:hover,
-.danger-btn:disabled:hover {
+.cancel-button:disabled:hover,
+.confirm-button:disabled:hover,
+.danger-button:disabled:hover {
 	background-color: inherit;
 }
