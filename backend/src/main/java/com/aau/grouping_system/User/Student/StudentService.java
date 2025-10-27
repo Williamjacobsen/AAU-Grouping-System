@@ -21,4 +21,13 @@ public class StudentService {
 		String passwordHash = passwordEncoder.encode(password);
 		return new Student(db, session.students, email, passwordHash, name, session);
 	}
+
+	public void saveQuestionnaireAnswers(Student student, String name) {
+		// TODO: Test: This might not work beceause we're not getting the student from
+		// the map first before changing it. This student is just from getAttribute from
+		// the auth session, so it might not work. If it doesn't just get teh student
+		// from the database map first.
+		student.setName(name);
+		// TODO: Do stuff here
+	}
 }

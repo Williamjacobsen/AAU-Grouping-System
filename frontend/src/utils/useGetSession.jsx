@@ -65,7 +65,7 @@ export function useGetSessionByUser(user) {
 	return { isLoading, session };
 }
 
-/// Session from user is prioritized over session from URL parameter.
+/** Session from user is prioritized over session from URL parameter. */
 export function useGetSessionByUserOrParameter(user) {
 
 	const { isLoading: IsLoadingSessionByParameter, session: sessionByParameter } = useGetSessionByParameter();

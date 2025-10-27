@@ -7,14 +7,17 @@ import org.springframework.stereotype.Service;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Authentication.AuthService;
 
 @Service
 public class SessionService {
 
 	private final Database db;
+	private final AuthService authService;
 
-	public SessionService(Database db) {
+	public SessionService(Database db, AuthService authService) {
 		this.db = db;
+		this.authService = authService;
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
@@ -32,7 +35,7 @@ public class SessionService {
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
-		if (!isCoordinatorAuthorized(sessionId, coordinator)) {
+		if (!isUserAuthorizedSession(sessionId, coordinator)) {
 			return false;
 		}
 
@@ -40,43 +43,32 @@ public class SessionService {
 		return true;
 	}
 
-	public Boolean isCoordinatorAuthorized(String sessionId, Coordinator coordinator) {
-		if (coordinator == null || !db.getSessions().getItem(sessionId).coordinatorId.equals(coordinator.getId())) {
-			return false;
-		} else {
-			return true;
-		}
-	}
+	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
 
-	public Boolean isUserAuthorized(String sessionId, User user) {
-
-		if (user == null) {
+		if (user == null || !authService.hasAuthorizedRole(user, authorizedRoles)) {
 			return false;
 		}
 
 		switch (user.getRole()) {
 			case User.Role.Coordinator:
-				if (!db.getSessions().getItem(sessionId).coordinatorId.equals(user.getId())) {
-					return false;
-				}
-				break;
+				return db.getSessions().getItem(sessionId).coordinatorId.equals(user.getId());
 			case User.Role.Supervisor:
-				if (!db.getSupervisors().getItem(user.getId()).getSessionId().equals(sessionId)) {
-					return false;
-				}
-				break;
+				return db.getSupervisors().getItem(user.getId()).getSessionId().equals(sessionId);
 			case User.Role.Student:
-				if (!db.getStudents().getItem(user.getId()).getSessionId().equals(sessionId)) {
-					System.out.println("------------- STUDENT DENIED");
-					System.out.println("Incoming session id: " + sessionId);
-					System.out.println("Stored   session id: " + db.getStudents().getItem(user.getId()).getSessionId());
-					return false;
-				}
-				break;
+				return db.getStudents().getItem(user.getId()).getSessionId().equals(sessionId);
 			default:
 				return false;
 		}
-		return true;
+	}
+
+	public Boolean isUserAuthorizedSession(String sessionId, User user) {
+		User.Role[] authorizedRoles = { User.Role.Coordinator, User.Role.Supervisor, User.Role.Student };
+		return isUserAuthorizedSession(sessionId, user, authorizedRoles);
+	}
+
+	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
+		User.Role[] authorizedRoles = { User.Role.Coordinator };
+		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
 	}
 
 }

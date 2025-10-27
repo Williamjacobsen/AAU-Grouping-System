@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
 
@@ -19,34 +20,19 @@ import jakarta.servlet.http.HttpSession;
 public class SessionController {
 
 	private final Database db;
-	private final SessionService service;
+	private final SessionService sessionService;
+	private final AuthService authService;
 
-	public SessionController(Database db, SessionService service) {
+	public SessionController(Database db, SessionService sessionService, AuthService authService) {
 		this.db = db;
-		this.service = service;
-	}
-
-	public User getUser(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if (session == null) {
-			return null;
-		}
-		return (User) session.getAttribute("user");
-	}
-
-	private Coordinator getCoordinatorByUser(HttpServletRequest request) {
-		User user = getUser(request);
-		if (user instanceof Coordinator) {
-			return (Coordinator) user;
-		} else {
-			return null;
-		}
+		this.sessionService = sessionService;
+		this.authService = authService;
 	}
 
 	@PostMapping
 	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request,
 			HttpServletRequest httpRequest) {
-		Coordinator coordinator = getCoordinatorByUser(httpRequest);
+		Coordinator coordinator = authService.getCoordinatorByUser(httpRequest);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -57,7 +43,7 @@ public class SessionController {
 		}
 
 		try {
-			Session newSession = service.createSession(sessionName.trim(), coordinator);
+			Session newSession = sessionService.createSession(sessionName.trim(), coordinator);
 			return ResponseEntity.status(HttpStatus.CREATED).body(newSession);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -66,25 +52,25 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
-		Coordinator coordinator = getCoordinatorByUser(request);
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		CopyOnWriteArrayList<Session> sessions = service.getSessionsByCoordinator(coordinator);
+		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
 
 	@GetMapping("/{sessionId}")
 	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
 
-		Session session = service.getSession(sessionId);
+		Session session = sessionService.getSession(sessionId);
 		if (session == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		User user = getUser(request);
-		if (user == null || !service.isUserAuthorized(sessionId, user)) {
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
@@ -93,12 +79,12 @@ public class SessionController {
 
 	@DeleteMapping("/{sessionId}")
 	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCoordinatorByUser(request);
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		boolean deleted = service.deleteSession(sessionId, coordinator);
+		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
 			return ResponseEntity.ok("Session deleted successfully");
 		} else {
