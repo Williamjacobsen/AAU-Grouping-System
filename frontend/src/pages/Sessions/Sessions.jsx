@@ -38,6 +38,10 @@ export default function Sessions() {
 		navigate(`/sessions/${sessionId}/setup`);
 	};
 
+	const manageSupervisors = (sessionId) => {
+		navigate(`/session/${sessionId}/supervisors`);
+	};
+
 	return (
 		<div className="session-page">
 			<div className="session-page-header">
@@ -101,6 +105,13 @@ export default function Sessions() {
 										disabled={loading}
 									>
 										Edit Setup
+									</button>
+									<button
+										onClick={() => manageSupervisors(session.id)}
+										className="supervisors-button"
+										disabled={loading}
+									>
+										Manage Supervisors
 									</button>
 									<button
 										onClick={() => handleDeleteSession(session.id)}
