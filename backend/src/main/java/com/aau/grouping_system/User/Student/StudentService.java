@@ -19,7 +19,7 @@ public class StudentService {
 
 	public Student addStudent(Session session, String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		return new Student(db, session.students, email, passwordHash, name, session);
+		return new Student(db, session.getStudents(), email, passwordHash, name, session);
 	}
 
 	public void applyQuestionnaireAnswers(Student student, Student.Questionnaire updatedQuestionnaire) {

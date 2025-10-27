@@ -51,7 +51,7 @@ public class SessionService {
 
 		switch (user.getRole()) {
 			case User.Role.Coordinator:
-				return db.getSessions().getItem(sessionId).coordinatorId.equals(user.getId());
+				return db.getSessions().getItem(sessionId).getCoordinatorId().equals(user.getId());
 			case User.Role.Supervisor:
 				return db.getSupervisors().getItem(user.getId()).getSessionId().equals(sessionId);
 			case User.Role.Student:
@@ -69,6 +69,33 @@ public class SessionService {
 	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
 		User.Role[] authorizedRoles = { User.Role.Coordinator };
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
+	}
+
+	// 1) Tilføj selv parametre til den data, som du har ekstraheret i
+	// StudentController.java.
+	public void applySetup(Session session) {
+
+		// 2) Lige nu er din variabel "studentEmails" bare en lang String.
+		// Hver email er separeret af en "\n" (AKA new line character).
+		// Du skal nu finde en måde at opdele hver email i deres eget String-objekt,
+		// som du så indsætter i en liste (brug CopyOnWriteArrayList<String>).
+
+		// 3) Gør det samme med supervisorEmails.
+
+		// 4) Lav et enhanced for-loop, som cycler igennem hver email i din liste af
+		// student emails.
+		// For hver email skal du bare lave et nyt Student-objekt (så "new
+		// Student(.......)").
+		// Dette tilføjer automatisk disse students til din session.
+		// Hint: Tjek "fillDatabaseWithExampleData"-funktionen i
+		// "DatabaseSerializer.java". Her er nemlig et eksempel på, at jeg laver nye
+		// Student-objekter.
+
+		// 5) Gør det samme med din liste af supervisor emails.
+
+		// 6) Sæt resten af den nye data ind i din session.
+		// Hint: Er meget simpelt. Bare gør, fx "session.setName(newName)"
+
 	}
 
 }

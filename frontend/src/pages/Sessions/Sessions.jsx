@@ -41,7 +41,7 @@ export default function Sessions() {
 	};
 
 	const editSetup = (sessionId) => {
-		navigate(`/sessions/${sessionId}/setup`);
+		navigate(`/session/${sessionId}/setup`);
 	};
 
 	return (
