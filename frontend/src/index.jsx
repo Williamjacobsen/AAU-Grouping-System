@@ -14,6 +14,7 @@ import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
 import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire"
+import SessionSetupPage from "./pages/SessionSetupPage/SessionSetupPage";
 
 export default function App() {
 	return (
@@ -26,6 +27,7 @@ export default function App() {
 						<Route path="sign-up" element={<SignUp />} />
 						<Route path="profile" element={<Profile />} />
 						<Route path="sessions" element={<Sessions />} />
+						<Route path="session-setup" element={<SessionSetupPage />} />
 						<Route path="session/:sessionId" element={<Outlet/>}>
 							<Route path="status" element={<Status />} />
 							<Route path="projects" element={<Projects />} />
