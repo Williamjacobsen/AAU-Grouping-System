@@ -3,49 +3,49 @@ import React, { useMemo, memo } from "react";
 
 const StudentTable = memo(({ students, columnDefs, sessionId }) => {
 
-  const columns = useMemo(() => {
-    if (!students || students.length === 0) return null;
+	const columns = useMemo(() => {
+		if (!students || students.length === 0) return null;
 
-    // If columnDefs is provided (array of { label, accessor }), use it.
-    if (columnDefs && Array.isArray(columnDefs) && columnDefs.length > 0) {
-      return columnDefs.map(def => ({
-        name: def.label ?? def.name,
-        rows: students.map(def.accessor)
-      }));
-    }
+		// If columnDefs is provided (array of { label, accessor }), use it.
+		if (columnDefs && Array.isArray(columnDefs) && columnDefs.length > 0) {
+			return columnDefs.map(def => ({
+				name: def.label ?? def.name,
+				rows: students.map(def.accessor)
+			}));
+		}
 
-    // Default columns
-    return [
-      createColumn("Name", students.map(student => student.name)),
-      createColumn("Group", students.map(student => student.group?.number)),
-      createColumn("Group project", students.map(student => student.group?.project))
-    ];
+		// Default columns
+		return [
+			createColumn("Name", students.map(student => student.name)),
+			createColumn("Group", students.map(student => student.group?.number)),
+			createColumn("Group project", students.map(student => student.group?.project))
+		];
 
-    function createColumn(columnName, values) {
-      return {
-        name: columnName,
-        rows: values
-      };
-    }
-  }, [students, columnDefs]);
+		function createColumn(columnName, values) {
+			return {
+				name: columnName,
+				rows: values
+			};
+		}
+	}, [students, columnDefs]);
 
-  if (!columns || columns.length === 0) {
-    return <div>List of students is empty.</div>;
-  }
+	if (!columns || columns.length === 0) {
+		return <div>List of students is empty.</div>;
+	}
 
-  return (
-    <table>
-      <thead>
-        <tr>
-          {columns.map((column, columnIndex) => (
-            <th key={columnIndex}>
-              {column.name}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-					// Why "columns[0]"?: It gets an array of the first rows of the first column,
+	return (
+		<table>
+			<thead>
+				<tr>
+					{columns.map((column, columnIndex) => (
+						<th key={columnIndex}>
+							{column.name}
+						</th>
+					))}
+				</tr>
+			</thead>
+			<tbody>
+				{/* // Why "columns[0]"?: It gets an array of the first rows of the first column,
 					// and since each column has the same amount of rows, this basically works
 					// as a for loop on the amount of rows in a column.
 					// ---
@@ -54,27 +54,27 @@ const StudentTable = memo(({ students, columnDefs, sessionId }) => {
 					// This is useful in cases where the item itself is irrelevant to your logic."
 					// ---
 					// Why "key"?: "You should add a key to each child as well as each element inside children.
-					// This way React can handle the minimal DOM change." And else you get a warning.
-  {columns[0].rows.map((_, rowIndex) => (
-          <tr
-            key={rowIndex}
-            style={{ cursor: 'pointer' }}
-            onClick={() => {
-              const studentId = students?.[rowIndex]?.id ?? rowIndex;
-              const sid = sessionId ?? '';
-              window.location.assign(`/session/${sid}/student/${studentId}`);
-            }}
-          >
-            {columns.map((column, columnIndex) => (
-              <td key={columnIndex}>
-                {column.rows[rowIndex]}
-              </td>
-            ))}
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  );
+					// This way React can handle the minimal DOM change." And else you get a warning. */}
+				{columns[0].rows.map((_, rowIndex) => (
+					<tr
+						key={rowIndex}
+						style={{ cursor: 'pointer' }}
+						onClick={() => {
+							const studentId = students?.[rowIndex]?.id ?? rowIndex;
+							const sid = sessionId ?? '';
+							window.location.assign(`/session/${sid}/student/${studentId}`);
+						}}
+					>
+						{columns.map((column, columnIndex) => (
+							<td key={columnIndex}>
+								{column.rows[rowIndex]}
+							</td>
+						))}
+					</tr>
+				))}
+			</tbody>
+		</table>
+	);
 });
 
 export default StudentTable;
