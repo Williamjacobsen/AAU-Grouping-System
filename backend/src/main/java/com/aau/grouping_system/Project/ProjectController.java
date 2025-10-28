@@ -29,19 +29,19 @@ public class ProjectController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here despite Java's invariance of generics.
 	@GetMapping("/getSessionProjects/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable Integer sessionId) {
-	 Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
+		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
-    // Check if session exists if not throw error
-    if (session == null) {
-		return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(null);
-    }
+		// Check if session exists if not throw error
+		if (session == null) {
+			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(null);
+		}
 
-    // Get that session’s projects and type cast
-    CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.projects.getItems();
+		// Get that session’s projects and type cast
+		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
 
-    // Return them with 200 ok 
-    return ResponseEntity.ok(projects);
+		// Return them with 200 ok
+		return ResponseEntity.ok(projects);
 	}
 
 }

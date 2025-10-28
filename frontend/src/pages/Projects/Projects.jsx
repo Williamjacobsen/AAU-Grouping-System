@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 
-import useGetSessionProjects from "./useGetSessionProjects";
+import useGetSessionProjects from "../../utils/useGetSessionProjects";
 import ProjectsTable from "./ProjectsTable";
 
 export default function Project() {
