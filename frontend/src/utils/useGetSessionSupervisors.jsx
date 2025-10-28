@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 
-export default function useGetSessionStudents(sessionId) {
+export default function useGetSessionSupervisors(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);
-	const [students, setStudents] = useState(null);
+	const [supervisors, setSupervisors] = useState(null);
 
 	useEffect(() => {
 		(async () => {
 			try {
-				setStudents(await requestSessionStudents(sessionId));
+				setSupervisors(await requestSessionSupervisors(sessionId));
 				setIsLoading(false);
 			} catch (error) {
 				alert(error);
@@ -16,10 +16,10 @@ export default function useGetSessionStudents(sessionId) {
 		})();
 	}, [sessionId]);
 
-	async function requestSessionStudents(sessionId) {
+	async function requestSessionSupervisors(sessionId) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/student/getSessionStudents/${sessionId}`,
+				`http://localhost:8080/sessions/${sessionId}/getSupervisors`,
 				{
 					method: "GET",
 					credentials: "include",
@@ -38,6 +38,6 @@ export default function useGetSessionStudents(sessionId) {
 		}
 	}
 
-	return { isLoading, students };
+	return { isLoading, supervisors };
 }
 

@@ -27,7 +27,7 @@ public class ProjectController {
 	// requests
 
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+																	// true here despite Java's invariance of generics.
 	@GetMapping("/getSessionProjects/{sessionId}")
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable Integer sessionId) {
 	 Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id

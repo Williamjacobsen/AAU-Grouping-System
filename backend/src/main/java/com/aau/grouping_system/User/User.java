@@ -1,20 +1,20 @@
 package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public abstract class User extends DatabaseItem {
 
 	private String email;
 	private String passwordHash;
 	private String name;
+	private Role role;
 
 	public enum Role {
-		UNDEFINED,
-		COORDINATOR,
-		SUPERVISOR,
-		STUDENT
+		Coordinator,
+		Supervisor,
+		Student;
 	}
 
 	// abstract methods
@@ -23,12 +23,13 @@ public abstract class User extends DatabaseItem {
 
 	// constructors
 
-	public User(DatabaseMap<? extends DatabaseItem> parentMap, DatabaseIdList parentReferences,
+	public User(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name) {
-		super(parentMap, parentReferences);
+		super(db, parentItemChildIdList);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;
+		this.role = getRole();
 	}
 
 	// getters & setters

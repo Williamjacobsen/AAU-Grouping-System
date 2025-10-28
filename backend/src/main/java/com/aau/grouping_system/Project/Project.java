@@ -2,20 +2,26 @@ package com.aau.grouping_system.Project;
 
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseIdList;
-// new class Project, inherits from DatabaseItem
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+
 public class Project extends DatabaseItem {
-// attributes
+	// attributes
 	private String name;
 	private String description;
 
-	// constructor (initial values)
-	public Project(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences, String name,
-			String description) {
-		super(parentMap, parentReferences); // parent class
+	// constructors
+
+	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
+			String name, String description) {
+		super(db, parentItemChildIdList);
 		this.name = name;
 		this.description = description;
+	}
+
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getProjects();
 	}
 
 	// getters & setters

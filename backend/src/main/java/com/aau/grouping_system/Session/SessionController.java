@@ -8,32 +8,31 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/sessions")
 public class SessionController {
 
-	private final SessionService sessionPageService;
+	private final Database db;
+	private final SessionService sessionService;
+	private final AuthService authService;
 
-	public SessionController(SessionService sessionPageService) {
-		this.sessionPageService = sessionPageService;
-	}
-
-	private Coordinator getCurrentCoordinator(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if (session == null) {
-			return null;
-		}
-		return (Coordinator) session.getAttribute("user");
+	public SessionController(Database db, SessionService sessionService, AuthService authService) {
+		this.db = db;
+		this.sessionService = sessionService;
+		this.authService = authService;
 	}
 
 	@PostMapping
 	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request,
 			HttpServletRequest httpRequest) {
-		Coordinator coordinator = getCurrentCoordinator(httpRequest);
+		Coordinator coordinator = authService.getCoordinatorByUser(httpRequest);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -44,7 +43,7 @@ public class SessionController {
 		}
 
 		try {
-			Session newSession = sessionPageService.createSession(sessionName.trim(), coordinator);
+			Session newSession = sessionService.createSession(sessionName.trim(), coordinator);
 			return ResponseEntity.status(HttpStatus.CREATED).body(newSession);
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -53,43 +52,61 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		CopyOnWriteArrayList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
+		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
 
 	@GetMapping("/{sessionId}")
-	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {
+	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
 
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		Session session = sessionPageService.getSession(sessionId);
+		Session session = sessionService.getSession(sessionId);
 		if (session == null) {
 			return ResponseEntity.notFound().build();
 		}
 
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
 		return ResponseEntity.ok(session);
 	}
 
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getSupervisors")
+	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = db.getSessions().getItem(sessionId);
+		if (session == null) {
+			return ResponseEntity.notFound().build();
+		}
+
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+
+		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
+
+		return ResponseEntity.ok(supervisors);
+	}
+
 	@DeleteMapping("/{sessionId}")
-	public ResponseEntity<String> deleteSession(@PathVariable Integer sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
 
-		boolean deleted = sessionPageService.deleteSession(sessionId, coordinator);
+		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
 			return ResponseEntity.ok("Session deleted successfully");
 		} else {
@@ -97,22 +114,29 @@ public class SessionController {
 		}
 	}
 
-	@PostMapping("/{sessionId}/open")
-	public ResponseEntity<String> openSession(@PathVariable Integer sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+	@PostMapping("/{sessionId}/saveSetup")
+	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
+			@RequestBody Map<String, String> request) {
 
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
+		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
+		// Hint: Tjek linje 86-89 i denne fil.
 
-		Session session = sessionPageService.getSession(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
+		// 2) Få useren via "httpRequest" og tjek, at han eksisterer og har adgang til
+		// sessionen.
+		// Hint: Tjek linje 91-94 i denne fil.
 
-		return ResponseEntity.ok("/status/" + sessionId);
+		// 3) Ekstraher data fra "request" og gem dem i nogle variable.
+		// Hint:
+		// String name = request.get("name");
+		// String studentEmails = request.get("studentEmails");
+		// osv.
+
+		// 4) Kald en funktion kaldet "applySetup", som jeg har lavet til dig i
+		// "SessionService.java"-filen (du skal dog selv fylde den ud, den er tom lige
+		// nu).
+		// Funktionen's parametre skal være den data, som du fik ekstraheret i trin 3).
+
+		return ResponseEntity.ok("Session setup saved successfully!");
 	}
+
 }

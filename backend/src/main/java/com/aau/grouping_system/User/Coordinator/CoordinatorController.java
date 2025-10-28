@@ -10,26 +10,24 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import jakarta.servlet.http.HttpServletRequest;
+
 @RestController // singleton bean
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
 	private final CoordinatorService service;
 
-	// constructors
-
 	public CoordinatorController(CoordinatorService coordinatorService) {
 		this.service = coordinatorService;
 	}
 
-	// requests
-
 	@PostMapping("/signUp")
-	public ResponseEntity<String> signUp(@RequestBody Map<String, String> request) {
+	public ResponseEntity<String> signUp(@RequestBody Map<String, String> body) {
 
-		String email = request.get("email");
-		String password = request.get("password");
-		String name = request.get("name");
+		String email = body.get("email");
+		String password = body.get("password");
+		String name = body.get("name");
 
 		if (service.isEmailDuplicate(email)) {
 			return ResponseEntity
@@ -45,11 +43,16 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(@RequestBody Map<String, String> request) {
-		// todo: Credentials validation
+	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
-		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
-		String newEmail = request.get("newEmail");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
+		}
+		String coordinatorId = user.getId();
+		String newEmail = body.get("newEmail");
 
 		if (service.isEmailDuplicate(newEmail)) {
 			return ResponseEntity
@@ -65,11 +68,16 @@ public class CoordinatorController {
 	}
 
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(@RequestBody Map<String, String> request) {
-		// todo: Credentials validation
+	public ResponseEntity<String> modifyPassword(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
-		Integer coordinatorId = Integer.parseInt(request.get("coordinatorId"));
-		String newPassword = request.get("newPassword");
+		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
+		if (user == null) {
+			return ResponseEntity
+					.status(HttpStatus.UNAUTHORIZED)
+					.body("Not logged in");
+		}
+		String coordinatorId = user.getId();
+		String newPassword = body.get("newPassword");
 
 		service.modifyPassword(newPassword, coordinatorId);
 
