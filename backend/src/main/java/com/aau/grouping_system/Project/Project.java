@@ -6,7 +6,7 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public class Project extends DatabaseItem {
-
+	// attributes
 	private String name;
 	private String description;
 
