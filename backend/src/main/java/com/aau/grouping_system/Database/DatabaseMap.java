@@ -1,64 +1,66 @@
 package com.aau.grouping_system.Database;
 
-import java.util.Map;
+import java.io.Serializable;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/// Functions as a ConcurrentHashMap that also handles IDs and hierarchy
-/// (child/parent relations) of items.
-public class DatabaseMap<T extends DatabaseItem> {
+/// A map using UUIDs and capable of cascade deletion.
+public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
-	private final Map<Integer, T> map = new ConcurrentHashMap<>();
-	private AtomicInteger idGenerator = new AtomicInteger();
+	private Integer id;
+	private final ConcurrentHashMap<String, T> map = new ConcurrentHashMap<>();
 
-	// public methods
+	/// Automatically adds this to the list of maps in the database.
+	public DatabaseMap(ConcurrentHashMap<Integer, DatabaseMap<? extends DatabaseItem>> maps, AtomicInteger idGenerator) {
+		this.id = idGenerator.incrementAndGet();
+		maps.put(id, this);
+	}
 
-	public void put(T item) {
-		int id = getNewId();
+	public void cascadeRemove(Database db, String id) {
+		T item = getItem(id);
+		item.cascadeRemoveChildren(db);
+		item.disconnectFromParent(db);
+		map.remove(id);
+	}
+
+	public void cascadeRemove(Database db, T item) {
+		cascadeRemove(db, item.getId());
+	}
+
+	void add(T item) {
+		String id = getNewItemId();
 		item.setId(id);
 		map.put(id, item);
 	}
 
-	public void remove(T item) {
-		item.removeChildren();
-		map.remove(item.getId());
+	private String getNewItemId() {
+		String id;
+		do {
+			id = UUID.randomUUID().toString();
+		} while (map.get(id) != null);
+		return id;
 	}
 
-	public void remove(int id) {
-		T item = getItem(id);
-		remove(item);
-	}
-
-	// private methods
-
-	private int getNewId() {
-
-		boolean hasLoopedOnce = false;
-
-		// Ensure ID isn't already used
-		while (map.get(idGenerator.get()) != null) {
-			if (idGenerator.get() >= Integer.MAX_VALUE - 1) {
-				if (hasLoopedOnce) {
-					throw new IllegalStateException("A valid new ID cannot be found because the Map is completely full.");
-				} else {
-					hasLoopedOnce = true;
-					idGenerator.set(0);
-				}
-			}
-			idGenerator.incrementAndGet();
-		}
-
-		return idGenerator.get();
-	}
-
-	// getters & setters
-
-	public T getItem(Integer id) {
+	public T getItem(String id) {
 		return map.get(id);
 	}
 
-	public Map<Integer, T> getAllItems() {
+	public CopyOnWriteArrayList<T> getItems(CopyOnWriteArrayList<String> ids) {
+		CopyOnWriteArrayList<T> list = new CopyOnWriteArrayList<>();
+		for (String id : ids) {
+			list.add(getItem(id));
+		}
+		return list;
+	}
+
+	public ConcurrentHashMap<String, T> getAllItems() {
 		return map;
+	}
+
+	Integer getId() {
+		return id;
 	}
 
 }

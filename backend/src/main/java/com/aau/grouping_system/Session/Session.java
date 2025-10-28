@@ -1,72 +1,90 @@
 package com.aau.grouping_system.Session;
 
+import java.time.LocalDateTime;
+
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.DatabaseIdList;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 public class Session extends DatabaseItem {
 
-	private Coordinator coordinator;
-	public DatabaseIdList supervisors;
-	public DatabaseIdList students;
-	public DatabaseIdList projects;
-	public DatabaseIdList groups;
+	private String coordinatorId;
 
-	// Constructor
+	private DatabaseItemChildGroup supervisors;
+	private DatabaseItemChildGroup students;
+	private DatabaseItemChildGroup projects;
+	private DatabaseItemChildGroup groups;
+	private String name;
+	private LocalDateTime questionnaireDeadline;
 
-	public Session(DatabaseMap<? extends DatabaseItem> parentMap,
-			DatabaseIdList parentReferences, Database db,
-			Coordinator coordinator) {
-		super(parentMap, parentReferences);
-		this.coordinator = coordinator;
-		this.supervisors = new DatabaseIdList(db.getSupervisors(), this);
-		this.students = new DatabaseIdList(db.getStudents(), this);
-		this.projects = new DatabaseIdList(db.getProjects(), this);
-		this.groups = new DatabaseIdList(db.getGroups(), this);
+	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
+			Coordinator coordinator, String name) {
+		super(db, parentItemChildIdList);
+		this.coordinatorId = coordinator.getId();
+		this.supervisors = new DatabaseItemChildGroup(db.getSupervisors(), this);
+		this.students = new DatabaseItemChildGroup(db.getStudents(), this);
+		this.projects = new DatabaseItemChildGroup(db.getProjects(), this);
+		this.groups = new DatabaseItemChildGroup(db.getGroups(), this);
+		this.name = name;
 	}
 
-	// Getters og setters
-
-	public Coordinator getCoordinator() {
-		return coordinator;
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getSessions();
 	}
 
-	public void setCoordinator(Coordinator coordinator) {
-		this.coordinator = coordinator;
+	public String getCoordinatorId() {
+		return coordinatorId;
 	}
 
-	public DatabaseIdList getSupervisors() {
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public DatabaseItemChildGroup getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(DatabaseIdList supervisors) {
+	public void setSupervisors(DatabaseItemChildGroup supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public DatabaseIdList getStudents() {
+	public DatabaseItemChildGroup getStudents() {
 		return students;
 	}
 
-	public void setStudents(DatabaseIdList students) {
+	public void setStudents(DatabaseItemChildGroup students) {
 		this.students = students;
 	}
 
-	public DatabaseIdList getProjects() {
+	public DatabaseItemChildGroup getProjects() {
 		return projects;
 	}
 
-	public void setProjects(DatabaseIdList projects) {
+	public void setProjects(DatabaseItemChildGroup projects) {
 		this.projects = projects;
 	}
 
-	public DatabaseIdList getGroups() {
+	public DatabaseItemChildGroup getGroups() {
 		return groups;
 	}
 
-	public void setGroups(DatabaseIdList groups) {
+	public void setGroups(DatabaseItemChildGroup groups) {
 		this.groups = groups;
+	}
+
+	public LocalDateTime getQuestionnaireDeadline() {
+		return questionnaireDeadline;
+	}
+
+	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) {
+		this.questionnaireDeadline = questionnaireDeadline;
 	}
 
 }

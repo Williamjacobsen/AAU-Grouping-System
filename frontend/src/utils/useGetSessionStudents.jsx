@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
 
-/**
- * @returns An object {isLoading, session}.
- * - isLoading is a useState boolean.
- * - students is a useState Student array.
- */
 export default function useGetSessionStudents(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +31,7 @@ export default function useGetSessionStudents(sessionId) {
 	async function requestSessionStudents(sessionId) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/student/${sessionId}`,
+				`http://localhost:8080/student/getSessionStudents/${sessionId}`,
 				{
 					method: "GET",
 					credentials: "include",
