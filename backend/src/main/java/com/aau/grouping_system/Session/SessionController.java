@@ -117,24 +117,30 @@ public class SessionController {
 	@PostMapping("/{sessionId}/saveSetup")
 	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
 			@RequestBody Map<String, String> request) {
+				
+			
+		Session session = db.getSessions().getItem(sessionId);
+		if (session == null) {
+			return ResponseEntity.notFound().build();
+		}
 
-		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
-		// Hint: Tjek linje 86-89 i denne fil.
+		User user = authService.getUser(request);
+		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+		}
+			
+		String name = request.get("name");
+		String description = request.get("description");
+		String studentEmails = request.get("studentEmails");
+		String supervisorEmails = request.get("supervisorEmails");
+		String coordinatorName = request.get("coordinatorName");
+		String questionnaireDeadline = request.get("questionnaireDeadline");
+		String initialProjects = request.get("initialProjects");
+		String optionalQuestionnaire = request.get("optionalQuestionnaire");
+		int groupSize = Integer.parseInt(request.get("groupSize"));
 
-		// 2) Få useren via "httpRequest" og tjek, at han eksisterer og har adgang til
-		// sessionen.
-		// Hint: Tjek linje 91-94 i denne fil.
-
-		// 3) Ekstraher data fra "request" og gem dem i nogle variable.
-		// Hint:
-		// String name = request.get("name");
-		// String studentEmails = request.get("studentEmails");
-		// osv.
-
-		// 4) Kald en funktion kaldet "applySetup", som jeg har lavet til dig i
-		// "SessionService.java"-filen (du skal dog selv fylde den ud, den er tom lige
-		// nu).
-		// Funktionen's parametre skal være den data, som du fik ekstraheret i trin 3).
+		sessionService.applySetup(session, name, description, studentEmails, supervisorEmails,
+		coordinatorName, questionnaireDeadline, initialProjects, optionalQuestionnaire, groupSize);
 
 		return ResponseEntity.ok("Session setup saved successfully!");
 	}

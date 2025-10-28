@@ -1,11 +1,15 @@
 package com.aau.grouping_system.Session;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Authentication.AuthService;
 
@@ -71,31 +75,36 @@ public class SessionService {
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
 	}
 
-	// 1) Tilføj selv parametre til den data, som du har ekstraheret i
-	// StudentController.java.
-	public void applySetup(Session session) {
+	public void applySetup(Session session, String name, String description, String studentEmails, 
+													String supervisorEmails, String coordinatorName, String questionnaireDeadline, String initialProjects, 
+													String optionalQuestionnaire, int groupSize) {
 
-		// 2) Lige nu er din variabel "studentEmails" bare en lang String.
-		// Hver email er separeret af en "\n" (AKA new line character).
-		// Du skal nu finde en måde at opdele hver email i deres eget String-objekt,
-		// som du så indsætter i en liste (brug CopyOnWriteArrayList<String>).
+		List<String> studentEmailList = new CopyOnWriteArrayList<>(
+			Arrays.asList(studentEmails.split("\\r?\\n")));
 
-		// 3) Gør det samme med supervisorEmails.
+		List<String> supervisorEmailList = new CopyOnWriteArrayList<>(
+			Arrays.asList(supervisorEmails.split("\\r?\\n")));
 
-		// 4) Lav et enhanced for-loop, som cycler igennem hver email i din liste af
-		// student emails.
-		// For hver email skal du bare lave et nyt Student-objekt (så "new
-		// Student(.......)").
-		// Dette tilføjer automatisk disse students til din session.
-		// Hint: Tjek "fillDatabaseWithExampleData"-funktionen i
-		// "DatabaseSerializer.java". Her er nemlig et eksempel på, at jeg laver nye
-		// Student-objekter.
+		for (String email : studentEmailList) {
+			if (!email.trim().isEmpty()) {
+				Student student = new Student(db, session, email.trim());
+				session.addStudent(student);
+			}
 
-		// 5) Gør det samme med din liste af supervisor emails.
-
-		// 6) Sæt resten af den nye data ind i din session.
-		// Hint: Er meget simpelt. Bare gør, fx "session.setName(newName)"
-
+		for (String email : supervisorEmailList) {
+			if (!email.trim().isEmpty()) {
+				Supervisor supervisor = new Supervisor(db, session, email.trim());
+				session.addSupervisor(supervisor);
+			}
+		}
+		session.setName(name);
+    session.setDescription(description);
+    session.setCoordinatorName(coordinatorName);
+    session.setQuestionnaireDeadline(questionnaireDeadline);
+    session.setInitialProjects(initialProjects);
+    session.setOptionalQuestionnaire(optionalQuestionnaire);
+		session.setGroupSize(groupSize);
+		sessionRepository.save(session);
 	}
-
+}
 }
