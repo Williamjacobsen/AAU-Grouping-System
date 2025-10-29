@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -11,7 +11,7 @@ export default function SignUp() {
 	const [name, setName] = useState("");
 	const [error, setError] = useState("");
 
-	const handleSignUp = async (password, email, name, setError, navigate) => {
+	const handleSignUp = async (email, password, name, setError, navigate) => {
 		try {
 			const response = await fetch("http://localhost:8080/coordinator/signUp", {
 				method: "POST",

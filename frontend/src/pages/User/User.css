@@ -79,3 +79,26 @@ input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
 	margin-top: 5px;
 	border-radius: 4px;
 }
+
+.group-container {
+	padding: 1rem;
+}
+
+.group-box {
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  padding: 10px 16px;
+  background-color: #e6e6e6;
+}
+
+.completed-group {
+	color: green;
+}
+
+.almost-completed-group {
+	color: goldenrod;
+}
+
+.incomplete-group {
+	color: red;
+}

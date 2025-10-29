@@ -1,6 +1,5 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { handleSignIn } from "../../utils/useGetUser";
 import "./User.css";
 
 export default function SignIn() {
