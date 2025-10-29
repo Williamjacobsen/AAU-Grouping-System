@@ -21,6 +21,20 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	implementation 'com.google.api-client:google-api-client:2.0.0'
+  implementation 'com.google.oauth-client:google-oauth-client-jetty:1.34.1'
+  implementation 'com.google.apis:google-api-services-gmail:v1-rev20220404-2.0.0'
+
+	//// Google Gmail API
+  //implementation 'com.google.api-client:google-api-client:2.7.0'
+	//implementation 'com.google.apis:google-api-services-gmail:v1-rev20250630-2.0.0'
+  //implementation 'com.google.oauth-client:google-oauth-client-jetty:1.35.0'
+  //implementation 'com.google.oauth-client:google-oauth-client-java6:1.35.0'   // << needed for AuthorizationCodeInstalledApp
+  //implementation 'com.google.http-client:google-http-client-jackson2:1.43.3' // << needed for JacksonFactory
+  //// Jakarta Mail (implementation already includes the API)
+  implementation 'com.sun.mail:jakarta.mail:2.0.1'	
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	developmentOnly("org.springframework.boot:spring-boot-devtools") // For automatic restart upon file change
 }
