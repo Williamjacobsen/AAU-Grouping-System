@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 /**
  * @returns An object {isLoading, session}.
@@ -21,14 +22,15 @@ export default function useGetSessionProjects(sessionId) {
 						credentials: "include",
 					}
 				); // request to API to get projects
+
 				if (!response.ok) {
-					return Promise.reject(`HTTP error! Status: ${response.status}`); // if server responded unsuccessfully, reject Promise
+					return Promise.reject("Status code " + response.status + ": " + await response.text());
 				}
 
         const data = await response.json(); // parse from JSON to object
         setProjects(data); // store data
       } catch (error) {
-        alert("Error fetching session projects:", error);
+        alert("Error fetching session projects: ", error);
       } finally {
         setIsLoading(false); // done loading, so set useState of isLoading to false
       }
@@ -36,4 +38,9 @@ export default function useGetSessionProjects(sessionId) {
   }, [sessionId]);
 
   return {isLoading, projects};
+}
+
+export function useGetSessionProjectsByParam() {
+	const { sessionId } = useParams();
+	return useGetSessionProjects(sessionId);
 }

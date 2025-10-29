@@ -2,6 +2,7 @@ package com.aau.grouping_system.Database;
 
 import org.springframework.stereotype.Component;
 
+import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
@@ -86,6 +87,12 @@ public class DatabaseSerializer {
 		Student st5 = studentService.addStudent(s2, "st5", "st5", "Student name 5");
 		Student st6 = studentService.addStudent(s3, "st6", "st6", "Student name 6");
 		Student st7 = studentService.addStudent(s3, "st7", "st7", "Student name 7");
+
+		Project p1 = new Project(db, s1.getProjects(), "Project name 1", "Description 1");
+		Project p2 = new Project(db, s1.getProjects(), "Project name 2", "Description 2");
+		Project p3 = new Project(db, s1.getProjects(), "Project name 3", "Description 3");
+		Project p4 = new Project(db, s1.getProjects(), "Project name 4", "Description 4");
+		Project p5 = new Project(db, s1.getProjects(), "Project name 5", "Description 5");
 
 		// For testing purposes, console log student logins so we can log in as them
 		System.out.println("---- TEST STUDENT LOGINS ----");
