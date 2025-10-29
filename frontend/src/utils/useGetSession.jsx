@@ -50,8 +50,7 @@ function useGetSession(sessionId) {
 
 export function useGetSessionByParameter() {
 	const { sessionId } = useParams();
-	const { isLoading, session } = useGetSession(sessionId);
-	return { isLoading, session };
+	return useGetSession(sessionId);
 }
 
 export function useGetSessionByUser(user) {
@@ -61,8 +60,7 @@ export function useGetSessionByUser(user) {
 		setSessionId(user?.sessionId);
 	}, [user]);
 
-	const { isLoading, session } = useGetSession(sessionId);
-	return { isLoading, session };
+	return useGetSession(sessionId);;
 }
 
 /** Session from user is prioritized over session from URL parameter. */

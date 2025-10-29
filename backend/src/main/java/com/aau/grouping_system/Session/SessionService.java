@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Session;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
@@ -69,6 +70,14 @@ public class SessionService {
 	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
 		User.Role[] authorizedRoles = { User.Role.Coordinator };
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
+	}
+
+	public Boolean isQuestionnaireDeadlineExceeded(Session session) {
+		LocalDateTime deadline = session.getQuestionnaireDeadline();
+		if (deadline == null) {
+			return false;
+		}
+		return deadline.isBefore(LocalDateTime.now());
 	}
 
 	// 1) Tilføj selv parametre til den data, som du har ekstraheret i

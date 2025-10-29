@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 /**
  * @returns An object {isLoading, session}.
@@ -36,4 +37,9 @@ export default function useGetSessionProjects(sessionId) {
   }, [sessionId]);
 
   return {isLoading, projects};
+}
+
+export function useGetSessionProjectsByParam() {
+	const { sessionId } = useParams();
+	return useGetSessionProjects(sessionId);
 }
