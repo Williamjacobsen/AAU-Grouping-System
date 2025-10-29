@@ -1,14 +1,16 @@
 import React from "react";
 import { useGetUser } from "../../utils/useGetUser";
 import { useGetSessionProjectsByParam } from "../../utils/useGetSessionProjects";
-import ProjectPrioritiesSelector from "./ProjectPrioritiesSelector";
+import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
 import { useGetSessionByParameter } from "../../utils/useGetSession";
+import useIsQuestionnaireDeadlineExceeded from "../../utils/useIsQuestionnaireDeadlineExceeded";
 
 export default function StudentQuestionnaire() {
 
 	const { isLoading: isLoadingUser, user } = useGetUser();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjectsByParam();
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 	
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return <>Access denied: Not logged in.</>;
@@ -50,11 +52,11 @@ export default function StudentQuestionnaire() {
 					),
 				}
 			);
-			
-			const data = await response;
+
 			if (!response.ok) {
-				return Promise.reject(data.error);
+				return Promise.reject("Status code " + response.status + ": " + await response.text());
 			}
+
 		} catch (error) {
 			return Promise.reject(error);
 		}
@@ -71,18 +73,18 @@ export default function StudentQuestionnaire() {
 			<form onSubmit={saveQuestionnaireAnswers}>
 				<label>
 					Project priorities: 
-					<ProjectPrioritiesSelector name="desiredProjectIds" projects={projects} desiredProjectIds={user.questionnaire.desiredProjectIds}/>
+					<ProjectPrioritySelectors name="desiredProjectIds" projects={projects} desiredProjectIds={user.questionnaire.desiredProjectIds}/>
 				</label>
 				<br />
 
 				<label>
-					Preferred minimum group size: 
+					Preferred minimum group size ("-1" means no preference): 
 					<input name="desiredGroupSizeMin" defaultValue={user.questionnaire.desiredGroupSizeMin} type="number" min={-1} step="1"/>
 				</label>
 				<br />
 
 				<label>
-					Preferred maximum group size: 
+					Preferred maximum group size ("-1" means no preference): 
 					<input name="desiredGroupSizeMax" defaultValue={user.questionnaire.desiredGroupSizeMax} type="number" min={-1} step="1"/>
 				</label>
 				<br />
@@ -131,7 +133,12 @@ export default function StudentQuestionnaire() {
 				</label>
 				<br />
 
-				<input type="submit" value="Apply changes" />
+				{isDeadlineExceeded() &&
+					<b>Submission deadline exceeded. Answers locked.</b>
+				}
+				{!isDeadlineExceeded() &&
+					<input type="submit" value="Apply changes"/>
+				}
 
 			</form>
 				

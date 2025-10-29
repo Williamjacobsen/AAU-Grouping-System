@@ -6,11 +6,9 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public class Project extends DatabaseItem {
-	// attributes
+
 	private String name;
 	private String description;
-
-	// constructors
 
 	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String name, String description) {
@@ -23,8 +21,6 @@ public class Project extends DatabaseItem {
 	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
 		return db.getProjects();
 	}
-
-	// getters & setters
 
 	public String getName() {
 		return name;

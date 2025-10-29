@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.Authentication.AuthService;
@@ -37,14 +38,12 @@ public class StudentController {
 
 		Student student = authService.getStudentByUser(request);
 		if (student == null) {
-			return ResponseEntity.notFound().build();
+			throw new RequestException(HttpStatus.NOT_FOUND, "Student not found");
 		}
 
 		Session session = db.getSessions().getItem(student.getSessionId());
 		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body("Unauthorized: Questionnaire submission deadline exceeded.");
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 
 		studentService.applyQuestionnaireAnswers(student, body);

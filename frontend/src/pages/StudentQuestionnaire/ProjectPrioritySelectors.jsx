@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function ProjectPrioritiesSelector({ projects, name, desiredProjectIds }) {
+export default function ProjectPrioritySelectors({ projects, name, desiredProjectIds }) {
 
   const [priorities, setPriorities] = useState(desiredProjectIds);
 
