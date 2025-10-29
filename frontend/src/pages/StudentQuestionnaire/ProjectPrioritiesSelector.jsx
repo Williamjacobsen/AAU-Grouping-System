@@ -7,7 +7,7 @@ export default function ProjectPrioritiesSelector({ projects, name, desiredProje
   function setPriority(index, value) {
 		setPriorities((previousArray) => {
 			
-      const newArray = [...previousArray];
+      const newArray = [...previousArray]; // The spread operator "..." copies the array.
       newArray[index] = value;
       
       // Clear lower priorities when a higher priority changes
