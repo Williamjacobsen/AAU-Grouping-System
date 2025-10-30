@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetUser } from "../../utils/useGetUser";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
@@ -14,6 +15,11 @@ export default function Sessions() {
 		createSession,
 		deleteSession
 	} = useSessionManager();
+
+	const { user, isLoading: isLoadingUser } = useGetUser();
+	
+	if (isLoadingUser) return <>Checking authentication...</>;
+	if (!user) return navigate("/sign-in");
 
 	const handleCreateSession = async (e) => {
 		e.preventDefault();
@@ -31,11 +37,11 @@ export default function Sessions() {
 	};
 
 	const openSession = (sessionId) => {
-		navigate(`/status/${sessionId}`);
+		navigate(`/session/${sessionId}/status`);
 	};
 
 	const editSetup = (sessionId) => {
-		navigate(`/sessions/${sessionId}/setup`);
+		navigate(`/session/${sessionId}/setup`);
 	};
 
 	const manageSupervisors = (sessionId) => {

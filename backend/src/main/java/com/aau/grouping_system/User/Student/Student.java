@@ -1,48 +1,72 @@
 package com.aau.grouping_system.User.Student;
 
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.StudentQuestionnaire.StudentQuestionnaire;
 
 public class Student extends User {
 
-	Session session;
-	StudentQuestionnaire questionnaire;
+	private String sessionId;
+	private Questionnaire questionnaire = new Questionnaire();
 
-	// constructors
+	public static class Questionnaire {
+		public CopyOnWriteArrayList<String> desiredProjectIds = new CopyOnWriteArrayList<>();
+		/// -1 means no preference
+		public Integer desiredGroupSizeMin = -1;
+		/// -1 means no preference
+		public Integer desiredGroupSizeMax = -1;
+		public WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
+		public WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
+		public String personalSkills = "";
+		public String specialNeeds = "";
+		public String academicInterests = "";
+		public String comments = "";
+	}
 
-	public Student(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public Student(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
-		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
-		this.session = session;
-		this.questionnaire = null;
+		super(db, parentItemChildIdList, email, passwordHash, name);
+		this.sessionId = session.getId();
 	}
 
-	public Session getSession() {
-		return session;
+	private enum WorkLocation {
+		NoPreference,
+		Located,
+		Remote;
 	}
 
-	public void setSession(Session session) {
-		this.session = session;
+	private enum WorkStyle {
+		NoPreference,
+		Solo,
+		Together;
 	}
 
-	public StudentQuestionnaire getQuestionnaire() {
-		return questionnaire;
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getStudents();
 	}
-
-	public void setQuestionnaire(StudentQuestionnaire questionnaire) {
-		this.questionnaire = questionnaire;
-	}
-
-	// abstract method overrides
 
 	@Override
 	public Role getRole() {
-		return Role.STUDENT;
+		return Role.Student;
+	}
+
+	public String getSessionId() {
+		return sessionId;
+	}
+
+	public Questionnaire getQuestionnaire() {
+		return questionnaire;
+	}
+
+	public void setQuestionnaire(Questionnaire questionnaire) {
+		this.questionnaire = questionnaire;
 	}
 
 }

@@ -1,95 +1,76 @@
 package com.aau.grouping_system.Authentication;
 
-import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-	private final Database db;
-	private final PasswordEncoder passwordEncoder;
+	private final AuthService service;
 
-	// Constructer injection
-	// Til at bruge Databasen når vi senere tjekker igennem listen af Coordinators.
-	public AuthController(Database db, PasswordEncoder passwordEncoder) {
-		this.db = db;
-		this.passwordEncoder = passwordEncoder;
+	public AuthController(AuthService authService) {
+		this.service = authService;
 	}
 
-	// Metoden behandler en POST request, når coordinatoren prøver at logge ind
-	@PostMapping("/login")
+	@PostMapping("/signIn")
 	public ResponseEntity<String> login(@RequestBody Map<String, String> body, HttpServletRequest request) {
 
-		// De forskellige værdier fra coordinatoren bliver stored i variabler
-		String email = body.get("email");
+		String email = body.get("emailOrId");
 		String password = body.get("password");
+		User.Role role = User.Role.valueOf(body.get("role"));
 
-		// Hvis coordinatoren findes i databasen, så bliver værdierne lageret i
-		// variablen
-		Coordinator user = null;
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				user = existingCoordinator;
-				break;
-			}
+		User user = service.findByEmailOrId(email, role);
+		if (user == null || !service.isPasswordCorrect(password, user)) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Invalid email/id or password");
 		}
 
-		// Hvis emailen ikke eksistere eller adg.koden er forkert, så sendes der en 401
-		// error response
-		if (user == null || !passwordEncoder.matches(password, user.getPasswordHash())) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid email or password");
-		}
+		service.invalidateOldSession(request);
+		service.createNewSession(request, user);
 
-		// getSession tjekker om der eksistere en session i HttpSession objektet
-		HttpSession oldSession = request.getSession(false);
-		if (oldSession != null)
-			oldSession.invalidate();
-		HttpSession session = request.getSession(true);
-		session.setMaxInactiveInterval(86400); // 1 dag
-		// Gemmer nøglen "user" i session objektet.
-		session.setAttribute("user", user);
-
-		return ResponseEntity.ok("Logged in, user: " + user.getName());
+		return ResponseEntity
+				.ok("Signed in, user: " + user.getEmail());
 	}
 
-	@PostMapping("/logout")
+	@PostMapping("/signOut")
 	public ResponseEntity<String> logout(HttpServletRequest request) {
 
-		HttpSession session = request.getSession(false);
-		if (session != null)
-			session.invalidate();
-		return ResponseEntity.ok("Logged out");
+		service.invalidateOldSession(request);
+		return ResponseEntity
+				.ok("Signed out"); // 200 ok
 	}
 
-	@GetMapping("/me")
-	public ResponseEntity<Coordinator> me(HttpServletRequest request) {
+	@GetMapping("/getUser")
+	public ResponseEntity<User> getUser(HttpServletRequest request) {
 
-		// todo: Set cookie?
-
-		// Tjekker om session stadig er aktiv
 		HttpSession session = request.getSession(false);
 		if (session == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Request does not contain a login session.");
 		}
 
-		Coordinator user = (Coordinator) session.getAttribute("user");
-
-		// Hvis brugeren findes, så retuneres bruger info som et JSON obj.
-		if (user != null) {
-			return ResponseEntity.ok(user);
+		User user = (User) session.getAttribute("user");
+		if (user == null) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Login session is invalid.");
 		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+
+		return ResponseEntity
+				.ok(user); // info om user returneres som JSON obj.
 	}
 
 }

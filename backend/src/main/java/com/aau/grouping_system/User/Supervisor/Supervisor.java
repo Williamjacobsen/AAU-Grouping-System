@@ -1,29 +1,34 @@
 package com.aau.grouping_system.User.Supervisor;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 
 public class Supervisor extends User {
 
-	Session session;
+	private String sessionId;
 
-	// constructors
-
-	public Supervisor(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public Supervisor(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name, Session session) {
-		super(parentDatabaseMap, parentReferenceList, email, passwordHash, name);
-		this.session = session;
+		super(db, parentItemChildIdList, email, passwordHash, name);
+		this.sessionId = session.getId();
 	}
 
-	// abstract method overrides
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getSupervisors();
+	}
 
 	@Override
 	public Role getRole() {
-		return Role.SUPERVISOR;
+		return Role.Supervisor;
+	}
+
+	public String getSessionId() {
+		return sessionId;
 	}
 
 }

@@ -7,126 +7,199 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.aau.grouping_system.Database.item.ItemReferenceList;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Group.Group;
+import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 @RestController
 @RequestMapping("/sessions")
 public class SessionController {
 
-	private final SessionService sessionPageService;
+	private final Database db;
+	private final SessionService sessionService;
+	private final AuthService authService;
 
-	public SessionController(SessionService sessionPageService) {
-		this.sessionPageService = sessionPageService;
+	public SessionController(Database db, SessionService sessionService, AuthService authService) {
+		this.db = db;
+		this.sessionService = sessionService;
+		this.authService = authService;
 	}
 
-	private Coordinator getCurrentCoordinator(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
-		if (session == null) {
-			return null;
+	public Coordinator RequireCoordinatorExists(HttpServletRequest request) {
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
+		if (coordinator == null) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
 		}
-		return (Coordinator) session.getAttribute("user");
+		return coordinator;
+	}
+
+	public Session RequireSessionExists(String sessionId) {
+		Session session = db.getSessions().getItem(sessionId);
+		if (session == null) {
+			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found.");
+		}
+		return session;
+	}
+
+	public User RequireUserExists(HttpServletRequest request) {
+		User user = authService.getUser(request);
+		if (user == null) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
+		}
+		return user;
+	}
+
+	private void RequireUserIsAuthorizedSession(String sessionId, User user) {
+		if (!sessionService.isUserAuthorizedSession(sessionId, user)) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "User is not authorized session.");
+		}
 	}
 
 	@PostMapping
-	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> request,
-			HttpServletRequest httpRequest) {
-		Coordinator coordinator = getCurrentCoordinator(httpRequest);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> body,
+			HttpServletRequest request) {
+
+		String sessionName = body.get("name");
+		if (sessionName == null || sessionName.trim().isEmpty()) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Name not found in request.");
 		}
 
-		String sessionName = request.get("name");
-		if (sessionName == null || sessionName.trim().isEmpty()) {
-			return ResponseEntity.badRequest().build();
-		}
+		Coordinator coordinator = RequireCoordinatorExists(request);
 
 		try {
-			Session newSession = sessionPageService.createSession(sessionName.trim(), coordinator);
+			Session newSession = sessionService.createSession(sessionName.trim(), coordinator);
 			return ResponseEntity.status(HttpStatus.CREATED).body(newSession);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + e.getMessage());
 		}
 	}
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+		Coordinator coordinator = RequireCoordinatorExists(request);
 
-		ItemReferenceList<Session> sessions = sessionPageService.getSessionsByCoordinator(coordinator);
-		return ResponseEntity.ok(sessions.getReferenceList());
+		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
+		return ResponseEntity.ok(sessions);
 	}
 
-	// TODO: old code (remove this):
-	// @GetMapping
-	// public ResponseEntity<Map<Integer, Session>>
-	// getAllSessions(HttpServletRequest request) {
-	// Coordinator coordinator = getCurrentCoordinator(request);
-	// if (coordinator == null) {
-	// return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-	// }
-
-	// DatabaseMap<Session> sessions =
-	// sessionPageService.getSessionsByCoordinator(coordinator);
-	// return ResponseEntity.ok(sessions.getAllItems());
-	// }
-
 	@GetMapping("/{sessionId}")
-	public ResponseEntity<Session> getSession(@PathVariable Integer sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
 
-		Session session = sessionPageService.getSession(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
+		Session session = RequireSessionExists(sessionId);
+		User user = RequireUserExists(request);
+		RequireUserIsAuthorizedSession(sessionId, user);
 
 		return ResponseEntity.ok(session);
 	}
 
-	@DeleteMapping("/{sessionId}")
-	public ResponseEntity<String> deleteSession(@PathVariable Integer sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getSupervisors")
+	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = RequireSessionExists(sessionId);
+		User user = RequireUserExists(request);
+		RequireUserIsAuthorizedSession(sessionId, user);
+
+		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
+
+		return ResponseEntity.ok(supervisors);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getStudents")
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = RequireSessionExists(sessionId);
+		User user = RequireUserExists(request);
+		RequireUserIsAuthorizedSession(sessionId, user);
+
+		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
+
+		return ResponseEntity.ok(students);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here despite Java's invariance of generics.
+	@GetMapping("/{sessionId}/getProjects")
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(@PathVariable String sessionId) {
+
+		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
+		// Check if session exists if not throw error
+		if (session == null) {
+			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
 		}
 
-		boolean deleted = sessionPageService.deleteSession(sessionId, coordinator);
+		// Get that session’s projects and type cast
+		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+
+		// Return them with 200 ok
+		return ResponseEntity.ok(projects);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getGroups")
+	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = RequireSessionExists(sessionId);
+		User user = RequireUserExists(request);
+		RequireUserIsAuthorizedSession(sessionId, user);
+
+		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+
+		return ResponseEntity.ok(groups);
+	}
+
+	@DeleteMapping("/{sessionId}")
+	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
+
+		Coordinator coordinator = RequireCoordinatorExists(request);
+
+		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
 			return ResponseEntity.ok("Session deleted successfully");
 		} else {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied or session not found");
+			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied or session not found");
 		}
 	}
 
-	@PostMapping("/{sessionId}/open")
-	public ResponseEntity<String> openSession(@PathVariable Integer sessionId, HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
-		if (coordinator == null) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
+	@PostMapping("/{sessionId}/saveSetup")
+	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
+			@RequestBody Map<String, String> request) {
 
-		if (!sessionPageService.hasPermission(sessionId, coordinator)) {
-			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-		}
+		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
+		// Hint: Tjek linje 86-89 i denne fil.
 
-		Session session = sessionPageService.getSession(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
+		// 2) Få useren via "httpRequest" og tjek, at han eksisterer og har adgang til
+		// sessionen.
+		// Hint: Tjek linje 91-94 i denne fil.
 
-		return ResponseEntity.ok("/status/" + sessionId);
+		// 3) Ekstraher data fra "request" og gem dem i nogle variable.
+		// Hint:
+		// String name = request.get("name");
+		// String studentEmails = request.get("studentEmails");
+		// osv.
+
+		// 4) Kald en funktion kaldet "applySetup", som jeg har lavet til dig i
+		// "SessionService.java"-filen (du skal dog selv fylde den ud, den er tom lige
+		// nu).
+		// Funktionen's parametre skal være den data, som du fik ekstraheret i trin 3).
+
+		return ResponseEntity.ok("Session setup saved successfully!");
 	}
+
 }

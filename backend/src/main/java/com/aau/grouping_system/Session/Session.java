@@ -1,75 +1,90 @@
 package com.aau.grouping_system.Session;
 
+import java.time.LocalDateTime;
+
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
-import com.aau.grouping_system.Group.Group;
-import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 public class Session extends DatabaseItem {
 
-	private Coordinator coordinator;
-	public ItemReferenceList<Supervisor> supervisors;
-	public ItemReferenceList<Student> students;
-	public ItemReferenceList<Project> projects;
-	public ItemReferenceList<Group> groups;
+	private String coordinatorId;
 
-	// Constructor
+	private DatabaseItemChildGroup supervisors;
+	private DatabaseItemChildGroup students;
+	private DatabaseItemChildGroup projects;
+	private DatabaseItemChildGroup groups;
+	private String name;
+	private LocalDateTime questionnaireDeadline = null;
 
-	public Session(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
-			Coordinator coordinator) {
-		super(parentDatabaseMap, parentReferenceList);
-		this.coordinator = coordinator;
-		this.supervisors = new ItemReferenceList<>(this);
-		this.students = new ItemReferenceList<>(this);
-		this.projects = new ItemReferenceList<>(this);
-		this.groups = new ItemReferenceList<>(this);
+	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
+			Coordinator coordinator, String name) {
+		super(db, parentItemChildIdList);
+		this.coordinatorId = coordinator.getId();
+		this.supervisors = new DatabaseItemChildGroup(db.getSupervisors(), this);
+		this.students = new DatabaseItemChildGroup(db.getStudents(), this);
+		this.projects = new DatabaseItemChildGroup(db.getProjects(), this);
+		this.groups = new DatabaseItemChildGroup(db.getGroups(), this);
+		this.name = name;
 	}
 
-	// Getters og setters
-
-	public Coordinator getCoordinator() {
-		return coordinator;
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getSessions();
 	}
 
-	public void setCoordinator(Coordinator coordinator) {
-		this.coordinator = coordinator;
+	public String getCoordinatorId() {
+		return coordinatorId;
 	}
 
-	public ItemReferenceList<Supervisor> getSupervisors() {
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public DatabaseItemChildGroup getSupervisors() {
 		return supervisors;
 	}
 
-	public void setSupervisors(ItemReferenceList<Supervisor> supervisors) {
+	public void setSupervisors(DatabaseItemChildGroup supervisors) {
 		this.supervisors = supervisors;
 	}
 
-	public ItemReferenceList<Student> getStudents() {
+	public DatabaseItemChildGroup getStudents() {
 		return students;
 	}
 
-	public void setStudents(ItemReferenceList<Student> students) {
+	public void setStudents(DatabaseItemChildGroup students) {
 		this.students = students;
 	}
 
-	public ItemReferenceList<Project> getProjects() {
+	public DatabaseItemChildGroup getProjects() {
 		return projects;
 	}
 
-	public void setProjects(ItemReferenceList<Project> projects) {
+	public void setProjects(DatabaseItemChildGroup projects) {
 		this.projects = projects;
 	}
 
-	public ItemReferenceList<Group> getGroups() {
+	public DatabaseItemChildGroup getGroups() {
 		return groups;
 	}
 
-	public void setGroups(ItemReferenceList<Group> groups) {
+	public void setGroups(DatabaseItemChildGroup groups) {
 		this.groups = groups;
+	}
+
+	public LocalDateTime getQuestionnaireDeadline() {
+		return questionnaireDeadline;
+	}
+
+	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) {
+		this.questionnaireDeadline = questionnaireDeadline;
 	}
 
 }

@@ -1,18 +1,20 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import Coordinator from "./pages/coordinator/coordinator";
 import "./index.css";
 
 import NoPage from "./pages/NoPage/NoPage";
 import Header from "./pages/Header/Header";
 import About from "./pages/About/About";
-import User from "./pages/User/User";
+import SignIn from "./pages/User/SignIn";
+import SignUp from "./pages/User/SignUp";
+import Profile from "./pages/User/Profile";
 import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
-import StudentPage from "./pages/StudentPage/StudentPage";
-import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage";
+import Projects from "./pages/Projects/Projects";
+import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire"
+import SessionSetup from "./pages/SessionSetup/SessionSetup";
 
 export default function App() {
 	return (
@@ -21,12 +23,16 @@ export default function App() {
 				<Routes>
 					<Route path="/" element={<Header />}>
 						<Route index element={<About />} />
-						<Route path="/user" element={<User />} />
-						<Route path="/coordinator" element={<Coordinator />} />
-						<Route path="/sessions" element={<Sessions />}/>
-						<Route path="/session/:id" element={<Status />}/>
-						<Route path="/session/:sessionId/student/:studentId" element={<StudentPage />}/>
-						<Route path="/session/:sessionId/supervisors" element={<SupervisorsPage />}/>
+						<Route path="sign-in" element={<SignIn />} />
+						<Route path="sign-up" element={<SignUp />} />
+						<Route path="profile" element={<Profile />} />
+						<Route path="sessions" element={<Sessions />} />
+						<Route path="session/:sessionId" element={<Outlet />}>
+							<Route path="setup" element={<SessionSetup />} />
+							<Route path="status" element={<Status />} />
+							<Route path="projects" element={<Projects />} />
+							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
+						</Route>
 						<Route path="*" element={<NoPage />} />
 					</Route>
 				</Routes>
@@ -42,3 +48,7 @@ root.render(<App />);
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+
+
+
+					

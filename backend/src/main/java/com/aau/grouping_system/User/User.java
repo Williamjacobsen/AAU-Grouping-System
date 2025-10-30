@@ -1,38 +1,36 @@
 package com.aau.grouping_system.User;
 
-import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.DatabaseItem;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public abstract class User extends DatabaseItem {
 
 	private String email;
 	private String passwordHash;
 	private String name;
+	/// Despite getRole being an abstract method and this therefore never being
+	/// assigned or set, this field is still needed to send the role in a JSON object
+	/// of User (despite being private, fields with public getters are inserted into
+	/// the JSON object when creating one).
+	private Role role;
 
 	public enum Role {
-		UNDEFINED,
-		COORDINATOR,
-		SUPERVISOR,
-		STUDENT
+		Coordinator,
+		Supervisor,
+		Student;
 	}
-
-	// abstract methods
 
 	public abstract Role getRole();
 
-	// constructors
-
-	public User(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList,
+	public User(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name) {
-		super(parentDatabaseMap, parentReferenceList);
+		super(db, parentItemChildIdList);
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;
+		this.role = getRole();
 	}
-
-	// getters & setters
 
 	public String getEmail() {
 		return email;

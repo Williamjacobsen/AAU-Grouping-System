@@ -9,40 +9,45 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
-@Component // so we can do dependency injection
+@Component
 public class Database {
 
-	private final DatabaseMap<Coordinator> coordinators = new DatabaseMap<>();
-	private final DatabaseMap<Session> sessions = new DatabaseMap<>();
-	private final DatabaseMap<Supervisor> supervisors = new DatabaseMap<>();
-	private final DatabaseMap<Student> students = new DatabaseMap<>();
-	private final DatabaseMap<Project> projects = new DatabaseMap<>();
-	private final DatabaseMap<Group> groups = new DatabaseMap<>();
+	private DatabaseData data = new DatabaseData();
 
-	// getters & setters
+	DatabaseData getData() {
+		return data;
+	}
+
+	void setData(DatabaseData data) {
+		this.data = data;
+	}
+
+	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {
+		return data.getMap(id);
+	}
 
 	public DatabaseMap<Coordinator> getCoordinators() {
-		return coordinators;
+		return data.getCoordinators();
 	}
 
 	public DatabaseMap<Session> getSessions() {
-		return sessions;
+		return data.getSessions();
 	}
 
 	public DatabaseMap<Supervisor> getSupervisors() {
-		return supervisors;
+		return data.getSupervisors();
 	}
 
 	public DatabaseMap<Student> getStudents() {
-		return students;
+		return data.getStudents();
 	}
 
 	public DatabaseMap<Project> getProjects() {
-		return projects;
+		return data.getProjects();
 	}
 
 	public DatabaseMap<Group> getGroups() {
-		return groups;
+		return data.getGroups();
 	}
 
 }

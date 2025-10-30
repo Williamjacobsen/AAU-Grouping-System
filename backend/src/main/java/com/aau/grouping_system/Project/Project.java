@@ -1,33 +1,33 @@
 package com.aau.grouping_system.Project;
 
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Database.item.DatabaseItem;
-import com.aau.grouping_system.Database.item.ItemReferenceList;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public class Project extends DatabaseItem {
-	// todo: Fjern "project" fra variabelnavne.
-	private String projectName;
+
+	private String name;
 	private String description;
-	private int projectId;
-	// todo: Tilføj user
 
-	public Project(DatabaseMap<? extends DatabaseItem> parentDatabaseMap,
-			ItemReferenceList<? extends DatabaseItem> parentReferenceList, String projectName,
-			String description,
-			int projectId) {
-		super(parentDatabaseMap, parentReferenceList);
-		this.projectName = projectName;
+	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
+			String name, String description) {
+		super(db, parentItemChildIdList);
+		this.name = name;
 		this.description = description;
-		this.projectId = projectId;
 	}
 
-	// Getters and setters
-	public String getProjectName() {
-		return projectName;
+	@Override
+	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
+		return db.getProjects();
 	}
 
-	public void setProjectName(String projectName) {
-		this.projectName = projectName;
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public String getDescription() {
@@ -36,13 +36,5 @@ public class Project extends DatabaseItem {
 
 	public void setDescription(String description) {
 		this.description = description;
-	}
-
-	public int getProjectId() {
-		return projectId;
-	}
-
-	public void setProjectId(int projectId) {
-		this.projectId = projectId;
 	}
 }
