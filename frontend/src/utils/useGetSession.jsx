@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-async function requestSession(sessionId) {
+export async function requestSession(sessionId) {
 	try {
 		const response = await fetch(
 			`http://localhost:8080/sessions/${sessionId}`,

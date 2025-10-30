@@ -13,6 +13,8 @@ import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -117,7 +119,7 @@ public class SessionController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/{sessionId}/getStudents")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable String sessionId,
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(@PathVariable String sessionId,
 			HttpServletRequest request) {
 
 		Session session = RequireSessionExists(sessionId);
@@ -127,6 +129,39 @@ public class SessionController {
 		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
 
 		return ResponseEntity.ok(students);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here despite Java's invariance of generics.
+	@GetMapping("/{sessionId}/getProjects")
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(@PathVariable String sessionId) {
+
+		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
+		// Check if session exists if not throw error
+		if (session == null) {
+			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
+		}
+
+		// Get that session’s projects and type cast
+		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+
+		// Return them with 200 ok
+		return ResponseEntity.ok(projects);
+	}
+
+	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
+																	// true here because Java's invariance of generics.
+	@GetMapping("/{sessionId}/getGroups")
+	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(@PathVariable String sessionId,
+			HttpServletRequest request) {
+
+		Session session = RequireSessionExists(sessionId);
+		User user = RequireUserExists(request);
+		RequireUserIsAuthorizedSession(sessionId, user);
+
+		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+
+		return ResponseEntity.ok(groups);
 	}
 
 	@DeleteMapping("/{sessionId}")

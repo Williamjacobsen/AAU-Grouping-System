@@ -16,7 +16,7 @@ export default function useGetSessionProjects(sessionId) {
     (async () => { // fetch data from the server
 			try { // try to fetch, catch will throw error if fail
 				const response = await fetch(
-					`http://localhost:8080/project/getSessionProjects/${sessionId}`,
+					`http://localhost:8080/sessions/${sessionId}/getProjects`,
 					{
 						method: "GET",
 						credentials: "include",
