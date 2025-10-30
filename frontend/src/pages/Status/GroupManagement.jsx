@@ -5,6 +5,7 @@ import "../User/User.css";
 export default function GroupManagement() {
 	const { sessionId } = useParams();
 	const [groups, setGroups] = useState([]);
+	const [selectedStudent, setSelectedStudent] = useState(null);
 
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
@@ -19,6 +20,33 @@ export default function GroupManagement() {
 		]);
 	}, [sessionId]);
 
+	function handleStudentClick(name, groupId) {
+		if (!selectedStudent) {
+			setSelectedStudent({ name, from: groupId })
+			return;
+		} else {
+			if (selectedStudent.from === groupId) {
+				setSelectedStudent(null);
+				return;
+			}
+
+			setGroups(groups =>
+				groups.map(group => {
+					if (group.id === selectedStudent.from)
+					// Copy the group, but update the members
+					// Old group keeps all members, except the selected student
+						return { ...group, members: group.members.filter(student => student !== selectedStudent.name) };
+					// Checks if the current group in the loop matches the target group
+					if (group.id === groupId)
+						// Copy the group, but update the members
+						// Copy all the members, but add the selected student
+						return { ...group, members: [...group.members, selectedStudent.name] };
+					return group; 
+				})
+			);
+			setSelectedStudent(null);
+		}
+	}
 
 	function renderGroups(groups) {
 		return groups.map((group) => (
@@ -28,7 +56,7 @@ export default function GroupManagement() {
 				</h4>
 				<ul>
 					{group.members.map((memberName, index) => (
-						<li key={index}> {memberName} </li>
+						<li key={index} onClick={() => handleStudentClick(memberName, group.id)}> {memberName} </li>
 					))}
 				</ul>
 			</div>
