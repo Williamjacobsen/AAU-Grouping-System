@@ -58,67 +58,64 @@ export default function GroupManagement() {
 
 	function handleGroupClick(groupId) {
 		if (!selectedGroup) {
-			setSelectedGroup({ from: groupId })
+			setSelectedGroup({ from: groupId });
 			return;
-		} else {
-			if (selectedGroup.from === groupId) {
-				setSelectedGroup(null);
-				return;
-			}
-			setGroups(groups =>
-				groups.map(group => {
-					if (group.id === selectedGroup.from) {
-						const fromGroup = groups.find(g => g.id === selectedGroup.from);
-						const targetGroup = groups.find(group => group.id === groupId);
-						// nothing happens if the groups would exceed 7 in total
-						if (targetGroup.members.length + fromGroup.members.length > 7) return group;
-						
-						return { ...group, members: [] };
-					}
-					// Checks if the current group in the loop matches the target group
-					if (group.id === groupId) {
-						const fromGroup = groups.find(g => g.id === selectedGroup.from);
-						// Copy the group, but update the members
-						// Copy all the members, but add the selected student
-						return { ...group, members: [...group.members, ...fromGroup.members] }
-					}
-					return group;
-				})
-			);
-			setSelectedGroup(null);
 		}
-	}
 
-	
-	function renderGroups(groups) {
-		return groups.map((group) => (
-			<div className="group-box" key={group.id}>
-				<h4 onClick={() => handleGroupClick(group.id)}
-					className={selectedGroup?.from === group.id ? "selected" : ""}>
-					{group.name} - size: {group.members.length}
-				</h4>
-				<ul>
-					{group.members.map((memberName, index) => (
-						<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
-							className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
-							{memberName} </li>
-					))}
-				</ul>
-			</div>
-		));
-	}
+		if (selectedGroup.from === groupId) {
+			setSelectedGroup(null);
+			return;
+		}
+		setGroups(groups => {
+			const fromGroup = groups.find(g => g.id === selectedGroup.from);
+			const targetGroup = groups.find(group => group.id === groupId);
+			// nothing happens if the groups would exceed 7 in total
+			if (targetGroup.members.length + fromGroup.members.length > 7) return groups;
 
-	return (
-		<div className="group-container">
-			<h1> Group Management</h1>
-			<h2 className="completed-groups" >Completed Groups</h2>
-			<div className="group-row">{renderGroups(completedGroups)}</div>
+			// Checks if the current group in the loop matches the target group
+			return groups.map(group => {
+				if (group.id === selectedGroup.from) 
+					return {...group, members: [] };
+				if (group.id === groupId) 
+				// Copy the group, but update the members
+				// Copy all the members, but add the selected student
+				return { ...group, members: [...group.members, ...fromGroup.members] }
+			return group;
+		});
+	});
+		setSelectedGroup(null);
+}
 
-			<h2 className="almost-completed-groups">Almost Completed Groups</h2>
-			<div className="group-row">{renderGroups(almostCompletedGroups)}</div>
 
-			<h2 className="incomplete-groups">Incomplete Groups</h2>
-			<div className="group-row">{renderGroups(incompleteGroups)}</div>
+function renderGroups(groups) {
+	return groups.map((group) => (
+		<div className="group-box" key={group.id}>
+			<h4 onClick={() => handleGroupClick(group.id)}
+				className={selectedGroup?.from === group.id ? "selected" : ""}>
+				{group.name} - size: {group.members.length}
+			</h4>
+			<ul>
+				{group.members.map((memberName, index) => (
+					<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
+						className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
+						{memberName} </li>
+				))}
+			</ul>
 		</div>
-	)
+	));
+}
+
+return (
+	<div className="group-container">
+		<h1> Group Management</h1>
+		<h2 className="completed-groups" >Completed Groups</h2>
+		<div className="group-row">{renderGroups(completedGroups)}</div>
+
+		<h2 className="almost-completed-groups">Almost Completed Groups</h2>
+		<div className="group-row">{renderGroups(almostCompletedGroups)}</div>
+
+		<h2 className="incomplete-groups">Incomplete Groups</h2>
+		<div className="group-row">{renderGroups(incompleteGroups)}</div>
+	</div>
+)
 }
