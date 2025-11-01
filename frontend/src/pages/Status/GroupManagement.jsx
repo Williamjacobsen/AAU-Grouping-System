@@ -6,10 +6,11 @@ export default function GroupManagement() {
 	const { sessionId } = useParams();
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
+	const [selectedGroup, setSelectedGroup] = useState(null);
 
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
-	const incompleteGroups = groups.filter(group => group.members.length <= 3);
+	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
 
 	useEffect(() => {
 		setGroups([
@@ -32,31 +33,74 @@ export default function GroupManagement() {
 
 			setGroups(groups =>
 				groups.map(group => {
-					if (group.id === selectedStudent.from)
-					// Copy the group, but update the members
-					// Old group keeps all members, except the selected student
-						return { ...group, members: group.members.filter(student => student !== selectedStudent.name) };
+					if (group.id === selectedStudent.from) {
+						const targetGroup = groups.find(group => group.id === groupId);
+						if (targetGroup.members.length >= 7)
+							// if the target group is full, we don’t remove the student
+							return group;
+						// Copy the group, but update the members
+						// Old group keeps all members, except the selected student
+						return { ...group, members: group.members.filter(student => student !== selectedStudent.name) }
+					}
 					// Checks if the current group in the loop matches the target group
-					if (group.id === groupId)
+					if (group.id === groupId) {
+						if (group.members.length >= 7) return group;
 						// Copy the group, but update the members
 						// Copy all the members, but add the selected student
-						return { ...group, members: [...group.members, selectedStudent.name] };
-					return group; 
+						return { ...group, members: [...group.members, selectedStudent.name] }
+					}
+					return group;
 				})
 			);
 			setSelectedStudent(null);
 		}
 	}
 
+	function handleGroupClick(groupId) {
+		if (!selectedGroup) {
+			setSelectedGroup({ from: groupId })
+			return;
+		} else {
+			if (selectedGroup.from === groupId) {
+				setSelectedGroup(null);
+				return;
+			}
+			setGroups(groups =>
+				groups.map(group => {
+					if (group.id === selectedGroup.from) {
+						const fromGroup = groups.find(g => g.id === selectedGroup.from);
+						const targetGroup = groups.find(group => group.id === groupId);
+						// nothing happens if the groups would exceed 7 in total
+						if (targetGroup.members.length + fromGroup.members.length > 7) return group;
+						
+						return { ...group, members: [] };
+					}
+					// Checks if the current group in the loop matches the target group
+					if (group.id === groupId) {
+						const fromGroup = groups.find(g => g.id === selectedGroup.from);
+						// Copy the group, but update the members
+						// Copy all the members, but add the selected student
+						return { ...group, members: [...group.members, ...fromGroup.members] }
+					}
+					return group;
+				})
+			);
+			setSelectedGroup(null);
+		}
+	}
+
 	function renderGroups(groups) {
 		return groups.map((group) => (
 			<div className="group-box" key={group.id}>
-				<h4>
+				<h4 onClick={() => handleGroupClick(group.id)}
+					className={selectedGroup?.from === group.id ? "selected" : ""}>
 					{group.name} - size: {group.members.length}
 				</h4>
 				<ul>
 					{group.members.map((memberName, index) => (
-						<li key={index} onClick={() => handleStudentClick(memberName, group.id)}> {memberName} </li>
+						<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
+							className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
+							{memberName} </li>
 					))}
 				</ul>
 			</div>
