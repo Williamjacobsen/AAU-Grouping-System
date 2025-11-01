@@ -89,6 +89,7 @@ export default function GroupManagement() {
 		}
 	}
 
+	
 	function renderGroups(groups) {
 		return groups.map((group) => (
 			<div className="group-box" key={group.id}>
