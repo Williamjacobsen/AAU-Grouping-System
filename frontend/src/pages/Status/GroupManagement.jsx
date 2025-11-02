@@ -6,7 +6,7 @@ export default function GroupManagement() {
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
-	const [error, setError] = useState(null);
+	const [error, setError] = useState(null); //needs error handling
 
 
 	const completedGroups = groups.filter(group => group.members.length === 7);
