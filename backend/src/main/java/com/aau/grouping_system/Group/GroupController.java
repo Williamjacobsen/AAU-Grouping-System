@@ -2,13 +2,16 @@ package com.aau.grouping_system.Group;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Student.Student;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
@@ -94,9 +97,45 @@ public class GroupController {
 	}
 
 	@GetMapping
+	/* 
 	public ResponseEntity<Map<String, Group>> getAllGroups() {
 		return ResponseEntity.ok(db.getGroups().getAllItems());
-	}
+	 }
+*/
+
+// ---TEST------TEST------TEST------TEST---
+public ResponseEntity<Object> getAllGroups() {
+
+    Map<String, Object> mockGroups = Map.of(
+        "1", Map.of(
+            "id", "1",
+            "name", "Group 1",
+            "members", List.of("Student 1", "Student 2", "Student 3", "Student 4", "Student 5", "Student 6", "Student 7")
+        ),
+        "2", Map.of(
+            "id", "2",
+            "name", "Group 2",
+            "members", List.of("Student 8", "Student 9", "Student 10", "Student 11", "Student 12", "Student 13")
+        ),
+        "3", Map.of(
+            "id", "3",
+            "name", "Group 3",
+            "members", List.of("Student 14", "Student 15", "Student 16", "Student 17", "Student 18")
+        ),
+        "4", Map.of(
+            "id", "4",
+            "name", "Group 4",
+            "members", List.of("Student 19", "Student 20", "Student 21")
+        ),
+        "5", Map.of(
+            "id", "5",
+            "name", "Group 5",
+            "members", List.of("Student 22", "Student 23")
+        )
+    );
+    return ResponseEntity.ok(mockGroups);
+}
+// ---TEST------TEST------TEST------TEST---
 
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(

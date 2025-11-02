@@ -7,27 +7,26 @@ export default function GroupManagement() {
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
 	const [error, setError] = useState(null);
-	const [loading, setLoading] = useState(true);
-	const [data, setData] = useState(null);
+
 
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			setLoading(true);
+		const fetchGroups = async () => {
 			setError(null);
 			try {
-				const response = await fetch("");
-				setData(response.data);
+				const response = await fetch("http://localhost:8080/groups");
+				const data = await response.json();
+				const groupArray = Object.values(data); //convert object into an array
+				setGroups(groupArray);
+				console.log("Fetched groups:", groupArray);
 			} catch (error) {
 				setError("Failed to fetch data");
-			} finally {
-				setLoading(false)
 			}
 		}
-		fetchData();
+		fetchGroups();
 	}, []);
 
 	function handleStudentClick(name, groupId) {
@@ -41,12 +40,12 @@ export default function GroupManagement() {
 			return;
 		}
 
-		setGroups( prevGroups => { 
+		setGroups(prevGroups => {
 			const targetGroup = prevGroups.find(group => group.id === groupId);
-			
-			if (targetGroup.members.length >= 7) 
+
+			if (targetGroup.members.length >= 7)
 				// if the target group is full, we don’t add the student
-						return prevGroups;
+				return prevGroups;
 
 			return prevGroups.map(group => {
 				if (group.id === selectedStudent.from) {
@@ -60,7 +59,7 @@ export default function GroupManagement() {
 				}
 				return group;
 			})
-	});
+		});
 		setSelectedStudent(null);
 	}
 
@@ -79,7 +78,7 @@ export default function GroupManagement() {
 		setGroups(prevGroups => {
 			const fromGroup = prevGroups.find(group => group.id === selectedGroup.from);
 			const targetGroup = prevGroups.find(group => group.id === groupId);
-			
+
 			if (targetGroup.members.length + fromGroup.members.length > 7)
 				// stops if combined size would exceed 7
 				return prevGroups;
@@ -100,21 +99,23 @@ export default function GroupManagement() {
 
 
 	function renderGroups(groups) {
-		return groups.map((group) => (
-			<div className="group-box" key={group.id}>
-				<h4 onClick={() => handleGroupClick(group.id)}
-					className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
-					{group.name} - size: {group.members.length}
-				</h4>
-				<ul>
-					{group.members.map((memberName, index) => (
-						<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
-							className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
-							{memberName} </li>
-					))}
-				</ul>
-			</div>
-		));
+		return groups.map((group) => {
+			return (
+				<div className="group-box" key={group.id}>
+					<h4 onClick={() => handleGroupClick(group.id)}
+						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
+						{group.name} - size: {group.members.length}
+					</h4>
+					<ul>
+						{group.members.map((memberName, index) => (
+							<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
+								className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
+								{memberName} </li>
+						))}
+					</ul>
+				</div>
+			);
+		});
 	}
 
 	return (
