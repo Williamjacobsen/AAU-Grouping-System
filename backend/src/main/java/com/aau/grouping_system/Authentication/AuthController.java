@@ -80,4 +80,15 @@ public class AuthController {
 				.ok(user); // info om user returneres som JSON obj.
 	}
 
+	// @GetMapping("/forgotPassword")
+	// public ResponseEntity<String> forgotPassword(HttpServletRequest request) {
+
+	// }
+
+	// @GetMapping("/resetPassword")
+	// public ResponseEntity<String> resetPassword(HttpServletRequest request) {
+		
+	// }
+	
+
 }
