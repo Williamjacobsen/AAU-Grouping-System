@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,11 +37,8 @@ public class AuthController {
 		User.Role role = User.Role.valueOf(body.get("role"));
 
 		User user = service.findByEmailOrId(email, role);
-
 		if (user == null || !service.isPasswordCorrect(password, user)) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED) // 401 error
-					.body("Invalid email/id or password");
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Invalid email/id or password");
 		}
 
 		service.invalidateOldSession(request);
@@ -63,17 +61,12 @@ public class AuthController {
 
 		HttpSession session = request.getSession(false);
 		if (session == null) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED) // 401 error
-					.body(null);
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Request does not contain a login session.");
 		}
 
 		User user = (User) session.getAttribute("user");
-
 		if (user == null) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED) // 401 error
-					.body(null);
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Login session is invalid.");
 		}
 
 		return ResponseEntity

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-async function requestSession(sessionId) {
+export async function requestSession(sessionId) {
 	try {
 		const response = await fetch(
 			`http://localhost:8080/sessions/${sessionId}`,
@@ -11,12 +11,10 @@ async function requestSession(sessionId) {
 			}
 		);
 
-		const data = await response.json();
 		if (!response.ok) {
-			return Promise.reject(data.error);
+			return Promise.reject("Status code " + response.status + ": " + await response.text());
 		}
-		
-		return data;
+		return await response.json();
 	}
 	catch (error) {
 		return Promise.reject(error);
@@ -50,8 +48,7 @@ function useGetSession(sessionId) {
 
 export function useGetSessionByParameter() {
 	const { sessionId } = useParams();
-	const { isLoading, session } = useGetSession(sessionId);
-	return { isLoading, session };
+	return useGetSession(sessionId);
 }
 
 export function useGetSessionByUser(user) {
@@ -61,8 +58,7 @@ export function useGetSessionByUser(user) {
 		setSessionId(user?.sessionId);
 	}, [user]);
 
-	const { isLoading, session } = useGetSession(sessionId);
-	return { isLoading, session };
+	return useGetSession(sessionId);;
 }
 
 /** Session from user is prioritized over session from URL parameter. */

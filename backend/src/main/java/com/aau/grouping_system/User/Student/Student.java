@@ -16,8 +16,7 @@ public class Student extends User {
 	private Questionnaire questionnaire = new Questionnaire();
 
 	public static class Questionnaire {
-		public CopyOnWriteArrayList<String> desiredProjectsIds = new CopyOnWriteArrayList<>();
-		public CopyOnWriteArrayList<String> desiredStudentIds = new CopyOnWriteArrayList<>();
+		public CopyOnWriteArrayList<String> desiredProjectIds = new CopyOnWriteArrayList<>();
 		/// -1 means no preference
 		public Integer desiredGroupSizeMin = -1;
 		/// -1 means no preference

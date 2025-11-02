@@ -17,7 +17,7 @@ public class Session extends DatabaseItem {
 	private DatabaseItemChildGroup projects;
 	private DatabaseItemChildGroup groups;
 	private String name;
-	private LocalDateTime questionnaireDeadline;
+	private LocalDateTime questionnaireDeadline = null;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Coordinator coordinator, String name) {

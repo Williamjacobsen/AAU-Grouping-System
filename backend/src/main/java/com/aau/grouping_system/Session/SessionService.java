@@ -25,7 +25,7 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db, coordinator.sessions, coordinator, sessionName);
+		return SessionFactory.create(db, coordinator.getSessions(), coordinator, sessionName);
 	}
 
 	public Session getSession(String sessionId) {
@@ -35,7 +35,7 @@ public class SessionService {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
-		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems(db);
+		return (CopyOnWriteArrayList<Session>) coordinator.getSessions().getItems(db);
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {

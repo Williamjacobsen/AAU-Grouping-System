@@ -26,12 +26,10 @@ export default function useGetSessionSupervisors(sessionId) {
 				}
 			);
 
-			const data = await response.json();
 			if (!response.ok) {
-				return Promise.reject(data.error);
+				return Promise.reject("Status code " + response.status + ": " + await response.text());
 			}
-			
-			return data;
+			return await response.json();
 		}
 		catch (error) {
 			return Promise.reject(error);

@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.Exceptions.RequestException;
+
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
@@ -16,10 +19,20 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
-	private final CoordinatorService service;
+	private final CoordinatorService coordinatorService;
+	private final AuthService authService;
 
-	public CoordinatorController(CoordinatorService coordinatorService) {
-		this.service = coordinatorService;
+	public CoordinatorController(CoordinatorService coordinatorService, AuthService authService) {
+		this.coordinatorService = coordinatorService;
+		this.authService = authService;
+	}
+
+	public Coordinator RequireCoordinatorExists(HttpServletRequest request) {
+		Coordinator coordinator = authService.getCoordinatorByUser(request);
+		if (coordinator == null) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
+		}
+		return coordinator;
 	}
 
 	@PostMapping("/signUp")
@@ -29,13 +42,11 @@ public class CoordinatorController {
 		String password = body.get("password");
 		String name = body.get("name");
 
-		if (service.isEmailDuplicate(email)) {
-			return ResponseEntity
-					.status(HttpStatus.CONFLICT)
-					.body("Error: Inputted email is already used by another coordinator.");
+		if (coordinatorService.isEmailDuplicate(email)) {
+			throw new RequestException(HttpStatus.CONFLICT, "Error: Inputted email is already used by another coordinator.");
 		}
 
-		service.addCoordinator(email, password, name);
+		coordinatorService.addCoordinator(email, password, name);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
@@ -45,22 +56,15 @@ public class CoordinatorController {
 	@PostMapping("/modifyEmail")
 	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
-		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
-		if (user == null) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body("Not logged in");
-		}
+		Coordinator user = RequireCoordinatorExists(request);
 		String coordinatorId = user.getId();
 		String newEmail = body.get("newEmail");
 
-		if (service.isEmailDuplicate(newEmail)) {
-			return ResponseEntity
-					.status(HttpStatus.CONFLICT)
-					.body("Error: Inputted email is already used by another coordinator.");
+		if (coordinatorService.isEmailDuplicate(newEmail)) {
+			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another coordinator.");
 		}
 
-		service.modifyEmail(newEmail, coordinatorId);
+		coordinatorService.modifyEmail(newEmail, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
@@ -70,16 +74,11 @@ public class CoordinatorController {
 	@PostMapping("/modifyPassword")
 	public ResponseEntity<String> modifyPassword(HttpServletRequest request, @RequestBody Map<String, String> body) {
 
-		Coordinator user = (Coordinator) request.getSession().getAttribute("user");
-		if (user == null) {
-			return ResponseEntity
-					.status(HttpStatus.UNAUTHORIZED)
-					.body("Not logged in");
-		}
+		Coordinator user = RequireCoordinatorExists(request);
 		String coordinatorId = user.getId();
 		String newPassword = body.get("newPassword");
 
-		service.modifyPassword(newPassword, coordinatorId);
+		coordinatorService.modifyPassword(newPassword, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

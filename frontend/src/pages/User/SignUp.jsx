@@ -19,12 +19,15 @@ export default function SignUp() {
 				body: JSON.stringify({ email, password, name }),
 				credentials: "include"
 			})
-			if (response.ok) {
-				navigate("/profile");
-			} else {
+
+			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
+				return Promise.resolve();
 			}
+
+			navigate("/profile");
+
 		} catch (e) {
 			setError(e.message);
 		}

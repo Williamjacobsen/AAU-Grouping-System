@@ -1,15 +1,13 @@
 package com.aau.grouping_system.User.Student;
 
-import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.Authentication.AuthService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,27 +22,14 @@ public class StudentController {
 	private final Database db;
 	private final StudentService studentService;
 	private final AuthService authService;
+	private final SessionService sessionService;
 
-	public StudentController(Database db, StudentService studentService, AuthService authService) {
+	public StudentController(Database db, StudentService studentService, AuthService authService,
+			SessionService sessionService) {
 		this.db = db;
 		this.studentService = studentService;
 		this.authService = authService;
-	}
-
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
-	@GetMapping("/getSessionStudents/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionStudents(@PathVariable String sessionId,
-			HttpServletRequest request) {
-
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
-
-		return ResponseEntity.ok(students);
+		this.sessionService = sessionService;
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")
@@ -53,7 +38,12 @@ public class StudentController {
 
 		Student student = authService.getStudentByUser(request);
 		if (student == null) {
-			return ResponseEntity.notFound().build();
+			throw new RequestException(HttpStatus.NOT_FOUND, "Student not found");
+		}
+
+		Session session = db.getSessions().getItem(student.getSessionId());
+		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 
 		studentService.applyQuestionnaireAnswers(student, body);

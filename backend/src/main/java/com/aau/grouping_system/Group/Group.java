@@ -36,8 +36,6 @@ public class Group extends DatabaseItem {
 		return db.getGroups();
 	}
 
-	// getters & setters
-
 	public String getSupervisorId() {
 		return supervisorId;
 	}
