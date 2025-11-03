@@ -1,7 +1,7 @@
 package com.aau.grouping_system.StudentPage;
 
 public class StudentDetailsDTO {
-	private Integer id;
+	private String id;
 	private String name;
 	private String email;
 	private StudentQuestionnaireDTO questionnaire;
@@ -9,7 +9,7 @@ public class StudentDetailsDTO {
 
 	public StudentDetailsDTO() {}
 
-	public StudentDetailsDTO(Integer id, String name, String email, 
+	public StudentDetailsDTO(String id, String name, String email, 
 			StudentQuestionnaireDTO questionnaire, StudentGroupDTO group) {
 		this.id = id;
 		this.name = name;
@@ -18,8 +18,8 @@ public class StudentDetailsDTO {
 		this.group = group;
 	}
 
-	public Integer getId() { return id; }
-	public void setId(Integer id) { this.id = id; }
+	public String getId() { return id; }
+	public void setId(String id) { this.id = id; }
 
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }

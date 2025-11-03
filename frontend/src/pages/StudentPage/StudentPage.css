@@ -211,6 +211,46 @@
 	cursor: not-allowed;
 }
 
+/* Header buttons container */
+.header-buttons {
+	display: flex;
+	gap: 12px;
+	margin-left: auto;
+}
+
+/* Reset Password Button */
+.reset-password-button {
+	padding: 10px 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.reset-password-button:hover {
+	background-color: #0056b3;
+}
+
+.reset-password-button:disabled {
+	background-color: #6c757d;
+	cursor: not-allowed;
+}
+
+/* Success message */
+.success-message {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 16px 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	border: 1px solid #c3e6cb;
+	font-size: 16px;
+}
+
 /* Modal Styles */
 .modal-overlay {
 	position: fixed;

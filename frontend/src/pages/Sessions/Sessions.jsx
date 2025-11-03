@@ -6,6 +6,9 @@ import "./Sessions.css";
 
 export default function Sessions() {
 	const [newSessionName, setNewSessionName] = useState("");
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [sessionToDelete, setSessionToDelete] = useState(null);
+	const [deletingSession, setDeletingSession] = useState(false);
 	const navigate = useNavigate();
 	
 	const {
@@ -30,10 +33,27 @@ export default function Sessions() {
 	};
 
 	const handleDeleteSession = async (sessionId) => {
-		if (!window.confirm("Are you sure you want to delete this session?")) {
-			return;
+		setDeletingSession(true);
+		
+		try {
+			await deleteSession(sessionId);
+			setShowDeleteModal(false);
+			setSessionToDelete(null);
+		} catch (err) {
+			console.error("Error deleting session:", err);
+		} finally {
+			setDeletingSession(false);
 		}
-		await deleteSession(sessionId);
+	};
+
+	const openDeleteModal = (session) => {
+		setSessionToDelete(session);
+		setShowDeleteModal(true);
+	};
+
+	const closeDeleteModal = () => {
+		setShowDeleteModal(false);
+		setSessionToDelete(null);
 	};
 
 	const openSession = (sessionId) => {
@@ -45,7 +65,7 @@ export default function Sessions() {
 	};
 
 	const manageSupervisors = (sessionId) => {
-		navigate(`/session/${sessionId}/supervisors`);
+		navigate(`/session/${sessionId}/supervisorsPage`);
 	};
 
 	return (
@@ -89,7 +109,9 @@ export default function Sessions() {
 					</div>
 				) : (
 					<div className="sessions-grid">
-						{sessions.map((session) => (
+						{sessions
+							.filter(session => session != null)
+							.map((session) => (
 							<div key={session.id} className="session-card">
 								<div className="session-header">
 									<h3 className="session-name">
@@ -120,7 +142,7 @@ export default function Sessions() {
 										Manage Supervisors
 									</button>
 									<button
-										onClick={() => handleDeleteSession(session.id)}
+										onClick={() => openDeleteModal(session)}
 										className="delete-button"
 										disabled={loading}
 									>
@@ -132,6 +154,42 @@ export default function Sessions() {
 					</div>
 				)}
 			</div>
+
+			{/* Delete Session Modal */}
+			{showDeleteModal && sessionToDelete && (
+				<div className="modal-overlay" onClick={closeDeleteModal}>
+					<div className="modal" onClick={(e) => e.stopPropagation()}>
+						<div className="modal-header">
+							<h3>Delete Session</h3>
+							<button className="close-button" onClick={closeDeleteModal}>×</button>
+						</div>
+						<div className="modal-body">
+							<p>
+								Are you sure you want to delete <strong>{sessionToDelete.name || `Session ${sessionToDelete.id}`}</strong>?
+							</p>
+							<p className="warning">This action cannot be undone.</p>
+						</div>
+						<div className="modal-footer">
+							<button 
+								type="button" 
+								className="cancel-button" 
+								onClick={closeDeleteModal}
+								disabled={deletingSession}
+							>
+								Cancel
+							</button>
+							<button 
+								type="button" 
+								className="danger-button"
+								onClick={() => handleDeleteSession(sessionToDelete.id)}
+								disabled={deletingSession}
+							>
+								{deletingSession ? "Deleting..." : "Delete"}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</div>
 	);
 }

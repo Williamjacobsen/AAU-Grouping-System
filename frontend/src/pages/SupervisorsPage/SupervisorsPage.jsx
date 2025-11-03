@@ -14,17 +14,18 @@ export default function SupervisorsPage() {
 	const [supervisorToRemove, setSupervisorToRemove] = useState(null);
 	const [addingSupervisor, setAddingSupervisor] = useState(false);
 	const [removingSupervisor, setRemovingSupervisor] = useState(false);
+	const [sendingPassword, setSendingPassword] = useState(null);
 
 	const fetchUserRole = async () => {
 		try {
-			const response = await fetch("http://localhost:8080/auth/me", {
+			const response = await fetch("http://localhost:8080/auth/getUser", {
 				method: "GET",
 				credentials: "include",
 			});
 			
 			if (response.ok) {
 				const userData = await response.json();
-				setIsCoordinator(userData.role === "COORDINATOR");
+				setIsCoordinator(userData.role === "Coordinator");
 			}
 		} catch (err) {
 			console.error("Error fetching user role:", err);
@@ -133,6 +134,29 @@ export default function SupervisorsPage() {
 		}
 	};
 
+	const handleSendNewPassword = async (supervisor) => {
+		setSendingPassword(supervisor.id);
+		
+		try {
+			const response = await fetch(`http://localhost:8080/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
+				method: "POST",
+				credentials: "include",
+			});
+			
+			if (response.ok) {
+				const successMessage = await response.text();
+				alert(successMessage);
+			} else {
+				const errorText = await response.text();
+				alert("Failed to send new password: " + errorText);
+			}
+		} catch (err) {
+			alert("Error sending new password: " + err.message);
+		} finally {
+			setSendingPassword(null);
+		}
+	};
+
 	const openRemoveModal = (supervisor) => {
 		setSupervisorToRemove(supervisor);
 		setShowRemoveModal(true);
@@ -203,6 +227,13 @@ export default function SupervisorsPage() {
 									<td>{supervisor.name}</td>
 									<td>{supervisor.email}</td>
 									<td>
+										<button
+											className="send-password-button"
+											onClick={() => handleSendNewPassword(supervisor)}
+											disabled={sendingPassword === supervisor.id}
+										>
+											{sendingPassword === supervisor.id ? "Sending..." : "Send New Password"}
+										</button>
 										<button
 											className="remove-button"
 											onClick={() => openRemoveModal(supervisor)}

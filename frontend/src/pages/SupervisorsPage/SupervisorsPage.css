@@ -74,6 +74,27 @@
 	background-color: #f8f9fa;
 }
 
+.send-password-button {
+	background-color: #28a745;
+	color: white;
+	border: none;
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+	margin-right: 8px;
+	transition: background-color 0.3s;
+}
+
+.send-password-button:hover {
+	background-color: #218838;
+}
+
+.send-password-button:disabled {
+	background-color: #6c757d;
+	cursor: not-allowed;
+}
+
 .remove-button {
 	background-color: #dc3545;
 	color: white;

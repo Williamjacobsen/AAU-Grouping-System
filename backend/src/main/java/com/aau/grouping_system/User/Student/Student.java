@@ -1,14 +1,13 @@
 package com.aau.grouping_system.User.Student;
 
-import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseMap;
-
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.User;
 
 public class Student extends User {
 
@@ -21,8 +20,8 @@ public class Student extends User {
 		public Integer desiredGroupSizeMin = -1;
 		/// -1 means no preference
 		public Integer desiredGroupSizeMax = -1;
-		public WorkLocation desiredWorkLocation = WorkLocation.NoPreference;
-		public WorkStyle desiredWorkStyle = WorkStyle.NoPreference;
+		public Student.WorkLocation desiredWorkLocation = Student.WorkLocation.NoPreference;
+		public Student.WorkStyle desiredWorkStyle = Student.WorkStyle.NoPreference;
 		public String personalSkills = "";
 		public String specialNeeds = "";
 		public String academicInterests = "";
@@ -35,13 +34,13 @@ public class Student extends User {
 		this.sessionId = session.getId();
 	}
 
-	private enum WorkLocation {
+	public enum WorkLocation {
 		NoPreference,
 		Located,
 		Remote;
 	}
 
-	private enum WorkStyle {
+	public enum WorkStyle {
 		NoPreference,
 		Solo,
 		Together;

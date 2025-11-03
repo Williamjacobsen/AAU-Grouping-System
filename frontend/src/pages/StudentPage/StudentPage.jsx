@@ -6,10 +6,13 @@ import "./StudentPage.css";
 export default function StudentPage() {
 	const { sessionId, studentId } = useParams();
 	const navigate = useNavigate();
-	const { student, loading, error, isCoordinator, removeStudent } = useStudentData(sessionId, studentId);
+	const { student, loading, error, isCoordinator, removeStudent, resetPassword } = useStudentData(sessionId, studentId);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 	const [isRemoving, setIsRemoving] = useState(false);
 	const [removeError, setRemoveError] = useState("");
+	const [isResettingPassword, setIsResettingPassword] = useState(false);
+	const [resetPasswordError, setResetPasswordError] = useState("");
+	const [resetPasswordSuccess, setResetPasswordSuccess] = useState("");
 
 	const goBack = () => {
 		navigate(-1);
@@ -39,6 +42,22 @@ export default function StudentPage() {
 	const handleCancelRemove = () => {
 		setShowConfirmDialog(false);
 		setRemoveError("");
+	};
+
+	const handleResetPassword = async () => {
+		setIsResettingPassword(true);
+		setResetPasswordError("");
+		setResetPasswordSuccess("");
+		
+		const result = await resetPassword();
+		
+		if (result.success) {
+			setResetPasswordSuccess(result.message);
+		} else {
+			setResetPasswordError(result.message);
+		}
+		
+		setIsResettingPassword(false);
 	};
 
 	if (loading) {
@@ -79,9 +98,18 @@ export default function StudentPage() {
 				</button>
 				<h1>Student Details</h1>
 				{isCoordinator && (
-					<button onClick={handleRemoveClick} className="remove-button">
-						Remove Student
-					</button>
+					<div className="header-buttons">
+						<button 
+							onClick={handleResetPassword} 
+							className="reset-password-button"
+							disabled={isResettingPassword}
+						>
+							{isResettingPassword ? "Sending..." : "Send New Password"}
+						</button>
+						<button onClick={handleRemoveClick} className="remove-button">
+							Remove Student
+						</button>
+					</div>
 				)}
 			</div>
 
@@ -199,6 +227,20 @@ export default function StudentPage() {
 					</div>
 				)}
 			</div>
+
+			{/* Success message for password reset */}
+			{resetPasswordSuccess && (
+				<div className="success-message" style={{ marginTop: '20px' }}>
+					{resetPasswordSuccess}
+				</div>
+			)}
+
+			{/* Error message for password reset */}
+			{resetPasswordError && (
+				<div className="error-message" style={{ marginTop: '20px' }}>
+					{resetPasswordError}
+				</div>
+			)}
 
 			{/* Error message for remove operation */}
 			{removeError && (

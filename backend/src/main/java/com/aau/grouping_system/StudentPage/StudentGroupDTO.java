@@ -1,7 +1,7 @@
 package com.aau.grouping_system.StudentPage;
 
 public class StudentGroupDTO {
-	private Integer id;
+	private String id;
 	private Boolean hasGroup;
 	private String project;
 	private Integer groupSize;
@@ -9,7 +9,7 @@ public class StudentGroupDTO {
 
 	public StudentGroupDTO() {}
 
-	public StudentGroupDTO(Integer id, Boolean hasGroup, String project, Integer groupSize, Integer maxSize) {
+	public StudentGroupDTO(String id, Boolean hasGroup, String project, Integer groupSize, Integer maxSize) {
 		this.id = id;
 		this.hasGroup = hasGroup;
 		this.project = project;
@@ -17,8 +17,8 @@ public class StudentGroupDTO {
 		this.maxSize = maxSize;
 	}
 
-	public Integer getId() { return id; }
-	public void setId(Integer id) { this.id = id; }
+	public String getId() { return id; }
+	public void setId(String id) { this.id = id; }
 
 	public Boolean getHasGroup() { return hasGroup; }
 	public void setHasGroup(Boolean hasGroup) { this.hasGroup = hasGroup; }
