@@ -1,0 +1,110 @@
+# Authentication Integration Tests
+
+### Variables
+@baseUrl = http://localhost:8080
+@coordinatorEmail = c2@test.com
+@coordinatorPassword = c2
+@studentId = student-test-uuid
+@studentPassword = stud123
+
+### Coordinator Sign In - Valid Credentials
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{coordinatorEmail}}",
+  "password": "{{coordinatorPassword}}",
+  "role": "Coordinator"
+}
+
+### Get User After Sign In
+GET {{baseUrl}}/auth/getUser
+
+### Test 3: Student Sign In - Valid Credentials
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{studentId}}",
+  "password": "{{studentPassword}}",
+  "role": "Student"
+}
+
+### Invalid Credentials
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{coordinatorEmail}}",
+  "password": "wrongpassword",
+  "role": "Coordinator"
+}
+
+### Invalid Credentials
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "nonexistent@test.com",
+  "password": "{{coordinatorPassword}}",
+  "role": "Coordinator"
+}
+
+### Invalid Role
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{coordinatorEmail}}",
+  "password": "{{coordinatorPassword}}",
+  "role": "InvalidRole"
+}
+
+### Missing Required Fields
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{coordinatorEmail}}",
+  "role": "Coordinator"
+}
+
+### Sign Out
+POST {{baseUrl}}/auth/signOut
+
+### TGet User After Sign Out
+GET {{baseUrl}}/auth/getUser
+
+### Password Reset Request
+POST {{baseUrl}}/auth/resetPassword
+Content-Type: application/json
+
+{
+  "email": "{{coordinatorEmail}}"
+}
+
+### Cross-Role Authentication
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "student@test.com",
+  "password": "{{studentPassword}}",
+  "role": "Student"
+}
+
+### Session Persistence Check
+POST {{baseUrl}}/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "{{coordinatorEmail}}",
+  "password": "{{coordinatorPassword}}",
+  "role": "Coordinator"
+}
+
+###
+GET {{baseUrl}}/auth/getUser
+
+###
+GET {{baseUrl}}/auth/getUser
