@@ -24,16 +24,19 @@ export default function Profile() {
 				body: JSON.stringify({ newEmail }),
 				credentials: "include"
 			})
-			if (response.ok) {
-				navigate("/profile");
-				setSucces("Email updated succesfully")
-				setError("");
-				setUser(prev => ({ ...prev, email: newEmail }));
-			} else {
+
+			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
 				setSucces("")
+				return Promise.resolve();
 			}
+
+			navigate("/profile");
+			setSucces("Email updated succesfully")
+			setError("");
+			setUser(prev => ({ ...prev, email: newEmail }));
+
 		} catch (e) {
 			setError(e.message);
 		}
@@ -47,16 +50,19 @@ export default function Profile() {
 				body: JSON.stringify({ newPassword }),
 				credentials: "include"
 			})
-			if (response.ok) {
-				navigate("/profile");
-				setSucces("Password updated succesfully");
-				setError("");
-				setUser(prev => ({ ...prev, password: newPassword }));
-			} else {
+
+			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
 				setSucces("");
+				return Promise.resolve();
 			}
+
+			navigate("/profile");
+			setSucces("Password updated succesfully");
+			setError("");
+			setUser(prev => ({ ...prev, password: newPassword }));
+
 		} catch (e) {
 			setError(e.message);
 		}
@@ -68,13 +74,16 @@ export default function Profile() {
 				method: "POST",
 				credentials: "include"
 			})
-			if (response.ok) {
-    		window.location.reload(); // Reload the page (to refresh changes, e.g. to the Header)
-				navigate("/sign-in");
-			} else {
+
+			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
+				return Promise.resolve();
 			}
+
+			window.location.reload(); // Reload the page (to refresh changes, e.g. to the Header)
+			navigate("/sign-in");
+
 		} catch (e) {
 			setError(e.message);
 		}

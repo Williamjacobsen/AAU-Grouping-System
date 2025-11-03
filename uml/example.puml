@@ -1,0 +1,55 @@
+@startuml example
+
+' Requirements: 
+' - The "PlantUML" VS Code extension.
+' - Download the latest version of Graphviz (https://graphviz.org/download/)
+
+' Tutorial: https://www.youtube.com/watch?v=EM-cvRubP4g&t=654s
+' To render the UML, right click inside this document and press "Preview Current Diagram (ALT+D)"
+
+class Animal {
+	# name : String
+	# age : int
+	# maxSpeed : Decimal
+	# diet : AnimalDietEnum
+	# run()
+	{abstract} # makeSound()
+	{abstract} # getMaxAge()
+}
+
+class Dog {
+	- pant()
+}
+
+class Cat {
+	- extraLives : int
+	- climb()
+}
+
+class Habitat {
+	- animals : Animal[]
+}
+note left: This is a note on the left.\nCool.
+
+enum AnimalDietEnum {
+	Carnivore
+	Herbivore
+	Omnivore
+}
+
+Habitat "1" --* "n" Animal
+AnimalDietEnum "1" *--- "1" Animal
+Animal <|-- Dog
+Animal <|-- Cat
+
+class Building {
+	- floors : Floor[]
+}
+
+class Floor {
+	- area : Decimal
+}
+
+Building "1" --* "n" Floor
+
+@enduml

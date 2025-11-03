@@ -48,9 +48,11 @@ export default function Header() {
 							<li>
 								<b>Session</b>: {session.name}
 							</li>
-							<li>
-								<Link to={`/session/${session.id}/status`}>Status</Link>
-							</li>
+							{user?.role !== "Supervisor" &&
+								<li>
+									<Link to={`/session/${session.id}/status`}>Status</Link>
+								</li>
+							}
 							<li>
 								<Link to={`/session/${session.id}/projects`}>Projects</Link>
 							</li>
