@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../User/User.css";
 
-export default function GroupManagement() {
+export default function useGroupManagement() {
 
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
