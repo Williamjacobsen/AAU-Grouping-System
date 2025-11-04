@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.aau.grouping_system.User.User;
 
@@ -80,10 +81,21 @@ public class AuthController {
 				.ok(user); // info om user returneres som JSON obj.
 	}
 
-	// @GetMapping("/forgotPassword")
-	// public ResponseEntity<String> forgotPassword(HttpServletRequest request) {
+	@PostMapping("/forgotPassword")
+	public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
+		
+		String email = body.get("email");
 
-	// }
+		User user = service.findByEmailOrId(email, User.Role.Coordinator);
+
+		if (user == null)
+			return ResponseEntity
+				.status(HttpStatus.NOT_FOUND)
+				.body(null);
+
+		return ResponseEntity
+				.ok("An email has been send to you"); 
+	}
 
 	// @GetMapping("/resetPassword")
 	// public ResponseEntity<String> resetPassword(HttpServletRequest request) {

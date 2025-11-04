@@ -98,7 +98,7 @@ export default function GroupManagement() {
 	}
 
 
-	function renderGroups(groups) {
+	function RenderGroups(groups) {
 		return groups.map((group) => {
 			return (
 				<div className="group-box" key={group.id}>
@@ -122,13 +122,13 @@ export default function GroupManagement() {
 		<div className="group-container">
 			<h1> Group Management</h1>
 			<h2 className="completed-groups" >Completed Groups</h2>
-			<div className="group-row">{renderGroups(completedGroups)}</div>
+			<div className="group-row">{RenderGroups(completedGroups)}</div>
 
 			<h2 className="almost-completed-groups">Almost Completed Groups</h2>
-			<div className="group-row">{renderGroups(almostCompletedGroups)}</div>
+			<div className="group-row">{RenderGroups(almostCompletedGroups)}</div>
 
 			<h2 className="incomplete-groups">Incomplete Groups</h2>
-			<div className="group-row">{renderGroups(incompleteGroups)}</div>
+			<div className="group-row">{RenderGroups(incompleteGroups)}</div>
 		</div>
 	)
 }

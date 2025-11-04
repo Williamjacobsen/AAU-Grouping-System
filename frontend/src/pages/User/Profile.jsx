@@ -26,7 +26,7 @@ export default function Profile() {
 			})
 			if (response.ok) {
 				navigate("/profile");
-				setSucces("Email updated succesfully")
+				setSucces("Email updated succesfully");
 				setError("");
 				setUser(prev => ({ ...prev, email: newEmail }));
 			} else {
