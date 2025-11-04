@@ -8,7 +8,6 @@ export default function useGroupManagement() {
 	const [selectedGroup, setSelectedGroup] = useState(null);
 	const [error, setError] = useState(null); //needs error handling
 
-
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
