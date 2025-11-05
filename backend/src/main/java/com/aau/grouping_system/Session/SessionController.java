@@ -23,6 +23,7 @@ import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -36,41 +37,14 @@ public class SessionController {
 	private final Database db;
 	private final SessionService sessionService;
 	private final AuthService authService;
+	private final RequirementService requirementService;
 
-	public SessionController(Database db, SessionService sessionService, AuthService authService) {
+	public SessionController(Database db, SessionService sessionService, AuthService authService,
+			RequirementService requirementService) {
 		this.db = db;
 		this.sessionService = sessionService;
 		this.authService = authService;
-	}
-
-	public Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
-		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
-		if (coordinator == null) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
-		}
-		return coordinator;
-	}
-
-	public Session RequireSessionExists(String sessionId) {
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found.");
-		}
-		return session;
-	}
-
-	public User RequireUserExists(HttpServletRequest servlet) {
-		User user = authService.getUser(servlet);
-		if (user == null) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
-		}
-		return user;
-	}
-
-	private void RequireUserIsAuthorizedSession(String sessionId, User user) {
-		if (!sessionService.isUserAuthorizedSession(sessionId, user)) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User is not authorized session.");
-		}
+		this.requirementService = requirementService;
 	}
 
 	private record CreateSessionRecord(
@@ -81,7 +55,7 @@ public class SessionController {
 	public ResponseEntity<Session> createSession(HttpServletRequest servlet,
 			@Valid @RequestBody CreateSessionRecord record) {
 
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 
 		try {
 			Session newSession = sessionService.createSession(record.name.trim(), coordinator);
@@ -93,7 +67,7 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest servlet) {
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 
 		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
@@ -103,9 +77,9 @@ public class SessionController {
 	public ResponseEntity<Session> getSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(servlet);
-		RequireUserIsAuthorizedSession(sessionId, user);
+		Session session = requirementService.RequireSessionExists(sessionId);
+		User user = requirementService.RequireUserExists(servlet);
+		requirementService.RequireUserIsAuthorizedSession(sessionId, user);
 
 		return ResponseEntity.ok(session);
 	}
@@ -116,9 +90,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(servlet);
-		RequireUserIsAuthorizedSession(sessionId, user);
+		Session session = requirementService.RequireSessionExists(sessionId);
+		User user = requirementService.RequireUserExists(servlet);
+		requirementService.RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
 				.getItems(db);
@@ -132,9 +106,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(servlet);
-		RequireUserIsAuthorizedSession(sessionId, user);
+		Session session = requirementService.RequireSessionExists(sessionId);
+		User user = requirementService.RequireUserExists(servlet);
+		requirementService.RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
 
@@ -166,9 +140,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(servlet);
-		RequireUserIsAuthorizedSession(sessionId, user);
+		Session session = requirementService.RequireSessionExists(sessionId);
+		User user = requirementService.RequireUserExists(servlet);
+		requirementService.RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
 
@@ -179,7 +153,7 @@ public class SessionController {
 	public ResponseEntity<String> deleteSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 
 		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {

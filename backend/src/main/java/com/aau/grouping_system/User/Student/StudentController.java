@@ -15,6 +15,7 @@ import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -29,13 +30,15 @@ public class StudentController {
 	private final StudentService studentService;
 	private final AuthService authService;
 	private final SessionService sessionService;
+	private final RequirementService requirementService;
 
 	public StudentController(Database db, StudentService studentService, AuthService authService,
-			SessionService sessionService) {
+			SessionService sessionService, RequirementService requirementService) {
 		this.db = db;
 		this.studentService = studentService;
 		this.authService = authService;
 		this.sessionService = sessionService;
+		this.requirementService = requirementService;
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")

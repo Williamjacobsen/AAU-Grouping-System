@@ -28,6 +28,7 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -41,43 +42,23 @@ public class SupervisorsPage {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
+	private final RequirementService requirementService;
 
-	public SupervisorsPage(Database db, PasswordEncoder passwordEncoder, AuthService authService) {
+	public SupervisorsPage(Database db, PasswordEncoder passwordEncoder, AuthService authService,
+			RequirementService requirementService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.authService = authService;
-	}
-
-	private Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
-		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
-		if (coordinator == null) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
-		}
-		return coordinator;
-	}
-
-	private Session RequireSessionExists(String sessionId) {
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found.");
-		}
-		return session;
-	}
-
-	private boolean hasPermission(String sessionId, Coordinator coordinator) {
-		Session session = db.getSessions().getItem(sessionId);
-		return session != null && session.getCoordinatorId().equals(coordinator.getId());
+		this.requirementService = requirementService;
 	}
 
 	@GetMapping
 	public ResponseEntity<List<Map<String, Object>>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
-		Session session = RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
+		Session session = requirementService.RequireSessionExists(sessionId);
 
-		if (!hasPermission(sessionId, coordinator)) {
-			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
-		}
+		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		@SuppressWarnings("unchecked")
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
@@ -105,12 +86,10 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody AddSupervisorRecord record) {
 
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
-		Session session = RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
+		Session session = requirementService.RequireSessionExists(sessionId);
 
-		if (!hasPermission(sessionId, coordinator)) {
-			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
-		}
+		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Check if supervisor with this email already exists in this session
 		@SuppressWarnings("unchecked")
@@ -167,12 +146,10 @@ public class SupervisorsPage {
 	public ResponseEntity<String> removeSupervisor(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
-		Session session = RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
+		Session session = requirementService.RequireSessionExists(sessionId);
 
-		if (!hasPermission(sessionId, coordinator)) {
-			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
-		}
+		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")
@@ -198,12 +175,10 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
-		Coordinator coordinator = RequireCoordinatorExists(servlet);
-		Session session = RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
+		Session session = requirementService.RequireSessionExists(sessionId);
 
-		if (!hasPermission(sessionId, coordinator)) {
-			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
-		}
+		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")

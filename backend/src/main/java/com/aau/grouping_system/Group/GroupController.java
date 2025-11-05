@@ -9,6 +9,7 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -24,26 +25,12 @@ public class GroupController {
 
 	private final Database db;
 	private final GroupService groupService;
+	private final RequirementService requirementService;
 
-	public GroupController(Database db, GroupService groupService) {
+	public GroupController(Database db, GroupService groupService, RequirementService requirementService) {
 		this.db = db;
 		this.groupService = groupService;
-	}
-
-	private Group RequireGroupExists(String groupId) {
-		Group group = db.getGroups().getItem(groupId);
-		if (group == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Group not found");
-		}
-		return group;
-	}
-
-	private Student RequireStudentExists(String studentId) {
-		Student student = db.getStudents().getItem(studentId);
-		if (student == null) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Student not found");
-		}
-		return student;
+		this.requirementService = requirementService;
 	}
 
 	@PostMapping("/{groupId}/accept-request/{studentId}")
@@ -51,8 +38,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = RequireGroupExists(groupId);
-		Student student = RequireStudentExists(studentId);
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.acceptJoinRequest(groupId, student);
@@ -66,7 +53,7 @@ public class GroupController {
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
-		Group group = RequireGroupExists(groupId);
+		Group group = requirementService.RequireGroupExists(groupId);
 
 		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
 
@@ -78,8 +65,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = RequireGroupExists(groupId);
-		Student student = RequireStudentExists(studentId);
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
@@ -91,7 +78,7 @@ public class GroupController {
 
 	@GetMapping("/{groupId}")
 	public ResponseEntity<Group> getGroup(@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
-		Group group = RequireGroupExists(groupId);
+		Group group = requirementService.RequireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
 
@@ -105,8 +92,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = RequireGroupExists(groupId);
-		Student student = RequireStudentExists(studentId);
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.joinGroup(groupId, student);
@@ -121,8 +108,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = RequireGroupExists(groupId);
-		Student student = RequireStudentExists(studentId);
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.leaveGroup(groupId, student);
