@@ -7,15 +7,22 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
 
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController // singleton bean
+@Validated // enables method-level validation
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
@@ -35,50 +42,59 @@ public class CoordinatorController {
 		return coordinator;
 	}
 
+	private record SignUpRequest(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
+			@NoDangerousCharacters @NotBlank String name) {
+	}
+
 	@PostMapping("/signUp")
-	public ResponseEntity<String> signUp(@RequestBody Map<String, String> body) {
+	public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRequest body) {
 
-		String email = body.get("email");
-		String password = body.get("password");
-		String name = body.get("name");
-
-		if (coordinatorService.isEmailDuplicate(email)) {
+		if (coordinatorService.isEmailDuplicate(body.email)) {
 			throw new RequestException(HttpStatus.CONFLICT, "Error: Inputted email is already used by another coordinator.");
 		}
 
-		coordinatorService.addCoordinator(email, password, name);
+		coordinatorService.addCoordinator(body.email, body.password, body.name);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body("Coordinator has been added to database.");
 	}
 
+	private record ModifyEmailRequest(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String newEmail) {
+	}
+
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @RequestBody Map<String, String> body) {
+	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @Valid @RequestBody ModifyEmailRequest body) {
 
 		Coordinator user = RequireCoordinatorExists(request);
 		String coordinatorId = user.getId();
-		String newEmail = body.get("newEmail");
 
-		if (coordinatorService.isEmailDuplicate(newEmail)) {
+		if (coordinatorService.isEmailDuplicate(body.newEmail)) {
 			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another coordinator.");
 		}
 
-		coordinatorService.modifyEmail(newEmail, coordinatorId);
+		coordinatorService.modifyEmail(body.newEmail, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Email has been changed.");
 	}
 
+	private record ModifyPasswordRequest(
+			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
+	}
+
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(HttpServletRequest request, @RequestBody Map<String, String> body) {
+	public ResponseEntity<String> modifyPassword(HttpServletRequest request,
+			@Valid @RequestBody ModifyPasswordRequest body) {
 
 		Coordinator user = RequireCoordinatorExists(request);
 		String coordinatorId = user.getId();
-		String newPassword = body.get("newPassword");
 
-		coordinatorService.modifyPassword(newPassword, coordinatorId);
+		coordinatorService.modifyPassword(body.newPassword, coordinatorId);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
