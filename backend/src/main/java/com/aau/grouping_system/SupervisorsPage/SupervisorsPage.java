@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,13 +26,18 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/sessions/{sessionId}/supervisors")
 public class SupervisorsPage {
-	
+
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
@@ -42,8 +48,8 @@ public class SupervisorsPage {
 		this.authService = authService;
 	}
 
-	private Coordinator RequireCoordinatorExists(HttpServletRequest request) {
-		Coordinator coordinator = authService.getCoordinatorByUser(request);
+	private Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
+		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
 		if (coordinator == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
 		}
@@ -64,65 +70,71 @@ public class SupervisorsPage {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<Map<String, Object>>> getSupervisors(@PathVariable String sessionId, HttpServletRequest request) {
-		Coordinator coordinator = RequireCoordinatorExists(request);
+	public ResponseEntity<List<Map<String, Object>>> getSupervisors(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 		Session session = RequireSessionExists(sessionId);
-		
+
 		if (!hasPermission(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
 		}
 
 		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
 		List<Map<String, Object>> supervisorList = supervisors.stream()
-			.map(supervisor -> {
-				Map<String, Object> supervisorMap = new HashMap<>();
-				supervisorMap.put("id", supervisor.getId());
-				supervisorMap.put("email", supervisor.getEmail());
-				supervisorMap.put("name", supervisor.getName());
-				return supervisorMap;
-			})
-			.collect(Collectors.toList());
+				.map(supervisor -> {
+					Map<String, Object> supervisorMap = new HashMap<>();
+					supervisorMap.put("id", supervisor.getId());
+					supervisorMap.put("email", supervisor.getEmail());
+					supervisorMap.put("name", supervisor.getName());
+					return supervisorMap;
+				})
+				.collect(Collectors.toList());
 
 		return ResponseEntity.ok(supervisorList);
 	}
 
+	private record AddSupervisorRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email) {
+	}
+
 	@PostMapping
-	public ResponseEntity<String> addSupervisor(@PathVariable String sessionId, @RequestBody Map<String, String> request, HttpServletRequest httpRequest) {
-		Coordinator coordinator = RequireCoordinatorExists(httpRequest);
+	public ResponseEntity<String> addSupervisor(
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@Valid @RequestBody AddSupervisorRecord record) {
+
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 		Session session = RequireSessionExists(sessionId);
-		
+
 		if (!hasPermission(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
 		}
 
-		String email = request.get("email");
-		if (email == null || email.trim().isEmpty()) {
-			return ResponseEntity.badRequest().body("Email is required");
-		}
-
 		// Check if supervisor with this email already exists in this session
 		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> existingSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> existingSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
 		boolean supervisorExists = existingSupervisors.stream()
-			.anyMatch(supervisor -> supervisor.getEmail().equals(email.trim()));
-		
+				.anyMatch(supervisor -> supervisor.getEmail().equals(record.email.trim()));
+
 		if (supervisorExists) {
-			return ResponseEntity.status(HttpStatus.CONFLICT).body("Supervisor with this email already exists in this session");
+			return ResponseEntity.status(HttpStatus.CONFLICT)
+					.body("Supervisor with this email already exists in this session");
 		}
 
 		// Create supervisor with UUID as password
 		String password = UUID.randomUUID().toString();
 		String passwordHash = passwordEncoder.encode(password);
-		
+
 		Supervisor newSupervisor = new Supervisor(
-			db,
-			session.getSupervisors(),
-			email.trim(),
-			passwordHash,
-			email.trim().split("@")[0], // Use email as default name
-			session
-		);
+				db,
+				session.getSupervisors(),
+				record.email.trim(),
+				passwordHash,
+				record.email.trim().split("@")[0], // Use email as default name
+				session);
 
 		// Send password via email
 		try {
@@ -140,32 +152,37 @@ public class SupervisorsPage {
 
 					Best regards,
 					AAU Grouping System""".formatted(session.getName(), newSupervisor.getId(), password);
-			
-			EmailService.sendEmail(email.trim(), subject, body);
-			return ResponseEntity.status(HttpStatus.CREATED).body("Supervisor added successfully and password sent via email");
+
+			EmailService.sendEmail(record.email.trim(), subject, body);
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body("Supervisor added successfully and password sent via email");
 		} catch (Exception e) {
 			// If email fails, still return success since supervisor was created
-			return ResponseEntity.status(HttpStatus.CREATED).body("Supervisor added successfully, but email failed to send: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body("Supervisor added successfully, but email failed to send: " + e.getMessage());
 		}
 	}
 
 	@DeleteMapping("/{supervisorId}")
-	public ResponseEntity<String> removeSupervisor(@PathVariable String sessionId, @PathVariable String supervisorId, HttpServletRequest request) {
-		Coordinator coordinator = RequireCoordinatorExists(request);
+	public ResponseEntity<String> removeSupervisor(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 		Session session = RequireSessionExists(sessionId);
-		
+
 		if (!hasPermission(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
 		}
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
 		Supervisor supervisor = sessionSupervisors.stream()
-			.filter(s -> s.getId().equals(supervisorId))
-			.findFirst()
-			.orElse(null);
-		
+				.filter(s -> s.getId().equals(supervisorId))
+				.findFirst()
+				.orElse(null);
+
 		if (supervisor == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
 		}
@@ -177,22 +194,26 @@ public class SupervisorsPage {
 	}
 
 	@PostMapping("/{supervisorId}/send-new-password")
-	public ResponseEntity<String> sendNewPassword(@PathVariable String sessionId, @PathVariable String supervisorId, HttpServletRequest request) {
-		Coordinator coordinator = RequireCoordinatorExists(request);
+	public ResponseEntity<String> sendNewPassword(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
+
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 		Session session = RequireSessionExists(sessionId);
-		
+
 		if (!hasPermission(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied.");
 		}
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
+				.getItems(db);
 		Supervisor supervisor = sessionSupervisors.stream()
-			.filter(s -> s.getId().equals(supervisorId))
-			.findFirst()
-			.orElse(null);
-		
+				.filter(s -> s.getId().equals(supervisorId))
+				.findFirst()
+				.orElse(null);
+
 		if (supervisor == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
 		}
@@ -218,7 +239,7 @@ public class SupervisorsPage {
 
 					Best regards,
 					AAU Grouping System""".formatted(session.getName(), supervisor.getId(), newPassword);
-			
+
 			EmailService.sendEmail(supervisor.getEmail(), subject, body);
 			return ResponseEntity.ok("New password sent successfully to " + supervisor.getEmail());
 		} catch (Exception e) {

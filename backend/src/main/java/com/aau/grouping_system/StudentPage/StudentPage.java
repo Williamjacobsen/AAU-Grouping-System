@@ -5,6 +5,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,12 +21,17 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Student.StudentQuestionnaire;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/session/{sessionId}/student")
 public class StudentPage {
 
@@ -37,8 +43,8 @@ public class StudentPage {
 		this.passwordEncoder = passwordEncoder;
 	}
 
-	private Coordinator getCurrentCoordinator(HttpServletRequest request) {
-		HttpSession session = request.getSession(false);
+	private Coordinator getCurrentCoordinator(HttpServletRequest servlet) {
+		HttpSession session = servlet.getSession(false);
 		if (session == null) {
 			return null;
 		}
@@ -47,11 +53,11 @@ public class StudentPage {
 
 	@GetMapping("/{studentId}")
 	public ResponseEntity<StudentDetailsDTO> getStudentDetails(
-			@PathVariable String sessionId,
-			@PathVariable String studentId, 
-			HttpServletRequest request) {
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 		try {
-			Coordinator coordinator = getCurrentCoordinator(request);
+			Coordinator coordinator = getCurrentCoordinator(servlet);
 			if (coordinator == null) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 			}
@@ -73,14 +79,13 @@ public class StudentPage {
 
 			StudentQuestionnaireDTO questionnaireDTO = buildQuestionnaireDTO(student, true);
 			StudentGroupDTO groupDTO = buildGroupDTO(student);
-			
+
 			StudentDetailsDTO studentData = new StudentDetailsDTO(
-				student.getId(),
-				student.getName(),
-				student.getEmail(),
-				questionnaireDTO,
-				groupDTO
-			);
+					student.getId(),
+					student.getName(),
+					student.getEmail(),
+					questionnaireDTO,
+					groupDTO);
 
 			return ResponseEntity.ok(studentData);
 		} catch (Exception e) {
@@ -91,8 +96,9 @@ public class StudentPage {
 
 	@GetMapping("/{studentId}/public")
 	public ResponseEntity<StudentDetailsDTO> getStudentPublicDetails(
-			@PathVariable String sessionId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+
 		try {
 			Student student = db.getStudents().getItem(studentId);
 			if (student == null) {
@@ -106,14 +112,13 @@ public class StudentPage {
 
 			StudentQuestionnaireDTO questionnaireDTO = buildQuestionnaireDTO(student, false);
 			StudentGroupDTO groupDTO = buildGroupDTO(student);
-			
+
 			StudentDetailsDTO studentData = new StudentDetailsDTO(
-				student.getId(),
-				student.getName(),
-				null,
-				questionnaireDTO,
-				groupDTO
-			);
+					student.getId(),
+					student.getName(),
+					null,
+					questionnaireDTO,
+					groupDTO);
 
 			return ResponseEntity.ok(studentData);
 		} catch (Exception e) {
@@ -126,66 +131,65 @@ public class StudentPage {
 	private StudentQuestionnaireDTO buildQuestionnaireDTO(Student student, boolean includePrivate) {
 		if (student == null || student.getQuestionnaire() == null) {
 			return new StudentQuestionnaireDTO(
-				"Not specified",
-				"Not specified",
-				"Not specified",
-				"Not specified",
-				"Not specified",
-				"Not specified",
-				"Not specified",
-				"Student has not filled out questionnaire yet.",
-				null,
-				null
-			);
+					"Not specified",
+					"Not specified",
+					"Not specified",
+					"Not specified",
+					"Not specified",
+					"Not specified",
+					"Not specified",
+					"Student has not filled out questionnaire yet.",
+					null,
+					null);
 		}
 
-		Student.Questionnaire q = student.getQuestionnaire();
-		
+		StudentQuestionnaire questionnaire = student.getQuestionnaire();
+
 		// Get project names from IDs
-		String project1Name = "Not specified";
-		String project2Name = "Not specified";
-		if (q.desiredProjectIds != null && !q.desiredProjectIds.isEmpty()) {
-			project1Name = getProjectNameById(q.desiredProjectIds.get(0));
-			if (q.desiredProjectIds.size() > 1) {
-				project2Name = getProjectNameById(q.desiredProjectIds.get(1));
-			}
-		}
-		
+		String project1Name = questionnaire.getDesiredProjectId1();
+		String project2Name = questionnaire.getDesiredProjectId2();
+
 		// Make group size preference
 		String groupSizePreference = "Not specified";
-		if (q.desiredGroupSizeMin != null && q.desiredGroupSizeMax != null &&
-			(q.desiredGroupSizeMin != -1 || q.desiredGroupSizeMax != -1)) {
-			if (q.desiredGroupSizeMin.equals(q.desiredGroupSizeMax) && q.desiredGroupSizeMin != -1) {
-				groupSizePreference = String.valueOf(q.desiredGroupSizeMin);
+		if (questionnaire.getDesiredGroupSizeMin() != null && questionnaire.getDesiredGroupSizeMax() != null &&
+				(questionnaire.getDesiredGroupSizeMin() != -1 || questionnaire.getDesiredGroupSizeMax() != -1)) {
+			if (questionnaire.getDesiredGroupSizeMin().equals(questionnaire.getDesiredGroupSizeMax())
+					&& questionnaire.getDesiredGroupSizeMin() != -1) {
+				groupSizePreference = String.valueOf(questionnaire.getDesiredGroupSizeMin());
 			} else {
-				String min = q.desiredGroupSizeMin == -1 ? "No min" : String.valueOf(q.desiredGroupSizeMin);
-				String max = q.desiredGroupSizeMax == -1 ? "No max" : String.valueOf(q.desiredGroupSizeMax);
+				String min = questionnaire.getDesiredGroupSizeMin() == -1 ? "No min"
+						: String.valueOf(questionnaire.getDesiredGroupSizeMin());
+				String max = questionnaire.getDesiredGroupSizeMax() == -1 ? "No max"
+						: String.valueOf(questionnaire.getDesiredGroupSizeMax());
 				groupSizePreference = min + " - " + max;
 			}
 		}
-		
+
 		// Create working environment string combining location and style
 		String workingEnvironment = "Not specified";
-		if (q.desiredWorkLocation != null && q.desiredWorkStyle != null) {
-			String location = q.desiredWorkLocation.name();
-			String style = q.desiredWorkStyle.name();
+		if (questionnaire.getDesiredWorkLocation() != null && questionnaire.getDesiredWorkStyle() != null) {
+			String location = questionnaire.getDesiredWorkLocation().name();
+			String style = questionnaire.getDesiredWorkStyle().name();
 			if (!"NoPreference".equals(location) || !"NoPreference".equals(style)) {
 				workingEnvironment = location + " / " + style;
 			}
 		}
-		
+
 		return new StudentQuestionnaireDTO(
-			project1Name,
-			project2Name,
-			"Not available",
-			"Not available",
-			groupSizePreference,
-			workingEnvironment, 
-			q.specialNeeds == null || q.specialNeeds.isEmpty() ? "Not specified" : q.specialNeeds,
-			q.comments == null || q.comments.isEmpty() ? "Not specified" : q.comments,
-			q.personalSkills == null || q.personalSkills.isEmpty() ? null : java.util.Arrays.asList(q.personalSkills.split(",")),
-			q.academicInterests == null || q.academicInterests.isEmpty() ? null : java.util.Arrays.asList(q.academicInterests.split(","))
-		);
+				project1Name,
+				project2Name,
+				"Not available",
+				"Not available",
+				groupSizePreference,
+				workingEnvironment,
+				questionnaire.getSpecialNeeds() == null || questionnaire.getSpecialNeeds().isEmpty() ? "Not specified"
+						: questionnaire.getSpecialNeeds(),
+				questionnaire.getComments() == null || questionnaire.getComments().isEmpty() ? "Not specified"
+						: questionnaire.getComments(),
+				questionnaire.getPersonalSkills() == null || questionnaire.getPersonalSkills().isEmpty() ? null
+						: java.util.Arrays.asList(questionnaire.getPersonalSkills().split(",")),
+				questionnaire.getAcademicInterests() == null || questionnaire.getAcademicInterests().isEmpty() ? null
+						: java.util.Arrays.asList(questionnaire.getAcademicInterests().split(",")));
 	}
 
 	private StudentGroupDTO buildGroupDTO(Student student) {
@@ -198,24 +202,22 @@ public class StudentPage {
 						projectName = project.getName();
 					}
 				}
-				
+
 				return new StudentGroupDTO(
-					group.getId(),
-					true,
-					projectName,
-					group.getStudentIds().size(),
-					group.getMaxStudents()
-				);
+						group.getId(),
+						true,
+						projectName,
+						group.getStudentIds().size(),
+						group.getMaxStudents());
 			}
 		}
-		
+
 		return new StudentGroupDTO(
-			null,
-			false,
-			"Not in a group",
-			0,
-			0
-		);
+				null,
+				false,
+				"Not in a group",
+				0,
+				0);
 	}
 
 	private String getProjectNameById(String projectId) {
@@ -228,10 +230,11 @@ public class StudentPage {
 
 	@DeleteMapping("/{studentId}")
 	public ResponseEntity<String> removeStudent(
-			@PathVariable String sessionId,
-			@PathVariable String studentId,
-			HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+
+		Coordinator coordinator = getCurrentCoordinator(servlet);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -274,10 +277,11 @@ public class StudentPage {
 
 	@PostMapping("/{studentId}/reset-password")
 	public ResponseEntity<String> resetStudentPassword(
-			@PathVariable String sessionId,
-			@PathVariable String studentId,
-			HttpServletRequest request) {
-		Coordinator coordinator = getCurrentCoordinator(request);
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+
+		Coordinator coordinator = getCurrentCoordinator(servlet);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -304,7 +308,7 @@ public class StudentPage {
 			String newPassword = UUID.randomUUID().toString();
 			String passwordHash = passwordEncoder.encode(newPassword);
 			student.setPasswordHash(passwordHash);
-			
+
 			// Send password via email
 			String subject = "AAU Grouping System - New Password";
 			String body = """
@@ -319,7 +323,7 @@ public class StudentPage {
 					Please use your ID and password to access the AAU Grouping System.
 
 					Best regards,
-					AAU Grouping System""".formatted(session.getName(), student.getId(), newPassword);			
+					AAU Grouping System""".formatted(session.getName(), student.getId(), newPassword);
 			EmailService.sendEmail(student.getEmail(), subject, body);
 			return ResponseEntity.ok("New password sent successfully to " + student.getEmail());
 		} catch (Exception e) {

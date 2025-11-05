@@ -1,9 +1,8 @@
 package com.aau.grouping_system.User.Student;
 
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,10 +13,15 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/student")
 public class StudentController {
 
@@ -35,10 +39,10 @@ public class StudentController {
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")
-	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest request,
-			@RequestBody Student.Questionnaire body) {
+	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest servlet,
+			@Valid @RequestBody StudentQuestionnaireRecord record) {
 
-		Student student = authService.getStudentByUser(request);
+		Student student = authService.getStudentByUser(servlet);
 		if (student == null) {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Student not found");
 		}
@@ -48,28 +52,27 @@ public class StudentController {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 
-		studentService.applyQuestionnaireAnswers(student, body);
+		studentService.applyQuestionnaireAnswers(student, record.toQuestionnaire());
 
 		return ResponseEntity.ok("Saved questionnaire answers successfully.");
 	}
 
+	private record CreateStudentRecord(
+			@NoDangerousCharacters @NotBlank String sessionId,
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
+			@NoDangerousCharacters @NotBlank String name) {
+	}
+
 	@PostMapping("/create")
-	public ResponseEntity<String> createStudent(@RequestBody Map<String, String> body) {
-		String sessionId = body.get("sessionId");
-		String email = body.get("email");
-		String password = body.get("password");
-		String name = body.get("name");
+	public ResponseEntity<String> createStudent(@Valid @RequestBody CreateStudentRecord record) {
 
-		if (sessionId == null || email == null || password == null || name == null) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Missing required fields: sessionId, email, password, name");
-		}
-
-		Session session = db.getSessions().getItem(sessionId);
+		Session session = db.getSessions().getItem(record.sessionId);
 		if (session == null) {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
 		}
 
-		Student student = studentService.addStudent(session, email, password, name);
+		Student student = studentService.addStudent(session, record.email, record.password, record.name);
 
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body("Student created successfully with ID: " + student.getId());

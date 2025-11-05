@@ -1,10 +1,10 @@
 package com.aau.grouping_system.Session;
 
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,10 +22,14 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/sessions")
 public class SessionController {
 
@@ -39,8 +43,8 @@ public class SessionController {
 		this.authService = authService;
 	}
 
-	public Coordinator RequireCoordinatorExists(HttpServletRequest request) {
-		Coordinator coordinator = authService.getCoordinatorByUser(request);
+	public Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
+		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
 		if (coordinator == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
 		}
@@ -55,8 +59,8 @@ public class SessionController {
 		return session;
 	}
 
-	public User RequireUserExists(HttpServletRequest request) {
-		User user = authService.getUser(request);
+	public User RequireUserExists(HttpServletRequest servlet) {
+		User user = authService.getUser(servlet);
 		if (user == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
 		}
@@ -69,19 +73,18 @@ public class SessionController {
 		}
 	}
 
+	private record CreateSessionRecord(
+			@NoDangerousCharacters @NotBlank String name) {
+	}
+
 	@PostMapping
-	public ResponseEntity<Session> createSession(@RequestBody Map<String, String> body,
-			HttpServletRequest request) {
+	public ResponseEntity<Session> createSession(HttpServletRequest servlet,
+			@Valid @RequestBody CreateSessionRecord record) {
 
-		String sessionName = body.get("name");
-		if (sessionName == null || sessionName.trim().isEmpty()) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Name not found in request.");
-		}
-
-		Coordinator coordinator = RequireCoordinatorExists(request);
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 
 		try {
-			Session newSession = sessionService.createSession(sessionName.trim(), coordinator);
+			Session newSession = sessionService.createSession(record.name.trim(), coordinator);
 			return ResponseEntity.status(HttpStatus.CREATED).body(newSession);
 		} catch (Exception e) {
 			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error: " + e.getMessage());
@@ -89,18 +92,19 @@ public class SessionController {
 	}
 
 	@GetMapping
-	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest request) {
-		Coordinator coordinator = RequireCoordinatorExists(request);
+	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest servlet) {
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 
 		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
 	}
 
 	@GetMapping("/{sessionId}")
-	public ResponseEntity<Session> getSession(@PathVariable String sessionId, HttpServletRequest request) {
+	public ResponseEntity<Session> getSession(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(request);
+		User user = RequireUserExists(servlet);
 		RequireUserIsAuthorizedSession(sessionId, user);
 
 		return ResponseEntity.ok(session);
@@ -109,11 +113,11 @@ public class SessionController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/{sessionId}/getSupervisors")
-	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(@PathVariable String sessionId,
-			HttpServletRequest request) {
+	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(request);
+		User user = RequireUserExists(servlet);
 		RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
@@ -125,11 +129,11 @@ public class SessionController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/{sessionId}/getStudents")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(@PathVariable String sessionId,
-			HttpServletRequest request) {
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(request);
+		User user = RequireUserExists(servlet);
 		RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
@@ -140,7 +144,8 @@ public class SessionController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here despite Java's invariance of generics.
 	@GetMapping("/{sessionId}/getProjects")
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(@PathVariable String sessionId) {
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 		// Check if session exists if not throw error
@@ -158,11 +163,11 @@ public class SessionController {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	@GetMapping("/{sessionId}/getGroups")
-	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(@PathVariable String sessionId,
-			HttpServletRequest request) {
+	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Session session = RequireSessionExists(sessionId);
-		User user = RequireUserExists(request);
+		User user = RequireUserExists(servlet);
 		RequireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
@@ -171,9 +176,10 @@ public class SessionController {
 	}
 
 	@DeleteMapping("/{sessionId}")
-	public ResponseEntity<String> deleteSession(@PathVariable String sessionId, HttpServletRequest request) {
+	public ResponseEntity<String> deleteSession(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Coordinator coordinator = RequireCoordinatorExists(request);
+		Coordinator coordinator = RequireCoordinatorExists(servlet);
 
 		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
@@ -183,9 +189,14 @@ public class SessionController {
 		}
 	}
 
+	// TODO: Needs content inside its parameter.
+	private record SaveSetupRecord() {
+	}
+
 	@PostMapping("/{sessionId}/saveSetup")
-	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
-			@RequestBody Map<String, String> request) {
+	public ResponseEntity<String> saveSetup(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@Valid @RequestBody SaveSetupRecord record) {
 
 		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
 		// Hint: Tjek linje 86-89 i denne fil.

@@ -23,150 +23,150 @@ import com.aau.grouping_system.Session.Session;
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
 
-    @Mock
-    private Database mockDatabase;
-    
-    @Mock
-    private PasswordEncoder mockPasswordEncoder;
-    
-    @Mock
-    private Session mockSession;
-    
-    @Mock
-    private DatabaseItemChildGroup mockStudentsGroup;
+	@Mock
+	private Database mockDatabase;
 
-    private StudentService studentService;
+	@Mock
+	private PasswordEncoder mockPasswordEncoder;
 
-    @BeforeEach
-    void setUp() {
-        studentService = new StudentService(mockDatabase, mockPasswordEncoder);
-        when(mockSession.getStudents()).thenReturn(mockStudentsGroup);
-    }
+	@Mock
+	private Session mockSession;
 
-    @Test
-    void testAddStudent_ValidData_ReturnsStudent() {
-        // Arrange
-        String email = "student@test.com";
-        String password = "plainPassword";
-        String name = "Test Student";
-        String hashedPassword = "hashedPassword123";
-        
-        when(mockPasswordEncoder.encode(password)).thenReturn(hashedPassword);
+	@Mock
+	private DatabaseItemChildGroup mockStudentsGroup;
 
-        // Act
-        Student result = studentService.addStudent(mockSession, email, password, name);
+	private StudentService studentService;
 
-        // Assert
-        assertNotNull(result);
-        verify(mockPasswordEncoder).encode(password);
-    }
+	@BeforeEach
+	void setUp() {
+		studentService = new StudentService(mockDatabase, mockPasswordEncoder);
+		when(mockSession.getStudents()).thenReturn(mockStudentsGroup);
+	}
 
-    @Test
-    void testAddStudent_EmptyEmail_StillCreatesStudent() {
-        // Arrange
-        String email = "";
-        String password = "plainPassword";
-        String name = "Test Student";
-        String hashedPassword = "hashedPassword123";
-        
-        when(mockPasswordEncoder.encode(password)).thenReturn(hashedPassword);
+	@Test
+	void testAddStudent_ValidData_ReturnsStudent() {
+		// Arrange
+		String email = "student@test.com";
+		String password = "plainPassword";
+		String name = "Test Student";
+		String hashedPassword = "hashedPassword123";
 
-        // Act
-        Student result = studentService.addStudent(mockSession, email, password, name);
+		when(mockPasswordEncoder.encode(password)).thenReturn(hashedPassword);
 
-        // Assert
-        assertNotNull(result);
-        verify(mockPasswordEncoder).encode(password);
-    }
+		// Act
+		Student result = studentService.addStudent(mockSession, email, password, name);
 
-    @Test
-    void testAddStudent_NullPassword_HandlesGracefully() {
-        // Arrange
-        String email = "student@test.com";
-        String password = null;
-        String name = "Test Student";
-        
-        when(mockPasswordEncoder.encode(password)).thenThrow(new IllegalArgumentException("Password cannot be null"));
+		// Assert
+		assertNotNull(result);
+		verify(mockPasswordEncoder).encode(password);
+	}
 
-        // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            studentService.addStudent(mockSession, email, password, name);
-        });
-        
-        verify(mockPasswordEncoder).encode(password);
-    }
+	@Test
+	void testAddStudent_EmptyEmail_StillCreatesStudent() {
+		// Arrange
+		String email = "";
+		String password = "plainPassword";
+		String name = "Test Student";
+		String hashedPassword = "hashedPassword123";
 
-    @Test
-    void testApplyQuestionnaireAnswers_ValidQuestionnaire_UpdatesStudent() {
-        // Arrange
-        Student student = mock(Student.class);
-        Student.Questionnaire questionnaire = new Student.Questionnaire();
-        questionnaire.desiredGroupSizeMin = 2;
-        questionnaire.desiredGroupSizeMax = 4;
-        questionnaire.desiredWorkLocation = Student.WorkLocation.Located;
-        questionnaire.desiredWorkStyle = Student.WorkStyle.Together;
-        questionnaire.personalSkills = "Java, Spring Boot";
-        questionnaire.academicInterests = "Software Engineering";
-        questionnaire.comments = "Test comment";
+		when(mockPasswordEncoder.encode(password)).thenReturn(hashedPassword);
 
-        // Act
-        studentService.applyQuestionnaireAnswers(student, questionnaire);
+		// Act
+		Student result = studentService.addStudent(mockSession, email, password, name);
 
-        // Assert
-        verify(student).setQuestionnaire(questionnaire);
-    }
+		// Assert
+		assertNotNull(result);
+		verify(mockPasswordEncoder).encode(password);
+	}
 
-    @Test
-    void testApplyQuestionnaireAnswers_NullQuestionnaire_UpdatesStudent() {
-        // Arrange
-        Student student = mock(Student.class);
-        Student.Questionnaire questionnaire = null;
+	@Test
+	void testAddStudent_NullPassword_HandlesGracefully() {
+		// Arrange
+		String email = "student@test.com";
+		String password = null;
+		String name = "Test Student";
 
-        // Act
-        studentService.applyQuestionnaireAnswers(student, questionnaire);
+		when(mockPasswordEncoder.encode(password)).thenThrow(new IllegalArgumentException("Password cannot be null"));
 
-        // Assert
-        verify(student).setQuestionnaire(questionnaire);
-    }
+		// Act & Assert
+		assertThrows(IllegalArgumentException.class, () -> {
+			studentService.addStudent(mockSession, email, password, name);
+		});
 
-    @Test
-    void testApplyQuestionnaireAnswers_EmptyQuestionnaire_UpdatesStudent() {
-        // Arrange
-        Student student = mock(Student.class);
-        Student.Questionnaire questionnaire = new Student.Questionnaire();
-        // Leave questionnaire with default values
+		verify(mockPasswordEncoder).encode(password);
+	}
 
-        // Act
-        studentService.applyQuestionnaireAnswers(student, questionnaire);
+	@Test
+	void testApplyQuestionnaireAnswers_ValidQuestionnaire_UpdatesStudent() {
+		// Arrange
+		Student student = mock(Student.class);
+		StudentQuestionnaire questionnaire = new StudentQuestionnaire();
+		questionnaire.setDesiredGroupSizeMin(2);
+		questionnaire.setDesiredGroupSizeMax(4);
+		questionnaire.setDesiredWorkLocation(StudentQuestionnaire.WorkLocation.Located);
+		questionnaire.setDesiredWorkStyle(StudentQuestionnaire.WorkStyle.Together);
+		questionnaire.setPersonalSkills("Java, Spring Boot");
+		questionnaire.setAcademicInterests("Software Engineering");
+		questionnaire.setComments("Test comment");
 
-        // Assert
-        verify(student).setQuestionnaire(questionnaire);
-        // Verify default values are maintained
-        assertEquals(-1, questionnaire.desiredGroupSizeMin);
-        assertEquals(-1, questionnaire.desiredGroupSizeMax);
-        assertEquals(Student.WorkLocation.NoPreference, questionnaire.desiredWorkLocation);
-        assertEquals(Student.WorkStyle.NoPreference, questionnaire.desiredWorkStyle);
-        assertEquals("", questionnaire.personalSkills);
-        assertEquals("", questionnaire.specialNeeds);
-        assertEquals("", questionnaire.academicInterests);
-        assertEquals("", questionnaire.comments);
-    }
+		// Act
+		studentService.applyQuestionnaireAnswers(student, questionnaire);
 
-    @Test
-    void testPasswordEncoding_VerifyEncryptionCalled() {
-        // Arrange
-        String email = "student@test.com";
-        String password = "testPassword123";
-        String name = "Test Student";
-        String expectedHash = "encryptedHash456";
-        
-        when(mockPasswordEncoder.encode(password)).thenReturn(expectedHash);
+		// Assert
+		verify(student).setQuestionnaire(questionnaire);
+	}
 
-        // Act
-        Student result = studentService.addStudent(mockSession, email, password, name);
+	@Test
+	void testApplyQuestionnaireAnswers_NullQuestionnaire_UpdatesStudent() {
+		// Arrange
+		Student student = mock(Student.class);
+		StudentQuestionnaire questionnaire = null;
 
-        // Assert
-        verify(mockPasswordEncoder, times(1)).encode(password);
-        verify(mockPasswordEncoder, never()).encode(argThat(arg -> !password.equals(arg)));
-    }
+		// Act
+		studentService.applyQuestionnaireAnswers(student, questionnaire);
+
+		// Assert
+		verify(student).setQuestionnaire(questionnaire);
+	}
+
+	@Test
+	void testApplyQuestionnaireAnswers_EmptyQuestionnaire_UpdatesStudent() {
+		// Arrange
+		Student student = mock(Student.class);
+		StudentQuestionnaire questionnaire = new StudentQuestionnaire();
+		// Leave questionnaire with default values
+
+		// Act
+		studentService.applyQuestionnaireAnswers(student, questionnaire);
+
+		// Assert
+		verify(student).setQuestionnaire(questionnaire);
+		// Verify default values are maintained
+		assertEquals(-1, questionnaire.getDesiredGroupSizeMin());
+		assertEquals(-1, questionnaire.getDesiredGroupSizeMax());
+		assertEquals(StudentQuestionnaire.WorkLocation.NoPreference, questionnaire.getDesiredWorkLocation());
+		assertEquals(StudentQuestionnaire.WorkStyle.NoPreference, questionnaire.getDesiredWorkStyle());
+		assertEquals("", questionnaire.getPersonalSkills());
+		assertEquals("", questionnaire.getSpecialNeeds());
+		assertEquals("", questionnaire.getAcademicInterests());
+		assertEquals("", questionnaire.getComments());
+	}
+
+	@Test
+	void testPasswordEncoding_VerifyEncryptionCalled() {
+		// Arrange
+		String email = "student@test.com";
+		String password = "testPassword123";
+		String name = "Test Student";
+		String expectedHash = "encryptedHash456";
+
+		when(mockPasswordEncoder.encode(password)).thenReturn(expectedHash);
+
+		// Act
+		Student result = studentService.addStudent(mockSession, email, password, name);
+
+		// Assert
+		verify(mockPasswordEncoder, times(1)).encode(password);
+		verify(mockPasswordEncoder, never()).encode(argThat(arg -> !password.equals(arg)));
+	}
 }
