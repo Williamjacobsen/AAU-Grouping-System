@@ -2,18 +2,25 @@ package com.aau.grouping_system.Group;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import jakarta.validation.constraints.*;
+
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/groups")
 public class GroupController {
+
+	// TODO: This lacks user authentication.
 
 	private final Database db;
 	private final GroupService groupService;
@@ -41,8 +48,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
 		Group group = RequireGroupExists(groupId);
 		Student student = RequireStudentExists(studentId);
@@ -56,7 +63,8 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(@PathVariable String groupId) {
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
 		Group group = RequireGroupExists(groupId);
 
@@ -67,8 +75,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/request-join/{studentId}")
 	public ResponseEntity<String> requestToJoin(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
 		Group group = RequireGroupExists(groupId);
 		Student student = RequireStudentExists(studentId);
@@ -82,7 +90,7 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<Group> getGroup(@PathVariable String groupId) {
+	public ResponseEntity<Group> getGroup(@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 		Group group = RequireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
@@ -94,8 +102,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
 		Group group = RequireGroupExists(groupId);
 		Student student = RequireStudentExists(studentId);
@@ -110,8 +118,8 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
 		Group group = RequireGroupExists(groupId);
 		Student student = RequireStudentExists(studentId);

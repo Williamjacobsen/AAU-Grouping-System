@@ -22,7 +22,7 @@ public class StudentService {
 		return new Student(db, session.getStudents(), email, passwordHash, name, session);
 	}
 
-	public void applyQuestionnaireAnswers(Student student, Student.Questionnaire updatedQuestionnaire) {
+	public void applyQuestionnaireAnswers(Student student, StudentQuestionnaire updatedQuestionnaire) {
 		student.setQuestionnaire(updatedQuestionnaire);
 	}
 }
