@@ -23,6 +23,7 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Student.StudentQuestionnaire;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -37,18 +38,12 @@ public class StudentPage {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
+	private final RequirementService requirementService;
 
-	public StudentPage(Database db, PasswordEncoder passwordEncoder) {
+	public StudentPage(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-	}
-
-	private Coordinator getCurrentCoordinator(HttpServletRequest servlet) {
-		HttpSession session = servlet.getSession(false);
-		if (session == null) {
-			return null;
-		}
-		return (Coordinator) session.getAttribute("user");
+		this.requirementService = requirementService;
 	}
 
 	@GetMapping("/{studentId}")
@@ -57,7 +52,7 @@ public class StudentPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 		try {
-			Coordinator coordinator = getCurrentCoordinator(servlet);
+			Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 			if (coordinator == null) {
 				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 			}
@@ -234,7 +229,7 @@ public class StudentPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Coordinator coordinator = getCurrentCoordinator(servlet);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
@@ -281,7 +276,7 @@ public class StudentPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Coordinator coordinator = getCurrentCoordinator(servlet);
+		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
 		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}

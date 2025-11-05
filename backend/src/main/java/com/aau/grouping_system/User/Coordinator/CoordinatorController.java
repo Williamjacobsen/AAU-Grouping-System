@@ -9,6 +9,7 @@ import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,18 +26,13 @@ public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;
 	private final AuthService authService;
+	private final RequirementService requirementService;
 
-	public CoordinatorController(CoordinatorService coordinatorService, AuthService authService) {
+	public CoordinatorController(CoordinatorService coordinatorService, AuthService authService,
+			RequirementService requirementService) {
 		this.coordinatorService = coordinatorService;
 		this.authService = authService;
-	}
-
-	public Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
-		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
-		if (coordinator == null) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
-		}
-		return coordinator;
+		this.requirementService = requirementService;
 	}
 
 	private record SignUpRecord(
@@ -67,7 +63,7 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyEmail(HttpServletRequest servlet,
 			@Valid @RequestBody ModifyEmailRecord record) {
 
-		Coordinator user = RequireCoordinatorExists(servlet);
+		Coordinator user = requirementService.RequireCoordinatorExists(servlet);
 		String coordinatorId = user.getId();
 
 		if (coordinatorService.isEmailDuplicate(record.newEmail)) {
@@ -89,7 +85,7 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyPassword(HttpServletRequest servlet,
 			@Valid @RequestBody ModifyPasswordRecord record) {
 
-		Coordinator user = RequireCoordinatorExists(servlet);
+		Coordinator user = requirementService.RequireCoordinatorExists(servlet);
 		String coordinatorId = user.getId();
 
 		coordinatorService.modifyPassword(record.newPassword, coordinatorId);
