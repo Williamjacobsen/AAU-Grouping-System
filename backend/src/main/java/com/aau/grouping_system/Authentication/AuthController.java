@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
+import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
@@ -84,24 +85,38 @@ public class AuthController {
 
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
-		
+
 		String email = body.get("email");
+
+		if (email == null || email.isBlank()) {
+			return ResponseEntity
+					.status(HttpStatus.BAD_REQUEST)
+					.body("Email cannot be empty.");
+		}
 
 		User user = service.findByEmailOrId(email, User.Role.Coordinator);
 
 		if (user == null)
 			return ResponseEntity
-				.status(HttpStatus.NOT_FOUND)
-				.body(null);
+					.status(HttpStatus.NOT_FOUND)
+					.body(null);
 
-		return ResponseEntity
-				.ok("An email has been send to you"); 
+		// Sending a email
+		try {
+			EmailService.sendEmail(email,
+					"Password Reset Request",
+					"This is a test reset email");
+			return ResponseEntity.ok("Email sent successfully to " + email);
+		} catch (Exception e) {
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to send email: " + e.getMessage());
+		}
 	}
 
-	// @GetMapping("/resetPassword")
+	// @PostMapping("/resetPassword")
 	// public ResponseEntity<String> resetPassword(HttpServletRequest request) {
-		
+
 	// }
-	
 
 }
