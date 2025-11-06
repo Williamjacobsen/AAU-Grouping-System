@@ -27,12 +27,14 @@ export default function SignIn() {
 				body: JSON.stringify({ emailOrId, password, role }),
 				credentials: "include"
 			})
-			if (response.ok) {
-				navigate("/profile");
-			} else {
+
+			if (!response.ok) {
 				const error = await response.text();
 				setError(error);
+				return Promise.resolve();
 			}
+
+			navigate("/profile");
 		} catch (e) {
 			setError(e.message);
 		}

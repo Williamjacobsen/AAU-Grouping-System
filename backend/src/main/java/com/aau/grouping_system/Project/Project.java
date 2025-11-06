@@ -10,8 +10,6 @@ public class Project extends DatabaseItem {
 	private String name;
 	private String description;
 
-	// constructors
-
 	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String name, String description) {
 		super(db, parentItemChildIdList);
@@ -23,8 +21,6 @@ public class Project extends DatabaseItem {
 	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
 		return db.getProjects();
 	}
-
-	// getters & setters
 
 	public String getName() {
 		return name;

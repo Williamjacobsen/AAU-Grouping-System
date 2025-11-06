@@ -8,17 +8,13 @@ import com.aau.grouping_system.User.User;
 
 public class Coordinator extends User {
 
-	public DatabaseItemChildGroup sessions;
-
-	// constructors
+	private DatabaseItemChildGroup sessions;
 
 	public Coordinator(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name) {
 		super(db, parentItemChildIdList, email, passwordHash, name);
 		this.sessions = new DatabaseItemChildGroup(db.getSessions(), this);
 	}
-
-	// abstract method overrides
 
 	@Override
 	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
@@ -28,6 +24,14 @@ public class Coordinator extends User {
 	@Override
 	public Role getRole() {
 		return Role.Coordinator;
+	}
+
+	public DatabaseItemChildGroup getSessions() {
+		return sessions;
+	}
+
+	public void setSessions(DatabaseItemChildGroup sessions) {
+		this.sessions = sessions;
 	}
 
 }

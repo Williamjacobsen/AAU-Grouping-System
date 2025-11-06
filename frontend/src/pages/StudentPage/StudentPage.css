@@ -1,0 +1,361 @@
+.student-page {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 20px;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.student-page-header {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	margin-bottom: 30px;
+	padding-bottom: 20px;
+	border-bottom: 2px solid #e9ecef;
+}
+
+.student-page-header h1 {
+	color: #333;
+	margin: 0;
+	font-size: 28px;
+}
+
+.back-button {
+	padding: 10px 16px;
+	background-color: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+}
+
+.back-button:hover {
+	background-color: #5a6268;
+}
+
+.loading {
+	text-align: center;
+	padding: 60px 20px;
+	color: #666;
+	font-size: 18px;
+}
+
+.error-message {
+	background-color: #f8d7da;
+	color: #721c24;
+	padding: 16px 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	border: 1px solid #f5c6cb;
+	font-size: 16px;
+}
+
+.student-details-container {
+	display: flex;
+	flex-direction: column;
+	gap: 30px;
+}
+
+.student-section {
+	background: white;
+	padding: 25px;
+	border-radius: 12px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+	border: 1px solid #e9ecef;
+}
+
+.student-section h2 {
+	color: #333;
+	margin-bottom: 20px;
+	font-size: 22px;
+	font-weight: 600;
+	border-bottom: 2px solid #007bff;
+	padding-bottom: 10px;
+}
+
+.info-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 20px;
+}
+
+.questionnaire-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+	gap: 16px;
+}
+
+.info-item {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.info-item.full-width {
+	grid-column: 1 / -1;
+}
+
+.info-item label {
+	font-weight: 600;
+	color: #495057;
+	font-size: 14px;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+}
+
+.info-item span {
+	color: #333;
+	font-size: 16px;
+	padding: 10px 12px;
+	background-color: #f8f9fa;
+	border-radius: 6px;
+	border: 1px solid #e9ecef;
+	min-height: 20px;
+}
+
+.group-info {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.status-badge {
+	display: inline-block;
+	padding: 8px 16px;
+	border-radius: 20px;
+	font-size: 14px;
+	font-weight: 600;
+	text-align: center;
+	max-width: fit-content;
+}
+
+.group-info p {
+	color: #666;
+	margin: 10px 0 0 0;
+	font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	.student-page {
+		padding: 15px;
+	}
+	
+	.student-page-header {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 15px;
+	}
+	
+	.student-page-header h1 {
+		font-size: 24px;
+	}
+	
+	.info-grid,
+	.questionnaire-grid {
+		grid-template-columns: 1fr;
+		gap: 16px;
+	}
+	
+	.student-section {
+		padding: 20px;
+	}
+	
+	.student-section h2 {
+		font-size: 20px;
+	}
+}
+
+@media (max-width: 480px) {
+	.student-page {
+		padding: 10px;
+	}
+	
+	.student-section {
+		padding: 15px;
+	}
+	
+	.info-item span {
+		padding: 8px 10px;
+		font-size: 15px;
+	}
+}
+
+/* Remove Student Button */
+.remove-button {
+	padding: 10px 16px;
+	background-color: #dc3545;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+	margin-left: auto;
+}
+
+.remove-button:hover {
+	background-color: #c82333;
+}
+
+.remove-button:disabled {
+	background-color: #6c757d;
+	cursor: not-allowed;
+}
+
+/* Header buttons container */
+.header-buttons {
+	display: flex;
+	gap: 12px;
+	margin-left: auto;
+}
+
+/* Reset Password Button */
+.reset-password-button {
+	padding: 10px 16px;
+	background-color: #007bff;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.reset-password-button:hover {
+	background-color: #0056b3;
+}
+
+.reset-password-button:disabled {
+	background-color: #6c757d;
+	cursor: not-allowed;
+}
+
+/* Success message */
+.success-message {
+	background-color: #d4edda;
+	color: #155724;
+	padding: 16px 20px;
+	border-radius: 8px;
+	margin-bottom: 20px;
+	border: 1px solid #c3e6cb;
+	font-size: 16px;
+}
+
+/* Modal Styles */
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	z-index: 1000;
+}
+
+.modal-content {
+	background: white;
+	padding: 30px;
+	border-radius: 12px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+	max-width: 500px;
+	width: 90%;
+	max-height: 90vh;
+	overflow-y: auto;
+}
+
+.modal-content h3 {
+	color: #333;
+	margin-bottom: 15px;
+	font-size: 24px;
+}
+
+.modal-content p {
+	color: #666;
+	margin-bottom: 15px;
+	line-height: 1.5;
+}
+
+.warning-text {
+	color: #dc3545 !important;
+	font-weight: 500;
+	background-color: #f8d7da;
+	padding: 12px;
+	border-radius: 6px;
+	border: 1px solid #f5c6cb;
+}
+
+.modal-buttons {
+	display: flex;
+	gap: 12px;
+	justify-content: flex-end;
+	margin-top: 25px;
+}
+
+.cancel-button {
+	padding: 10px 20px;
+	background-color: #6c757d;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.cancel-button:hover {
+	background-color: #5a6268;
+}
+
+.cancel-button:disabled {
+	background-color: #adb5bd;
+	cursor: not-allowed;
+}
+
+.confirm-remove-button {
+	padding: 10px 20px;
+	background-color: #dc3545;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-size: 14px;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s ease;
+}
+
+.confirm-remove-button:hover {
+	background-color: #c82333;
+}
+
+.confirm-remove-button:disabled {
+	background-color: #adb5bd;
+	cursor: not-allowed;
+}
+
+/* Update header layout to accommodate remove button */
+.student-page-header {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	margin-bottom: 30px;
+	padding-bottom: 20px;
+	border-bottom: 2px solid #e9ecef;
+}
+
+.student-page-header h1 {
+	flex: 1;
+}

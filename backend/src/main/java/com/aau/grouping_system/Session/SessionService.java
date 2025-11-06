@@ -1,13 +1,14 @@
 package com.aau.grouping_system.Session;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
 
+import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.Authentication.AuthService;
 
 @Service
 public class SessionService {
@@ -21,7 +22,7 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db, coordinator.sessions, coordinator, sessionName);
+		return SessionFactory.create(db, coordinator.getSessions(), coordinator, sessionName);
 	}
 
 	public Session getSession(String sessionId) {
@@ -31,7 +32,7 @@ public class SessionService {
 	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
 																	// true here because Java's invariance of generics.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
-		return (CopyOnWriteArrayList<Session>) coordinator.sessions.getItems(db);
+		return (CopyOnWriteArrayList<Session>) coordinator.getSessions().getItems(db);
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
@@ -69,6 +70,14 @@ public class SessionService {
 	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
 		User.Role[] authorizedRoles = { User.Role.Coordinator };
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
+	}
+
+	public Boolean isQuestionnaireDeadlineExceeded(Session session) {
+		LocalDateTime deadline = session.getQuestionnaireDeadline();
+		if (deadline == null) {
+			return false;
+		}
+		return deadline.isBefore(LocalDateTime.now());
 	}
 
 	// 1) Tilføj selv parametre til den data, som du har ekstraheret i

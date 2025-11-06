@@ -1,11 +1,17 @@
 package com.aau.grouping_system.Group;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Utils.RequirementService;
+import jakarta.validation.constraints.*;
 
 import java.util.List;
 import java.util.Map;
@@ -13,48 +19,43 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/groups")
 public class GroupController {
 
+	// TODO: This lacks user authentication.
+
 	private final Database db;
 	private final GroupService groupService;
+	private final RequirementService requirementService;
 
-	public GroupController(Database db, GroupService groupService) {
+	public GroupController(Database db, GroupService groupService, RequirementService requirementService) {
 		this.db = db;
 		this.groupService = groupService;
+		this.requirementService = requirementService;
 	}
 
 	@PostMapping("/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = db.getGroups().getItem(groupId);
-		Student student = db.getStudents().getItem(studentId);
-
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		if (student == null) {
-			return ResponseEntity.badRequest().body("Student not found");
-		}
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.acceptJoinRequest(groupId, student);
 			return ResponseEntity.ok("Join request accepted successfully");
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Failed to accept request: " + e.getMessage());
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to accept request: " + e.getMessage());
 		}
 	}
 
 	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(@PathVariable String groupId) {
-		Group group = db.getGroups().getItem(groupId);
+	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
+		Group group = requirementService.RequireGroupExists(groupId);
 
 		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
 
@@ -63,36 +64,23 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/request-join/{studentId}")
 	public ResponseEntity<String> requestToJoin(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = db.getGroups().getItem(groupId);
-		Student student = db.getStudents().getItem(studentId);
-
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		if (student == null) {
-			return ResponseEntity.badRequest().body("Student not found");
-		}
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
 			return ResponseEntity.ok("Join request submitted successfully");
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Failed to submit request: " + e.getMessage());
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to submit request: " + e.getMessage());
 		}
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<Group> getGroup(@PathVariable String groupId) {
-		Group group = db.getGroups().getItem(groupId);
-
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
-
+	public ResponseEntity<Group> getGroup(@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
+		Group group = requirementService.RequireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
 
@@ -139,49 +127,33 @@ public ResponseEntity<Object> getAllGroups() {
 
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = db.getGroups().getItem(groupId);
-		Student student = db.getStudents().getItem(studentId);
-
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		if (student == null) {
-			return ResponseEntity.badRequest().body("Student not found");
-		}
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.joinGroup(groupId, student);
 			return ResponseEntity.ok("Successfully joined the group");
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Failed to join group: " + e.getMessage());
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to join group: " + e.getMessage());
 		}
 	}
 
 	@PostMapping("/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
-			@PathVariable String groupId,
-			@PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = db.getGroups().getItem(groupId);
-		Student student = db.getStudents().getItem(studentId);
-
-		if (group == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		if (student == null) {
-			return ResponseEntity.badRequest().body("Student not found");
-		}
+		Group group = requirementService.RequireGroupExists(groupId);
+		Student student = requirementService.RequireStudentExists(studentId);
 
 		try {
 			groupService.leaveGroup(groupId, student);
 			return ResponseEntity.ok("Successfully left the group");
 		} catch (Exception e) {
-			return ResponseEntity.badRequest().body("Failed to leave group: " + e.getMessage());
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to leave group: " + e.getMessage());
 		}
 	}
 }

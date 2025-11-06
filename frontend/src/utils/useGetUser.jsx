@@ -15,12 +15,14 @@ export function useGetUser() {
 					method: "GET",
 					credentials: "include",
 				})
-				if (response.ok) {
-					const data = await response.json();
-					setUser(data);
-				} else {
+				
+				if (!response.ok) {
 					setUser(null)
+					return Promise.resolve();
 				}
+
+				const data = await response.json();
+				setUser(data);
 			} catch (error) {
 				alert(error);
 			} finally {

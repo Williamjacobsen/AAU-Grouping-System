@@ -7,7 +7,7 @@ import useGetSessionStudents from "../../utils/useGetSessionStudents";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
 import useStudentColumns from "./useStudentColumns";
-
+import CsvDownloadButton from "./CsvDownloadButton";
 
 export default function Status() {
 
@@ -31,17 +31,18 @@ export default function Status() {
 
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return <>Access denied: Not logged in.</>;
-
 	if (isLoadingStudents) {
     return <>Loading session information...</>;
-  }
- 
+	}
+	
 	return (
 		<>
 			<SearchFilterInput/>
 			<SortingDropdown />
-			<ColumnsSelector />
-				<StudentTable students={visibleStudents} columnDefs={selectedColumns} sessionId={sessionId} />
+			<StudentTable students={visibleStudents} />
+			{user?.role === "Coordinator" &&
+				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
+			}
 		</>
 	);
 }

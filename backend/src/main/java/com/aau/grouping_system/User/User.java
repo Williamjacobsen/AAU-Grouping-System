@@ -9,6 +9,10 @@ public abstract class User extends DatabaseItem {
 	private String email;
 	private String passwordHash;
 	private String name;
+	/// Despite getRole being an abstract method and this therefore never being
+	/// assigned or set, this field is still needed to send the role in a JSON object
+	/// of User (despite being private, fields with public getters are inserted into
+	/// the JSON object when creating one).
 	private Role role;
 
 	public enum Role {
@@ -17,11 +21,7 @@ public abstract class User extends DatabaseItem {
 		Student;
 	}
 
-	// abstract methods
-
 	public abstract Role getRole();
-
-	// constructors
 
 	public User(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			String email, String passwordHash, String name) {
@@ -31,8 +31,6 @@ public abstract class User extends DatabaseItem {
 		this.name = name;
 		this.role = getRole();
 	}
-
-	// getters & setters
 
 	public String getEmail() {
 		return email;
