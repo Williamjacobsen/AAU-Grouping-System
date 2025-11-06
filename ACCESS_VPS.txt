@@ -1,0 +1,2 @@
+ssh -i path_to_ssh_key root@vps_ipv4
+ssh -i ~/.ssh/id_ed25519_aau root@167.71.0.82
