@@ -15,10 +15,13 @@ export default function ForgotPassword() {
 				body: JSON.stringify({ email }),
 			})
 			if (response.ok) {
-				setSucces("An Email has been sent to you!");
+				setSucces("An reset-link has been sent to your email!");
 				setError("");
 			}
-
+			else {
+			setError("The email is not valid");
+			setSucces("");
+			}
 		} catch (e) {
 			setError(e.message)
 			setSucces("");
@@ -28,18 +31,27 @@ export default function ForgotPassword() {
 
 	return (
 		<div className="container">
-			<div className="header-text">Submit the email, which you have forgotten the password to</div>
+			<h2>Forgot your password?</h2>
+			<p>
+				No problem! Enter your email address and we’ll send you a password reset link.
+			</p>
+
+			<div className="header-text"> Email</div>
 			{error && (
 				<div className="error-box">
 					{error}
 				</div>
 			)}
-				<div className="input">
-					<label className="label">
-						Email
-						<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} placeholder="john123@example.com" />
-					</label>
+			{succes && (
+				<div className="succes-box">
+					{succes}
 				</div>
+			)}
+			<div className="input">
+				<label className="label">
+					<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} placeholder="john123@example.com" />
+				</label>
+			</div>
 			<div className="submit-container">
 				<button className="submit" onClick={() => handleEmailSubmit(email)}>
 					Submit

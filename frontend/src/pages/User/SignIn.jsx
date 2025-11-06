@@ -91,7 +91,7 @@ export default function SignIn() {
 				{role == userRoleEnum.Coordinator &&
 					<>
 						<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
-							Forgot password? 
+							Forgot your password? 
 						</div>
 					</>
 				}
