@@ -10,11 +10,12 @@ import About from "./pages/About/About";
 import SignIn from "./pages/User/SignIn";
 import SignUp from "./pages/User/SignUp";
 import Profile from "./pages/User/Profile";
+import ForgotPassword from "./pages/User/ForgotPassword";
 import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
 import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire"
-import GroupManagement from "./pages/Status/GroupManagement";
+import useGroupManagement from "./pages/Status/useGroupManagement";
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage"
 import StudentPage from "./pages/StudentPage/StudentPage"
@@ -29,12 +30,13 @@ export default function App() {
 						<Route path="sign-in" element={<SignIn />} />
 						<Route path="sign-up" element={<SignUp />} />
 						<Route path="profile" element={<Profile />} />
+						<Route path="forgotPassword" element={<ForgotPassword />} />
 						<Route path="sessions" element={<Sessions />} />
 						<Route path="session/:sessionId" element={<Outlet />}>
 							<Route path="setup" element={<SessionSetup />} />
 							<Route path="status" element={<Status />} />
 							<Route path="projects" element={<Projects />} />
-							<Route path="groups" element={<GroupManagement />} />
+							<Route path="groups" element={<useGroupManagement />} />
 							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
 							<Route path="supervisorsPage" element={<SupervisorsPage />} />
 							<Route path="student/:studentId" element={<StudentPage />} />

@@ -57,6 +57,8 @@ input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
 
 .forgot-password {
 	font-size: 14px;
+	font-weight: bold;
+	color: rgb(27, 172, 220);
 }
 
 .error-box {

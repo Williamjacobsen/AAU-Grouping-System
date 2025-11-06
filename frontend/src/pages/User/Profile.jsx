@@ -137,9 +137,7 @@ export default function Profile() {
 					Update Password
 				</button>
 			</div>
-
 			<hr />
-
 			<button className="sign-up" onClick={handleLogout}>
 				Log Out
 			</button>
