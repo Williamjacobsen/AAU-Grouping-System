@@ -107,6 +107,7 @@ public class AuthController {
 					"Password Reset Request",
 					"This is a test reset email");
 			return ResponseEntity.ok("Email sent successfully to " + email);
+		
 		} catch (Exception e) {
 			return ResponseEntity
 					.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -116,7 +117,6 @@ public class AuthController {
 
 	// @PostMapping("/resetPassword")
 	// public ResponseEntity<String> resetPassword(HttpServletRequest request) {
-
 	// }
 
 }
