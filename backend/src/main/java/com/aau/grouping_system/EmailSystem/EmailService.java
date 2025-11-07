@@ -29,7 +29,8 @@ import java.util.Properties;
 import org.springframework.stereotype.Service;
 
 /*
- * EmailService requires that credentials.json is in the EmailSystem folder.
+ * EmailService requires that credentials.json is in the EmailSystem classpath: 
+ * 	(backend/src/main/resources/com/aau/grouping_system/EmailSystem/credentials.json).
  * EmailService requires that the tokens folder is in the root directory.
  * credentials.json is downloaded form the Google API platform.
  * The tokens folder is generated once the client has signed in (via. OAuth).
@@ -213,10 +214,10 @@ public class EmailService {
 	}
 
 	public static void main(String[] args) throws Exception {
-		// String one = "villi05.v.j@gmail.com";
-		// List<String> many = List.of("villi05.v.j@gmail.com",
-		// "pleasedontletmeknow1@example.com");
-		// List<String> cc = List.of("aau.p3.email@gmail.com", "villi05.v.j@gmail.com");
+		String one = "villi05.v.j@gmail.com";
+		List<String> many = List.of("villi05.v.j@gmail.com",
+				"pleasedontletmeknow1@example.com");
+		List<String> cc = List.of("aau.p3.email@gmail.com", "villi05.v.j@gmail.com");
 
 		// 1) One email (no CC)
 		// Message m1 = sendEmail(one, "Test: single", "Hello from AAU Grouping
@@ -227,7 +228,7 @@ public class EmailService {
 		// separately).");
 
 		// 3) One email with CC
-		// Message m3 = sendEmail(one, cc, "Test: single + CC", "CC list included.");
+		Message m3 = sendEmail(one, cc, "Test: single + CC", "CC list included.");
 
 		// 4) Many emails with CC
 		// List<Message> m4 = sendEmail(many, cc, "Test: many + CC", "Each recipient
