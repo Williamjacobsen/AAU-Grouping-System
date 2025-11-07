@@ -74,7 +74,7 @@ public class RequirementService {
 		return group;
 	}
 
-	// Require authroization
+	// Require authorization
 
 	public void RequireUserIsAuthorizedSession(String sessionId, User user) {
 		if (!sessionService.isUserAuthorizedSession(sessionId, user)) {

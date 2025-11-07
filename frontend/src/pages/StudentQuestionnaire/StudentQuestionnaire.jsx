@@ -1,9 +1,9 @@
 import React from "react";
-import { useGetUser } from "../../utils/useGetUser";
-import { useGetSessionProjectsByParam } from "../../utils/useGetSessionProjects";
+import { useGetUser } from "../../hooks/useGetUser";
+import { useGetSessionProjectsByParam } from "../../hooks/useGetSessionProjects";
 import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
-import { useGetSessionByParameter } from "../../utils/useGetSession";
-import useIsQuestionnaireDeadlineExceeded from "../../utils/useIsQuestionnaireDeadlineExceeded";
+import { useGetSessionByParameter } from "../../hooks/useGetSession";
+import useIsQuestionnaireDeadlineExceeded from "../../hooks/useIsQuestionnaireDeadlineExceeded";
 
 export default function StudentQuestionnaire() {
 
@@ -36,7 +36,7 @@ export default function StudentQuestionnaire() {
 	async function requestSaveQuestionnaireAnswers(updatedQuestionnaire) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/student/saveQuestionnaireAnswers`,
+				`${process.env.REACT_APP_API_BASE_URL}/student/saveQuestionnaireAnswers`,
 				{
 					method: "POST",
 					credentials: "include", // Ensures cookies are sent with the request

@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export async function requestSession(sessionId) {
-	try {
-		const response = await fetch(
-			`http://localhost:8080/sessions/${sessionId}`,
-			{
-				method: "GET",
-				credentials: "include",
-			}
-		);
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
 
-		if (!response.ok) {
-			return Promise.reject("Status code " + response.status + ": " + await response.text());
+export async function fetchSession(sessionId) {
+	return await fetchWithDefaultErrorHandling(
+		`/sessions/${sessionId}`,
+		{
+			method: "GET"
 		}
-		return await response.json();
-	}
-	catch (error) {
-		return Promise.reject(error);
-	}
+	);
 }
 
 function useGetSession(sessionId) {
@@ -34,7 +25,7 @@ function useGetSession(sessionId) {
 			}
 	
 			try {
-				setSession(await requestSession(sessionId));
+				setSession(await fetchSession(sessionId));
 				setIsLoading(false);
 			} catch (error) {
 				alert(error);
@@ -44,7 +35,6 @@ function useGetSession(sessionId) {
 
 	return { isLoading, session };
 }
-
 
 export function useGetSessionByParameter() {
 	const { sessionId } = useParams();

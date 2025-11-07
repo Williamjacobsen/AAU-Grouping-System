@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../../utils/useGetUser";
+import { useGetUser } from "../../hooks/useGetUser";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
