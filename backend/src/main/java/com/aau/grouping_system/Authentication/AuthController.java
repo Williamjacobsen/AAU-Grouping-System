@@ -86,8 +86,8 @@ public class AuthController {
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
 
+		try { 
 		String email = body.get("email");
-
 		if (email == null || email.isBlank()) {
 			return ResponseEntity
 					.status(HttpStatus.BAD_REQUEST)
@@ -95,25 +95,27 @@ public class AuthController {
 		}
 
 		User user = service.findByEmailOrId(email, User.Role.Coordinator);
-
 		if (user == null)
 			return ResponseEntity
 					.status(HttpStatus.NOT_FOUND)
 					.body(null);
 
 		// Sending a email
-		try {
-			EmailService.sendEmail(email,
-					"Password Reset Request",
-					"This is a test reset email");
-			return ResponseEntity.ok("Email sent successfully to " + email);
-		
-		} catch (Exception e) {
-			return ResponseEntity
-					.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Failed to send email: " + e.getMessage());
-		}
-	}
+	  String resetLink = "http://localhost:3000/reset-password?email=" + email;
+    String message = "Click this link to reset your password: " + resetLink;
+        
+        EmailService.sendEmail(
+            email,
+            "Password Reset Request",
+            message
+        );
+        return ResponseEntity.ok("Reset link sent to " + email);
+
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                             .body("Error: " + e.getMessage());
+			}
+}
 
 	// @PostMapping("/resetPassword")
 	// public ResponseEntity<String> resetPassword(HttpServletRequest request) {
