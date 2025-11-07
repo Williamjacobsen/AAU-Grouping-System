@@ -7,9 +7,10 @@ public class StudentDetailsDTO {
 	private StudentQuestionnaireDTO questionnaire;
 	private StudentGroupDTO group;
 
-	public StudentDetailsDTO() {}
+	public StudentDetailsDTO() {
+	}
 
-	public StudentDetailsDTO(String id, String name, String email, 
+	public StudentDetailsDTO(String id, String name, String email,
 			StudentQuestionnaireDTO questionnaire, StudentGroupDTO group) {
 		this.id = id;
 		this.name = name;
@@ -18,18 +19,15 @@ public class StudentDetailsDTO {
 		this.group = group;
 	}
 
+	// @formatter:off
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
-
 	public String getEmail() { return email; }
 	public void setEmail(String email) { this.email = email; }
-
 	public StudentQuestionnaireDTO getQuestionnaire() { return questionnaire; }
 	public void setQuestionnaire(StudentQuestionnaireDTO questionnaire) { this.questionnaire = questionnaire; }
-
 	public StudentGroupDTO getGroup() { return group; }
 	public void setGroup(StudentGroupDTO group) { this.group = group; }
 }

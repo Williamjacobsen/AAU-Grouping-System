@@ -34,7 +34,7 @@ public class RequirementService {
 
 	// Require X to exist
 
-	public User RequireUserExists(HttpServletRequest servlet) {
+	public User requireUserExists(HttpServletRequest servlet) {
 		User user = authService.getUser(servlet);
 		if (user == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
@@ -42,7 +42,7 @@ public class RequirementService {
 		return user;
 	}
 
-	public Coordinator RequireCoordinatorExists(HttpServletRequest servlet) {
+	public Coordinator requireUserCoordinatorExists(HttpServletRequest servlet) {
 		Coordinator coordinator = authService.getCoordinatorByUser(servlet);
 		if (coordinator == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized as a valid coordinator");
@@ -50,7 +50,15 @@ public class RequirementService {
 		return coordinator;
 	}
 
-	public Student RequireStudentExists(String studentId) {
+	public Student requireUserStudentExists(HttpServletRequest servlet) {
+		Student student = authService.getStudentByUser(servlet);
+		if (student == null) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student");
+		}
+		return student;
+	}
+
+	public Student requireStudentExists(String studentId) {
 		Student student = db.getStudents().getItem(studentId);
 		if (student == null) {
 			throw new RequestException(HttpStatus.BAD_REQUEST, "Student not found");
@@ -58,7 +66,7 @@ public class RequirementService {
 		return student;
 	}
 
-	public Session RequireSessionExists(String sessionId) {
+	public Session requireSessionExists(String sessionId) {
 		Session session = db.getSessions().getItem(sessionId);
 		if (session == null) {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
@@ -66,7 +74,7 @@ public class RequirementService {
 		return session;
 	}
 
-	public Group RequireGroupExists(String groupId) {
+	public Group requireGroupExists(String groupId) {
 		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Group not found");
@@ -76,13 +84,13 @@ public class RequirementService {
 
 	// Require authorization
 
-	public void RequireUserIsAuthorizedSession(String sessionId, User user) {
+	public void requireUserIsAuthorizedSession(String sessionId, User user) {
 		if (!sessionService.isUserAuthorizedSession(sessionId, user)) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User is not authorized session");
 		}
 	}
 
-	public void RequireCoordinatorIsAuthorizedSession(String sessionId, Coordinator coordinator) {
+	public void requireCoordinatorIsAuthorizedSession(String sessionId, Coordinator coordinator) {
 		if (!sessionService.isUserAuthorizedSession(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Coordinator user is not authorized session");
 		}

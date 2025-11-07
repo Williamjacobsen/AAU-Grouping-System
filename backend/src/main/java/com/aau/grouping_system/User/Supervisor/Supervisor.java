@@ -27,8 +27,6 @@ public class Supervisor extends User {
 		return Role.Supervisor;
 	}
 
-	public String getSessionId() {
-		return sessionId;
-	}
-
+	// @formatter:off
+	public String getSessionId() { return sessionId; }
 }

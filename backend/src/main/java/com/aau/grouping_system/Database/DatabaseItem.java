@@ -47,12 +47,7 @@ public abstract class DatabaseItem implements Serializable {
 		childGroups.add(childGroup);
 	}
 
-	public String getId() {
-		return this.id;
-	}
-
-	void setId(String id) {
-		this.id = id;
-	}
-
+	// @formatter:off
+	public String getId() { return this.id; }
+	void setId(String id) { this.id = id; }
 }

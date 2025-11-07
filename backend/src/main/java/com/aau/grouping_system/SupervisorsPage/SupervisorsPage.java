@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.EmailSystem.EmailService;
-import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
@@ -55,10 +54,10 @@ public class SupervisorsPage {
 	@GetMapping
 	public ResponseEntity<List<Map<String, Object>>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
-		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
-		Session session = requirementService.RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		@SuppressWarnings("unchecked")
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
@@ -86,10 +85,10 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody AddSupervisorRecord record) {
 
-		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
-		Session session = requirementService.RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Check if supervisor with this email already exists in this session
 		@SuppressWarnings("unchecked")
@@ -146,10 +145,10 @@ public class SupervisorsPage {
 	public ResponseEntity<String> removeSupervisor(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
-		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
-		Session session = requirementService.RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")
@@ -175,10 +174,10 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
-		Coordinator coordinator = requirementService.RequireCoordinatorExists(servlet);
-		Session session = requirementService.RequireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-		requirementService.RequireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		// Find supervisor in the session
 		@SuppressWarnings("unchecked")
