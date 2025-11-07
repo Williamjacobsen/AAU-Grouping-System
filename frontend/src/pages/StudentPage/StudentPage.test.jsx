@@ -4,7 +4,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StudentPage from './StudentPage';
-import { useGetUser } from '../../utils/useGetUser';
+import { useGetUser } from '../../hooks/useGetUser';
 import useStudentData from './useStudentData';
 import useGetCurrentTime from '../../utils/useGetCurrentTime';
 import useIsQuestionnaireDeadlineExceeded from '../../utils/useIsQuestionnaireDeadlineExceeded';

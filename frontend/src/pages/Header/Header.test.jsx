@@ -5,8 +5,8 @@ import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 
 import Header from "./Header";
-import { useGetUser } from '../../utils/useGetUser';
-import { useGetSessionByUserOrParameter } from '../../utils/useGetSession';
+import { useGetUser } from '../../hooks/useGetUser';
+import { useGetSessionByUserOrParameter } from '../../hooks/useGetSession';
 
 vi.mock('../../utils/useGetUser', () => ({
   useGetUser: vi.fn(),

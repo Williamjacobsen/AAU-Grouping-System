@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useGetUser } from "../../utils/useGetUser";
+import { useGetUser } from "../../hooks/useGetUser";
 
 import StudentTable from "./StudentTable";
-import useGetSessionStudents from "../../utils/useGetSessionStudents";
+import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
 import CsvDownloadButton from "./CsvDownloadButton";

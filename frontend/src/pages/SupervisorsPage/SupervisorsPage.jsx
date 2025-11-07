@@ -18,7 +18,7 @@ export default function SupervisorsPage() {
 
 	const fetchUserRole = async () => {
 		try {
-			const response = await fetch("http://localhost:8080/auth/getUser", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/getUser`, {
 				method: "GET",
 				credentials: "include",
 			});
@@ -37,7 +37,7 @@ export default function SupervisorsPage() {
 		setError("");
 		
 		try {
-			const response = await fetch(`http://localhost:8080/sessions/${sessionId}/supervisors`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
 				method: "GET",
 				credentials: "include",
 			});
@@ -80,7 +80,7 @@ export default function SupervisorsPage() {
 		setAddingSupervisor(true);
 		
 		try {
-			const response = await fetch(`http://localhost:8080/sessions/${sessionId}/supervisors`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -113,7 +113,7 @@ export default function SupervisorsPage() {
 		setRemovingSupervisor(true);
 		
 		try {
-			const response = await fetch(`http://localhost:8080/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
 				method: "DELETE",
 				credentials: "include",
 			});
@@ -138,7 +138,7 @@ export default function SupervisorsPage() {
 		setSendingPassword(supervisor.id);
 		
 		try {
-			const response = await fetch(`http://localhost:8080/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
 				method: "POST",
 				credentials: "include",
 			});

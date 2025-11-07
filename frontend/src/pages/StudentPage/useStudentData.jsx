@@ -11,7 +11,7 @@ export default function useStudentData(sessionId, studentId) {
 		setError("");
 		
 		try {
-			const roleResponse = await fetch("http://localhost:8080/auth/getUser", {
+			const roleResponse = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/getUser`, {
 				method: "GET",
 				credentials: "include",
 			});
@@ -23,14 +23,14 @@ export default function useStudentData(sessionId, studentId) {
 				setIsCoordinator(userIsCoordinator);
 			}
 
-			let url = `http://localhost:8080/session/${sessionId}/student/${studentId}`;
+			let url = `${process.env.REACT_APP_API_BASE_URL}/session/${sessionId}/student/${studentId}`;
 			let response = await fetch(url, {
 				method: "GET",
 				credentials: "include",
 			});
 
 			if (response.status === 401 || response.status === 403) {
-				url = `http://localhost:8080/session/${sessionId}/student/${studentId}/public`;
+				url = `${process.env.REACT_APP_API_BASE_URL}/session/${sessionId}/student/${studentId}/public`;
 				response = await fetch(url, {
 					method: "GET",
 				});
@@ -78,7 +78,7 @@ export default function useStudentData(sessionId, studentId) {
 		},
 		removeStudent: async () => {
 			try {
-				const response = await fetch(`http://localhost:8080/session/${sessionId}/student/${studentId}`, {
+				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/session/${sessionId}/student/${studentId}`, {
 					method: "DELETE",
 					credentials: "include",
 				});
@@ -105,7 +105,7 @@ export default function useStudentData(sessionId, studentId) {
 		},
 		resetPassword: async () => {
 			try {
-				const response = await fetch(`http://localhost:8080/session/${sessionId}/student/${studentId}/reset-password`, {
+				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/session/${sessionId}/student/${studentId}/reset-password`, {
 					method: "POST",
 					credentials: "include",
 				});
