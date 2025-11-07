@@ -59,8 +59,6 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 		return map;
 	}
 
-	Integer getId() {
-		return id;
-	}
-
+	// @formatter:off
+	Integer getId() { return id; }
 }

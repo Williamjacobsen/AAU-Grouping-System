@@ -18,7 +18,6 @@ public class RequestException extends RuntimeException {
 		this.status = status;
 	}
 
-	public HttpStatus getStatus() {
-		return status;
-	}
+	// @formatter:off
+	public HttpStatus getStatus() { return status; }
 }
