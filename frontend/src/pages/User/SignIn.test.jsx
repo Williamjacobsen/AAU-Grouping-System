@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
-import SignIn from '../pages/User/SignIn';
+import SignIn from './SignIn';
 
 const MockedSignIn = () => (
   <BrowserRouter>

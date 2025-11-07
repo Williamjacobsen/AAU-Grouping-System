@@ -2,16 +2,17 @@ import React from 'react';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import Header from '../pages/Header/Header';
 import { BrowserRouter } from 'react-router-dom';
-import { useGetUser } from '../utils/useGetUser';
-import { useGetSessionByUserOrParameter } from '../utils/useGetSession';
 
-vi.mock('../utils/useGetUser', () => ({
+import Header from "./Header";
+import { useGetUser } from '../../utils/useGetUser';
+import { useGetSessionByUserOrParameter } from '../../utils/useGetSession';
+
+vi.mock('../../utils/useGetUser', () => ({
   useGetUser: vi.fn(),
 }));
 
-vi.mock('../utils/useGetSession', () => ({
+vi.mock('../../utils/useGetSession', () => ({
   useGetSessionByUserOrParameter: vi.fn(),
 }));
 
