@@ -6,10 +6,10 @@ import { BrowserRouter } from 'react-router-dom';
 import StudentPage from './StudentPage';
 import { useGetUser } from '../../hooks/useGetUser';
 import useStudentData from './useStudentData';
-import useGetCurrentTime from '../../utils/useGetCurrentTime';
-import useIsQuestionnaireDeadlineExceeded from '../../utils/useIsQuestionnaireDeadlineExceeded';
+import useGetCurrentTime from '../../hooks/useGetCurrentTime';
+import useIsQuestionnaireDeadlineExceeded from '../../hooks/useIsQuestionnaireDeadlineExceeded';
 
-vi.mock('../../utils/useGetUser', () => ({
+vi.mock('../../hooks/useGetUser', () => ({
   useGetUser: vi.fn(),
 }));
 
@@ -17,11 +17,11 @@ vi.mock('./useStudentData', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('../../utils/useGetCurrentTime', () => ({
+vi.mock('../../hooks/useGetCurrentTime', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('../../utils/useIsQuestionnaireDeadlineExceeded', () => ({
+vi.mock('../../hooks/useIsQuestionnaireDeadlineExceeded', () => ({
   default: vi.fn(),
 }));
 

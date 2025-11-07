@@ -8,11 +8,11 @@ import Header from "./Header";
 import { useGetUser } from '../../hooks/useGetUser';
 import { useGetSessionByUserOrParameter } from '../../hooks/useGetSession';
 
-vi.mock('../../utils/useGetUser', () => ({
+vi.mock('../../hooks/useGetUser', () => ({
   useGetUser: vi.fn(),
 }));
 
-vi.mock('../../utils/useGetSession', () => ({
+vi.mock('../../hooks/useGetSession', () => ({
   useGetSessionByUserOrParameter: vi.fn(),
 }));
 
