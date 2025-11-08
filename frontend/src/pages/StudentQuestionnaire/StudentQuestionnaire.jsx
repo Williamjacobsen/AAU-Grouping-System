@@ -1,9 +1,9 @@
 import React from "react";
-import { useGetUser } from "../../utils/useGetUser";
-import { useGetSessionProjectsByParam } from "../../utils/useGetSessionProjects";
+import { useGetUser } from "../../hooks/useGetUser";
+import { useGetSessionProjectsByParam } from "../../hooks/useGetSessionProjects";
 import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
-import { useGetSessionByParameter } from "../../utils/useGetSession";
-import useIsQuestionnaireDeadlineExceeded from "../../utils/useIsQuestionnaireDeadlineExceeded";
+import { useGetSessionByParameter } from "../../hooks/useGetSession";
+import useIsQuestionnaireDeadlineExceeded from "../../hooks/useIsQuestionnaireDeadlineExceeded";
 
 export default function StudentQuestionnaire() {
 
@@ -24,10 +24,6 @@ export default function StudentQuestionnaire() {
 			
 			const formData = new FormData(event.currentTarget);
 			const updatedQuestionnaire = Object.fromEntries(formData);
-			// Because Object.fromEntries(formData) flattens the form data to strings,
-			// arrays become a string of values seperated by commas, so we need
-			// to re-convert it into an actual array
-			updatedQuestionnaire.desiredProjectIds = updatedQuestionnaire.desiredProjectIds.split(",")
 
 			await requestSaveQuestionnaireAnswers(updatedQuestionnaire);
 			
@@ -40,7 +36,7 @@ export default function StudentQuestionnaire() {
 	async function requestSaveQuestionnaireAnswers(updatedQuestionnaire) {
 		try {
 			const response = await fetch(
-				`http://localhost:8080/student/saveQuestionnaireAnswers`,
+				`${process.env.REACT_APP_API_BASE_URL}/student/saveQuestionnaireAnswers`,
 				{
 					method: "POST",
 					credentials: "include", // Ensures cookies are sent with the request
@@ -73,7 +69,15 @@ export default function StudentQuestionnaire() {
 			<form onSubmit={saveQuestionnaireAnswers}>
 				<label>
 					Project priorities: 
-					<ProjectPrioritySelectors name="desiredProjectIds" projects={projects} desiredProjectIds={user.questionnaire.desiredProjectIds}/>
+					<ProjectPrioritySelectors
+						projects={projects}
+						desiredProjectId1Name="desiredProjectId1"
+						desiredProjectId2Name="desiredProjectId2"
+						desiredProjectId3Name="desiredProjectId3"
+						desiredProjectId1={user.questionnaire.desiredProjectId1}
+						desiredProjectId2={user.questionnaire.desiredProjectId2}
+						desiredProjectId3={user.questionnaire.desiredProjectId3}
+					/>
 				</label>
 				<br />
 

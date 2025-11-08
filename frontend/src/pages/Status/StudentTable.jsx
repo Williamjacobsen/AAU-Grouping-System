@@ -1,6 +1,9 @@
 import React, { useMemo, memo } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
 const StudentTable = memo(({ students }) => {
+	const navigate = useNavigate();
+	const { sessionId } = useParams();
 
 	const columns = useMemo(() => {
 		
@@ -19,6 +22,13 @@ const StudentTable = memo(({ students }) => {
 			};
 		}
   }, [students]);
+
+	const handleStudentClick = (studentIndex) => {
+		const student = students[studentIndex];
+		if (student && student.id) {
+			navigate(`/session/${sessionId}/student/${student.id}`);
+		}
+	};
 
   if (!columns || columns.length === 0) {
     return <div>List of students is empty.</div>;
@@ -47,7 +57,11 @@ const StudentTable = memo(({ students }) => {
 					// ---
 					// Why "key"?: "You should add a key to each child as well as each element inside children.
 					// This way React can handle the minimal DOM change." And else you get a warning.
-          <tr key={rowIndex}>
+          <tr 
+						key={rowIndex} 
+						onClick={() => handleStudentClick(rowIndex)}
+						style={{ cursor: 'pointer' }}
+					>
             {columns.map((column, columnIndex) => (
               <td key={columnIndex}>
                 {column.rows[rowIndex]}

@@ -26,12 +26,7 @@ public class Coordinator extends User {
 		return Role.Coordinator;
 	}
 
-	public DatabaseItemChildGroup getSessions() {
-		return sessions;
-	}
-
-	public void setSessions(DatabaseItemChildGroup sessions) {
-		this.sessions = sessions;
-	}
-
+	// @formatter:off
+	public DatabaseItemChildGroup getSessions() { return sessions; }
+	public void setSessions(DatabaseItemChildGroup sessions) { this.sessions = sessions; }
 }

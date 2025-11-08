@@ -22,19 +22,9 @@ public class Project extends DatabaseItem {
 		return db.getProjects();
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
+	// @formatter:off
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
+	public String getDescription() { return description; }
+	public void setDescription(String description) { this.description = description; }
 }

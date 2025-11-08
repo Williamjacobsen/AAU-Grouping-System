@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { requestSessionGroups } from "../../utils/useGetSessionGroups";
+import { fetchSessionGroups } from "../../hooks/useGetSessionGroups";
 import { CSVLink } from "react-csv";
 
 export default function CsvDownloadButton({ allStudents, sessionId }) {
@@ -18,7 +18,7 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 	async function startDownload() {
 		try {
 			
-			const groups = await requestSessionGroups(sessionId);
+			const groups = await fetchSessionGroups(sessionId);
 
 			if (!areAllStudentsAssignedAGroup(groups)) {
 				alert("CSV file cannot be generated: Not all students have been assigned a group.");

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useGetSessionByParameter } from "../../utils/useGetSession";
-import useGetSessionStudents from "../../utils/useGetSessionStudents";
-import useGetSessionSupervisors from "../../utils/useGetSessionSupervisors";
+import { useGetSessionByParameter } from "../../hooks/useGetSession";
+import useGetSessionStudents from "../../hooks/useGetSessionStudents";
+import useGetSessionSupervisors from "../../hooks/useGetSessionSupervisors";
 
 export default function SessionSetup() {
 
@@ -29,7 +29,7 @@ export default function SessionSetup() {
 			
 			const formData = new FormData(event.currentTarget);
 
-			const res = await fetch(`http://localhost:8080/sessions/${sessionId}/saveSetup`, {
+			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/saveSetup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }, 
         credentials: "include",

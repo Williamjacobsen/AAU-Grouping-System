@@ -5,80 +5,87 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Exceptions.RequestException;
-
-import java.util.Map;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController // singleton bean
+@Validated // enables method-level validation
 @RequestMapping("/coordinator")
 public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;
-	private final AuthService authService;
+	private final RequirementService requirementService;
 
-	public CoordinatorController(CoordinatorService coordinatorService, AuthService authService) {
+	public CoordinatorController(CoordinatorService coordinatorService,
+			RequirementService requirementService) {
 		this.coordinatorService = coordinatorService;
-		this.authService = authService;
+		this.requirementService = requirementService;
 	}
 
-	public Coordinator RequireCoordinatorExists(HttpServletRequest request) {
-		Coordinator coordinator = authService.getCoordinatorByUser(request);
-		if (coordinator == null) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized.");
+	void requireEmailNotDuplicate(String email) {
+		if (coordinatorService.isEmailDuplicate(email)) {
+			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another coordinator");
 		}
-		return coordinator;
+	}
+
+	private record SignUpRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
+			@NoDangerousCharacters @NotBlank String name) {
 	}
 
 	@PostMapping("/signUp")
-	public ResponseEntity<String> signUp(@RequestBody Map<String, String> body) {
+	public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRecord record) {
 
-		String email = body.get("email");
-		String password = body.get("password");
-		String name = body.get("name");
+		requireEmailNotDuplicate(record.email);
 
-		if (coordinatorService.isEmailDuplicate(email)) {
-			throw new RequestException(HttpStatus.CONFLICT, "Error: Inputted email is already used by another coordinator.");
-		}
-
-		coordinatorService.addCoordinator(email, password, name);
+		coordinatorService.addCoordinator(record.email, record.password, record.name);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body("Coordinator has been added to database.");
 	}
 
+	private record ModifyEmailRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String newEmail) {
+	}
+
 	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(HttpServletRequest request, @RequestBody Map<String, String> body) {
+	public ResponseEntity<String> modifyEmail(HttpServletRequest servlet,
+			@Valid @RequestBody ModifyEmailRecord record) {
 
-		Coordinator user = RequireCoordinatorExists(request);
-		String coordinatorId = user.getId();
-		String newEmail = body.get("newEmail");
+		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
 
-		if (coordinatorService.isEmailDuplicate(newEmail)) {
-			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another coordinator.");
-		}
+		requireEmailNotDuplicate(record.newEmail);
 
-		coordinatorService.modifyEmail(newEmail, coordinatorId);
+		coordinatorService.modifyEmail(record.newEmail, user.getId());
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
 				.body("Email has been changed.");
 	}
 
+	private record ModifyPasswordRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
+	}
+
 	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(HttpServletRequest request, @RequestBody Map<String, String> body) {
+	public ResponseEntity<String> modifyPassword(HttpServletRequest servlet,
+			@Valid @RequestBody ModifyPasswordRecord record) {
 
-		Coordinator user = RequireCoordinatorExists(request);
-		String coordinatorId = user.getId();
-		String newPassword = body.get("newPassword");
+		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
 
-		coordinatorService.modifyPassword(newPassword, coordinatorId);
+		coordinatorService.modifyPassword(record.newPassword, user.getId());
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

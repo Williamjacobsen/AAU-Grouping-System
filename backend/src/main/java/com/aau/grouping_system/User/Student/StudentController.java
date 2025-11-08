@@ -2,52 +2,70 @@ package com.aau.grouping_system.User.Student;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
-import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/student")
 public class StudentController {
 
-	private final Database db;
 	private final StudentService studentService;
-	private final AuthService authService;
 	private final SessionService sessionService;
+	private final RequirementService requirementService;
 
-	public StudentController(Database db, StudentService studentService, AuthService authService,
-			SessionService sessionService) {
-		this.db = db;
+	public StudentController(StudentService studentService,
+			SessionService sessionService, RequirementService requirementService) {
 		this.studentService = studentService;
-		this.authService = authService;
 		this.sessionService = sessionService;
+		this.requirementService = requirementService;
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")
-	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest request,
-			@RequestBody Student.Questionnaire body) {
+	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest servlet,
+			@Valid @RequestBody StudentQuestionnaireRecord record) {
 
-		Student student = authService.getStudentByUser(request);
-		if (student == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Student not found");
-		}
+		Student student = requirementService.requireUserStudentExists(servlet);
+		Session session = requirementService.requireSessionExists(student.getSessionId());
 
-		Session session = db.getSessions().getItem(student.getSessionId());
 		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 
-		studentService.applyQuestionnaireAnswers(student, body);
+		studentService.applyQuestionnaireAnswers(student, record.toQuestionnaire());
 
 		return ResponseEntity.ok("Saved questionnaire answers successfully.");
+	}
+
+	private record CreateStudentRecord(
+			@NoDangerousCharacters @NotBlank String sessionId,
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
+			@NoDangerousCharacters @NotBlank String name) {
+	}
+
+	@PostMapping("/create")
+	public ResponseEntity<String> createStudent(@Valid @RequestBody CreateStudentRecord record) {
+
+		Session session = requirementService.requireSessionExists(record.sessionId);
+
+		Student student = studentService.addStudent(session, record.email, record.password, record.name);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body("Student created successfully with ID: " + student.getId());
 	}
 }

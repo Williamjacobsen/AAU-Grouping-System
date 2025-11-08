@@ -15,6 +15,8 @@ import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
 import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire"
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
+import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage"
+import StudentPage from "./pages/StudentPage/StudentPage"
 
 export default function App() {
 	return (
@@ -32,6 +34,8 @@ export default function App() {
 							<Route path="status" element={<Status />} />
 							<Route path="projects" element={<Projects />} />
 							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
+							<Route path="supervisorsPage" element={<SupervisorsPage />} />
+							<Route path="student/:studentId" element={<StudentPage />} />
 						</Route>
 						<Route path="*" element={<NoPage />} />
 					</Route>

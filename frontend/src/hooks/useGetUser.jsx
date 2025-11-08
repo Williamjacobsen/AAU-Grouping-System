@@ -11,7 +11,7 @@ export function useGetUser() {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const response = await fetch("http://localhost:8080/auth/getUser", {
+				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/getUser`, {
 					method: "GET",
 					credentials: "include",
 				})

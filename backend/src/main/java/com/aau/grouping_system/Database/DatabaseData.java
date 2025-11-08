@@ -24,31 +24,12 @@ public class DatabaseData implements Serializable {
 	private final DatabaseMap<Project> projects = new DatabaseMap<>(maps, idGenerator);
 	private final DatabaseMap<Group> groups = new DatabaseMap<>(maps, idGenerator);
 
-	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {
-		return maps.get(id);
-	}
-
-	DatabaseMap<Coordinator> getCoordinators() {
-		return coordinators;
-	}
-
-	DatabaseMap<Session> getSessions() {
-		return sessions;
-	}
-
-	DatabaseMap<Supervisor> getSupervisors() {
-		return supervisors;
-	}
-
-	DatabaseMap<Student> getStudents() {
-		return students;
-	}
-
-	DatabaseMap<Project> getProjects() {
-		return projects;
-	}
-
-	DatabaseMap<Group> getGroups() {
-		return groups;
-	}
+	// @formatter:off
+	DatabaseMap<? extends DatabaseItem> getMap(Integer id) { return maps.get(id); }
+	DatabaseMap<Coordinator> getCoordinators() { return coordinators; }
+	DatabaseMap<Session> getSessions() { return sessions; }
+	DatabaseMap<Supervisor> getSupervisors() { return supervisors; }
+	DatabaseMap<Student> getStudents() { return students; }
+	DatabaseMap<Project> getProjects() { return projects; }
+	DatabaseMap<Group> getGroups() { return groups; }
 }

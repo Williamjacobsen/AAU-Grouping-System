@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-export async function requestSessionGroups(sessionId) {
-	try {
-		const response = await fetch(
-			`http://localhost:8080/sessions/${sessionId}/getGroups`,
-			{
-				method: "GET",
-				credentials: "include",
-			}
-		);
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
 
-		if (!response.ok) {
-			return Promise.reject("Status code " + response.status + ": " + await response.text());
+export async function fetchSessionGroups(sessionId) {
+	return await fetchWithDefaultErrorHandling(
+		`/sessions/${sessionId}/getGroups`,
+		{
+			method: "GET"
 		}
-		return await response.json();
-	}
-	catch (error) {
-		return Promise.reject(error);
-	}
+	);
 }
 
 export default function useGetSessionGroups(sessionId) {
@@ -29,7 +20,7 @@ export default function useGetSessionGroups(sessionId) {
 	useEffect(() => {
 		(async () => {
 			try {
-				setGroups(await requestSessionGroups(sessionId));
+				setGroups(await fetchSessionGroups(sessionId));
 				setIsLoading(false);
 			} catch (error) {
 				alert(error);

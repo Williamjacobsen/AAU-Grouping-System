@@ -14,14 +14,6 @@ public class Database {
 
 	private DatabaseData data = new DatabaseData();
 
-	DatabaseData getData() {
-		return data;
-	}
-
-	void setData(DatabaseData data) {
-		this.data = data;
-	}
-
 	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {
 		return data.getMap(id);
 	}
@@ -50,4 +42,7 @@ public class Database {
 		return data.getGroups();
 	}
 
+	// @formatter:off
+	DatabaseData getData() { return data; }
+	void setData(DatabaseData data) { this.data = data; }
 }
