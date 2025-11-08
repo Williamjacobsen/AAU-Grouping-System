@@ -147,22 +147,44 @@ export default function SessionSetup() {
 	async function sendLoginCodeToStudents(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
+			setMessage("Sending login codes to students...");
 			
 			const formData = new FormData(event.currentTarget);
-			// TODO: The rest of this isn't implemented yet.
+			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
+
+			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/sendLoginCodeToStudents`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({ sendOnlyNew })
+			});
+
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			setMessage("Login codes sent to students successfully!");
 		} catch (error) {
-			alert(error);
+			setMessage(`Error: ${error.message}`);
 		}
 	}
 
 	async function sendLoginCodeToSupervisors(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
+			setMessage("Sending login codes to supervisors...");
 			
 			const formData = new FormData(event.currentTarget);
-			// TODO: The rest of this isn't implemented yet.
+			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
+
+			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/sendLoginCodeToSupervisors`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify({ sendOnlyNew })
+			});
+
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			setMessage("Login codes sent to supervisors successfully!");
 		} catch (error) {
-			alert(error);
+			setMessage(`Error: ${error.message}`);
 		}
 	}
 
