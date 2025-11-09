@@ -4,7 +4,7 @@ import React, { useMemo, memo } from "react";
 { /* replaced component to add keys and action buttons */ }
 const ProjectsTable = memo(({ projects }) => {
  const onDelete = (project)	=> {
-	fetch(`http://localhost:8080/project/${project.id}`, { method: 'DELETE' })
+	fetch(`http://localhost:8080/project/delete/${project.id}`, { method: 'DELETE' })
  };
  const onEdit = () => {};
 
