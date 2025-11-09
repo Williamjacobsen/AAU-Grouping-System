@@ -1,18 +1,29 @@
 import React, { useMemo, memo } from "react";
 
-const ProjectsTable = memo(({ projects }) => { //only re-render if data changes (memo)
+// ...existing code...
+{ /* replaced component to add keys and action buttons */ }
+const ProjectsTable = memo(({ projects, onEdit, onDelete }) => {
   return (
     <table>
-      <tr>
-        <th>Name:</th>
-        <th>Description:</th>
-      </tr>
-      {projects!==null&&projects.map((project) => ( //check if we have projects to show. .map means do this for every project
+      <thead>
         <tr>
-          <th>{project.name}</th>
-          <th>{project.description}</th>
+          <th>Name</th>
+          <th>Description</th>
+          <th>Actions</th>
         </tr>
-      ))}
+      </thead>
+      <tbody>
+        {projects !== null && projects.map((project) => (
+          <tr key={project.id || project._id || project.name}>
+            <td>{project.name}</td>
+            <td>{project.description}</td>
+            <td>
+              <button onClick={() => onEdit && onEdit(project)}>Edit</button>
+              <button onClick={() => onDelete && onDelete(project)}>Delete</button>
+            </td>
+          </tr>
+        ))}
+      </tbody>
     </table>
   );
 });
