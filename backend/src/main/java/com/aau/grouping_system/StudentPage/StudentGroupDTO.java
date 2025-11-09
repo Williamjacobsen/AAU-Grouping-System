@@ -7,7 +7,8 @@ public class StudentGroupDTO {
 	private Integer groupSize;
 	private Integer maxSize;
 
-	public StudentGroupDTO() {}
+	public StudentGroupDTO() {
+	}
 
 	public StudentGroupDTO(String id, Boolean hasGroup, String project, Integer groupSize, Integer maxSize) {
 		this.id = id;
@@ -17,18 +18,15 @@ public class StudentGroupDTO {
 		this.maxSize = maxSize;
 	}
 
+	// @formatter:off
 	public String getId() { return id; }
 	public void setId(String id) { this.id = id; }
-
 	public Boolean getHasGroup() { return hasGroup; }
 	public void setHasGroup(Boolean hasGroup) { this.hasGroup = hasGroup; }
-
 	public String getProject() { return project; }
 	public void setProject(String project) { this.project = project; }
-
 	public Integer getGroupSize() { return groupSize; }
 	public void setGroupSize(Integer groupSize) { this.groupSize = groupSize; }
-
 	public Integer getMaxSize() { return maxSize; }
 	public void setMaxSize(Integer maxSize) { this.maxSize = maxSize; }
 }

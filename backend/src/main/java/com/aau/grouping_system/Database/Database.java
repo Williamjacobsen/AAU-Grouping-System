@@ -2,6 +2,8 @@ package com.aau.grouping_system.Database;
 
 import org.springframework.stereotype.Component;
 
+//import com.aau.grouping_system.ChatSystem.GroupMessage;
+//import com.aau.grouping_system.ChatSystem.PrivateMessage;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
@@ -13,14 +15,6 @@ import com.aau.grouping_system.User.Supervisor.Supervisor;
 public class Database {
 
 	private DatabaseData data = new DatabaseData();
-
-	DatabaseData getData() {
-		return data;
-	}
-
-	void setData(DatabaseData data) {
-		this.data = data;
-	}
 
 	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {
 		return data.getMap(id);
@@ -50,4 +44,7 @@ public class Database {
 		return data.getGroups();
 	}
 
+	// @formatter:off
+	DatabaseData getData() { return data; }
+	void setData(DatabaseData data) { this.data = data; }
 }

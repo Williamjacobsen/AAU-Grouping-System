@@ -25,16 +25,11 @@ public class DatabaseItemChildGroup implements Serializable {
 		childIds.remove(id);
 	}
 
-	Integer getMapId() {
-		return mapId;
-	}
-
-	CopyOnWriteArrayList<String> getChildIds() {
-		return childIds;
-	}
-
 	public CopyOnWriteArrayList<? extends DatabaseItem> getItems(Database db) {
 		return db.getMap(mapId).getItems(childIds);
 	}
 
+	// @formatter:off
+	Integer getMapId() { return mapId; }
+	CopyOnWriteArrayList<String> getChildIds() { return childIds; }
 }

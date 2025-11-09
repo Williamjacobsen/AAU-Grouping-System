@@ -28,16 +28,8 @@ public class Student extends User {
 		return Role.Student;
 	}
 
-	public String getSessionId() {
-		return sessionId;
-	}
-
-	public StudentQuestionnaire getQuestionnaire() {
-		return questionnaire;
-	}
-
-	public void setQuestionnaire(StudentQuestionnaire questionnaire) {
-		this.questionnaire = questionnaire;
-	}
-
+	// @formatter:off
+	public String getSessionId() { return sessionId; }
+	public StudentQuestionnaire getQuestionnaire() { return questionnaire; }
+	public void setQuestionnaire(StudentQuestionnaire questionnaire) { this.questionnaire = questionnaire; }
 }

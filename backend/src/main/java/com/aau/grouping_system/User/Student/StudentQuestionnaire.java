@@ -56,92 +56,28 @@ public class StudentQuestionnaire {
 		this.comments = comments;
 	}
 
-	public String getDesiredProjectId1() {
-		return desiredProjectId1;
-	}
-
-	public void setDesiredProjectId1(String desiredProjectId1) {
-		this.desiredProjectId1 = desiredProjectId1;
-	}
-
-	public String getDesiredProjectId2() {
-		return desiredProjectId2;
-	}
-
-	public void setDesiredProjectId2(String desiredProjectId2) {
-		this.desiredProjectId2 = desiredProjectId2;
-	}
-
-	public String getDesiredProjectId3() {
-		return desiredProjectId3;
-	}
-
-	public void setDesiredProjectId3(String desiredProjectId3) {
-		this.desiredProjectId3 = desiredProjectId3;
-	}
-
-	public Integer getDesiredGroupSizeMin() {
-		return desiredGroupSizeMin;
-	}
-
-	public void setDesiredGroupSizeMin(Integer desiredGroupSizeMin) {
-		this.desiredGroupSizeMin = desiredGroupSizeMin;
-	}
-
-	public Integer getDesiredGroupSizeMax() {
-		return desiredGroupSizeMax;
-	}
-
-	public void setDesiredGroupSizeMax(Integer desiredGroupSizeMax) {
-		this.desiredGroupSizeMax = desiredGroupSizeMax;
-	}
-
-	public WorkLocation getDesiredWorkLocation() {
-		return desiredWorkLocation;
-	}
-
-	public void setDesiredWorkLocation(WorkLocation desiredWorkLocation) {
-		this.desiredWorkLocation = desiredWorkLocation;
-	}
-
-	public WorkStyle getDesiredWorkStyle() {
-		return desiredWorkStyle;
-	}
-
-	public void setDesiredWorkStyle(WorkStyle desiredWorkStyle) {
-		this.desiredWorkStyle = desiredWorkStyle;
-	}
-
-	public String getPersonalSkills() {
-		return personalSkills;
-	}
-
-	public void setPersonalSkills(String personalSkills) {
-		this.personalSkills = personalSkills;
-	}
-
-	public String getSpecialNeeds() {
-		return specialNeeds;
-	}
-
-	public void setSpecialNeeds(String specialNeeds) {
-		this.specialNeeds = specialNeeds;
-	}
-
-	public String getAcademicInterests() {
-		return academicInterests;
-	}
-
-	public void setAcademicInterests(String academicInterests) {
-		this.academicInterests = academicInterests;
-	}
-
-	public String getComments() {
-		return comments;
-	}
-
-	public void setComments(String comments) {
-		this.comments = comments;
-	}
+	// @formatter:off
+	public String getDesiredProjectId1() { return desiredProjectId1; }
+	public void setDesiredProjectId1(String desiredProjectId1) { this.desiredProjectId1 = desiredProjectId1; }
+	public String getDesiredProjectId2() { return desiredProjectId2; }
+	public void setDesiredProjectId2(String desiredProjectId2) { this.desiredProjectId2 = desiredProjectId2; }
+	public String getDesiredProjectId3() { return desiredProjectId3; }
+	public void setDesiredProjectId3(String desiredProjectId3) { this.desiredProjectId3 = desiredProjectId3; }
+	public Integer getDesiredGroupSizeMin() { return desiredGroupSizeMin; }
+	public void setDesiredGroupSizeMin(Integer desiredGroupSizeMin) { this.desiredGroupSizeMin = desiredGroupSizeMin; }
+	public Integer getDesiredGroupSizeMax() { return desiredGroupSizeMax; }
+	public void setDesiredGroupSizeMax(Integer desiredGroupSizeMax) { this.desiredGroupSizeMax = desiredGroupSizeMax; }
+	public WorkLocation getDesiredWorkLocation() { return desiredWorkLocation; }
+	public void setDesiredWorkLocation(WorkLocation desiredWorkLocation) { this.desiredWorkLocation = desiredWorkLocation; }
+	public WorkStyle getDesiredWorkStyle() { return desiredWorkStyle; }
+	public void setDesiredWorkStyle(WorkStyle desiredWorkStyle) { this.desiredWorkStyle = desiredWorkStyle; }
+	public String getPersonalSkills() { return personalSkills; }
+	public void setPersonalSkills(String personalSkills) { this.personalSkills = personalSkills; }
+	public String getSpecialNeeds() { return specialNeeds; }
+	public void setSpecialNeeds(String specialNeeds) { this.specialNeeds = specialNeeds; }
+	public String getAcademicInterests() { return academicInterests; }
+	public void setAcademicInterests(String academicInterests) { this.academicInterests = academicInterests; }
+	public String getComments() { return comments; }
+	public void setComments(String comments) { this.comments = comments; }
 
 }

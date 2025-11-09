@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../../utils/useGetUser";
+import { useGetUser } from "../../hooks/useGetUser";
 import "./User.css";
 
 export default function Profile() {
@@ -18,7 +18,7 @@ export default function Profile() {
 
 	const handleEmailChange = async () => {
 		try {
-			const response = await fetch("http://localhost:8080/coordinator/modifyEmail", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyEmail`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newEmail }),
@@ -44,7 +44,7 @@ export default function Profile() {
 
 	const handlePasswordChange = async () => {
 		try {
-			const response = await fetch("http://localhost:8080/coordinator/modifyPassword", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyPassword`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newPassword }),
@@ -70,7 +70,7 @@ export default function Profile() {
 
 	const handleLogout = async () => {
 		try {
-			const response = await fetch("http://localhost:8080/auth/signOut", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/signOut`, {
 				method: "POST",
 				credentials: "include"
 			})

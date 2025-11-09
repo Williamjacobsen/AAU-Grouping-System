@@ -3,25 +3,25 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
-import StudentPage from '../pages/StudentPage/StudentPage';
-import { useGetUser } from '../utils/useGetUser';
-import useStudentData from '../pages/StudentPage/useStudentData';
-import useGetCurrentTime from '../utils/useGetCurrentTime';
-import useIsQuestionnaireDeadlineExceeded from '../utils/useIsQuestionnaireDeadlineExceeded';
+import StudentPage from './StudentPage';
+import { useGetUser } from '../../hooks/useGetUser';
+import useStudentData from './useStudentData';
+import useGetCurrentTime from '../../hooks/useGetCurrentTime';
+import useIsQuestionnaireDeadlineExceeded from '../../hooks/useIsQuestionnaireDeadlineExceeded';
 
-vi.mock('../utils/useGetUser', () => ({
+vi.mock('../../hooks/useGetUser', () => ({
   useGetUser: vi.fn(),
 }));
 
-vi.mock('../pages/StudentPage/useStudentData', () => ({
+vi.mock('./useStudentData', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('../utils/useGetCurrentTime', () => ({
+vi.mock('../../hooks/useGetCurrentTime', () => ({
   default: vi.fn(),
 }));
 
-vi.mock('../utils/useIsQuestionnaireDeadlineExceeded', () => ({
+vi.mock('../../hooks/useIsQuestionnaireDeadlineExceeded', () => ({
   default: vi.fn(),
 }));
 

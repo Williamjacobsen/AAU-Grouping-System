@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
-import SignIn from '../pages/User/SignIn';
+import SignIn from './SignIn';
 
 const MockedSignIn = () => (
   <BrowserRouter>
@@ -73,7 +73,7 @@ describe('SignIn Component', () => {
     fireEvent.click(submitButton);
     
     await waitFor(() => {
-      expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/auth/signIn', {
+      expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/auth/signIn`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -117,7 +117,7 @@ describe('SignIn Component', () => {
     const submitButton = screen.getByRole('button', { name: /sign in/i });
     fireEvent.click(submitButton);
     
-    expect(global.fetch).toHaveBeenCalledWith('http://localhost:8080/auth/signIn', {
+    expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/auth/signIn`, {
       method: 'POST',
       credentials: 'include',
       headers: {

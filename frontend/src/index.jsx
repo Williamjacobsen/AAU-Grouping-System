@@ -20,32 +20,37 @@ import GroupManagement from "./pages/Status/GroupManagement";
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage"
 import StudentPage from "./pages/StudentPage/StudentPage"
+import ChatBox from "./Components/ChatBox/ChatBox";
+import { AppStateProvider } from "./AppStateContext";
 
 export default function App() {
 	return (
 		<React.StrictMode>
 			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Header />}>
-						<Route index element={<About />} />
-						<Route path="sign-in" element={<SignIn />} />
-						<Route path="sign-up" element={<SignUp />} />
-						<Route path="profile" element={<Profile />} />
-						<Route path="forgotPassword" element={<ForgotPassword />} />
-						<Route path="resetPassword" element={<ResetPassword />} />
-						<Route path="sessions" element={<Sessions />} />
-						<Route path="session/:sessionId" element={<Outlet />}>
-							<Route path="setup" element={<SessionSetup />} />
-							<Route path="status" element={<Status />} />
-							<Route path="projects" element={<Projects />} />
-							<Route path="groupManagement" element={<GroupManagement />} />
-							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
-							<Route path="supervisorsPage" element={<SupervisorsPage />} />
-							<Route path="student/:studentId" element={<StudentPage />} />
+			  <AppStateProvider>
+					<Routes>
+						<Route path="/" element={<Header />}>
+							<Route index element={<About />} />
+							<Route path="sign-in" element={<SignIn />} />
+							<Route path="sign-up" element={<SignUp />} />
+							<Route path="profile" element={<Profile />} />
+							<Route path="forgotPassword" element={<ForgotPassword />} />
+							<Route path="resetPassword" element={<ResetPassword />} />
+							<Route path="sessions" element={<Sessions />} />
+							<Route path="session/:sessionId" element={<Outlet />}>
+								<Route path="/chatBoxTestRoute" element={<ChatBox />} />
+								<Route path="setup" element={<SessionSetup />} />
+								<Route path="status" element={<Status />} />
+								<Route path="projects" element={<Projects />} />
+								<Route path="groupManagement" element={<GroupManagement />} />
+								<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
+								<Route path="supervisorsPage" element={<SupervisorsPage />} />
+								<Route path="student/:studentId" element={<StudentPage />} />
+							</Route>
+							<Route path="*" element={<NoPage />} />
 						</Route>
-						<Route path="*" element={<NoPage />} />
-					</Route>
-				</Routes>
+					</Routes>
+				</AppStateProvider>
 			</BrowserRouter>
 		</React.StrictMode>
 	);

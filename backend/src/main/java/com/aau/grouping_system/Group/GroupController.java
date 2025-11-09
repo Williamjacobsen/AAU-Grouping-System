@@ -40,8 +40,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = requirementService.RequireGroupExists(groupId);
-		Student student = requirementService.RequireStudentExists(studentId);
+		Group group = requirementService.requireGroupExists(groupId);
+		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.acceptJoinRequest(groupId, student);
@@ -55,7 +55,7 @@ public class GroupController {
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
-		Group group = requirementService.RequireGroupExists(groupId);
+		Group group = requirementService.requireGroupExists(groupId);
 
 		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
 
@@ -67,8 +67,8 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = requirementService.RequireGroupExists(groupId);
-		Student student = requirementService.RequireStudentExists(studentId);
+		Group group = requirementService.requireGroupExists(groupId);
+		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
@@ -80,7 +80,7 @@ public class GroupController {
 
 	@GetMapping("/{groupId}")
 	public ResponseEntity<Group> getGroup(@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
-		Group group = requirementService.RequireGroupExists(groupId);
+		Group group = requirementService.requireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
 
@@ -130,8 +130,8 @@ public ResponseEntity<Object> getAllGroups() {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = requirementService.RequireGroupExists(groupId);
-		Student student = requirementService.RequireStudentExists(studentId);
+		Group group = requirementService.requireGroupExists(groupId);
+		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.joinGroup(groupId, student);
@@ -146,8 +146,8 @@ public ResponseEntity<Object> getAllGroups() {
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Group group = requirementService.RequireGroupExists(groupId);
-		Student student = requirementService.RequireStudentExists(studentId);
+		Group group = requirementService.requireGroupExists(groupId);
+		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.leaveGroup(groupId, student);

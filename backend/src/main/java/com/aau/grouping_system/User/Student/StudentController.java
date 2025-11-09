@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Authentication.AuthService;
-import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
@@ -26,17 +24,13 @@ import jakarta.validation.constraints.*;
 @RequestMapping("/student")
 public class StudentController {
 
-	private final Database db;
 	private final StudentService studentService;
-	private final AuthService authService;
 	private final SessionService sessionService;
 	private final RequirementService requirementService;
 
-	public StudentController(Database db, StudentService studentService, AuthService authService,
+	public StudentController(StudentService studentService,
 			SessionService sessionService, RequirementService requirementService) {
-		this.db = db;
 		this.studentService = studentService;
-		this.authService = authService;
 		this.sessionService = sessionService;
 		this.requirementService = requirementService;
 	}
@@ -45,12 +39,9 @@ public class StudentController {
 	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest servlet,
 			@Valid @RequestBody StudentQuestionnaireRecord record) {
 
-		Student student = authService.getStudentByUser(servlet);
-		if (student == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Student not found");
-		}
+		Student student = requirementService.requireUserStudentExists(servlet);
+		Session session = requirementService.requireSessionExists(student.getSessionId());
 
-		Session session = db.getSessions().getItem(student.getSessionId());
 		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
@@ -70,10 +61,7 @@ public class StudentController {
 	@PostMapping("/create")
 	public ResponseEntity<String> createStudent(@Valid @RequestBody CreateStudentRecord record) {
 
-		Session session = db.getSessions().getItem(record.sessionId);
-		if (session == null) {
-			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
-		}
+		Session session = requirementService.requireSessionExists(record.sessionId);
 
 		Student student = studentService.addStudent(session, record.email, record.password, record.name);
 
