@@ -31,7 +31,7 @@ export default function useGetSessionProjects(sessionId) {
     })();
   }, [sessionId]);
 
-  return {isLoading, projects};
+  return {isLoading, projects, setProjects};
 }
 
 export function useCreateProject() {

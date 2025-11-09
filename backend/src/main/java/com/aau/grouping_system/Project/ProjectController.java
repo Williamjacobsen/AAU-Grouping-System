@@ -5,8 +5,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Session.Session;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,21 +32,22 @@ public class ProjectController {
 	public ProjectController(Database db) {
 		this.db = db;
 	}
-@GetMapping("/getSessionProjects/{sessionId}")
-    public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
-        Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
-        // Check if session exists if not throw error
-        if (session == null) {
-            return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(null);
-        }
+	@GetMapping("/getSessionProjects/{sessionId}")
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
+		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
-        // Get that session’s projects and type cast
-        CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+		// Check if session exists if not throw error
+		if (session == null) {
+			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST).body(null);
+		}
 
-        // Return them with 200 ok
-        return ResponseEntity.ok(projects);
-    }
+		// Get that session’s projects and type cast
+		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+
+		// Return them with 200 ok
+		return ResponseEntity.ok(projects);
+	}
 
 	@DeleteMapping("/delete/{projectId}")
 	public ResponseEntity<String> deleteProject(@PathVariable String projectId) {
@@ -60,24 +65,28 @@ public class ProjectController {
 		// Return success message with 200 ok
 		return ResponseEntity.ok("Project with id " + projectId + " has been deleted successfully.");
 	}
-	@PostMapping("/create/{sessionId}/{projectName}")
-	public ResponseEntity<String> createProject(@PathVariable String sessionId, @PathVariable String projectName) {
+
+	@PostMapping("/create/{sessionId}/{projectName}/{description}")
+	public ResponseEntity<Map<String, Object>> createProject(@PathVariable String sessionId,
+			@PathVariable String projectName, @PathVariable String description) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error
 		if (session == null) {
-			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
-					.body("Session with id " + sessionId + " does not exist.");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+					.body(Collections.singletonMap("error", "Session with id " + sessionId + " does not exist."));
 		}
+		Project newProject = new Project(db, session.getProjects(), projectName, description);
 
-		// Create new project
-		Project newProject = new Project(db, session.getProjects(), "Test", "Description 1");
-		newProject.setName(projectName);
+		// Create a response map
+		Map<String, Object> response = new HashMap<>();
+		response.put("message", "Project '" + projectName + "' has been created successfully.");
+		response.put("id", newProject.getId());
 
 		// Return success message with 200 ok
-		return ResponseEntity.ok("Project '" + projectName + "' has been created successfully with id "
-				+ newProject.getId() + " and linked to session " + sessionId + ".");
+		return ResponseEntity.ok(response);
 	}
+
 	@PutMapping("/update/{projectId}/{newName}/{newDescription}")
 	public ResponseEntity<String> updateProject(@PathVariable String projectId, @PathVariable String newName,
 			@PathVariable String newDescription) {
