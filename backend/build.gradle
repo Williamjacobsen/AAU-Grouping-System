@@ -21,6 +21,10 @@ repositories {
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Chat System
+	implementation 'org.springframework.boot:spring-boot-starter-websocket' // Websocket support (chat system)
+	implementation 'org.springframework:spring-messaging' // STOMP support (chat system / no need to handle websockets manually)
+	implementation("org.springframework.security:spring-security-messaging") // For some reason need in order to receive messages from a websocket
 	// Input validation
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
   implementation 'org.springframework.boot:spring-boot-starter-web'

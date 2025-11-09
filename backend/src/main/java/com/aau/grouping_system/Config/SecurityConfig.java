@@ -15,8 +15,13 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.csrf(csrf -> csrf.disable()) // disable CSRF
-				.authorizeHttpRequests(auth -> auth.anyRequest().permitAll()); // allow all
+				.csrf(csrf -> csrf
+						.ignoringRequestMatchers("/ws/**") // Ignore CSRF for WebSocket endpoints
+				)
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/ws/**").permitAll() // Allow WebSocket connections
+						.anyRequest().permitAll()
+				);
 		return http.build();
 	}
 
