@@ -7,46 +7,46 @@ import com.aau.grouping_system.User.Student.Student;
 @Service
 public class GroupService {
 
-	private final Database database;
+	private final Database db;
 
-	public GroupService(Database database) {
-		this.database = database;
+	public GroupService(Database db) {
+		this.db = db;
 	}
 
-	private void logGroupActivity(String activity, Student student, Integer groupId) {
+	private void logGroupActivity(String activity, Student student, String groupId) {
 		System.out.println(student.getName() + " " + activity + " group " + groupId + ".");
 	}
 
-	public void joinGroup(Integer groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+	public void joinGroup(String groupId, Student student) {
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
 
-		if (group.getStudents().contains(student)) {
+		if (group.getStudentIds().contains(student.getId())) {
 			throw new IllegalStateException("Student is already in the group");
 		}
 
-		if (group.getStudents().size() >= group.getMaxStudents()) {
+		if (group.getStudentIds().size() >= group.getMaxStudents()) {
 			throw new IllegalStateException("Group is full");
 		}
 
-		group.getStudents().add(student);
+		group.getStudentIds().add(student.getId());
 		logGroupActivity("joined", student, groupId);
 	}
 
-	public void leaveGroup(Integer groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+	public void leaveGroup(String groupId, Student student) {
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
 
-		group.getStudents().remove(student);
+		group.getStudentIds().remove(student.getId());
 		logGroupActivity("left", student, groupId);
 	}
 
-	public void requestToJoin(Integer groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+	public void requestToJoin(String groupId, Student student) {
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
@@ -55,34 +55,34 @@ public class GroupService {
 			throw new IllegalArgumentException("Student cannot be null");
 		}
 
-		if (group.getJoinRequests().contains(student)) {
+		if (group.getJoinRequestStudentIds().contains(student.getId())) {
 			throw new IllegalStateException("Student already has a pending request");
 		}
 
-		if (group.getJoinRequests().size() >= group.getMaxRequests()) {
+		if (group.getJoinRequestStudentIds().size() >= group.getMaxRequests()) {
 			throw new IllegalStateException("Join request queue is full");
 		}
 
-		group.getJoinRequests().add(student);
+		group.getJoinRequestStudentIds().add(student.getId());
 		logGroupActivity("requested to join", student, groupId);
 	}
 
-	public void acceptJoinRequest(Integer groupId, Student student) {
-		Group group = database.getGroups().getItem(groupId);
+	public void acceptJoinRequest(String groupId, Student student) {
+		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
 		}
 
-		if (!group.getJoinRequests().contains(student)) {
+		if (!group.getJoinRequestStudentIds().contains(student.getId())) {
 			throw new IllegalStateException("No join request found from this student");
 		}
 
-		if (group.getStudents().size() >= group.getMaxStudents()) {
+		if (group.getStudentIds().size() >= group.getMaxStudents()) {
 			throw new IllegalStateException("Group is full");
 		}
 
-		group.getJoinRequests().remove(student);
-		group.getStudents().add(student);
+		group.getJoinRequestStudentIds().remove(student.getId());
+		group.getStudentIds().add(student.getId());
 		logGroupActivity("was accepted to join", student, groupId);
 	}
 }

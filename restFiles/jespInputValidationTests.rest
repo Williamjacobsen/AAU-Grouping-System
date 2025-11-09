@@ -1,0 +1,62 @@
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatWorks@example.com",
+  "password": "testPassword",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails",
+  "password": "testPassword",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails@example.com",
+  "password": "test Password",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails@example.com",
+  "password": "",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails@example.com",
+  "password": " ",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails@example.com",
+  "password": "testPas/sword",
+  "name": "Test name"
+}
+
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "testThatFails@exam;ple.com",
+  "password": "testPassword",
+  "name": "Test name"
+}

@@ -1,0 +1,81 @@
+.container {
+	border: 3px solid #f1f1f1;
+	width: 300px;
+	padding: 20px;
+	border-radius: 8px;
+	margin: 100px auto;
+	text-align: center;
+	background-color: rgb(241, 241, 241);
+}
+
+.header-text {
+ 	text-align: center;
+  margin-bottom: 10px;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.text {
+	text-align: left;
+	margin-bottom: 10px;
+	font-weight: bold;
+}
+
+input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
+	text-align: left;
+	width: 85%;
+	padding: 10px;
+	margin: 8px 0;
+	display: inline-block;
+	border: 1px solid #ccc;
+}
+
+.label {
+	display: block;
+	margin-top: 10px;
+}
+
+.sign-in {
+	background-color: black;
+	color: white;
+	font-size: 14px;
+	font: bold;
+	padding: 3px 10px;
+	font-family: sans-serif;
+	border-radius: 5px;
+	margin-right: 10px;
+
+}
+.sign-up {
+	background-color: white;
+	color: black;
+	font-size: 14px;
+	font: bold;
+	padding: 3px 10px;
+	border-radius: 5px;
+}
+
+.forgot-password {
+	font-size: 14px;
+}
+
+.error-box {
+	color: red;
+	font-weight: bold;
+	background: rgb(253, 184, 184);
+	padding: 4px;
+	width: 90%;
+	margin-top: 5px;
+	border-radius: 4px;
+}
+
+
+.succes-box {
+	color: green;
+	font-weight: bold;
+	background: rgb(176, 255, 176);
+	padding: 4px;
+	width: 90%;
+	margin-top: 5px;
+	border-radius: 4px;
+}

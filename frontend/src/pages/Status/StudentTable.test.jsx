@@ -4,6 +4,7 @@ import { describe, test, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import StudentTable from "./StudentTable"
+import { BrowserRouter } from "react-router-dom";
 
 describe("StudentTable", function () {
 
@@ -16,7 +17,11 @@ describe("StudentTable", function () {
 		mockStudents.push({ name: "Name C", group: { number: "2", project: "Project B" } });
 
 		// Render component
-		render(<StudentTable students={mockStudents} />);
+		render(
+			<BrowserRouter>
+				<StudentTable students={mockStudents} />
+			</BrowserRouter>
+			);
 		
 		// Check if content exists
 		const rows = screen.getAllByRole('row').slice(1); // slice(1) to skip header

@@ -1,44 +1,71 @@
 package com.aau.grouping_system.User.Student;
 
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.Session.SessionService;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.bind.annotation.RequestMapping;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/student")
 public class StudentController {
 
-	private final Database db;
+	private final StudentService studentService;
+	private final SessionService sessionService;
+	private final RequirementService requirementService;
 
-	public StudentController(Database db) {
-		this.db = db;
+	public StudentController(StudentService studentService,
+			SessionService sessionService, RequirementService requirementService) {
+		this.studentService = studentService;
+		this.sessionService = sessionService;
+		this.requirementService = requirementService;
 	}
 
-	// requests
+	@PostMapping("/saveQuestionnaireAnswers")
+	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest servlet,
+			@Valid @RequestBody StudentQuestionnaireRecord record) {
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
-	@GetMapping("/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getSessionsStudents(@PathVariable Integer sessionId,
-			HttpServletRequest request) {
+		Student student = requirementService.requireUserStudentExists(servlet);
+		Session session = requirementService.requireSessionExists(student.getSessionId());
 
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
+		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.students.getItems();
+		studentService.applyQuestionnaireAnswers(student, record.toQuestionnaire());
 
-		return ResponseEntity.ok(students);
+		return ResponseEntity.ok("Saved questionnaire answers successfully.");
 	}
 
+	private record CreateStudentRecord(
+			@NoDangerousCharacters @NotBlank String sessionId,
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
+			@NoDangerousCharacters @NotBlank String name) {
+	}
+
+	@PostMapping("/create")
+	public ResponseEntity<String> createStudent(@Valid @RequestBody CreateStudentRecord record) {
+
+		Session session = requirementService.requireSessionExists(record.sessionId);
+
+		Student student = studentService.addStudent(session, record.email, record.password, record.name);
+
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body("Student created successfully with ID: " + student.getId());
+	}
 }

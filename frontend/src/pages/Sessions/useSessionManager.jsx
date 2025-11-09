@@ -9,23 +9,20 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch("http://localhost:8080/sessions", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions`, {
 				method: "GET",
 				credentials: "include", 
 			});
 
-			if (response.ok) {
-				const data = await response.json();
-				const sessionArray = data;
-				setSessions(sessionArray);
-			} else if (response.status === 401) {
-				setError("You must be logged in to view sessions.");
-			} else {
-				setError("Failed to fetch sessions.");
+			if (!response.ok) {
+				setError(await response.text());
+				return Promise.reject("Status code " + response.status + ": " + await response.text());
 			}
-		} catch (err) {
-			setError("Network error. Please try again.");
-			console.error("Error fetching sessions:", err);
+
+			setSessions(await response.json());
+
+		} catch (error) {
+			alert(error)
 		} finally {
 			setLoading(false);
 		}
@@ -37,7 +34,7 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch("http://localhost:8080/sessions", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -46,17 +43,16 @@ export default function useSessionManager() {
 				body: JSON.stringify({ name: sessionName.trim() }),
 			});
 
-			if (response.ok) {
-				await fetchSessions();
-				return true;
-			} else if (response.status === 401) {
-				setError("You must be logged in to create sessions.");
-			} else {
-				setError("Failed to create session.");
+			if (!response.ok) {
+				setError(await response.text());
+				return Promise.reject("Status code " + response.status + ": " + await response.text());
 			}
-		} catch (err) {
-			setError("Network error. Please try again.");
-			console.error("Error creating session:", err);
+
+			await fetchSessions();
+			return true;
+
+		} catch (error) {
+			alert(error);
 		} finally {
 			setLoading(false);
 		}
@@ -67,24 +63,21 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch(`http://localhost:8080/sessions/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}`, {
 				method: "DELETE",
 				credentials: "include",
 			});
 
-			if (response.ok) {
-				await fetchSessions();
-				return true;
-			} else if (response.status === 401) {
-				setError("You must be logged in to delete sessions.");
-			} else if (response.status === 403) {
-				setError("You don't have permission to delete this session.");
-			} else {
-				setError("Failed to delete session.");
+			if (!response.ok) {
+				setError(await response.text());
+				return Promise.reject("Status code " + response.status + ": " + await response.text());
 			}
-		} catch (err) {
-			setError("Network error. Please try again.");
-			console.error("Error deleting session:", err);
+
+			await fetchSessions();
+			return true;
+
+		} catch (error) {
+			alert(error);
 		} finally {
 			setLoading(false);
 		}

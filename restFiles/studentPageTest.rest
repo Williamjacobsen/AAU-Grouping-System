@@ -1,0 +1,114 @@
+### Create coordinator account
+POST http://localhost:8080/coordinator/signUp
+Content-Type: application/json
+
+{
+  "email": "c1@test.com",
+  "password": "c1",
+  "name": "Test Coordinator"
+}
+
+### Sign in as coordinator  
+POST http://localhost:8080/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "c1@test.com",
+  "password": "c1",
+  "role": "Coordinator"
+}
+
+### Create a test session
+POST http://localhost:8080/sessions
+Content-Type: application/json
+
+{
+  "name": "Test Session"
+}
+
+### Verify session was created
+GET http://localhost:8080/sessions
+
+### Create Student 1
+POST http://localhost:8080/student/create
+Content-Type: application/json
+
+{
+  "sessionId": "",
+  "email": "st1",
+  "password": "st1", 
+  "name": "Joe Biden"
+}
+
+### Step 5: Create Student 2
+POST http://localhost:8080/student/create
+Content-Type: application/json
+
+{
+  "sessionId": "",
+  "email": "st2@test.com",
+  "password": "st2",
+  "name": "SDG Chriller"
+}
+
+### Sign in as Student 1
+POST http://localhost:8080/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "",
+  "password": "st1",
+  "role": "Student"
+}
+
+### Save questionnaire for Student 1
+POST http://localhost:8080/student/saveQuestionnaireAnswers
+Content-Type: application/json
+
+{
+  "desiredProjectIds": [],
+  "desiredGroupSizeMin": 3,
+  "desiredGroupSizeMax": 4,
+  "desiredWorkLocation": "Located",
+  "desiredWorkStyle": "Together",
+  "personalSkills": "Java, Spring Boot, MySQL, Git, IntelliJ",
+  "specialNeeds": "",
+  "academicInterests": "Software Engineering, Database Design, Web Development",
+  "comments": "I prefer working in a collaborative environment and enjoy backend development."
+}
+
+### Sign in as Student 2
+POST http://localhost:8080/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "",
+  "password": "st2",
+  "role": "Student"
+}
+
+### Save questionnaire for Student 2
+POST http://localhost:8080/student/saveQuestionnaireAnswers
+Content-Type: application/json
+
+{
+  "desiredProjectIds": [],
+  "desiredGroupSizeMin": 2,
+  "desiredGroupSizeMax": 3,
+  "desiredWorkLocation": "Remote",
+  "desiredWorkStyle": "Solo",
+  "personalSkills": "Python, TensorFlow, NumPy, Pandas, Jupyter",
+  "specialNeeds": "Need a quiet environment for concentration",
+  "academicInterests": "Machine Learning, Artificial Intelligence, Data Science",
+  "comments": "I work best independently and have strong analytical skills."
+}
+
+### Sign in as Coordinator to test access
+POST http://localhost:8080/auth/signIn
+Content-Type: application/json
+
+{
+  "emailOrId": "c1@test.com",
+  "password": "c1",
+  "role": "Coordinator"
+}
