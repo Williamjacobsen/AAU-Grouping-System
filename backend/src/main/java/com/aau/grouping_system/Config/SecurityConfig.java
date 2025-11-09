@@ -17,15 +17,15 @@ public class SecurityConfig {
 	private CorsConfigurationSource corsConfigurationSource;
 
 	@Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(csrf -> csrf.disable()) // disables CSRF globally
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .anyRequest().permitAll());
-        return http.build();
-    }
+	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+		http
+				.cors(cors -> cors.configurationSource(corsConfigurationSource))
+				.csrf(csrf -> csrf.disable()) // disables CSRF globally
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+						.anyRequest().permitAll());
+		return http.build();
+	}
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
