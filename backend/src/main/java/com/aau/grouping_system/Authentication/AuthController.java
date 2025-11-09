@@ -34,14 +34,11 @@ import org.springframework.validation.annotation.Validated;
 public class AuthController {
 
 	private final AuthService service;
-	private final CoordinatorService coordinatorService;
-	private final RequirementService requirementService;
+	private final EmailService emailService;
 
-	public AuthController(AuthService authService, CoordinatorService coordinatorService,
-			RequirementService requirementService) {
+	public AuthController(AuthService authService, EmailService emailService) {
 		this.service = authService;
-		this.coordinatorService = coordinatorService;
-		this.requirementService = requirementService;
+		this.emailService = emailService;
 	}
 
 	private record SignInRecord(
@@ -96,31 +93,47 @@ public class AuthController {
 
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest record) {
+		String email = record.email();
+		User user = service.findByEmailOrId(email, User.Role.Coordinator);
 
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("No coordinator found with the provided email.");
+		}
+
+		// Create reset token and store temporarily
+		String token = java.util.UUID.randomUUID().toString();
+		PasswordResetTokens.tokens.put(token, email);
+
+		// Build reset link and email body
+		String resetLink = "http://localhost:3000/reset-password?token=" + token;
+		String subject = "AAU Grouping System - Password Reset";
+		String body = """
+				Hello %s,
+
+				A password reset was requested for your account on the AAU Grouping System.
+
+				To reset your password, please click the link below:
+				%s
+
+				If you didn’t request this, you can safely ignore this email.
+
+				Best regards,
+				AAU Grouping System
+				""".formatted(user.getName(), resetLink);
+
+		// Send email safely
 		try {
-			String email = record.email();
-			User user = service.findByEmailOrId(email, User.Role.Coordinator);
-			if (user == null)
-				return ResponseEntity
-						.status(HttpStatus.NOT_FOUND)
-						.body(null);
-
-			// Sending a test-email
-			String token = java.util.UUID.randomUUID().toString(); // unique random token
-			PasswordResetTokens.tokens.put(token, email); // temporary store
-
-			String resetLink = "http://localhost:3000/reset-password?token=" + token;
-			String message = "Click this link to reset your password: " + resetLink;
-
-			EmailService.sendEmail(
-					email,
-					"Password Reset Request",
-					message);
-			return ResponseEntity.ok("Reset link sent to " + email);
-
+			emailService.builder()
+					.to(email.trim())
+					.subject(subject)
+					.text(body)
+					.send();
+			return ResponseEntity.ok("Password reset link sent to " + email);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body("Error: " + e.getMessage());
+			// If email fails, still return success for security reasons
+			return ResponseEntity.status(HttpStatus.OK)
+					.body("Password reset requested, but email could not be sent: " + e.getMessage());
 		}
 	}
 
@@ -160,7 +173,7 @@ public class AuthController {
 			String hashedPassword = service.encodePassword(newPassword);
 			user.setPasswordHash(hashedPassword);
 
-			// Remove token so it can’t be reused
+			// Remove token 
 			PasswordResetTokens.tokens.remove(token);
 
 			return ResponseEntity.ok("Password reset successfully.");

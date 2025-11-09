@@ -38,7 +38,7 @@ export default function App() {
 							<Route path="resetPassword" element={<ResetPassword />} />
 							<Route path="sessions" element={<Sessions />} />
 							<Route path="session/:sessionId" element={<Outlet />}>
-								<Route path="/chatBoxTestRoute" element={<ChatBox />} />
+								<Route path="chatBoxTestRoute" element={<ChatBox />} />
 								<Route path="setup" element={<SessionSetup />} />
 								<Route path="status" element={<Status />} />
 								<Route path="projects" element={<Projects />} />
