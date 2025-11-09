@@ -1,6 +1,7 @@
 import React, { useMemo, memo } from "react";
+import StudentGroupActions from './StudentGroupActions';
 
-const StudentTable = memo(({ students }) => {
+const StudentTable = memo(({ students, columnDefs, sessionId }) => {
 
   const columns = useMemo(() => {
     if (!students || students.length === 0) return null;
@@ -26,7 +27,7 @@ const StudentTable = memo(({ students }) => {
 				rows: values
 			};
 		}
-  }, [students]);
+  }, [students, columnDefs]);
 
   if (!columns || columns.length === 0) {
     return <div>List of students is empty.</div>;
