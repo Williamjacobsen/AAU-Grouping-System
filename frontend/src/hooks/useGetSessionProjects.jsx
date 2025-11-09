@@ -57,7 +57,7 @@ export function useUpdateProject() {
 
 export function useDeleteProject() {
   return useCallback(async (id) => {
-    return await fetchWithDefaultErrorHandling(`/project/${id}`, {
+    return await fetchWithDefaultErrorHandling(`http://localhost:8080/project/${id}`, {
       method: "DELETE"
     });
   }, []);

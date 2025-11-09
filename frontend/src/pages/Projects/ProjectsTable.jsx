@@ -2,8 +2,14 @@ import React, { useMemo, memo } from "react";
 
 // ...existing code...
 { /* replaced component to add keys and action buttons */ }
-const ProjectsTable = memo(({ projects, onEdit, onDelete }) => {
-  return (
+const ProjectsTable = memo(({ projects }) => {
+ const onDelete = (project)	=> {
+	fetch(`http://localhost:8080/project/${project.id}`, { method: 'DELETE' })
+ };
+ const onEdit = () => {};
+
+
+	return (
     <table>
       <thead>
         <tr>
@@ -18,8 +24,8 @@ const ProjectsTable = memo(({ projects, onEdit, onDelete }) => {
             <td>{project.name}</td>
             <td>{project.description}</td>
             <td>
-              <button onClick={() => onEdit && onEdit(project)}>Edit</button>
-              <button onClick={() => onDelete && onDelete(project)}>Delete</button>
+              <button onClick={() => onEdit(project)}>Edit</button>
+              <button onClick={() => onDelete(project)}>Delete</button>
             </td>
           </tr>
         ))}
