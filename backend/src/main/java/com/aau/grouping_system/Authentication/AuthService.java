@@ -4,6 +4,7 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -36,9 +37,18 @@ public class AuthService {
 				}
 				return null;
 			case User.Role.Supervisor:
-				return db.getSupervisors().getItem(emailOrId);
+				for (Supervisor supervisor : db.getSupervisors().getAllItems().values()) {
+					if (supervisor.getEmail().equals(emailOrId)) {
+						return supervisor;
+					}
+				}
+				return null;
 			case User.Role.Student:
-				return db.getStudents().getItem(emailOrId);
+				for (Student student : db.getStudents().getAllItems().values()) {
+					if (student.getEmail().equals(emailOrId)) {
+						return student;
+					}
+				}	
 			default:
 				return null;
 		}
