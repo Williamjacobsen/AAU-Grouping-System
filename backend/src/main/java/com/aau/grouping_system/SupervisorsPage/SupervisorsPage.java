@@ -42,13 +42,15 @@ public class SupervisorsPage {
 	private final PasswordEncoder passwordEncoder;
 	private final AuthService authService;
 	private final RequirementService requirementService;
+	private final EmailService emailService;
 
 	public SupervisorsPage(Database db, PasswordEncoder passwordEncoder, AuthService authService,
-			RequirementService requirementService) {
+			RequirementService requirementService, EmailService emailService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.authService = authService;
 		this.requirementService = requirementService;
+		this.emailService = emailService;
 	}
 
 	@GetMapping
@@ -131,7 +133,7 @@ public class SupervisorsPage {
 					Best regards,
 					AAU Grouping System""".formatted(session.getName(), newSupervisor.getId(), password);
 
-			EmailService.sendEmail(record.email.trim(), subject, body);
+			emailService.builder().to(record.email.trim()).subject(subject).text(body).send();
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Supervisor added successfully and password sent via email");
 		} catch (Exception e) {
@@ -214,7 +216,7 @@ public class SupervisorsPage {
 					Best regards,
 					AAU Grouping System""".formatted(session.getName(), supervisor.getId(), newPassword);
 
-			EmailService.sendEmail(supervisor.getEmail(), subject, body);
+			emailService.builder().to(supervisor.getEmail()).subject(subject).text(body).send();
 			return ResponseEntity.ok("New password sent successfully to " + supervisor.getEmail());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

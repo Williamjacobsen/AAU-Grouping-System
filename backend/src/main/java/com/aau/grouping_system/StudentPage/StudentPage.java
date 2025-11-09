@@ -39,11 +39,13 @@ public class StudentPage {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 	private final RequirementService requirementService;
+	private final EmailService emailService;
 
-	public StudentPage(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService) {
+	public StudentPage(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService, EmailService emailService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.requirementService = requirementService;
+		this.emailService = emailService;
 	}
 
 	@GetMapping("/{studentId}")
@@ -319,7 +321,11 @@ public class StudentPage {
 
 					Best regards,
 					AAU Grouping System""".formatted(session.getName(), student.getId(), newPassword);
-			EmailService.sendEmail(student.getEmail(), subject, body);
+			emailService.builder()
+					.to(student.getEmail())
+					.subject(subject)
+					.text(body)
+					.send();
 			return ResponseEntity.ok("New password sent successfully to " + student.getEmail());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
