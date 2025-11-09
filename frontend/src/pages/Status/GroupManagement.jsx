@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "../User/User.css";
 
-export default function useGroupManagement() {
+export default function GroupManagement() {
 
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
@@ -14,7 +14,6 @@ export default function useGroupManagement() {
 
 	useEffect(() => {
 		const fetchGroups = async () => {
-			setError(null);
 			try {
 				const response = await fetch("http://localhost:8080/groups");
 				const data = await response.json();

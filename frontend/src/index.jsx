@@ -16,7 +16,7 @@ import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
 import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire"
-import useGroupManagement from "./pages/Status/useGroupManagement";
+import GroupManagement from "./pages/Status/GroupManagement";
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage"
 import StudentPage from "./pages/StudentPage/StudentPage"
@@ -38,7 +38,7 @@ export default function App() {
 							<Route path="setup" element={<SessionSetup />} />
 							<Route path="status" element={<Status />} />
 							<Route path="projects" element={<Projects />} />
-							<Route path="groupManagement" element={<useGroupManagement />} />
+							<Route path="groupManagement" element={<GroupManagement />} />
 							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
 							<Route path="supervisorsPage" element={<SupervisorsPage />} />
 							<Route path="student/:studentId" element={<StudentPage />} />

@@ -84,14 +84,14 @@ public class GroupController {
 		return ResponseEntity.ok(group);
 	}
 
-	@GetMapping
 	/* 
 	public ResponseEntity<Map<String, Group>> getAllGroups() {
 		return ResponseEntity.ok(db.getGroups().getAllItems());
-	 }
-*/
-
-// ---TEST------TEST------TEST------TEST---
+		}
+		*/
+		
+		// ---TEST------TEST------TEST------TEST---
+@GetMapping
 public ResponseEntity<Object> getAllGroups() {
 
     Map<String, Object> mockGroups = Map.of(

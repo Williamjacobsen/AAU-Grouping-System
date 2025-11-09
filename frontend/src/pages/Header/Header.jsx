@@ -64,7 +64,7 @@ export default function Header() {
 							}
 							{user?.role === "Coordinator" &&
 								<li>
-									<Link to={`/session/${session.id}/groups`}>Group Management</Link>
+									<Link to={`/session/${session.id}/groupManagement`}>Group Management</Link>
 								</li>
 							}
 							{user?.role === "Student" &&
