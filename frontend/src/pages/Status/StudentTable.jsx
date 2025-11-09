@@ -1,7 +1,7 @@
 import React, { useMemo, memo } from "react";
 import StudentGroupActions from './StudentGroupActions';
 
-const StudentTable = memo(({ students, columnDefs, sessionId }) => {
+const StudentTable = memo(({ students, columnDefs, sessionId, session, user }) => {
 
   const columns = useMemo(() => {
     if (!students || students.length === 0) return null;
@@ -67,6 +67,8 @@ const StudentTable = memo(({ students, columnDefs, sessionId }) => {
               <StudentGroupActions
                 groupId={students?.[rowIndex]?.group?.id}
                 studentId={students?.[rowIndex]?.id}
+                session={session}
+                user={user}
               />
             </td>
           </tr>

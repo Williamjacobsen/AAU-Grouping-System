@@ -4,6 +4,7 @@ import { useGetUser } from "../../hooks/useGetUser";
 
 import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
+import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
 
@@ -12,6 +13,7 @@ export default function Status() {
 	const { sessionId } = useParams();
 	const { user, isLoading: isLoadingUser } = useGetUser();
 
+	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
@@ -29,6 +31,7 @@ export default function Status() {
 
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return <>Access denied: Not logged in.</>;
+	if (isLoadingSession) return <>Loading session information...</>;
 	if (isLoadingStudents) {
     return <>Loading session information...</>;
 	}
@@ -37,7 +40,7 @@ export default function Status() {
 		<>
 			<SearchFilterInput/>
 			<SortingDropdown />
-			<StudentTable students={visibleStudents}/>
+			<StudentTable students={visibleStudents} session={session} user={user}/>
 		</>
 	);
 }
