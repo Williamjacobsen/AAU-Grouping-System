@@ -19,13 +19,10 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 		http
-				.cors(cors -> cors.configurationSource(corsConfigurationSource)) 
-				.csrf(csrf -> csrf
-						.ignoringRequestMatchers("/ws/**", "/auth/**") // ignore CSRF for WebSocket and auth endpoints
-				)
+				.cors(cors -> cors.configurationSource(corsConfigurationSource))
+				.csrf(csrf -> csrf.disable()) // disables CSRF globally
 				.authorizeHttpRequests(auth -> auth
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // allow preflight OPTIONS
-						.requestMatchers("/ws/**").permitAll()
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 						.anyRequest().permitAll());
 		return http.build();
 	}
