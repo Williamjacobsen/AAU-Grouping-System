@@ -15,7 +15,14 @@ export default function GroupManagement() {
 	useEffect(() => {
 		const fetchGroups = async () => {
 			try {
-				const response = await fetch("http://localhost:8080/groups");
+				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups`);
+				
+				if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+				
 				const data = await response.json();
 				const groupArray = Object.values(data); //convert object into an array
 				setGroups(groupArray);
@@ -26,6 +33,39 @@ export default function GroupManagement() {
 		}
 		fetchGroups();
 	}, []);
+
+	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
+				method: "POST"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+		} catch (error) {
+			setError("Error moving student");
+		}
+	}
+
+	const moveAllMembers = async (fromGroupId, toGroupId) => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}`, {
+				method: "POST"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+
+		} catch (error) {
+			setError("Error moving group members");
+		}
+	}
 
 	function handleStudentClick(name, groupId) {
 		if (!selectedStudent) {
@@ -45,7 +85,7 @@ export default function GroupManagement() {
 				// if the target group is full, we don’t add the student
 				return prevGroups;
 
-			return prevGroups.map(group => {
+			const newGroups = prevGroups.map(group => {
 				if (group.id === selectedStudent.from) {
 					// Old group keeps all members, except the selected student
 					return { ...group, members: group.members.filter(student => student !== selectedStudent.name) }
@@ -56,7 +96,9 @@ export default function GroupManagement() {
 					return { ...group, members: [...group.members, selectedStudent.name] }
 				}
 				return group;
-			})
+			});
+			moveStudent(selectedStudent.from, groupId, selectedStudent.name);
+			return newGroups;
 		});
 		setSelectedStudent(null);
 	}
@@ -81,7 +123,7 @@ export default function GroupManagement() {
 				// stops if combined size would exceed 7
 				return prevGroups;
 
-			return prevGroups.map(group => {
+			const newGroups = prevGroups.map(group => {
 				if (group.id === selectedGroup.from) //
 					return { ...group, members: [] };
 
@@ -91,6 +133,8 @@ export default function GroupManagement() {
 					return { ...group, members: [...group.members, ...fromGroup.members] }
 				return group;
 			});
+			moveAllMembers(selectedGroup.from, groupId);
+			return newGroups;
 		});
 		setSelectedGroup(null);
 	}
@@ -119,6 +163,7 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			<h1> Group Management</h1>
+			{error && <div className="error-box">{error}</div>}
 			<h2 className="completed-groups" >Completed Groups</h2>
 			<div className="group-row">{RenderGroups(completedGroups)}</div>
 
