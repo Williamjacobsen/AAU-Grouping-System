@@ -94,4 +94,5 @@ public class CoordinatorController {
 				.status(HttpStatus.OK)
 				.body("Password has been changed.");
 	}
+
 }

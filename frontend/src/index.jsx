@@ -11,6 +11,7 @@ import SignIn from "./pages/User/SignIn";
 import SignUp from "./pages/User/SignUp";
 import Profile from "./pages/User/Profile";
 import ForgotPassword from "./pages/User/ForgotPassword";
+import ResetPassword from "./pages/User/ResetPassword";
 import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
@@ -31,12 +32,13 @@ export default function App() {
 						<Route path="sign-up" element={<SignUp />} />
 						<Route path="profile" element={<Profile />} />
 						<Route path="forgotPassword" element={<ForgotPassword />} />
+						<Route path="resetPassword" element={<ResetPassword />} />
 						<Route path="sessions" element={<Sessions />} />
 						<Route path="session/:sessionId" element={<Outlet />}>
 							<Route path="setup" element={<SessionSetup />} />
 							<Route path="status" element={<Status />} />
 							<Route path="projects" element={<Projects />} />
-							<Route path="groups" element={<useGroupManagement />} />
+							<Route path="groupManagement" element={<useGroupManagement />} />
 							<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
 							<Route path="supervisorsPage" element={<SupervisorsPage />} />
 							<Route path="student/:studentId" element={<StudentPage />} />
