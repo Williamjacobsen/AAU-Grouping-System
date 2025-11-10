@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 import "./User.css";
@@ -12,6 +12,21 @@ export default function Profile() {
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
 	const { user, isLoading: isLoadingUser, setUser } = useGetUser();
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
+
+	useEffect(() => {
+		if (succes) {
+			const timer = setTimeout(() => setSucces(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [succes])
+
 
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");;

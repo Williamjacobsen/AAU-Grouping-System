@@ -34,6 +34,13 @@ export default function GroupManagement() {
 		fetchGroups();
 	}, []);
 
+	useEffect (() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
+
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
