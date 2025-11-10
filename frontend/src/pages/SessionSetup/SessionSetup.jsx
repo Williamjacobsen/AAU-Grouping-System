@@ -152,7 +152,7 @@ export default function SessionSetup() {
 			const formData = new FormData(event.currentTarget);
 			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
 
-			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/sendLoginCodeToStudents`, {
+			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/sendLoginCodeToStudents`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",
@@ -174,7 +174,7 @@ export default function SessionSetup() {
 			const formData = new FormData(event.currentTarget);
 			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
 
-			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/sendLoginCodeToSupervisors`, {
+			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/sendLoginCodeToSupervisors`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				credentials: "include",

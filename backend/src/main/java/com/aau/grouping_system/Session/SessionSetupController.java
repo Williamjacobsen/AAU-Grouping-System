@@ -8,7 +8,6 @@ import com.aau.grouping_system.User.Supervisor.SupervisorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -17,11 +16,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/sessions/{sessionId}")
 public class SessionSetupController {
 
-    @Autowired
-    private StudentService studentService;
-
-    @Autowired
-    private SupervisorService supervisorService;
+    @Autowired private StudentService studentService;
+    @Autowired private SupervisorService supervisorService;
+    @Autowired private EmailService emailService;
 
     @PostMapping("/sendLoginCodeToStudents")
     public ResponseEntity<?> sendLoginCodeToStudents(
@@ -29,36 +26,42 @@ public class SessionSetupController {
             @RequestBody SendLoginCodeRequest request) {
         try {
             List<Student> students = studentService.getStudentsBySessionId(sessionId);
-            
-            // Filter if sendOnlyNew is true
+
             if (request.isSendOnlyNew()) {
                 students = students.stream()
-                    .filter(student -> student.getLoginCode() == null)
-                    .collect(Collectors.toList());
+                        .filter(s -> s.getLoginCode() == null)
+                        .collect(Collectors.toList());
             }
 
-            // Generate and save login codes for each student
-            for (Student student : students) {
-                String loginCode = generateLoginCode();
-                student.setLoginCode(loginCode);
-                studentService.saveStudent(student);
+            int sent = 0;
+            for (Student s : students) {
+                String code = s.getLoginCode();
+                if (code == null) {
+                    code = generateLoginCode();
+                    s.setLoginCode(code);
+                    studentService.saveStudent(s);
+                }
 
-                // Send email with login code
                 String subject = "AAU Grouping System - Your Login Code";
-                String body = String.format("""
-                    Hello,
-                    
-                    Your login code for the AAU Grouping System is: %s
-                    
-                    Please use this code to access your student page and submit your project preferences.
-                    
-                    Best regards,
-                    AAU Grouping System""", loginCode);
+                String body = """
+                        Hello,
 
-                EmailService.sendEmail(student.getEmail(), subject, body);
+                        Your login code for the AAU Grouping System is: %s
+
+                        Please use this code to access your student page and submit your project preferences.
+
+                        Best regards,
+                        AAU Grouping System
+                        """.formatted(code);
+
+                emailService.builder()
+                        .to(s.getEmail())
+                        .subject(subject)
+                        .text(body)
+                        .send();
+                sent++;
             }
-
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Emails sent: " + sent);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -70,55 +73,57 @@ public class SessionSetupController {
             @RequestBody SendLoginCodeRequest request) {
         try {
             List<Supervisor> supervisors = supervisorService.getSupervisorsBySessionId(sessionId);
-            
-            // Filter if sendOnlyNew is true
+
             if (request.isSendOnlyNew()) {
                 supervisors = supervisors.stream()
-                    .filter(supervisor -> supervisor.getLoginCode() == null)
-                    .collect(Collectors.toList());
+                        .filter(sv -> sv.getLoginCode() == null)
+                        .collect(Collectors.toList());
             }
 
-            // Generate and save login codes for each supervisor
-            for (Supervisor supervisor : supervisors) {
-                String loginCode = generateLoginCode();
-                supervisor.setLoginCode(loginCode);
-                supervisorService.saveSupervisor(supervisor);
+            int sent = 0;
+            for (Supervisor sv : supervisors) {
+                String code = sv.getLoginCode();
+                if (code == null) {
+                    code = generateLoginCode();
+                    sv.setLoginCode(code);
+                    supervisorService.saveSupervisor(sv);
+                }
 
-                // Send email with login code
                 String subject = "AAU Grouping System - Your Login Code";
-                String body = String.format("""
-                    Hello,
-                    
-                    Your login code for the AAU Grouping System is: %s
-                    
-                    Please use this code to access your supervisor page and manage your projects.
-                    
-                    Best regards,
-                    AAU Grouping System""", loginCode);
+                String body = """
+                        Hello,
 
-                EmailService.sendEmail(supervisor.getEmail(), subject, body);
+                        Your login code for the AAU Grouping System is: %s
+
+                        Please use this code to access your supervisor page and manage your projects.
+
+                        Best regards,
+                        AAU Grouping System
+                        """.formatted(code);
+
+                emailService.builder()
+                        .to(sv.getEmail())
+                        .subject(subject)
+                        .text(body)
+                        .send();
+                sent++;
             }
-
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok("Emails sent: " + sent);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
     }
-
     private String generateLoginCode() {
-        // Generate a random 6-character code
         return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
-}
-
-class SendLoginCodeRequest {
-    private boolean sendOnlyNew;
-
-    public boolean isSendOnlyNew() {
-        return sendOnlyNew;
-    }
-
-    public void setSendOnlyNew(boolean sendOnlyNew) {
-        this.sendOnlyNew = sendOnlyNew;
-    }
+		static class SendLoginCodeRequest {
+			private boolean sendOnlyNew;
+	
+			public boolean isSendOnlyNew() {
+					return sendOnlyNew;
+			}
+			public void setSendOnlyNew(boolean sendOnlyNew) {
+					this.sendOnlyNew = sendOnlyNew;
+			}
+	}
 }
