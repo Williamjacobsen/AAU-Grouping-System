@@ -14,7 +14,6 @@ import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.User;
 
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -86,7 +85,8 @@ public class AuthController {
 				.ok(user); // info om user returneres som JSON obj.
 	}
 
-	private record ForgotPasswordRequest(@NotBlank String email) {
+	private record ForgotPasswordRequest(
+			@NoDangerousCharacters @NotBlank String email) {
 	}
 
 	@PostMapping("/forgotPassword")
@@ -141,8 +141,8 @@ public class AuthController {
 	}
 
 	private record ResetPasswordRecord(
-			@NotBlank String token,
-			@NotBlank String newPassword) {
+			@NoDangerousCharacters @NotBlank String token,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
 	}
 
 	@PostMapping("/resetPassword")
@@ -150,6 +150,10 @@ public class AuthController {
 		try {
 			String token = record.token();
 			String newPassword = record.newPassword();
+
+			if (newPassword == null || newPassword.trim().isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password cannot be empty.");
+			}
 
 			// Check if token exists
 			String email = PasswordResetTokens.tokens.get(token);
@@ -171,7 +175,7 @@ public class AuthController {
 			String hashedPassword = service.encodePassword(newPassword);
 			user.setPasswordHash(hashedPassword);
 
-			// Remove token 
+			// Remove token
 			PasswordResetTokens.tokens.remove(token);
 
 			return ResponseEntity.ok("Password reset successfully.");

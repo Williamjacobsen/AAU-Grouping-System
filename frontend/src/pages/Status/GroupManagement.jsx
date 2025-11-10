@@ -165,7 +165,9 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			<h1> Group Management</h1>
+			
 			{error && <div className="error-box">{error}</div>}
+
 			<h2 className="completed-groups" >Completed Groups</h2>
 			<div className="group-row">{RenderGroups(completedGroups)}</div>
 
