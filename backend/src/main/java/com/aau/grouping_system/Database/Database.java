@@ -2,6 +2,8 @@ package com.aau.grouping_system.Database;
 
 import org.springframework.stereotype.Component;
 
+//import com.aau.grouping_system.ChatSystem.GroupMessage;
+//import com.aau.grouping_system.ChatSystem.PrivateMessage;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;

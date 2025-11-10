@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-
+import { useCallback } from "react";
 import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
 
 async function fetchSessionProjects(sessionId) {
@@ -31,7 +31,36 @@ export default function useGetSessionProjects(sessionId) {
     })();
   }, [sessionId]);
 
-  return {isLoading, projects};
+  return {isLoading, projects, setProjects};
+}
+
+export function useCreateProject() {
+  return useCallback(async (sessionId, { name, description }) => {
+    const body = { sessionId, name, description };
+    return await fetchWithDefaultErrorHandling(`/project`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+  }, []);
+}
+
+export function useUpdateProject() {
+  return useCallback(async (id, { name, description }) => {
+    return await fetchWithDefaultErrorHandling(`/project/${id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, description })
+    });
+  }, []);
+}
+
+export function useDeleteProject() {
+  return useCallback(async (id) => {
+    return await fetchWithDefaultErrorHandling(`http://localhost:8080/project/${id}`, {
+      method: "DELETE"
+    });
+  }, []);
 }
 
 export function useGetSessionProjectsByParam() {

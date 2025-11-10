@@ -6,7 +6,7 @@ import { render, screen } from "@testing-library/react";
 import StudentTable from "./StudentTable"
 import { BrowserRouter } from "react-router-dom";
 
-describe(StudentTable.name, function () {
+describe("StudentTable", function () {
 
   test("Table content renders properly", async function () {
 

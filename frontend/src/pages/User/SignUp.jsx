@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -32,6 +32,13 @@ export default function SignUp() {
 			setError(e.message);
 		}
 	}
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
 
 	return (
 
@@ -69,7 +76,7 @@ export default function SignUp() {
 			</div>
 		</div>
 	);
-	
+
 
 
 }

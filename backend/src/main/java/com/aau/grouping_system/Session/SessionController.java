@@ -121,7 +121,8 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
+		Session session = db.getSessions().getItem(sessionId);
+		System.out.println(session); // ask the database for session with certain id
 		// Check if session exists if not throw error
 		if (session == null) {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Session not found");
