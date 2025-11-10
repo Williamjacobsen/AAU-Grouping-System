@@ -37,18 +37,9 @@ public class AuthService {
 				}
 				return null;
 			case User.Role.Supervisor:
-				for (Supervisor supervisor : db.getSupervisors().getAllItems().values()) {
-					if (supervisor.getEmail().equals(emailOrId)) {
-						return supervisor;
-					}
-				}
-				return null;
+				return db.getSupervisors().getItem(emailOrId);
 			case User.Role.Student:
-				for (Student student : db.getStudents().getAllItems().values()) {
-					if (student.getEmail().equals(emailOrId)) {
-						return student;
-					}
-				}	
+				return db.getStudents().getItem(emailOrId);
 			default:
 				return null;
 		}
@@ -111,8 +102,8 @@ public class AuthService {
 		}
 	}
 
-public String encodePassword(String password) {
-    return passwordEncoder.encode(password);
-}
+	public String encodePassword(String password) {
+		return passwordEncoder.encode(password);
+	}
 
 }
