@@ -7,6 +7,8 @@ import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
+import useStudentColumns from "./useStudentColumns";
+import CsvDownloadButton from "./CsvDownloadButton";
 
 export default function Status() {
 
@@ -17,7 +19,7 @@ export default function Status() {
 	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
-
+	const { selectedColumns, ColumnsSelector } = useStudentColumns();
 	const visibleStudents = useMemo(() => {
 
 		if (!allStudents) return null;
@@ -40,7 +42,10 @@ export default function Status() {
 		<>
 			<SearchFilterInput/>
 			<SortingDropdown />
-			<StudentTable students={visibleStudents} session={session} user={user}/>
+			<StudentTable students={visibleStudents} />
+			{user?.role === "Coordinator" &&
+				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
+			}
 		</>
 	);
 }

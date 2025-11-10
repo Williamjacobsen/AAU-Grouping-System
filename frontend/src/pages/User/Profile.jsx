@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 import "./User.css";
@@ -81,7 +81,6 @@ export default function Profile() {
 				return Promise.resolve();
 			}
 
-			window.location.reload(); // Reload the page (to refresh changes, e.g. to the Header)
 			navigate("/sign-in");
 
 		} catch (e) {
@@ -137,9 +136,7 @@ export default function Profile() {
 					Update Password
 				</button>
 			</div>
-
 			<hr />
-
 			<button className="sign-up" onClick={handleLogout}>
 				Log Out
 			</button>
