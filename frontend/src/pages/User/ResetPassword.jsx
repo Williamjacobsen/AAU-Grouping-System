@@ -18,7 +18,7 @@ export default function ResetPassword() {
 		}
 
 		try {
-			const response = await fetch("http://localhost:8080/auth/resetPassword", {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/resetPassword`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ token, newPassword }),
