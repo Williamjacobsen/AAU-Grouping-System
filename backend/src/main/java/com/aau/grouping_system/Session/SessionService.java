@@ -112,26 +112,43 @@ public class SessionService {
 	}
 
 	public void applySetup(
-            Session session,
-            String name,
-            String description,
-            String studentEmails,
-            String supervisorEmails,
-            String coordinatorName,
-            String questionnaireDeadline,
-            String initialProjects,
-            String optionalQuestionnaire,
-            int groupSize) {
+			Session session,
+      String name,
+      String description,
+      String studentEmails,
+      String supervisorEmails,
+      String coordinatorName,
+      String questionnaireDeadline,
+      String initialProjects,
+      String optionalQuestionnaire,
+      int groupSize) {
 
-        if (session == null) return;
+    if (session == null) return;
 
-        List<String> studentEmailList = Arrays.stream(
-                studentEmails == null ? new String[0] : studentEmails.split("\\r?\\n"))
-                .map(String::trim).filter(s -> !s.isEmpty()).toList();
+		String[] studentEmailArray;
+    if (studentEmails == null) {
+        studentEmailArray = new String[0];
+    } else {
+        studentEmailArray = studentEmails.split("\\r?\\n");
+    }
 
-        List<String> supervisorEmailList = Arrays.stream(
-                supervisorEmails == null ? new String[0] : supervisorEmails.split("\\r?\\n"))
-                .map(String::trim).filter(s -> !s.isEmpty()).toList();
+    List<String> studentEmailList = Arrays.stream(studentEmailArray)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toList();
+
+    String[] supervisorEmailArray;
+    if (supervisorEmails == null) {
+        supervisorEmailArray = new String[0];
+    } else {
+        supervisorEmailArray = supervisorEmails.split("\\r?\\n");
+    }
+
+    List<String> supervisorEmailList = Arrays.stream(supervisorEmailArray)
+            .map(String::trim)
+            .filter(s -> !s.isEmpty())
+            .toList();
+
 
         for (String email : studentEmailList) {
             new Student(db, session.getStudents(), email, "", "Student", session);
@@ -141,12 +158,12 @@ public class SessionService {
             new Supervisor(db, session.getSupervisors(), email, "", "Supervisor", session);
         }
 
-        session.setName(name);
-        session.setDescription(description);
-        session.setCoordinatorName(coordinatorName);
-        session.setQuestionnaireDeadline(questionnaireDeadline);
-        session.setInitialProjects(initialProjects);
-        session.setOptionalQuestionnaire(optionalQuestionnaire);
-        session.setGroupSize(groupSize);
+    session.setName(name);
+    session.setDescription(description);
+    session.setCoordinatorName(coordinatorName);
+    session.setQuestionnaireDeadline(questionnaireDeadline);
+    session.setInitialProjects(initialProjects);
+    session.setOptionalQuestionnaire(optionalQuestionnaire);
+    session.setGroupSize(groupSize);
     }
 }
