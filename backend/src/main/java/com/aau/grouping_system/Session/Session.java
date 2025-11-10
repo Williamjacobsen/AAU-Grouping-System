@@ -17,7 +17,12 @@ public class Session extends DatabaseItem {
 	private DatabaseItemChildGroup projects;
 	private DatabaseItemChildGroup groups;
 	private String name;
-	private LocalDateTime questionnaireDeadline = null;
+	private String questionnaireDeadline = null;
+	private String description;
+	private String coordinatorName;
+	private String initialProjects;
+	private String optionalQuestionnaire;
+	private int groupSize;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Coordinator coordinator, String name) {
@@ -47,7 +52,22 @@ public class Session extends DatabaseItem {
 	public void setProjects(DatabaseItemChildGroup projects) { this.projects = projects; }
 	public DatabaseItemChildGroup getGroups() { return groups; }
 	public void setGroups(DatabaseItemChildGroup groups) { this.groups = groups; }
-	public LocalDateTime getQuestionnaireDeadline() { return questionnaireDeadline; }
-	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
+	public String getQuestionnaireDeadline() { return questionnaireDeadline; }
+	public void setQuestionnaireDeadline(String questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
+
+	public String getDescription() { return description; }
+	public void setDescription(String description) { this.description = description; }
+
+	public String getCoordinatorName() { return coordinatorName; }
+	public void setCoordinatorName(String coordinatorName) { this.coordinatorName = coordinatorName; }
+
+	public String getInitialProjects() { return initialProjects; }
+	public void setInitialProjects(String initialProjects) { this.initialProjects = initialProjects; }
+
+	public String getOptionalQuestionnaire() { return optionalQuestionnaire; }
+	public void setOptionalQuestionnaire(String optionalQuestionnaire) { this.optionalQuestionnaire = optionalQuestionnaire; }
+
+	public int getGroupSize() { return groupSize; }
+	public void setGroupSize(int groupSize) { this.groupSize = groupSize; }
 
 }

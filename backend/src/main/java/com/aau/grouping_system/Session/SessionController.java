@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Session;
 
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -177,7 +178,7 @@ public class SessionController {
 			return ResponseEntity.notFound().build();
 		}
 
-		User user = authService.getUser(request);
+		User user = authService.getUser(httpRequest);
 		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}

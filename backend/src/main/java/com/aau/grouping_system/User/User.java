@@ -9,6 +9,8 @@ public abstract class User extends DatabaseItem {
 	private String email;
 	private String passwordHash;
 	private String name;
+	private String loginCode;
+
 	/// Despite getRole being an abstract method and this therefore never being
 	/// assigned or set, this field is still needed to send the role in a JSON object
 	/// of User. This is because - despite being private - fields with public getters
@@ -39,4 +41,7 @@ public abstract class User extends DatabaseItem {
 	public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
+	public String getLoginCode() { return loginCode; }
+	public void setLoginCode(String loginCode) { this.loginCode = loginCode; }
+	
 }

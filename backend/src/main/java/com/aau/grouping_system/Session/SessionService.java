@@ -1,5 +1,11 @@
 package com.aau.grouping_system.Session;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -47,6 +53,37 @@ public class SessionService {
 		return true;
 	}
 
+	@SuppressWarnings("unchecked")
+  public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
+        Session s = getSession(sessionId);
+        if (s == null) return new CopyOnWriteArrayList<>();
+        return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
+    }
+
+  @SuppressWarnings("unchecked")
+    public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
+        Session s = getSession(sessionId);
+        if (s == null) return new CopyOnWriteArrayList<>();
+        return (CopyOnWriteArrayList<Supervisor>) s.getSupervisors().getItems(db);
+    }
+	public boolean isQuestionnaireDeadlineExceeded(Session session) {
+        if (session == null) return false;
+        String raw = session.getQuestionnaireDeadline();
+        if (raw == null || raw.isBlank()) return false; // no deadline set => not exceeded
+        LocalDateTime deadline = parseDeadline(raw);
+        if (deadline == null) return false;             // unparsable => treat as not exceeded
+        return LocalDateTime.now().isAfter(deadline);
+    }
+
+    // ADD: robust parser that accepts several common formats
+    private LocalDateTime parseDeadline(String s) {
+        try { return LocalDateTime.parse(s); } catch (DateTimeParseException ignored) {}
+        try { return LocalDate.parse(s).atTime(23, 59, 59); } catch (DateTimeParseException ignored) {}
+        try { return OffsetDateTime.parse(s).toLocalDateTime(); } catch (DateTimeParseException ignored) {}
+        try { return Instant.parse(s).atZone(ZoneId.systemDefault()).toLocalDateTime(); } catch (DateTimeParseException ignored) {}
+        return null;
+    }
+
 	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
 
 		if (user == null || !authService.hasAuthorizedRole(user, authorizedRoles)) {
@@ -75,36 +112,42 @@ public class SessionService {
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
 	}
 
-	public void applySetup(Session session, String name, String description, String studentEmails, 
-													String supervisorEmails, String coordinatorName, String questionnaireDeadline, String initialProjects, 
-													String optionalQuestionnaire, int groupSize) {
+	public void applySetup(
+            Session session,
+            String name,
+            String description,
+            String studentEmails,
+            String supervisorEmails,
+            String coordinatorName,
+            String questionnaireDeadline,
+            String initialProjects,
+            String optionalQuestionnaire,
+            int groupSize) {
 
-		List<String> studentEmailList = new CopyOnWriteArrayList<>(
-			Arrays.asList(studentEmails.split("\\r?\\n")));
+        if (session == null) return;
 
-		List<String> supervisorEmailList = new CopyOnWriteArrayList<>(
-			Arrays.asList(supervisorEmails.split("\\r?\\n")));
+        List<String> studentEmailList = Arrays.stream(
+                studentEmails == null ? new String[0] : studentEmails.split("\\r?\\n"))
+                .map(String::trim).filter(s -> !s.isEmpty()).toList();
 
-		for (String email : studentEmailList) {
-			if (!email.trim().isEmpty()) {
-				Student student = new Student(db, session, email.trim());
-				session.addStudent(student);
-			}
+        List<String> supervisorEmailList = Arrays.stream(
+                supervisorEmails == null ? new String[0] : supervisorEmails.split("\\r?\\n"))
+                .map(String::trim).filter(s -> !s.isEmpty()).toList();
 
-		for (String email : supervisorEmailList) {
-			if (!email.trim().isEmpty()) {
-				Supervisor supervisor = new Supervisor(db, session, email.trim());
-				session.addSupervisor(supervisor);
-			}
-		}
-		session.setName(name);
-    session.setDescription(description);
-    session.setCoordinatorName(coordinatorName);
-    session.setQuestionnaireDeadline(questionnaireDeadline);
-    session.setInitialProjects(initialProjects);
-    session.setOptionalQuestionnaire(optionalQuestionnaire);
-		session.setGroupSize(groupSize);
-		sessionRepository.save(session);
-	}
-}
+        for (String email : studentEmailList) {
+            new Student(db, session.getStudents(), email, "", "Student", session);
+        }
+
+        for (String email : supervisorEmailList) {
+            new Supervisor(db, session.getSupervisors(), email, "", "Supervisor", session);
+        }
+
+        session.setName(name);
+        session.setDescription(description);
+        session.setCoordinatorName(coordinatorName);
+        session.setQuestionnaireDeadline(questionnaireDeadline);
+        session.setInitialProjects(initialProjects);
+        session.setOptionalQuestionnaire(optionalQuestionnaire);
+        session.setGroupSize(groupSize);
+    }
 }
