@@ -54,34 +54,52 @@ public class SessionService {
 	}
 
 	@SuppressWarnings("unchecked")
-  public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
-        Session s = getSession(sessionId);
-        if (s == null) return new CopyOnWriteArrayList<>();
-        return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
-    }
+	public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
+		Session s = getSession(sessionId);
+		if (s == null)
+			return new CopyOnWriteArrayList<>();
+		return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
+	}
 
-  @SuppressWarnings("unchecked")
-    public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
-        Session s = getSession(sessionId);
-        if (s == null) return new CopyOnWriteArrayList<>();
-        return (CopyOnWriteArrayList<Supervisor>) s.getSupervisors().getItems(db);
-    }
+	@SuppressWarnings("unchecked")
+	public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
+		Session s = getSession(sessionId);
+		if (s == null)
+			return new CopyOnWriteArrayList<>();
+		return (CopyOnWriteArrayList<Supervisor>) s.getSupervisors().getItems(db);
+	}
+
 	public boolean isQuestionnaireDeadlineExceeded(Session session) {
-        if (session == null) return false;
-        String raw = session.getQuestionnaireDeadline();
-        if (raw == null || raw.isBlank()) return false; // no deadline set => not exceeded
-        LocalDateTime deadline = parseDeadline(raw);
-        if (deadline == null) return false;             // unparsable => treat as not exceeded
-        return LocalDateTime.now().isAfter(deadline);
-    }
+		if (session == null)
+			return false;
+		String raw = session.getQuestionnaireDeadline();
+		if (raw == null || raw.isBlank())
+			return false; // no deadline set => not exceeded
+		LocalDateTime deadline = parseDeadline(raw);
+		if (deadline == null)
+			return false; // unparsable => treat as not exceeded
+		return LocalDateTime.now().isAfter(deadline);
+	}
 
-    private LocalDateTime parseDeadline(String s) {
-        try { return LocalDateTime.parse(s); } catch (DateTimeParseException ignored) {}
-        try { return LocalDate.parse(s).atTime(23, 59, 59); } catch (DateTimeParseException ignored) {}
-        try { return OffsetDateTime.parse(s).toLocalDateTime(); } catch (DateTimeParseException ignored) {}
-        try { return Instant.parse(s).atZone(ZoneId.systemDefault()).toLocalDateTime(); } catch (DateTimeParseException ignored) {}
-        return null;
-    }
+	private LocalDateTime parseDeadline(String s) {
+		try {
+			return LocalDateTime.parse(s);
+		} catch (DateTimeParseException ignored) {
+		}
+		try {
+			return LocalDate.parse(s).atTime(23, 59, 59);
+		} catch (DateTimeParseException ignored) {
+		}
+		try {
+			return OffsetDateTime.parse(s).toLocalDateTime();
+		} catch (DateTimeParseException ignored) {
+		}
+		try {
+			return Instant.parse(s).atZone(ZoneId.systemDefault()).toLocalDateTime();
+		} catch (DateTimeParseException ignored) {
+		}
+		return null;
+	}
 
 	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
 
@@ -113,57 +131,57 @@ public class SessionService {
 
 	public void applySetup(
 			Session session,
-      String name,
-      String description,
-      String studentEmails,
-      String supervisorEmails,
-      String coordinatorName,
-      String questionnaireDeadline,
-      String initialProjects,
-      String optionalQuestionnaire,
-      int groupSize) {
+			String name,
+			String description,
+			String studentEmails,
+			String supervisorEmails,
+			String coordinatorName,
+			String questionnaireDeadline,
+			String initialProjects,
+			String optionalQuestionnaire,
+			int groupSize) {
 
-    if (session == null) return;
+		if (session == null)
+			return;
 
 		String[] studentEmailArray;
-    if (studentEmails == null) {
-        studentEmailArray = new String[0];
-    } else {
-        studentEmailArray = studentEmails.split("\\r?\\n");
-    }
+		if (studentEmails == null) {
+			studentEmailArray = new String[0];
+		} else {
+			studentEmailArray = studentEmails.split("\\r?\\n");
+		}
 
-    List<String> studentEmailList = Arrays.stream(studentEmailArray)
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .toList();
+		List<String> studentEmailList = Arrays.stream(studentEmailArray)
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.toList();
 
-    String[] supervisorEmailArray;
-    if (supervisorEmails == null) {
-        supervisorEmailArray = new String[0];
-    } else {
-        supervisorEmailArray = supervisorEmails.split("\\r?\\n");
-    }
+		String[] supervisorEmailArray;
+		if (supervisorEmails == null) {
+			supervisorEmailArray = new String[0];
+		} else {
+			supervisorEmailArray = supervisorEmails.split("\\r?\\n");
+		}
 
-    List<String> supervisorEmailList = Arrays.stream(supervisorEmailArray)
-            .map(String::trim)
-            .filter(s -> !s.isEmpty())
-            .toList();
+		List<String> supervisorEmailList = Arrays.stream(supervisorEmailArray)
+				.map(String::trim)
+				.filter(s -> !s.isEmpty())
+				.toList();
 
+		for (String email : studentEmailList) {
+			new Student(db, session.getStudents(), email, "", "Student", session);
+		}
 
-        for (String email : studentEmailList) {
-            new Student(db, session.getStudents(), email, "", "Student", session);
-        }
+		for (String email : supervisorEmailList) {
+			new Supervisor(db, session.getSupervisors(), email, "", "Supervisor", session);
+		}
 
-        for (String email : supervisorEmailList) {
-            new Supervisor(db, session.getSupervisors(), email, "", "Supervisor", session);
-        }
-
-    session.setName(name);
-    session.setDescription(description);
-    session.setCoordinatorName(coordinatorName);
-    session.setQuestionnaireDeadline(questionnaireDeadline);
-    session.setInitialProjects(initialProjects);
-    session.setOptionalQuestionnaire(optionalQuestionnaire);
-    session.setGroupSize(groupSize);
-    }
+		session.setName(name);
+		session.setDescription(description);
+		session.setCoordinatorName(coordinatorName);
+		session.setQuestionnaireDeadline(questionnaireDeadline);
+		session.setInitialProjects(initialProjects);
+		session.setOptionalQuestionnaire(optionalQuestionnaire);
+		session.setGroupSize(groupSize);
+	}
 }
