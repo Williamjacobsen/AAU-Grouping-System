@@ -31,11 +31,11 @@ const StudentTable = memo(({ students }) => {
 	};
 
   if (!columns || columns.length === 0) {
-    return <div>List of students is empty.</div>;
+    return <div className="empty-message">List of students is empty.</div>;
   }
 
   return (
-    <table>
+    <table className="student-table">
       <thead>
         <tr>
           {columns.map((column, columnIndex) => (
@@ -60,7 +60,6 @@ const StudentTable = memo(({ students }) => {
           <tr 
 						key={rowIndex} 
 						onClick={() => handleStudentClick(rowIndex)}
-						style={{ cursor: 'pointer' }}
 					>
             {columns.map((column, columnIndex) => (
               <td key={columnIndex}>
