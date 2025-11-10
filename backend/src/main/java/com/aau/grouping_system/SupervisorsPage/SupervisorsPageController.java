@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.EmailSystem.EmailService;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
@@ -41,12 +42,14 @@ public class SupervisorsPageController {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 	private final RequirementService requirementService;
+	private final EmailService emailService;
 
 	public SupervisorsPageController(Database db, PasswordEncoder passwordEncoder, 
-			RequirementService requirementService) {
+			RequirementService requirementService, EmailService emailService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.requirementService = requirementService;
+		this.emailService = emailService;
 	}
 
 	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
@@ -89,7 +92,11 @@ public class SupervisorsPageController {
 				Best regards,
 				AAU Grouping System""".formatted(actionText, sessionName, supervisorId, password);
 
-		EmailService.sendEmail(email, subject, body);
+		emailService.builder()
+				.to(email)
+				.subject(subject)
+				.text(body)
+				.send();
 	}
 
 	@GetMapping
@@ -129,8 +136,8 @@ public class SupervisorsPageController {
 				.anyMatch(supervisor -> supervisor.getEmail().equals(record.email.trim()));
 
 		if (supervisorExists) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body("Supervisor with this email already exists in this session");
+			throw new RequestException(HttpStatus.CONFLICT, 
+					"Supervisor with this email already exists in this session");
 		}
 
 		// Create supervisor with UUID as password
@@ -164,7 +171,7 @@ public class SupervisorsPageController {
 		Supervisor supervisor = findSupervisorInSession(session, supervisorId);
 
 		if (supervisor == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
+			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
 		}
 
 		// Remove supervisor from database
@@ -182,7 +189,7 @@ public class SupervisorsPageController {
 		Supervisor supervisor = findSupervisorInSession(session, supervisorId);
 
 		if (supervisor == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
+			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
 		}
 
 		// Generate new password and update supervisor

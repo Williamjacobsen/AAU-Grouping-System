@@ -38,11 +38,14 @@ public class StudentPageController {
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
 	private final RequirementService requirementService;
+	private final EmailService emailService;
 
-	public StudentPageController(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService) {
+	public StudentPageController(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService,
+			EmailService emailService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.requirementService = requirementService;
+		this.emailService = emailService;
 	}
 
 	private static final String NOT_SPECIFIED = "Not specified";
@@ -54,8 +57,9 @@ public class StudentPageController {
 	private static final String NO_MAX = "No max";
 	private static final String NO_PREFERENCE = "NoPreference";
 
-	private static final String PASSWORD_RESET_SUBJECT = "AAU Grouping System - New Password";
-	private static final String PASSWORD_RESET_TEMPLATE = """
+	private void sendPasswordResetEmail(String email, String sessionName, String studentId, String password) throws Exception {
+		String subject = "AAU Grouping System - New Password";
+		String body = """
 			Hello,
 
 			Your password for the AAU Grouping System has been reset for session: %s
@@ -67,7 +71,15 @@ public class StudentPageController {
 			Please use your ID and password to access the AAU Grouping System.
 
 			Best regards,
-			AAU Grouping System""";
+			AAU Grouping System""".formatted(sessionName, studentId, password);
+
+		emailService.builder()
+				.to(email)
+				.subject(subject)
+				.text(body)
+				.send();
+	}
+
 
 	private StudentSessionData validateCoordinatorAndStudent(HttpServletRequest servlet, String sessionId, String studentId) {
 		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
@@ -311,22 +323,19 @@ public class StudentPageController {
 
 		StudentSessionData validation = validateCoordinatorAndStudent(servlet, sessionId, studentId);
 
-		try {
-			// Generate new UUID password
-			String newPassword = UUID.randomUUID().toString();
-			String passwordHash = passwordEncoder.encode(newPassword);
-			validation.student.setPasswordHash(passwordHash);
+		// Generate new UUID password
+		String newPassword = UUID.randomUUID().toString();
+		String passwordHash = passwordEncoder.encode(newPassword);
+		validation.student.setPasswordHash(passwordHash);
 
-			// Send password via email
-			String body = PASSWORD_RESET_TEMPLATE.formatted(
-					validation.session.getName(), 
-					validation.student.getId(), 
-					newPassword);
-			EmailService.sendEmail(validation.student.getEmail(), PASSWORD_RESET_SUBJECT, body);
+		// Send new password via email
+		try {
+			sendPasswordResetEmail(validation.student.getEmail(), validation.session.getName(), 
+					validation.student.getId(), newPassword);
 			return ResponseEntity.ok("New password sent successfully to " + validation.student.getEmail());
 		} catch (Exception e) {
-			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, 
-				"Failed to reset password: " + e.getMessage());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to reset password: " + e.getMessage());
 		}
 	}
 }
