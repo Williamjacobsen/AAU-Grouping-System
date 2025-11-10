@@ -75,7 +75,6 @@ public class SessionService {
         return LocalDateTime.now().isAfter(deadline);
     }
 
-    // ADD: robust parser that accepts several common formats
     private LocalDateTime parseDeadline(String s) {
         try { return LocalDateTime.parse(s); } catch (DateTimeParseException ignored) {}
         try { return LocalDate.parse(s).atTime(23, 59, 59); } catch (DateTimeParseException ignored) {}
