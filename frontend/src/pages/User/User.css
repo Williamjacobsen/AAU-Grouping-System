@@ -61,6 +61,7 @@ input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
 	color: blue;
 	cursor: pointer;
 	text-decoration: underline;
+	display: inline-block; 
 }
 
 .error-box {
