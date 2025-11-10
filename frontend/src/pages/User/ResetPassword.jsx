@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./User.css";
 
 export default function ResetPassword() {
@@ -6,14 +6,14 @@ export default function ResetPassword() {
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [error, setError] = useState("");
-	const [success, setSuccess] = useState("");
+	const [succes, setSucces] = useState("");
 
 	const token = new URLSearchParams(window.location.search).get("token"); // get token from URL
 
 	const handlePasswordSubmit = async () => {
 		if (newPassword !== confirmPassword) {
 			setError("Passwords do not match.");
-			setSuccess("");
+			setSucces("");
 			return;
 		}
 
@@ -25,17 +25,31 @@ export default function ResetPassword() {
 			});
 
 			if (response.ok) {
-				setSuccess("Your password has been reset successfully!");
+				setSucces("Your password has been reset successfully!");
 				setError("");
 			} else {
 				setError("Failed to reset password.");
-				setSuccess("");
+				setSucces("");
 			}
 		} catch (e) {
 			setError(e.message);
-			setSuccess("");
+			setSucces("");
 		}
 	};
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
+
+	useEffect(() => {
+		if (succes) {
+			const timer = setTimeout(() => setSucces(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [succes])
 
 	return (
 		<div className="container">
@@ -49,7 +63,7 @@ export default function ResetPassword() {
 			</div>
 
 			{error && <div className="error-box">{error}</div>}
-			{success && <div className="succes-box">{success}</div>}
+			{succes && <div className="succes-box">{succes}</div>}
 
 			<div className="input">
 				<label className="label">
