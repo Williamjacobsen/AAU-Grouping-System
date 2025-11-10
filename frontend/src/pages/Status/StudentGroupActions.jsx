@@ -3,11 +3,6 @@ import useGroupRequests from './useGroupRequests';
 import useIsQuestionnaireDeadlineExceeded from '../../hooks/useIsQuestionnaireDeadlineExceeded';
 
 // Small UI for requesting to join or accepting a join request on a group.
-// - groupId: id of the group to act on
-// - studentId: id of the student performing the action (or being accepted)
-// Props:
-// - groupId: id of the group to act on
-// - studentId: id of the student performing the action (or being accepted)
 // - session: session object (used for questionnaire deadline)
 // - user: current logged in user (used to decide if the user is a student)
 export default function StudentGroupActions({ groupId, studentId, session, user }) {
