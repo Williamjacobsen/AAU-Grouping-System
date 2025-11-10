@@ -37,7 +37,8 @@ export default function GroupManagement() {
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
-				method: "POST"
+				method: "POST",
+				credentials: "include"
 			});
 
 			if (!response.ok) {
@@ -53,7 +54,8 @@ export default function GroupManagement() {
 	const moveAllMembers = async (fromGroupId, toGroupId) => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}`, {
-				method: "POST"
+				method: "POST",
+				credentials: "include"
 			});
 
 			if (!response.ok) {

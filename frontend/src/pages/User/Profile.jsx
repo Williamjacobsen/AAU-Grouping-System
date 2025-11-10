@@ -81,7 +81,6 @@ export default function Profile() {
 				return Promise.resolve();
 			}
 
-			window.location.reload(); // Reload the page (to refresh changes, e.g. to the Header)
 			navigate("/sign-in");
 
 		} catch (e) {
