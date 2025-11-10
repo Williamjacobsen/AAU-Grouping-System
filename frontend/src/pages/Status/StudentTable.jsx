@@ -32,7 +32,7 @@ const StudentTable = memo(({ students, columnDefs, sessionId, session, user }) =
 		}
   }, [students]);
 
-	const handleStudentClick = (studentIndex) => {
+	const handleStudentClick = ((studentIndex) => {
 		const student = students[studentIndex];
 		if (student && student.id) {
 			navigate(`/session/${sessionId}/student/${student.id}`);
