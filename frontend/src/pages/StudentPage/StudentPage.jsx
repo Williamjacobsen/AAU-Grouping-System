@@ -96,7 +96,7 @@ export default function StudentPage() {
 				<button onClick={goBack} className="back-button">
 					← Back
 				</button>
-				<h1>Student Details</h1>
+				<h1>Student</h1>
 				{isCoordinator && (
 					<div className="header-buttons">
 						<button 
@@ -137,10 +137,6 @@ export default function StudentPage() {
 					{student.group && student.group.hasGroup ? (
 						<div className="group-info">
 							<div className="info-item">
-								<label>Group ID:</label>
-								<span>{student.group.id}</span>
-							</div>
-							<div className="info-item">
 								<label>Project:</label>
 								<span>{student.group.project}</span>
 							</div>
@@ -169,12 +165,10 @@ export default function StudentPage() {
 								<label>Project Priority 2:</label>
 								<span>{student.questionnaire.projectPriority2}</span>
 							</div>
-							{student.questionnaire.previousSessionTeammates !== undefined && (
-								<div className="info-item">
-									<label>Previous Session Teammates:</label>
-									<span>{student.questionnaire.previousSessionTeammates}</span>
-								</div>
-							)}
+							<div className="info-item">
+								<label>Project Priority 3:</label>
+								<span>{student.questionnaire.projectPriority3}</span>
+							</div>
 							{student.questionnaire.desiredGroupMembers !== undefined && (
 								<div className="info-item">
 									<label>Desired Group Members:</label>
@@ -189,28 +183,24 @@ export default function StudentPage() {
 								<label>Working Environment:</label>
 								<span>{student.questionnaire.workingEnvironment}</span>
 							</div>
-							{student.questionnaire.personalSkills && (
-								<div className="info-item full-width">
-									<label>Personal Skills:</label>
-									<span>
-										{Array.isArray(student.questionnaire.personalSkills) 
-											? student.questionnaire.personalSkills.join(", ")
-											: student.questionnaire.personalSkills
-										}
-									</span>
-								</div>
-							)}
-							{student.questionnaire.academicInterests && (
-								<div className="info-item full-width">
-									<label>Academic Interests:</label>
-									<span>
-										{Array.isArray(student.questionnaire.academicInterests) 
-											? student.questionnaire.academicInterests.join(", ")
-											: student.questionnaire.academicInterests
-										}
-									</span>
-								</div>
-							)}
+							<div className="info-item full-width">
+								<label>Personal Skills:</label>
+								<span>
+									{student.questionnaire.personalSkills && Array.isArray(student.questionnaire.personalSkills) 
+										? student.questionnaire.personalSkills.join(", ")
+										: student.questionnaire.personalSkills || "Not specified"
+									}
+								</span>
+							</div>
+							<div className="info-item full-width">
+								<label>Academic Interests:</label>
+								<span>
+									{student.questionnaire.academicInterests && Array.isArray(student.questionnaire.academicInterests) 
+										? student.questionnaire.academicInterests.join(", ")
+										: student.questionnaire.academicInterests || "Not specified"
+									}
+								</span>
+							</div>
 							{isCoordinator && student.questionnaire.specialNeeds && (
 								<div className="info-item full-width">
 									<label>Special Needs:</label>
@@ -228,28 +218,24 @@ export default function StudentPage() {
 				)}
 			</div>
 
-			{/* Success message for password reset */}
 			{resetPasswordSuccess && (
 				<div className="success-message" style={{ marginTop: '20px' }}>
 					{resetPasswordSuccess}
 				</div>
 			)}
 
-			{/* Error message for password reset */}
 			{resetPasswordError && (
 				<div className="error-message" style={{ marginTop: '20px' }}>
 					{resetPasswordError}
 				</div>
 			)}
 
-			{/* Error message for remove operation */}
 			{removeError && (
 				<div className="error-message" style={{ marginTop: '20px' }}>
 					{removeError}
 				</div>
 			)}
 
-			{/* Confirmation Dialog */}
 			{showConfirmDialog && (
 				<div className="modal-overlay">
 					<div className="modal-content">

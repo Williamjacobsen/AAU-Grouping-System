@@ -1,10 +1,17 @@
 package com.aau.grouping_system.Group;
 
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
+
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.Student.Student;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 @Service
+@Validated
 public class GroupService {
 
 	private final Database db;
@@ -13,11 +20,11 @@ public class GroupService {
 		this.db = db;
 	}
 
-	private void logGroupActivity(String activity, Student student, String groupId) {
+	private void logGroupActivity(@NotBlank String activity, @NotNull Student student, @NoDangerousCharacters @NotBlank String groupId) {
 		System.out.println(student.getName() + " " + activity + " group " + groupId + ".");
 	}
 
-	public void joinGroup(String groupId, Student student) {
+	public void joinGroup(@NoDangerousCharacters @NotBlank String groupId, @NotNull Student student) {
 		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
@@ -35,7 +42,7 @@ public class GroupService {
 		logGroupActivity("joined", student, groupId);
 	}
 
-	public void leaveGroup(String groupId, Student student) {
+	public void leaveGroup(@NoDangerousCharacters @NotBlank String groupId, @NotNull Student student) {
 		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
@@ -45,7 +52,7 @@ public class GroupService {
 		logGroupActivity("left", student, groupId);
 	}
 
-	public void requestToJoin(String groupId, Student student) {
+	public void requestToJoin(@NoDangerousCharacters @NotBlank String groupId, @NotNull Student student) {
 		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");
@@ -67,7 +74,7 @@ public class GroupService {
 		logGroupActivity("requested to join", student, groupId);
 	}
 
-	public void acceptJoinRequest(String groupId, Student student) {
+	public void acceptJoinRequest(@NoDangerousCharacters @NotBlank String groupId, @NotNull Student student) {
 		Group group = db.getGroups().getItem(groupId);
 		if (group == null) {
 			throw new IllegalArgumentException("Group not found");

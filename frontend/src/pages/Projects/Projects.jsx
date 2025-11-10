@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 
 import useGetSessionProjects from "../../hooks/useGetSessionProjects";
 import ProjectsTable from "./ProjectsTable";
+import "./Projects.css";
 
 export default function Project() {
 
@@ -10,16 +11,14 @@ export default function Project() {
 	const { isloading: isLoadingProjects, projects: allProjects } = useGetSessionProjects(sessionId); // hook, fetch projects from backend
 
 	if (isLoadingProjects) {
-    return <>Fetching projects from database...</>;
+    return <div className="loading-message">Fetching projects from database...</div>;
   }
 
 	return (
-		<>
-			<h1>List of projects:</h1>
+		<div className="projects-container">
+			<h1 className="projects-title">List of Projects</h1>
 			<ProjectsTable projects={allProjects}/>
-		</>
+		</div>
 	)
-
-	
 
 }

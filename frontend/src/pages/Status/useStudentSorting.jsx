@@ -52,14 +52,14 @@ export default function useStudentSorting() {
 
 	const SortingDropdown = useCallback(() => {
 		return (
-			<>
+			<div className="sorting-dropdown">
 				<select value={sortingMode} onChange={(event) => setSortingMode(event.target.value)}>
 					<option value={sortingModeEnum.groupAscending}>{sortingModeEnum.groupAscending}</option>
 					<option value={sortingModeEnum.groupDescending}>{sortingModeEnum.groupDescending}</option>
 					<option value={sortingModeEnum.nameAscending}>{sortingModeEnum.nameAscending}</option>
 					<option value={sortingModeEnum.nameDescending}>{sortingModeEnum.nameDescending}</option>
 				</select>
-			</>
+			</div>
 		);
 	}, [sortingMode]);
 
