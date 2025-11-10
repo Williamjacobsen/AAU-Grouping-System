@@ -12,6 +12,7 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Utils.RequirementService;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -163,14 +164,8 @@ public class GroupController {
 			Group toGroup = requirementService.requireGroupExists(toGroupId);
 
 			// Remove student from old group
-			fromGroup.getStudentIds().remove(student.getId());
-
-			// Add to new group
-			if (toGroup.getStudentIds().size() >= toGroup.getMaxStudents()) {
-				throw new RequestException(HttpStatus.BAD_REQUEST, "Target group is full");
-			}
-
-			toGroup.getStudentIds().add(student.getId());
+			groupService.leaveGroup(fromGroupId, student);
+			groupService.joinGroup(toGroupId, student);
 
 			return ResponseEntity.ok("Student moved successfully.");
 
@@ -194,9 +189,12 @@ public class GroupController {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 
-			// Move all students
-			toGroup.getStudentIds().addAll(fromGroup.getStudentIds());
-			fromGroup.getStudentIds().clear();
+			// a copy of the student list, to avoid errors when modifying the  original list inside the loop
+			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
+				Student student = requirementService.requireStudentExists(studentId);
+				groupService.leaveGroup(fromGroupId, student);
+				groupService.joinGroup(toGroupId, student);
+			}
 
 			return ResponseEntity.ok("Members moved successfully");
 		} catch (Exception e) {
