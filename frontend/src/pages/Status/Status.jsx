@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 
@@ -6,18 +6,18 @@ import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
+import useStudentColumns from "./useStudentColumns";
 import CsvDownloadButton from "./CsvDownloadButton";
-
 
 export default function Status() {
 
 	const { sessionId } = useParams();
 	const { user, isLoading: isLoadingUser } = useGetUser();
 
-	const { isloading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
+	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
-	
+	const { selectedColumns, ColumnsSelector } = useStudentColumns();
 	const visibleStudents = useMemo(() => {
 
 		if (!allStudents) return null;
@@ -44,5 +44,5 @@ export default function Status() {
 				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
 			}
 		</>
-	) 
+	);
 }
