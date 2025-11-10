@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
+import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,9 +31,11 @@ import org.springframework.validation.annotation.Validated;
 public class AuthController {
 
 	private final AuthService service;
+	private final EmailService emailService;
 
-	public AuthController(AuthService authService) {
+	public AuthController(AuthService authService, EmailService emailService) {
 		this.service = authService;
+		this.emailService = emailService;
 	}
 
 	private record SignInRecord(
@@ -78,6 +83,108 @@ public class AuthController {
 
 		return ResponseEntity
 				.ok(user); // info om user returneres som JSON obj.
+	}
+
+	private record ForgotPasswordRequest(
+			@NoDangerousCharacters @NotBlank String email) {
+	}
+
+	@PostMapping("/forgotPassword")
+	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest record) {
+		String email = record.email();
+		User user = service.findByEmailOrId(email, User.Role.Coordinator);
+
+		if (user == null) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND)
+					.body("No coordinator found with the provided email.");
+		}
+
+		// Create reset token and store temporarily
+		String token = java.util.UUID.randomUUID().toString();
+		PasswordResetTokens.tokens.put(token, email);
+
+		// Build reset link and email body
+		String resetLink = "http://localhost:3000/reset-password?token=" + token;
+		String subject = "AAU Grouping System - Password Reset";
+		String body = """
+				Hello %s,
+
+				A password reset was requested for your account on the AAU Grouping System.
+
+				To reset your password, please click the link below:
+				%s
+
+				If you didn’t request this, you can safely ignore this email.
+
+				Best regards,
+				AAU Grouping System
+				""".formatted(user.getName(), resetLink);
+
+		// Send email safely
+		try {
+			emailService.builder()
+					.to(email.trim())
+					.subject(subject)
+					.text(body)
+					.send();
+			return ResponseEntity.ok("Password reset link sent to " + email);
+		} catch (Exception e) {
+			// If email fails, still return success for security reasons
+			return ResponseEntity.status(HttpStatus.OK)
+					.body("Password reset requested, but email could not be sent: " + e.getMessage());
+		}
+	}
+
+	// Helper function
+	public class PasswordResetTokens {
+		public static final ConcurrentHashMap<String, String> tokens = new ConcurrentHashMap<>();
+	}
+
+	private record ResetPasswordRecord(
+			@NoDangerousCharacters @NotBlank String token,
+			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
+	}
+
+	@PostMapping("/resetPassword")
+	public ResponseEntity<String> resetPassword(@Valid @RequestBody ResetPasswordRecord record) {
+		try {
+			String token = record.token();
+			String newPassword = record.newPassword();
+
+			if (newPassword == null || newPassword.trim().isEmpty()) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Password cannot be empty.");
+			}
+
+			// Check if token exists
+			String email = PasswordResetTokens.tokens.get(token);
+			if (email == null) {
+				return ResponseEntity
+						.status(HttpStatus.UNAUTHORIZED)
+						.body("Invalid or expired token.");
+			}
+
+			// Find the coordinator
+			User user = service.findByEmailOrId(email, User.Role.Coordinator);
+			if (user == null) {
+				return ResponseEntity
+						.status(HttpStatus.NOT_FOUND)
+						.body("User not found.");
+			}
+
+			// Hash and update the new password
+			String hashedPassword = service.encodePassword(newPassword);
+			user.setPasswordHash(hashedPassword);
+
+			// Remove token
+			PasswordResetTokens.tokens.remove(token);
+
+			return ResponseEntity.ok("Password reset successfully.");
+
+		} catch (Exception e) {
+			return ResponseEntity
+					.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Error: " + e.getMessage());
+		}
 	}
 
 }

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -86,10 +86,15 @@ export default function SignIn() {
 				</button>
 				<button className="sign-up" onClick={() => navigate("/sign-up")}>
 					Sign Up
-				</button>
-				<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
-					Forgot password?
-				</div>
+				</button> 
+				<br />
+				{role == userRoleEnum.Coordinator &&
+					<>
+						<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
+							Forgot your password? 
+						</div>
+					</>
+				}
 			</div>
 		</div>
 	);

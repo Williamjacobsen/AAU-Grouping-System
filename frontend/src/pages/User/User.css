@@ -57,6 +57,10 @@ input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
 
 .forgot-password {
 	font-size: 14px;
+	font-weight: bold;
+	color: blue;
+	cursor: pointer;
+	text-decoration: underline;
 }
 
 .error-box {
@@ -79,3 +83,40 @@ input[type=email],input[type=emailOrId],input[type=password], input[type=text] {
 	margin-top: 5px;
 	border-radius: 4px;
 }
+
+
+.group-container {
+	padding: 1rem;
+}
+
+.group-row {
+  display: flex;
+  flex-wrap: wrap;   
+  gap: 12px;         
+}
+
+.group-box {
+  border: 1px solid #ccc;
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #e6e6e6;
+}
+
+.completed-groups {
+	color: green;
+}
+
+.almost-completed-groups {
+	color: goldenrod;
+}
+
+.incomplete-groups {
+	color: red;
+}
+
+.selected {
+  background-color: #3288e4; 
+  border-radius: 3px;
+	border: 1px solid #000000;
+}
+

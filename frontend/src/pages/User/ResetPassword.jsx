@@ -1,0 +1,83 @@
+import { useState } from "react";
+import "./User.css";
+
+export default function ResetPassword() {
+
+	const [newPassword, setNewPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
+
+	const token = new URLSearchParams(window.location.search).get("token"); // get token from URL
+
+	const handlePasswordSubmit = async () => {
+		if (newPassword !== confirmPassword) {
+			setError("Passwords do not match.");
+			setSuccess("");
+			return;
+		}
+
+		try {
+			const response = await fetch("http://localhost:8080/auth/resetPassword", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ token, newPassword }),
+			});
+
+			if (response.ok) {
+				setSuccess("Your password has been reset successfully!");
+				setError("");
+			} else {
+				setError("Failed to reset password.");
+				setSuccess("");
+			}
+		} catch (e) {
+			setError(e.message);
+			setSuccess("");
+		}
+	};
+
+	return (
+		<div className="container">
+			<h2>Reset your password</h2>
+			<p>
+				Enter your new password below. Make sure it’s something secure that you can remember.
+			</p>
+
+			<div className="header-text">
+				New password
+			</div>
+
+			{error && <div className="error-box">{error}</div>}
+			{success && <div className="succes-box">{success}</div>}
+
+			<div className="input">
+				<label className="label">
+					<input
+						type="password"
+						placeholder="Enter new password"
+						value={newPassword}
+						onChange={(e) => setNewPassword(e.target.value)}
+					/>
+				</label>
+			</div>
+
+			<div className="input">
+				<label className="label">
+					<input
+						type="password"
+						placeholder="Confirm new password"
+						value={confirmPassword}
+						onChange={(e) => setConfirmPassword(e.target.value)}
+					/>
+				</label>
+			</div>
+
+			<div className="submit-container">
+				<button className="submit" onClick={handlePasswordSubmit}>
+					Reset Password
+				</button>
+			</div>
+		</div>
+	);
+}
