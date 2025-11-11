@@ -39,10 +39,10 @@ public class SessionSetupController {
 				String code = s.getLoginCode();
 				if (code == null || code.isBlank()) {
 					code = generateLoginCode();
-					s.setLoginCode(code); // persisted by your DB layer
+					s.setLoginCode(code);
 				}
 
-				String subject = "AAU Grouping System – Your Login Code";
+				String subject = "AAU Grouping System - Your Login Code";
 				String body = """
 						Hello,
 
@@ -89,10 +89,10 @@ public class SessionSetupController {
 				String code = sv.getLoginCode();
 				if (code == null || code.isBlank()) {
 					code = generateLoginCode();
-					sv.setLoginCode(code); // persisted by your DB layer
+					sv.setLoginCode(code);
 				}
 
-				String subject = "AAU Grouping System – Your Login Code";
+				String subject = "AAU Grouping System - Your Login Code";
 				String body = """
 						Hello,
 
