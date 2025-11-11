@@ -12,34 +12,34 @@ export default function SessionSetup() {
 	const { isLoading: isLoadingStudents, students } = useGetSessionStudents(sessionId);
 	const { isLoading: isLoadingSupervisors, supervisors } = useGetSessionSupervisors(sessionId);
 	const [message, setMessage] = useState("");
-	
+
 	if (isLoadingSession) {
-		return <div className="loading-message">Loading session...</div>
+		return <div className="loading-message">Loading session...</div>;
 	}
 	if (isLoadingStudents) {
-		return <div className="loading-message">Loading students...</div>
+		return <div className="loading-message">Loading students...</div>;
 	}
 	if (isLoadingSupervisors) {
-		return <div className="loading-message">Loading supervisors...</div>
+		return <div className="loading-message">Loading supervisors...</div>;
 	}
 
 	async function saveSetup(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 			setMessage("Saving session...");
-			
+
 			const formData = new FormData(event.currentTarget);
 
 			const res = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/saveSetup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" }, 
-        credentials: "include",
-        body: JSON.stringify(formData),
-      });
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				credentials: "include",
+				body: JSON.stringify(formData),
+			});
 
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+			if (!res.ok) throw new Error(`HTTP ${res.status}`);
 			setMessage("Setup saved successfully!");
-			
+
 			window.location.reload(); // Reload the page (to refresh changes)
 		} catch (error) {
 			alert(error);
@@ -50,7 +50,7 @@ export default function SessionSetup() {
 		let text = "";
 		supervisors.map((supervisor) => {
 			text += supervisor.email + "\n";
-		})
+		});
 		return text;
 	}
 
@@ -58,7 +58,7 @@ export default function SessionSetup() {
 		let text = "";
 		students.map((student) => {
 			text += student.email + "\n";
-		})
+		});
 		return text;
 	}
 
@@ -67,7 +67,7 @@ export default function SessionSetup() {
 			<form className="setup-form" onSubmit={saveSetup}>
 				<div className="form-section">
 					<h3 className="section-title">Basic Settings</h3>
-					
+
 					<div className="form-group">
 						<label className="form-label">
 							Session name
@@ -119,7 +119,7 @@ export default function SessionSetup() {
 							</select>
 						</label>
 					</div>
-					
+
 					<div className="form-group">
 						<label className="form-label">
 							Deadline for students to submit their questionnaires
@@ -135,7 +135,7 @@ export default function SessionSetup() {
 
 				<div className="form-section">
 					<h3 className="section-title">Participants</h3>
-					
+
 					<div className="form-group">
 						<label className="form-label">
 							Emails of supervisors
@@ -169,10 +169,11 @@ export default function SessionSetup() {
 	}
 
 	async function sendLoginCodeToStudents(event) {
+
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 			setMessage("Sending login codes to students...");
-			
+
 			const formData = new FormData(event.currentTarget);
 			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
 
@@ -194,7 +195,7 @@ export default function SessionSetup() {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 			setMessage("Sending login codes to supervisors...");
-			
+
 			const formData = new FormData(event.currentTarget);
 			const sendOnlyNew = formData.get("sendOnlyNew") === "on";
 
@@ -212,14 +213,14 @@ export default function SessionSetup() {
 		}
 	}
 
-  return (
-    <div className="session-setup-container">
+	return (
+		<div className="session-setup-container">
 			<h1 className="session-setup-title">Session Setup</h1>
 			<SetupForm />
 
 			<div className="form-section">
 				<h3 className="section-title">Actions</h3>
-				
+
 				<div className="button-group">
 					<button
 						className="button-secondary"
@@ -233,7 +234,7 @@ export default function SessionSetup() {
 
 			<div className="form-section">
 				<h3 className="section-title">Send Login Codes</h3>
-				
+
 				<form className="checkbox-form" onSubmit={sendLoginCodeToStudents}>
 					<div className="checkbox-group">
 						<input
@@ -274,6 +275,6 @@ export default function SessionSetup() {
 			</div>
 
 			{message && <div className="message">{message}</div>}
-    </div>
-  );
+		</div>
+	);
 }

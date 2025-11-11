@@ -1,138 +1,87 @@
 package com.aau.grouping_system.Session;
 
-import com.aau.grouping_system.EmailSystem.EmailService;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.Utils.RequirementService;
+
+import jakarta.servlet.http.HttpServletRequest;
+
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
+@Validated // enables method-level validation
 @RequestMapping("/api/sessions/{sessionId}")
 public class SessionSetupController {
 
-	@Autowired
-	private SessionService sessionService;
-	@Autowired
-	private EmailService emailService;
+	private final Database db;
+	private final RequirementService requirementService;
+	private final UserService userService;
 
+	public SessionSetupController(
+			Database db,
+			RequirementService requirementService,
+			UserService userService) {
+		this.db = db;
+		this.requirementService = requirementService;
+		this.userService = userService;
+	}
+
+	record SendLoginCodeRecord(
+			Boolean sendOnlyNew) {
+	}
+
+	// Suppress in-editor warnings about type safety violations because it isn't
+	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked")
 	@PostMapping("/sendLoginCodeToStudents")
-	public ResponseEntity<?> sendLoginCodeToStudents(
+	public ResponseEntity<String> sendLoginCodeToStudents(
+			HttpServletRequest servlet,
 			@PathVariable String sessionId,
-			@RequestBody SendLoginCodeRequest request) {
+			@RequestBody SendLoginCodeRecord record) {
 
-		try {
-			List<Student> students = sessionService.getStudentsBySessionId(sessionId);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-			if (request.isSendOnlyNew()) {
-				students = students.stream()
-						.filter(s -> s.getLoginCode() == null || s.getLoginCode().isBlank())
-						.collect(Collectors.toList());
-			}
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
-			int sent = 0;
-			for (Student s : students) {
-				String code = s.getLoginCode();
-				if (code == null || code.isBlank()) {
-					code = generateLoginCode();
-					s.setLoginCode(code);
-				}
-
-				String subject = "AAU Grouping System - Your Login Code";
-				String body = """
-						Hello,
-
-						Your login code for the AAU Grouping System is: %s
-
-						Use this code to access your student page and submit your preferences.
-
-						Best regards,
-						AAU Grouping System
-						""".formatted(code);
-
-				emailService.builder()
-						.to(s.getEmail())
-						.subject(subject)
-						.text(body)
-						.send();
-
-				sent++;
-			}
-
-			return ResponseEntity.ok("Emails sent: " + sent);
-		} catch (Exception e) {
-			return ResponseEntity.internalServerError()
-					.body("Failed sending student codes: " + e.getMessage());
+		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
+		if (record.sendOnlyNew) {
+			students.removeIf(student -> student.getLoginCode() != null);
 		}
+
+		userService.applyAndEmailLoginCodes(session, students);
+
+		return ResponseEntity.ok("Emails have been sent to students.");
 	}
 
+	// Suppress in-editor warnings about type safety violations because it isn't
+	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked")
 	@PostMapping("/sendLoginCodeToSupervisors")
-	public ResponseEntity<?> sendLoginCodeToSupervisors(
+	public ResponseEntity<String> sendLoginCodeToSupervisors(
+			HttpServletRequest servlet,
 			@PathVariable String sessionId,
-			@RequestBody SendLoginCodeRequest request) {
+			@RequestBody SendLoginCodeRecord record) {
 
-		try {
-			List<Supervisor> supervisors = sessionService.getSupervisorsBySessionId(sessionId);
+		Session session = requirementService.requireSessionExists(sessionId);
 
-			if (request.isSendOnlyNew()) {
-				supervisors = supervisors.stream()
-						.filter(sv -> sv.getLoginCode() == null || sv.getLoginCode().isBlank())
-						.collect(Collectors.toList());
-			}
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
-			int sent = 0;
-			for (Supervisor sv : supervisors) {
-				String code = sv.getLoginCode();
-				if (code == null || code.isBlank()) {
-					code = generateLoginCode();
-					sv.setLoginCode(code);
-				}
-
-				String subject = "AAU Grouping System - Your Login Code";
-				String body = """
-						Hello,
-
-						Your login code for the AAU Grouping System is: %s
-
-						Use this code to access your supervisor dashboard.
-
-						Best regards,
-						AAU Grouping System
-						""".formatted(code);
-
-				emailService.builder()
-						.to(sv.getEmail())
-						.subject(subject)
-						.text(body)
-						.send();
-
-				sent++;
-			}
-
-			return ResponseEntity.ok("Emails sent: " + sent);
-		} catch (Exception e) {
-			return ResponseEntity.internalServerError()
-					.body("Failed sending supervisor codes: " + e.getMessage());
-		}
-	}
-
-	private String generateLoginCode() {
-		return UUID.randomUUID().toString().substring(0, 6).toUpperCase();
-	}
-
-	static class SendLoginCodeRequest {
-		private boolean sendOnlyNew;
-
-		public boolean isSendOnlyNew() {
-			return sendOnlyNew;
+		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
+		if (record.sendOnlyNew) {
+			supervisors.removeIf(supervisor -> supervisor.getLoginCode() != null);
 		}
 
-		public void setSendOnlyNew(boolean sendOnlyNew) {
-			this.sendOnlyNew = sendOnlyNew;
-		}
+		userService.applyAndEmailLoginCodes(session, supervisors);
+
+		return ResponseEntity.ok("Emails have been sent to supervisors.");
 	}
+
 }

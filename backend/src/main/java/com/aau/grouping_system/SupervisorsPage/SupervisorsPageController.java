@@ -25,6 +25,7 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequirementService;
@@ -43,13 +44,19 @@ public class SupervisorsPageController {
 	private final PasswordEncoder passwordEncoder;
 	private final RequirementService requirementService;
 	private final EmailService emailService;
+	private final UserService userService;
 
-	public SupervisorsPageController(Database db, PasswordEncoder passwordEncoder, 
-			RequirementService requirementService, EmailService emailService) {
+	public SupervisorsPageController(
+			Database db,
+			PasswordEncoder passwordEncoder,
+			RequirementService requirementService,
+			EmailService emailService,
+			UserService userService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
 		this.requirementService = requirementService;
 		this.emailService = emailService;
+		this.userService = userService;
 	}
 
 	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
@@ -72,12 +79,12 @@ public class SupervisorsPageController {
 				.orElse(null);
 	}
 
-	private void sendCredentialsEmail(String email, String sessionName, String supervisorId, String password, 
+	private void sendCredentialsEmail(String email, String sessionName, String supervisorId, String password,
 			boolean isNewPassword) throws Exception {
 		String subject = isNewPassword ? "AAU Grouping System - New Password" : "AAU Grouping System - Supervisor Access";
-		String actionText = isNewPassword ? "Your password for the AAU Grouping System has been reset for" 
+		String actionText = isNewPassword ? "Your password for the AAU Grouping System has been reset for"
 				: "You have been added as a supervisor for the";
-		
+
 		String body = """
 				Hello,
 
@@ -104,7 +111,7 @@ public class SupervisorsPageController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 		Session session = validateSessionAccess(servlet, sessionId);
 		CopyOnWriteArrayList<Supervisor> supervisors = getSessionSupervisors(session);
-		
+
 		List<Map<String, Object>> supervisorList = supervisors.stream()
 				.map(supervisor -> {
 					Map<String, Object> supervisorMap = new HashMap<>();
@@ -130,13 +137,13 @@ public class SupervisorsPageController {
 
 		Session session = validateSessionAccess(servlet, sessionId);
 		CopyOnWriteArrayList<Supervisor> existingSupervisors = getSessionSupervisors(session);
-		
+
 		// Check if supervisor with this email already exists in this session
 		boolean supervisorExists = existingSupervisors.stream()
 				.anyMatch(supervisor -> supervisor.getEmail().equals(record.email.trim()));
 
 		if (supervisorExists) {
-			throw new RequestException(HttpStatus.CONFLICT, 
+			throw new RequestException(HttpStatus.CONFLICT,
 					"Supervisor with this email already exists in this session");
 		}
 
@@ -192,10 +199,9 @@ public class SupervisorsPageController {
 			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
 		}
 
-		// Generate new password and update supervisor
+		// Generate new UUID password
 		String newPassword = UUID.randomUUID().toString();
-		String passwordHash = passwordEncoder.encode(newPassword);
-		supervisor.setPasswordHash(passwordHash);
+		userService.modifyPassword(newPassword, supervisor);
 
 		// Send new password via email
 		try {

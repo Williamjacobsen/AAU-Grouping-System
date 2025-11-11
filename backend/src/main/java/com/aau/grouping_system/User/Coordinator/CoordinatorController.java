@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequirementService;
 
 import org.springframework.http.HttpStatus;
@@ -25,11 +27,15 @@ public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;
 	private final RequirementService requirementService;
+	private final UserService userService;
 
-	public CoordinatorController(CoordinatorService coordinatorService,
-			RequirementService requirementService) {
+	public CoordinatorController(
+			CoordinatorService coordinatorService,
+			RequirementService requirementService,
+			UserService userService) {
 		this.coordinatorService = coordinatorService;
 		this.requirementService = requirementService;
+		this.userService = userService;
 	}
 
 	void requireEmailNotDuplicate(String email) {
@@ -64,11 +70,11 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyEmail(HttpServletRequest servlet,
 			@Valid @RequestBody ModifyEmailRecord record) {
 
-		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
 
 		requireEmailNotDuplicate(record.newEmail);
 
-		coordinatorService.modifyEmail(record.newEmail, user.getId());
+		userService.modifyEmail(record.newEmail, coordinator);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
@@ -83,9 +89,9 @@ public class CoordinatorController {
 	public ResponseEntity<String> modifyPassword(HttpServletRequest servlet,
 			@Valid @RequestBody ModifyPasswordRecord record) {
 
-		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
 
-		coordinatorService.modifyPassword(record.newPassword, user.getId());
+		userService.modifyPassword(record.newPassword, coordinator);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)
