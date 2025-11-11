@@ -26,7 +26,7 @@ export default function SignIn() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ emailOrId, password, role }),
 				credentials: "include"
-			})
+			});
 
 			if (!response.ok) {
 				const error = await response.text();
@@ -38,7 +38,7 @@ export default function SignIn() {
 		} catch (e) {
 			setError(e.message);
 		}
-	}
+	};
 
 	return (
 		<div className="container">
@@ -86,12 +86,12 @@ export default function SignIn() {
 				</button>
 				<button className="sign-up" onClick={() => navigate("/sign-up")}>
 					Sign Up
-				</button> 
+				</button>
 				<br />
-				{role == userRoleEnum.Coordinator &&
+				{role === userRoleEnum.Coordinator &&
 					<>
 						<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
-							Forgot your password? 
+							Forgot your password?
 						</div>
 					</>
 				}
