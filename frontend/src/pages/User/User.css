@@ -235,6 +235,26 @@ select:focus {
   color: #777;
 }
 
+.undo-box {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.undo-box button {
+  background-color: #f04e4e;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.undo-box button:hover {
+  background-color: #ec1f1f;
+}
+
+
 
 	
 
