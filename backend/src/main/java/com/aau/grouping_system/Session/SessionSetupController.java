@@ -42,7 +42,7 @@ public class SessionSetupController {
 					s.setLoginCode(code);
 				}
 
-				String subject = "AAU Grouping System – Your Login Code";
+				String subject = "AAU Grouping System - Your Login Code";
 				String body = """
 						Hello,
 
@@ -92,7 +92,7 @@ public class SessionSetupController {
 					sv.setLoginCode(code);
 				}
 
-				String subject = "AAU Grouping System – Your Login Code";
+				String subject = "AAU Grouping System - Your Login Code";
 				String body = """
 						Hello,
 
