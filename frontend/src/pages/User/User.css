@@ -24,7 +24,10 @@
 	margin-bottom: 1rem;
 }
 
-input[type=email], input[type=emailOrId], input[type=password], input[type=text] {
+input[type=email],
+input[type=emailOrId],
+input[type=password],
+input[type=text] {
 	width: 100%;
 	padding: 0.75rem;
 	margin: 0.5rem 0 1rem 0;
@@ -35,7 +38,10 @@ input[type=email], input[type=emailOrId], input[type=password], input[type=text]
 	box-sizing: border-box;
 }
 
-input[type=email]:focus, input[type=emailOrId]:focus, input[type=password]:focus, input[type=text]:focus {
+input[type=email]:focus,
+input[type=emailOrId]:focus,
+input[type=password]:focus,
+input[type=text]:focus {
 	outline: none;
 	border-color: #3498db;
 }
@@ -69,7 +75,8 @@ select:focus {
 	margin-top: 2rem;
 }
 
-.sign-in, .submit {
+.sign-in,
+.submit {
 	background-color: #3498db;
 	color: white;
 	font-size: 1rem;
@@ -81,7 +88,8 @@ select:focus {
 	font-family: inherit;
 }
 
-.sign-in:hover, .submit:hover {
+.sign-in:hover,
+.submit:hover {
 	background-color: #2980b9;
 }
 
@@ -136,19 +144,98 @@ select:focus {
 		padding: 1rem;
 		margin: 1rem;
 	}
-	
+
 	.header-text {
 		font-size: 2rem;
 	}
-	
+
 	.submit-container {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 	}
-	
-	.sign-in, .sign-up {
+
+	.sign-in,
+	.sign-up {
 		margin: 0;
 		width: 100%;
 	}
 }
+
+.group-container {
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 1.5rem;
+	font-family: inherit;
+	color: #000;
+}
+
+.group-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 2rem;
+	justify-content: flex-start;
+}
+
+.group-box {
+	width: 220px;               
+	height: auto;               
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 1rem;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.group-box:hover {
+	border-color: #3498db;
+}
+
+.completed-groups {
+	color: #27ae60;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.almost-completed-groups {
+	color: #f1c40f;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.incomplete-groups {
+	color: #e74c3c;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.selected {
+	background-color: #3498db;
+	color: #fff;
+	border: 1px solid #2980b9;
+	border-radius: 4px;
+}
+
+.group-project {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+.group-project .highlight {
+  color: #333;
+  font-weight: 600;
+}
+
+.student-priorities {
+  font-size: 0.85rem;
+  color: #777;
+}
+
+
+	
+
+

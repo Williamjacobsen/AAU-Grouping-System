@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useGetUser } from "../../hooks/useGetUser";
 import "../User/User.css";
 
 export default function GroupManagement() {
@@ -6,23 +8,25 @@ export default function GroupManagement() {
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
-	const [error, setError] = useState(null); //needs error handling
+	const [error, setError] = useState(null);
+	const navigate = useNavigate();
 
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
 
+
 	useEffect(() => {
 		const fetchGroups = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups`);
-				
+
 				if (!response.ok) {
-				const errorMessage = await response.text();
-				setError(errorMessage);
-				return;
-			}
-				
+					const errorMessage = await response.text();
+					setError(errorMessage);
+					return;
+				}
+
 				const data = await response.json();
 				const groupArray = Object.values(data); //convert object into an array
 				setGroups(groupArray);
@@ -34,12 +38,18 @@ export default function GroupManagement() {
 		fetchGroups();
 	}, []);
 
-	useEffect (() => {
+	useEffect(() => {
 		if (error) {
 			const timer = setTimeout(() => setError(""), 5000);
 			return () => clearTimeout(timer);
 		}
 	}, [error])
+
+	const { user, isLoading: isLoadingUser } = useGetUser();
+
+	if (isLoadingUser) return <>Checking authentication...</>;
+	if (!user) return navigate("/sign-in");
+
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -90,9 +100,11 @@ export default function GroupManagement() {
 		setGroups(prevGroups => {
 			const targetGroup = prevGroups.find(group => group.id === groupId);
 
-			if (targetGroup.members.length >= 7)
-				// if the target group is full, we don’t add the student
+			// if the target group is full, we don’t add the student
+			if (targetGroup.members.length >= 7) {
+				setError("Total group members cant exceed: ");
 				return prevGroups;
+			}
 
 			const newGroups = prevGroups.map(group => {
 				if (group.id === selectedStudent.from) {
@@ -157,11 +169,26 @@ export default function GroupManagement() {
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
 						{group.name} - size: {group.members.length}
 					</h4>
+					{group.project && (
+						<p className="group-project">
+							Project: <span className="highlight">{group.project}</span>
+						</p>
+					)}
 					<ul>
-						{group.members.map((memberName, index) => (
-							<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
-								className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
-								{memberName} </li>
+						{group.members.map((member, index) => (
+						<li key={index} onClick={() => handleStudentClick(member.name, group.id)}
+							className={selectedStudent && selectedStudent.name === member.name ? "selected" : ""
+							}> <span classname="student-name"> {member.name} </span>
+							{member.priority1 || member.priority2 || member.priority3 ? (
+								<span className="student-priorities">
+									— [
+									{member.priority1 ? member.priority1 : ""}
+									{member.priority2 ? ", " + member.priority2 : ""}
+									{member.priority3 ? ", " + member.priority3 : ""}
+									]
+								</span>
+							) : null}
+						</li>
 						))}
 					</ul>
 				</div>
@@ -172,7 +199,7 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			<h1> Group Management</h1>
-			
+
 			{error && <div className="error-box">{error}</div>}
 
 			<h2 className="completed-groups" >Completed Groups</h2>
