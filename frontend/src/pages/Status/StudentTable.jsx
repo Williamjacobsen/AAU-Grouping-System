@@ -2,19 +2,19 @@ import React, { memo } from "react";
 import StudentGroupActions from './StudentGroupActions';
 import { useNavigate } from "react-router-dom";
 
-const StudentTable = memo(({ visibleColumns, students, sessionId, session, user }) => {
+const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session, user }) => {
 
 	const navigate = useNavigate();
 
 	function navigateToStudentPage(studentIndex) {
-		const student = students[studentIndex];
+		const student = visibleStudents[studentIndex];
 		if (student && student.id) {
 			navigate(`/session/${sessionId}/student/${student.id}`);
 		}
 	}
 
 	if (!visibleColumns || visibleColumns.length === 0) {
-		return <div>List of students is empty.</div>;
+		return <div>No visible columns.</div>;
 	}
 
 	return (
@@ -53,8 +53,8 @@ const StudentTable = memo(({ visibleColumns, students, sessionId, session, user 
 						))}
 						<td>
 							<StudentGroupActions
-								groupId={students?.[rowIndex]?.group?.id}
-								studentId={students?.[rowIndex]?.id}
+								groupId={visibleStudents?.[rowIndex]?.group?.id}
+								studentId={visibleStudents?.[rowIndex]?.id}
 								session={session}
 								user={user}
 							/>

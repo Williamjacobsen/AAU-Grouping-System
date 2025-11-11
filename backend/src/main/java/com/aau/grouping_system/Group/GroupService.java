@@ -32,6 +32,7 @@ public class GroupService {
 		}
 
 		group.getStudentIds().add(student.getId());
+		student.setGroupId(group.getId());
 		logGroupActivity("joined", student, groupId);
 	}
 
@@ -42,6 +43,7 @@ public class GroupService {
 		}
 
 		group.getStudentIds().remove(student.getId());
+		student.setGroupId(null);
 		logGroupActivity("left", student, groupId);
 	}
 
@@ -83,6 +85,7 @@ public class GroupService {
 
 		group.getJoinRequestStudentIds().remove(student.getId());
 		group.getStudentIds().add(student.getId());
+		student.setGroupId(group.getId());
 		logGroupActivity("was accepted to join", student, groupId);
 	}
 }

@@ -5,7 +5,6 @@ import { useGetUser } from "../../hooks/useGetUser";
 import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
-import useStudentSorting from "./useStudentSorting";
 import useStudentFiltering from "./useStudentFiltering";
 import useStudentColumns from "./useStudentColumns";
 import CsvDownloadButton from "./CsvDownloadButton";
@@ -22,7 +21,6 @@ export default function Status() {
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjects(sessionId);
 	const { isLoading: isLoadingGroups, groups } = useGetSessionGroups(sessionId);
 
-	const { toSorted, SortingDropdown } = useStudentSorting();
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
 
 	const visibleStudents = useMemo(() => {
@@ -31,10 +29,9 @@ export default function Status() {
 
 		let result = allStudents;
 		result = toFiltered(result);
-		result = toSorted(result);
 
 		return result;
-	}, [allStudents, toSorted, toFiltered]);
+	}, [allStudents, toFiltered]);
 
 	const { visibleColumns, ColumnSelector } = useStudentColumns(visibleStudents, projects, groups);
 
@@ -48,7 +45,6 @@ export default function Status() {
 	return (
 		<>
 			<SearchFilterInput />
-			<SortingDropdown />
 			<ColumnSelector />
 			<StudentTable
 				visibleColumns={visibleColumns}

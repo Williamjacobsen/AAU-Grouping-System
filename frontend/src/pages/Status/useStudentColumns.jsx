@@ -1,75 +1,151 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 
-// Hook that provides a set of selectable student columns and a small UI to toggle them
 export default function useStudentColumns(visibleStudents, projects, groups) {
+
+	const [sortedStudents, setSortedStudents] = useState(visibleStudents);
+
+	useEffect(() => {
+		setSortedStudents(visibleStudents);
+	}, [visibleStudents]);
 
 	const allColumns = useMemo(() => {
 
-		if (!visibleStudents || !projects || !groups) {
+		if (!sortedStudents || !projects || !groups) {
 			return null;
 		}
 
-		function createColumn(label, values) {
+		// Add group numbers to groups
+		const groupsWithNumbers = groups.map((group, index) => ({
+			...group,
+			number: index + 1
+		}));
+
+		function createColumn(label, getFunction) {
+
+			const rows = sortedStudents.map(student => getFunction(student));
+
+			function sortingFunction() {
+				// Create a copy and sort it
+				const newlySorted = [...visibleStudents].sort((a, b) => {
+					const valueA = getFunction(a)?.toString() || "";
+					const valueB = getFunction(b)?.toString() || "";
+					return valueA.localeCompare(valueB);
+				});
+				setSortedStudents(newlySorted);
+			}
+
 			return {
 				label: label,
-				rows: values
+				sortingFunction: sortingFunction,
+				rows: rows
 			};
 		}
 
 		return [
-			createColumn("Name", visibleStudents.map(student => student.name)),
-			createColumn("Group number", visibleStudents.map(student => {
-				for (let i = 0; i < groups.length; i++) {
-					if (groups[i].id === student.groupId) {
-						return i + 1;
+			createColumn(
+				"Name",
+				function (student) {
+					return student.name;
+				}
+			),
+			createColumn(
+				"Group number",
+				function (student) {
+					return groupsWithNumbers.find(
+						group => group.id === student.groupId)?.number
+						?? "";
+				}
+			),
+			createColumn(
+				"Group project",
+				function (student) {
+					return projects.find(
+						project => project.id === groupsWithNumbers.find(
+							group => group.id === student.groupId))?.projectId
+						?? "";
+				}
+			),
+			createColumn(
+				"1st project priority",
+				function (student) {
+					return projects.find(
+						project => project.id === student.questionnaire.desiredProjectId1)
+						?? "";
+				}
+			),
+			createColumn(
+				"2st project priority",
+				function (student) {
+					return projects.find(
+						project => project.id === student.questionnaire.desiredProjectId2)
+						?? "";
+				}
+			),
+			createColumn(
+				"3st project priority",
+				function (student) {
+					return projects.find(
+						project => project.id === student.questionnaire.desiredProjectId3)
+						?? "";
+				}
+			),
+			createColumn(
+				"Preferred group size",
+				function (student) {
+					let min = student.questionnaire.desiredGroupSizeMin;
+					let max = student.questionnaire.desiredGroupSizeMax;
+					if (min === -1 && max === -1) {
+						return "No preference";
+					}
+					else if (min === -1) {
+						return "Max: " + max;
+					}
+					else if (student.questionnaire.desiredGroupSizeMax === -1) {
+						return "Min: " + min;
+					}
+					else {
+						return min + " to " + max;
 					}
 				}
-				return "";
-			})),
-			createColumn("Group project", visibleStudents.map(student => {
-				return projects.find(
-					project => project.id === groups.find(
-						group => group.id === student.groupId))?.projectId;
-			})),
-			createColumn("1st project priority", visibleStudents.map(student => {
-				return projects.find(
-					project => project.id === student.questionnaire.desiredProjectId1)
-					?? "";
-			})),
-			createColumn("2st project priority", visibleStudents.map(student => {
-				return projects.find(
-					project => project.id === student.questionnaire.desiredProjectId2)
-					?? "";
-			})),
-			createColumn("3st project priority", visibleStudents.map(student => {
-				return projects.find(
-					project => project.id === student.questionnaire.desiredProjectId3)
-					?? "";
-			})),
-			createColumn("Preferred group size", visibleStudents.map(student => {
-				let min = student.questionnaire.desiredGroupSizeMin;
-				let max = student.questionnaire.desiredGroupSizeMax;
-				if (min === -1 && max === -1) {
-					return "No preference";
+			),
+			createColumn(
+				"Preferred work location",
+				function (student) {
+					return student.questionnaire.desiredWorkLocation;
 				}
-				else if (min === -1) {
-					return "Max: " + max;
+			),
+			createColumn(
+				"Preferred work style",
+				function (student) {
+					return student.questionnaire.desiredWorkStyle;
 				}
-				else if (student.questionnaire.desiredGroupSizeMax === -1) {
-					return "Min: " + min;
+			),
+			createColumn(
+				"Personal skills",
+				function (student) {
+					return student.questionnaire.personalSkills;
 				}
-				else {
-					return min + " to " + max;
+			),
+			createColumn(
+				"Special needs",
+				function (student) {
+					return student.questionnaire.specialNeeds;
 				}
-			})),
-			createColumn("Preferred work location", visibleStudents.map(student => student.questionnaire.desiredWorkLocation)),
-			createColumn("Preferred work style", visibleStudents.map(student => student.questionnaire.desiredWorkStyle)),
-			createColumn("Personal skills", visibleStudents.map(student => student.questionnaire.personalSkills)),
-			createColumn("Special needs", visibleStudents.map(student => student.questionnaire.specialNeeds)),
-			createColumn("Academic interests", visibleStudents.map(student => student.questionnaire.academicInterests)),
-			createColumn("Other comments", visibleStudents.map(student => student.questionnaire.comments))
+			),
+			createColumn(
+				"Academic interests",
+				function (student) {
+					return student.questionnaire.academicInterests;
+				}
+			),
+			createColumn(
+				"Other comments",
+				function (student) {
+					return student.questionnaire.comments;
+				}
+			)
 		];
-	}, [visibleStudents, projects, groups]);
+	}, [sortedStudents, visibleStudents, projects, groups]);
 
 	const [enabledLabels, setEnabledLabels] = useState([
 		"Name",
@@ -81,15 +157,15 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 
 	const visibleColumns = useMemo(() => {
 		return allColumns?.filter(column => enabledLabels.includes(column.label));
-	}, [allColumns, enabledLabels]);
+	}, [allColumns, enabledLabels, sortedStudents]);
 
 	function toggleLabel(label) {
-		setEnabledLabels(previousValue => {
-			if (previousValue.includes(label)) {
-				return previousValue.filter(item => item !== label);
+		setEnabledLabels(previousValues => {
+			if (previousValues.includes(label)) {
+				return previousValues.filter(item => item !== label);
 			}
 			else {
-				return [...previousValue, label];
+				return [...previousValues, label];
 			}
 		});
 	}
@@ -116,19 +192,23 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 						border: '1px solid #ccc',
 						padding: '8px',
 						zIndex: 1000,
-						minWidth: '200px'
+						minWidth: '400px'
 					}}>
-						{allColumns.map(column => (
-							column.label !== "Name" && (
-								<label key={column.label} style={{ display: 'block', margin: '4px 0' }}>
-									<input
-										type="checkbox"
-										checked={enabledLabels.includes(column.label)}
-										onChange={() => toggleLabel(column.label)}
-									/>
-									<span style={{ marginLeft: '8px' }}>{column.label}</span>
-								</label>
-							)
+						{allColumns?.map(column => (
+							<label key={column.label} style={{ display: 'block', margin: '4px 0' }}>
+								<input
+									type="checkbox"
+									checked={enabledLabels.includes(column.label)}
+									onChange={() => toggleLabel(column.label)}
+								/>
+								<button
+									disabled={!enabledLabels.includes(column.label)}
+									onClick={column.sortingFunction}
+								>
+									Sort by
+								</button>
+								<span style={{ marginLeft: '8px' }}>{column.label}</span>
+							</label>
 						))}
 					</div>
 				)}
