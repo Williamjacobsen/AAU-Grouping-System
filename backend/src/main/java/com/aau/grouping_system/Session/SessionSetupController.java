@@ -16,7 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/api/sessions/{sessionId}")
+@RequestMapping("/sessionSetup")
 public class SessionSetupController {
 
 	private final Database db;
@@ -39,7 +39,7 @@ public class SessionSetupController {
 	// Suppress in-editor warnings about type safety violations because it isn't
 	// true here because Java's invariance of generics.
 	@SuppressWarnings("unchecked")
-	@PostMapping("/sendLoginCodeToStudents")
+	@PostMapping("/{sessionId}/sendLoginCodeTo/students")
 	public ResponseEntity<String> sendLoginCodeToStudents(
 			HttpServletRequest servlet,
 			@PathVariable String sessionId,
@@ -63,7 +63,7 @@ public class SessionSetupController {
 	// Suppress in-editor warnings about type safety violations because it isn't
 	// true here because Java's invariance of generics.
 	@SuppressWarnings("unchecked")
-	@PostMapping("/sendLoginCodeToSupervisors")
+	@PostMapping("/{sessionId}/sendLoginCodeTo/supervisors")
 	public ResponseEntity<String> sendLoginCodeToSupervisors(
 			HttpServletRequest servlet,
 			@PathVariable String sessionId,

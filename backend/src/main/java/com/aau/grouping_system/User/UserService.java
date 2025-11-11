@@ -93,7 +93,9 @@ public class UserService {
 						.text(body)
 						.send();
 			} catch (Exception exception) {
-				throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to send email: " + exception.getMessage());
+				throw new RequestException(
+						HttpStatus.INTERNAL_SERVER_ERROR,
+						"Failed to send email to address '" + user.getEmail() + "': " + exception.getMessage());
 			}
 		}
 	}

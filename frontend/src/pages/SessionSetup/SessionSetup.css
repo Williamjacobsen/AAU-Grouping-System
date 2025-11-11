@@ -103,6 +103,8 @@
 	border: none;
 	cursor: pointer;
 	font-family: inherit;
+	min-width: 300px;
+	text-align: center;
 }
 
 .button-primary:hover {
@@ -167,20 +169,20 @@
 	.session-setup-container {
 		padding: 1rem;
 	}
-	
+
 	.session-setup-title {
 		font-size: 2rem;
 	}
-	
+
 	.button-group {
 		flex-direction: column;
 	}
-	
+
 	.button-primary,
 	.button-secondary {
 		width: 100%;
 	}
-	
+
 	.form-number {
 		max-width: none;
 	}

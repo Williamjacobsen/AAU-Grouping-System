@@ -169,11 +169,9 @@ public class SessionController {
 	private record SaveSetupRecord() {
 	}
 
-	@PostMapping("/{sessionId}/saveSetup")
 	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
 			@RequestBody Map<String, String> request) {
-				
-			
+
 		Session session = db.getSessions().getItem(sessionId);
 		if (session == null) {
 			return ResponseEntity.notFound().build();
@@ -183,7 +181,7 @@ public class SessionController {
 		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 		}
-			
+
 		String name = request.get("name");
 		String description = request.get("description");
 		String studentEmails = request.get("studentEmails");
@@ -195,7 +193,7 @@ public class SessionController {
 		int groupSize = Integer.parseInt(request.get("groupSize"));
 
 		sessionService.applySetup(session, name, description, studentEmails, supervisorEmails,
-		coordinatorName, questionnaireDeadline, initialProjects, optionalQuestionnaire, groupSize);
+				coordinatorName, questionnaireDeadline, initialProjects, optionalQuestionnaire, groupSize);
 
 		return ResponseEntity.ok("Session setup saved successfully!");
 	}
