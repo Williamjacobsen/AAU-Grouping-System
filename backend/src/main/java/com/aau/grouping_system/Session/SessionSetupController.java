@@ -39,7 +39,7 @@ public class SessionSetupController {
 				String code = s.getLoginCode();
 				if (code == null || code.isBlank()) {
 					code = generateLoginCode();
-					s.setLoginCode(code); // persisted by your DB layer
+					s.setLoginCode(code);
 				}
 
 				String subject = "AAU Grouping System – Your Login Code";
