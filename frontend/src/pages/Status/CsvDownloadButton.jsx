@@ -71,7 +71,7 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 
 	return (
 		<>
-			<button onClick={startDownload}>
+			<button className="csv-download-button" onClick={startDownload}>
 				Download CSV file of groups 
 			</button>
 

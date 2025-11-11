@@ -2,10 +2,10 @@
 
 ### Variables
 @baseUrl = http://localhost:8080
-@coordinatorEmail = c2@test.com
-@coordinatorPassword = c2
+@coordinatorEmail = c1@test.com
+@coordinatorPassword = c1
 @studentId = student-test-uuid
-@studentPassword = stud123
+@studentPassword = st1
 
 ### Coordinator Sign In - Valid Credentials
 POST {{baseUrl}}/auth/signIn
@@ -45,7 +45,7 @@ POST {{baseUrl}}/auth/signIn
 Content-Type: application/json
 
 {
-  "emailOrId": "nonexistent@test.com",
+  "emailOrId": "nix@test.com",
   "password": "{{coordinatorPassword}}",
   "role": "Coordinator"
 }

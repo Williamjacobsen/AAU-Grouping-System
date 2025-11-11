@@ -10,6 +10,8 @@ import com.aau.grouping_system.User.User;
 public class Student extends User {
 
 	private String sessionId;
+	private String groupId = null;
+
 	private StudentQuestionnaire questionnaire = new StudentQuestionnaire();
 
 	public Student(Database db, DatabaseItemChildGroup parentItemChildIdList,
@@ -32,4 +34,6 @@ public class Student extends User {
 	public String getSessionId() { return sessionId; }
 	public StudentQuestionnaire getQuestionnaire() { return questionnaire; }
 	public void setQuestionnaire(StudentQuestionnaire questionnaire) { this.questionnaire = questionnaire; }
+	public String getGroupId() { return groupId; }
+	public void setGroupId(String groupId) { this.groupId = groupId; }
 }

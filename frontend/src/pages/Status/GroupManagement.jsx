@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useGetUser } from "../../hooks/useGetUser";
 import "../User/User.css";
 
 export default function GroupManagement() {
@@ -6,23 +8,29 @@ export default function GroupManagement() {
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
-	const [error, setError] = useState(null); //needs error handling
+	const [error, setError] = useState(null);
+	const [previousGroups, setPreviousGroups] = useState([]);
+	const [canUndo, setCanUndo] = useState(false);
+	const [lastAction, setLastAction] = useState(null);
+	const navigate = useNavigate();
 
+	// Default is max = 7, needs to change so that it gets the number from the max students session setup page
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
+
 
 	useEffect(() => {
 		const fetchGroups = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups`);
-				
+
 				if (!response.ok) {
-				const errorMessage = await response.text();
-				setError(errorMessage);
-				return;
-			}
-				
+					const errorMessage = await response.text();
+					setError(errorMessage);
+					return;
+				}
+
 				const data = await response.json();
 				const groupArray = Object.values(data); //convert object into an array
 				setGroups(groupArray);
@@ -34,12 +42,18 @@ export default function GroupManagement() {
 		fetchGroups();
 	}, []);
 
-	useEffect (() => {
+	useEffect(() => {
 		if (error) {
 			const timer = setTimeout(() => setError(""), 5000);
 			return () => clearTimeout(timer);
 		}
 	}, [error])
+
+	const { user, isLoading: isLoadingUser } = useGetUser();
+
+	if (isLoadingUser) return <>Checking authentication...</>;
+	if (!user) return navigate("/sign-in");
+
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -76,9 +90,9 @@ export default function GroupManagement() {
 		}
 	}
 
-	function handleStudentClick(name, groupId) {
+	const handleStudentClick = async (member, groupId) => {
 		if (!selectedStudent) {
-			setSelectedStudent({ name, from: groupId });
+			setSelectedStudent({ member, from: groupId });
 			return;
 		}
 
@@ -87,33 +101,48 @@ export default function GroupManagement() {
 			return;
 		}
 
-		setGroups(prevGroups => {
-			const targetGroup = prevGroups.find(group => group.id === groupId);
-
-			if (targetGroup.members.length >= 7)
-				// if the target group is full, we don’t add the student
-				return prevGroups;
-
-			const newGroups = prevGroups.map(group => {
-				if (group.id === selectedStudent.from) {
-					// Old group keeps all members, except the selected student
-					return { ...group, members: group.members.filter(student => student !== selectedStudent.name) }
-				}
-				// Checks if the current group in the loop matches the target group
-				if (group.id === groupId) {
-					// Copy all the members, but add the selected student
-					return { ...group, members: [...group.members, selectedStudent.name] }
-				}
-				return group;
+		try {
+			setPreviousGroups(groups);
+			setCanUndo(true);
+			await moveStudent(selectedStudent.from, groupId, selectedStudent.member.id);
+			setLastAction({
+				type: "student",
+				from: selectedStudent.from,
+				to: groupId,
+				student: selectedStudent.member,
 			});
-			moveStudent(selectedStudent.from, groupId, selectedStudent.name);
-			return newGroups;
-		});
+			setGroups(prevGroups => {
+				const targetGroup = prevGroups.find(group => group.id === groupId);
+
+				// if the target group is full, we don’t add the student
+				if (targetGroup.members.length >= 7) {
+					setError("Sorry, adding this student would make the group too big");
+					return prevGroups;
+				}
+
+				const newGroups = prevGroups.map(group => {
+					if (group.id === selectedStudent.from) {
+						// Old group keeps all members, except the selected student
+						return { ...group, members: group.members.filter(student => student.name !== selectedStudent.member.name) }
+					}
+					// Checks if the current group in the loop matches the target group
+					if (group.id === groupId) {
+						// Copy all the members, but add the selected student
+						return { ...group, members: [...group.members, selectedStudent.member] }
+					}
+					return group;
+				});
+
+				return newGroups;
+			});
+		} catch (error) {
+			setError("Failed to move student: " + error.message);
+		}
 		setSelectedStudent(null);
 	}
 
 
-	function handleGroupClick(groupId) {
+	const handleGroupClick = async (groupId) => {
 		if (!selectedGroup) {
 			setSelectedGroup({ from: groupId });
 			return;
@@ -124,27 +153,41 @@ export default function GroupManagement() {
 			return;
 		}
 
-		setGroups(prevGroups => {
-			const fromGroup = prevGroups.find(group => group.id === selectedGroup.from);
-			const targetGroup = prevGroups.find(group => group.id === groupId);
-
-			if (targetGroup.members.length + fromGroup.members.length > 7)
-				// stops if combined size would exceed 7
-				return prevGroups;
-
-			const newGroups = prevGroups.map(group => {
-				if (group.id === selectedGroup.from) //
-					return { ...group, members: [] };
-
-				if (group.id === groupId)
-					// Copy the group, but update the members
-					// Copy all the members, but add the selected student
-					return { ...group, members: [...group.members, ...fromGroup.members] }
-				return group;
+		try {
+			setPreviousGroups(groups);
+			setCanUndo(true);
+			await moveAllMembers(selectedGroup.from, groupId);
+			setLastAction({
+				type: "group",
+				from: selectedGroup.from,
+				to: groupId,
 			});
-			moveAllMembers(selectedGroup.from, groupId);
-			return newGroups;
-		});
+			setGroups(prevGroups => {
+				const fromGroup = prevGroups.find(group => group.id === selectedGroup.from);
+				const targetGroup = prevGroups.find(group => group.id === groupId);
+
+				// stops if combined size would exceed 7
+				if (targetGroup.members.length + fromGroup.members.length > 7) {
+					setError("Sorry, merging these groups would make the group too big");
+					return prevGroups;
+				}
+
+				const newGroups = prevGroups.map(group => {
+					if (group.id === selectedGroup.from) //
+						return { ...group, members: [] };
+
+					if (group.id === groupId)
+						// Copy the group, but update the members
+						// Copy all the members, but add the selected student
+						return { ...group, members: [...group.members, ...fromGroup.members] }
+					return group;
+				});
+				setPreviousGroups(newGroups);
+				return newGroups;
+			});
+		} catch (error) {
+			setError("Failed to merge groups: " + error.message)
+		}
 		setSelectedGroup(null);
 	}
 
@@ -155,13 +198,30 @@ export default function GroupManagement() {
 				<div className="group-box" key={group.id}>
 					<h4 onClick={() => handleGroupClick(group.id)}
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
-						{group.name} - size: {group.members.length}
+						{group.name} <br />
+						size: {group.members.length} <br />
+						preferred size: {group.maxStudents}
 					</h4>
+					{group.project && (
+						<p className="group-project">
+							Project: <span className="highlight">{group.project}</span>
+						</p>
+					)}
 					<ul>
-						{group.members.map((memberName, index) => (
-							<li key={index} onClick={() => handleStudentClick(memberName, group.id)}
-								className={selectedStudent && selectedStudent.name === memberName ? "selected" : ""}>
-								{memberName} </li>
+						{group.members.map((member, index) => (
+							<li key={index} onClick={() => handleStudentClick(member, group.id)}
+								className={selectedStudent && selectedStudent.member?.name === member.name ? "selected" : ""
+								}> <span classame="student-name"> {member.name} </span>
+								{member.priority1 || member.priority2 || member.priority3 ? (
+									<span className="student-priorities">
+										— [
+										{member.priority1 ? member.priority1 : ""}
+										{member.priority2 ? ", " + member.priority2 : ""}
+										{member.priority3 ? ", " + member.priority3 : ""}
+										]
+									</span>
+								) : null}
+							</li>
 						))}
 					</ul>
 				</div>
@@ -172,8 +232,34 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			<h1> Group Management</h1>
-			
+
 			{error && <div className="error-box">{error}</div>}
+
+			{canUndo && (
+				<div className="undo-box">
+					<button
+						onClick={async () => {
+							try {
+								setGroups(previousGroups);
+								setError("");
+								if (lastAction) {
+									if (lastAction.type === "student") {
+										await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
+									} else if (lastAction.type === "group") {
+										await moveAllMembers(lastAction.to, lastAction.from);
+									}
+								}
+							} catch (err) {
+								setError("Failed to undo: " + err.message);
+							}
+							setCanUndo(false);
+							setLastAction(null);
+						}}
+					>
+						Undo last change
+					</button>
+				</div>
+			)}
 
 			<h2 className="completed-groups" >Completed Groups</h2>
 			<div className="group-row">{RenderGroups(completedGroups)}</div>

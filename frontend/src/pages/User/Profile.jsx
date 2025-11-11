@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 import "./User.css";
@@ -6,6 +6,12 @@ import "./User.css";
 export default function Profile() {
 
 	const navigate = useNavigate();
+
+	const userRoleEnum = useMemo(() => Object.freeze({
+		Coordinator: "Coordinator",
+		Supervisor: "Supervisor",
+		Student: "Student",
+	}), []);
 
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
@@ -122,36 +128,39 @@ export default function Profile() {
 				<p><b>Role:</b> {user.role}</p>
 			</div>
 
-			<hr />
+			{user.role === userRoleEnum.Coordinator &&
+				<>
+				<hr />
+					<div className="text">
+						<label className="label">
+							Change Email
+							<input
+								type="email"
+								placeholder="New email"
+								onChange={(e) => setNewEmail(e.target.value)}
+							/>
+						</label>
+						<button className="sign-in" onClick={handleEmailChange}>
+							Update Email
+						</button>
+					</div>
 
-			<div className="text">
-				<label className="label">
-					Change Email
-					<input
-						type="email"
-						placeholder="New email"
-						onChange={(e) => setNewEmail(e.target.value)}
-					/>
-				</label>
-				<button className="sign-in" onClick={handleEmailChange}>
-					Update Email
-				</button>
-			</div>
-
-			<div className="text">
-				<label className="label">
-					Change Password
-					<input
-						type="password"
-						placeholder="New password"
-						onChange={(e) => setNewPassword(e.target.value)}
-					/>
-				</label>
-				<button className="sign-in" onClick={handlePasswordChange}>
-					Update Password
-				</button>
-			</div>
-			<hr />
+					<div className="text">
+						<label className="label">
+							Change Password
+							<input
+								type="password"
+								placeholder="New password"
+								onChange={(e) => setNewPassword(e.target.value)}
+							/>
+						</label>
+						<button className="sign-in" onClick={handlePasswordChange}>
+							Update Password
+						</button>
+					</div>
+					<hr />
+				</>
+			}
 			<button className="sign-up" onClick={handleLogout}>
 				Log Out
 			</button>

@@ -19,51 +19,92 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.EmailSystem.EmailService;
+import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
-import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Utils.RequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
-@Validated // enables method-level validation
+@Validated
 @RequestMapping("/sessions/{sessionId}/supervisors")
-public class SupervisorsPage {
+public class SupervisorsPageController {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
-	private final AuthService authService;
 	private final RequirementService requirementService;
 	private final EmailService emailService;
 
-	public SupervisorsPage(Database db, PasswordEncoder passwordEncoder, AuthService authService,
+	public SupervisorsPageController(Database db, PasswordEncoder passwordEncoder, 
 			RequirementService requirementService, EmailService emailService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-		this.authService = authService;
 		this.requirementService = requirementService;
 		this.emailService = emailService;
+	}
+
+	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Session session = requirementService.requireSessionExists(sessionId);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		return session;
+	}
+
+	@SuppressWarnings("unchecked")
+	private CopyOnWriteArrayList<Supervisor> getSessionSupervisors(Session session) {
+		return (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+	}
+
+	private Supervisor findSupervisorInSession(Session session, String supervisorId) {
+		CopyOnWriteArrayList<Supervisor> sessionSupervisors = getSessionSupervisors(session);
+		return sessionSupervisors.stream()
+				.filter(s -> s.getId().equals(supervisorId))
+				.findFirst()
+				.orElse(null);
+	}
+
+	private void sendCredentialsEmail(String email, String sessionName, String supervisorId, String password, 
+			boolean isNewPassword) throws Exception {
+		String subject = isNewPassword ? "AAU Grouping System - New Password" : "AAU Grouping System - Supervisor Access";
+		String actionText = isNewPassword ? "Your password for the AAU Grouping System has been reset for" 
+				: "You have been added as a supervisor for the";
+		
+		String body = """
+				Hello,
+
+				%s session: %s
+
+				Your login credentials are:
+				ID: %s
+				Password: %s
+
+				Please use your ID and password to access the AAU Grouping System.
+
+				Best regards,
+				AAU Grouping System""".formatted(actionText, sessionName, supervisorId, password);
+
+		emailService.builder()
+				.to(email)
+				.subject(subject)
+				.text(body)
+				.send();
 	}
 
 	@GetMapping
 	public ResponseEntity<List<Map<String, Object>>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		Session session = requirementService.requireSessionExists(sessionId);
-
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
-		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
-				.getItems(db);
+		Session session = validateSessionAccess(servlet, sessionId);
+		CopyOnWriteArrayList<Supervisor> supervisors = getSessionSupervisors(session);
+		
 		List<Map<String, Object>> supervisorList = supervisors.stream()
 				.map(supervisor -> {
 					Map<String, Object> supervisorMap = new HashMap<>();
@@ -77,7 +118,7 @@ public class SupervisorsPage {
 		return ResponseEntity.ok(supervisorList);
 	}
 
-	private record AddSupervisorRecord(
+	public record AddSupervisorRecord(
 			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String email) {
 	}
 
@@ -87,21 +128,16 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody AddSupervisorRecord record) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		Session session = requirementService.requireSessionExists(sessionId);
-
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
+		Session session = validateSessionAccess(servlet, sessionId);
+		CopyOnWriteArrayList<Supervisor> existingSupervisors = getSessionSupervisors(session);
+		
 		// Check if supervisor with this email already exists in this session
-		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> existingSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
-				.getItems(db);
 		boolean supervisorExists = existingSupervisors.stream()
 				.anyMatch(supervisor -> supervisor.getEmail().equals(record.email.trim()));
 
 		if (supervisorExists) {
-			return ResponseEntity.status(HttpStatus.CONFLICT)
-					.body("Supervisor with this email already exists in this session");
+			throw new RequestException(HttpStatus.CONFLICT, 
+					"Supervisor with this email already exists in this session");
 		}
 
 		// Create supervisor with UUID as password
@@ -118,26 +154,10 @@ public class SupervisorsPage {
 
 		// Send password via email
 		try {
-			String subject = "AAU Grouping System - Supervisor Access";
-			String body = """
-					Hello,
-
-					You have been added as a supervisor for the session: %s
-
-					Your login credentials are:
-					ID: %s
-					Password: %s
-
-					Please use your ID and password to access the AAU Grouping System.
-
-					Best regards,
-					AAU Grouping System""".formatted(session.getName(), newSupervisor.getId(), password);
-
-			emailService.builder().to(record.email.trim()).subject(subject).text(body).send();
+			sendCredentialsEmail(record.email.trim(), session.getName(), newSupervisor.getId(), password, false);
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Supervisor added successfully and password sent via email");
 		} catch (Exception e) {
-			// If email fails, still return success since supervisor was created
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Supervisor added successfully, but email failed to send: " + e.getMessage());
 		}
@@ -147,22 +167,11 @@ public class SupervisorsPage {
 	public ResponseEntity<String> removeSupervisor(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		Session session = requirementService.requireSessionExists(sessionId);
-
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
-		// Find supervisor in the session
-		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
-				.getItems(db);
-		Supervisor supervisor = sessionSupervisors.stream()
-				.filter(s -> s.getId().equals(supervisorId))
-				.findFirst()
-				.orElse(null);
+		Session session = validateSessionAccess(servlet, sessionId);
+		Supervisor supervisor = findSupervisorInSession(session, supervisorId);
 
 		if (supervisor == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
+			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
 		}
 
 		// Remove supervisor from database
@@ -176,22 +185,11 @@ public class SupervisorsPage {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		Session session = requirementService.requireSessionExists(sessionId);
-
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
-		// Find supervisor in the session
-		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Supervisor> sessionSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
-				.getItems(db);
-		Supervisor supervisor = sessionSupervisors.stream()
-				.filter(s -> s.getId().equals(supervisorId))
-				.findFirst()
-				.orElse(null);
+		Session session = validateSessionAccess(servlet, sessionId);
+		Supervisor supervisor = findSupervisorInSession(session, supervisorId);
 
 		if (supervisor == null) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Supervisor not found in this session");
+			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
 		}
 
 		// Generate new password and update supervisor
@@ -201,22 +199,7 @@ public class SupervisorsPage {
 
 		// Send new password via email
 		try {
-			String subject = "AAU Grouping System - New Password";
-			String body = """
-					Hello,
-
-					Your password for the AAU Grouping System has been reset for session: %s
-
-					Your login credentials are:
-					ID: %s
-					Password: %s
-
-					Please use your ID and password to access the AAU Grouping System.
-
-					Best regards,
-					AAU Grouping System""".formatted(session.getName(), supervisor.getId(), newPassword);
-
-			emailService.builder().to(supervisor.getEmail()).subject(subject).text(body).send();
+			sendCredentialsEmail(supervisor.getEmail(), session.getName(), supervisor.getId(), newPassword, true);
 			return ResponseEntity.ok("New password sent successfully to " + supervisor.getEmail());
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

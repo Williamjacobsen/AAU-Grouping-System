@@ -1,29 +1,38 @@
 package com.aau.grouping_system.Group;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Exceptions.RequestException;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Utils.RequirementService;
-import jakarta.validation.constraints.*;
-
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Utils.RequirementService;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.NotBlank;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @Validated // enables method-level validation
 @RequestMapping("/groups")
 public class GroupController {
-
-	// TODO: This lacks user authentication.
 
 	private final Database db;
 	private final GroupService groupService;
@@ -35,10 +44,34 @@ public class GroupController {
 		this.requirementService = requirementService;
 	}
 
+	private Coordinator validateCoordinatorAccess(HttpServletRequest servlet) {
+		return requirementService.requireUserCoordinatorExists(servlet);
+	}
+
+	private Student validateStudentAccess(HttpServletRequest servlet, String studentId) {
+		Student authenticatedStudent = requirementService.requireUserStudentExists(servlet);
+		Student targetStudent = requirementService.requireStudentExists(studentId);
+
+		if (!authenticatedStudent.getId().equals(targetStudent.getId())) {
+			throw new RequestException(HttpStatus.FORBIDDEN, "Students can only perform operations on themselves");
+		}
+
+		return targetStudent;
+	}
+
+	private User validateUserAccess(HttpServletRequest servlet, String groupId) {
+		User user = requirementService.requireUserExists(servlet);
+		requirementService.requireGroupExists(groupId);
+		return user;
+	}
+
 	@PostMapping("/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+
+		validateCoordinatorAccess(servlet);
 
 		Group group = requirementService.requireGroupExists(groupId);
 		Student student = requirementService.requireStudentExists(studentId);
@@ -53,7 +86,10 @@ public class GroupController {
 
 	@GetMapping("/{groupId}/requests")
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
+
+		validateCoordinatorAccess(servlet);
 
 		Group group = requirementService.requireGroupExists(groupId);
 
@@ -64,11 +100,13 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/request-join/{studentId}")
 	public ResponseEntity<String> requestToJoin(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
+		Student student = validateStudentAccess(servlet, studentId);
+
 		Group group = requirementService.requireGroupExists(groupId);
-		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
@@ -79,7 +117,12 @@ public class GroupController {
 	}
 
 	@GetMapping("/{groupId}")
-	public ResponseEntity<Group> getGroup(@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
+	public ResponseEntity<Group> getGroup(
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
+
+		validateUserAccess(servlet, groupId);
+
 		Group group = requirementService.requireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
@@ -93,40 +136,66 @@ public class GroupController {
 	// ---TEST------TEST------TEST------TEST---
 	@GetMapping
 	public ResponseEntity<Object> getAllGroups() {
+		Map<String, Group> allGroups = db.getGroups().getAllItems();
+		Map<String, Object> response = new LinkedHashMap<>();
 
-		Map<String, Object> mockGroups = Map.of(
-				"1", Map.of(
-						"id", "1",
-						"name", "Group 1",
-						"members",
-						List.of("Student 1", "Student 2", "Student 3", "Student 4", "Student 5", "Student 6", "Student 7")),
-				"2", Map.of(
-						"id", "2",
-						"name", "Group 2",
-						"members", List.of("Student 8", "Student 9", "Student 10", "Student 11", "Student 12", "Student 13")),
-				"3", Map.of(
-						"id", "3",
-						"name", "Group 3",
-						"members", List.of("Student 14", "Student 15", "Student 16", "Student 17", "Student 18")),
-				"4", Map.of(
-						"id", "4",
-						"name", "Group 4",
-						"members", List.of("Student 19", "Student 20", "Student 21")),
-				"5", Map.of(
-						"id", "5",
-						"name", "Group 5",
-						"members", List.of("Student 22", "Student 23")));
-		return ResponseEntity.ok(mockGroups);
+		for (Map.Entry<String, Group> entry : allGroups.entrySet()) {
+			Group group = entry.getValue();
+
+			// Get project name safely
+			String projectName = "No project";
+			if (group.getProjectId() != null && !group.getProjectId().isEmpty()) {
+				Project project = db.getProjects().getItem(group.getProjectId());
+				if (project != null) {
+					projectName = project.getName();
+				}
+			}
+
+			// Build members list
+			List<Map<String, Object>> membersList = new ArrayList<>();
+			for (String studentId : group.getStudentIds()) {
+				Student student = db.getStudents().getItem(studentId);
+				if (student == null)
+					continue;
+
+				Map<String, Object> studentInfo = new LinkedHashMap<>();
+				studentInfo.put("id", student.getId());
+				studentInfo.put("name", student.getName());
+
+				if (student.getQuestionnaire() != null) {
+					studentInfo.put("priority1", student.getQuestionnaire().getDesiredProjectId1());
+					studentInfo.put("priority2", student.getQuestionnaire().getDesiredProjectId2());
+					studentInfo.put("priority3", student.getQuestionnaire().getDesiredProjectId3());
+				}
+
+				membersList.add(studentInfo);
+			}
+
+			// Build group data
+			Map<String, Object> groupData = new LinkedHashMap<>();
+			groupData.put("id", group.getId());
+			groupData.put("name", "Group " + group.getId()); // if there’s no explicit name property
+			groupData.put("project", projectName);
+			groupData.put("maxStudents", group.getMaxStudents());
+			groupData.put("members", membersList);
+
+			response.put(entry.getKey(), groupData);
+		}
+
+		return ResponseEntity.ok(response);
 	}
+
 	// ---TEST------TEST------TEST------TEST---
 
 	@PostMapping("/{groupId}/join/{studentId}")
 	public ResponseEntity<String> joinGroup(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
+		Student student = validateStudentAccess(servlet, studentId);
+
 		Group group = requirementService.requireGroupExists(groupId);
-		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.joinGroup(groupId, student);
@@ -138,11 +207,13 @@ public class GroupController {
 
 	@PostMapping("/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
+		Student student = validateStudentAccess(servlet, studentId);
+
 		Group group = requirementService.requireGroupExists(groupId);
-		Student student = requirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.leaveGroup(groupId, student);
@@ -154,14 +225,22 @@ public class GroupController {
 
 	@PostMapping("/{fromGroupId}/move-student/{toGroupId}/{studentId}")
 	public ResponseEntity<String> moveStudentBetweenGroups(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+
+		validateCoordinatorAccess(servlet);
 
 		try {
 			Student student = requirementService.requireStudentExists(studentId);
 			Group fromGroup = requirementService.requireGroupExists(fromGroupId);
 			Group toGroup = requirementService.requireGroupExists(toGroupId);
+
+			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Target group is full");
+			}
 
 			// Remove student from old group
 			groupService.leaveGroup(fromGroupId, student);
@@ -177,19 +256,23 @@ public class GroupController {
 
 	@PostMapping("/{fromGroupId}/move-members/{toGroupId}")
 	public ResponseEntity<String> moveAllMembersBetweenGroups(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId) {
+
+		validateCoordinatorAccess(servlet);
 
 		try {
 			Group fromGroup = requirementService.requireGroupExists(fromGroupId);
 			Group toGroup = requirementService.requireGroupExists(toGroupId);
 
 			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > toGroup.getMaxStudents()) {
+			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 
-			// a copy of the student list, to avoid errors when modifying the  original list inside the loop
+			// a copy of the student list, to avoid errors when modifying the original list
+			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
 				Student student = requirementService.requireStudentExists(studentId);
 				groupService.leaveGroup(fromGroupId, student);
