@@ -1,0 +1,182 @@
+.status-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	line-height: 1.5;
+	color: #000;
+}
+
+.status-title {
+	font-size: 2.5rem;
+	color: #000;
+	text-align: center;
+	margin-bottom: 1.5rem;
+	font-weight: 600;
+	border-bottom: 3px solid #3498db;
+	padding-bottom: 0.5rem;
+}
+
+.status-controls {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+	align-items: stretch;
+}
+
+.search-filter-input {
+	flex: 2;
+	min-width: 250px;
+	display: flex;
+}
+
+.search-filter-input input {
+	width: 100%;
+	padding: 1rem;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	font-family: inherit;
+	color: #000;
+	box-sizing: border-box;
+	margin: 0;
+	line-height: 1.25;
+}
+
+.search-filter-input input:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.search-filter-input input::placeholder {
+	color: #666;
+}
+
+.sorting-dropdown {
+	flex-shrink: 0;
+	display: flex;
+}
+
+.sorting-dropdown select {
+	padding: 1rem;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	font-family: inherit;
+	color: #000;
+	background-color: white;
+	box-sizing: border-box;
+	min-width: 140px;
+	margin: 0;
+	line-height: 1.25;
+}
+
+.sorting-dropdown select:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.student-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 2rem;
+}
+
+.student-table thead {
+	border-bottom: 3px solid #3498db;
+}
+
+.student-table th {
+	text-align: left;
+	padding: 1rem;
+	font-weight: 600;
+	color: #000;
+	font-size: 1rem;
+}
+
+.student-table td {
+	padding: 0.75rem 1rem;
+	color: #000;
+	border-bottom: 1px solid #eee;
+}
+
+.student-table tbody tr {
+	cursor: pointer;
+	transition: background-color 0.25s ease;
+}
+
+.student-table tbody tr:hover {
+	background-color: #f8f9fa;
+}
+
+.student-table tbody tr:last-child td {
+	border-bottom: none;
+}
+
+.empty-message {
+	text-align: center;
+	padding: 2rem;
+	color: #000;
+	font-size: 1rem;
+}
+
+.csv-download-button {
+	background-color: #3498db;
+	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	border: none;
+	cursor: pointer;
+	font-family: inherit;
+	margin-top: 1rem;
+}
+
+.csv-download-button:hover {
+	background-color: #2980b9;
+}
+
+.loading-message {
+	text-align: center;
+	padding: 2rem;
+	color: #000;
+	font-size: 1rem;
+}
+
+.access-denied-message {
+	text-align: center;
+	padding: 2rem;
+	color: #e74c3c;
+	font-size: 1rem;
+	border-left: 4px solid #e74c3c;
+	margin: 2rem auto;
+	max-width: 400px;
+}
+
+@media (max-width: 768px) {
+	.status-container {
+		padding: 1rem;
+	}
+	
+	.status-title {
+		font-size: 2rem;
+	}
+	
+	.status-controls {
+		flex-direction: column;
+		align-items: stretch;
+	}
+	
+	.student-table {
+		font-size: 1rem;
+	}
+	
+	.student-table th,
+	.student-table td {
+		padding: 0.5rem;
+	}
+	
+	.csv-download-button {
+		width: 100%;
+	}
+}

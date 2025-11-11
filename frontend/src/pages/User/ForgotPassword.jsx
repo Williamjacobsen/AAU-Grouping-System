@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./User.css";
 
 export default function ForgotPassword() {
@@ -19,14 +19,28 @@ export default function ForgotPassword() {
 				setError("");
 			}
 			else {
-			setError("The email is not valid");
-			setSucces("");
+				setError("The email is not valid");
+				setSucces("");
 			}
 		} catch (e) {
 			setError(e.message)
 			setSucces("");
 		}
 	};
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
+
+	useEffect(() => {
+		if (succes) {
+			const timer = setTimeout(() => setSucces(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [succes])
 
 
 	return (

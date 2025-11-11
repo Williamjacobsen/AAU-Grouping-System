@@ -1,13 +1,13 @@
 package com.aau.grouping_system.Group;
 
-import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Group extends DatabaseItem {
 

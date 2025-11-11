@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -39,6 +39,13 @@ export default function SignIn() {
 			setError(e.message);
 		}
 	};
+
+	useEffect(() => {
+		if (error) {
+			const timer = setTimeout(() => setError(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [error])
 
 	return (
 		<div className="container">

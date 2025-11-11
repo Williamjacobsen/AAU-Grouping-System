@@ -1,134 +1,128 @@
 .supervisors-page {
-	padding: 20px;
-	max-width: 1200px;
+	max-width: 800px;
 	margin: 0 auto;
+	padding: 2rem;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	line-height: 1.5;
+	color: #000;
 }
 
 .supervisors-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 30px;
-	border-bottom: 2px solid #e0e0e0;
-	padding-bottom: 15px;
+	text-align: center;
+	margin-bottom: 1.5rem;
 }
 
 .supervisors-header h2 {
-	margin: 0;
-	color: #333;
-	font-size: 24px;
+	font-size: 2.5rem;
+	color: #000;
+	margin-bottom: 1.5rem;
+	font-weight: 600;
+	border-bottom: 3px solid #3498db;
+	padding-bottom: 0.5rem;
 }
 
 .add-supervisor-button {
-	background-color: #007bff;
+	background-color: #3498db;
 	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
 	border: none;
-	padding: 10px 20px;
-	border-radius: 5px;
 	cursor: pointer;
-	font-size: 16px;
-	transition: background-color 0.3s;
+	font-family: inherit;
+	margin-top: 1rem;
 }
 
 .add-supervisor-button:hover {
-	background-color: #0056b3;
+	background-color: #2980b9;
 }
 
 .supervisors-list {
-	margin-top: 20px;
+	margin-top: 1.5rem;
 }
 
 .no-supervisors {
 	text-align: center;
-	color: #666;
-	font-size: 18px;
-	padding: 40px;
-	background-color: #f8f9fa;
-	border-radius: 8px;
-	border: 1px solid #e0e0e0;
+	color: #000;
+	font-size: 1rem;
+	padding: 2.5rem;
 }
 
 .supervisors-table {
 	width: 100%;
 	border-collapse: collapse;
-	background-color: white;
-	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-	border-radius: 8px;
-	overflow: hidden;
+	margin-top: 1.5rem;
+	border-left: 3px solid #3498db;
 }
 
 .supervisors-table th,
 .supervisors-table td {
-	padding: 12px 15px;
+	padding: 0.75rem 1rem;
 	text-align: left;
 	border-bottom: 1px solid #e0e0e0;
+	color: #000;
 }
 
 .supervisors-table th {
-	background-color: #f8f9fa;
 	font-weight: 600;
-	color: #333;
-}
-
-.supervisors-table tr:hover {
-	background-color: #f8f9fa;
+	color: #000;
+	font-size: 1rem;
 }
 
 .send-password-button {
-	background-color: #28a745;
+	background-color: #3498db;
 	color: white;
 	border: none;
-	padding: 6px 12px;
-	border-radius: 4px;
+	padding: 0.5rem 0.75rem;
 	cursor: pointer;
-	font-size: 14px;
-	margin-right: 8px;
-	transition: background-color 0.3s;
+	font-size: 1rem;
+	font-family: inherit;
+	margin-right: 0.5rem;
 }
 
 .send-password-button:hover {
-	background-color: #218838;
+	background-color: #2980b9;
 }
 
 .send-password-button:disabled {
-	background-color: #6c757d;
+	background-color: #bdc3c7;
 	cursor: not-allowed;
 }
 
-.remove-button {
-	background-color: #dc3545;
+.supervisors-page .remove-button {
+	background-color: #e74c3c;
 	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.5rem 0.75rem;
 	border: none;
-	padding: 6px 12px;
-	border-radius: 4px;
 	cursor: pointer;
-	font-size: 14px;
-	transition: background-color 0.3s;
+	font-family: inherit;
 }
 
-.remove-button:hover {
-	background-color: #c82333;
+.supervisors-page .remove-button:hover {
+	background-color: #c0392b;
 }
 
 .loading,
 .error {
 	text-align: center;
-	padding: 20px;
-	font-size: 18px;
+	padding: 1.25rem;
+	font-size: 1rem;
 }
 
 .loading {
-	color: #007bff;
+	color: #3498db;
 }
 
 .error {
-	color: #dc3545;
+	color: #000;
 	background-color: #f8d7da;
-	border: 1px solid #f5c6cb;
-	border-radius: 5px;
+	border-left: 3px solid #e74c3c;
 }
 
-/* Modal Styles */
 .modal-overlay {
 	position: fixed;
 	top: 0;
@@ -144,141 +138,140 @@
 
 .modal {
 	background-color: white;
-	border-radius: 8px;
 	width: 90%;
 	max-width: 500px;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	border-left: 3px solid #3498db;
 }
 
 .modal-header {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	padding: 20px 20px 0;
-	border-bottom: 1px solid #e0e0e0;
-	margin-bottom: 20px;
+	padding: 1.5rem 1.5rem 0;
+	border-bottom: 3px solid #3498db;
+	margin-bottom: 1.5rem;
 }
 
 .modal-header h3 {
 	margin: 0;
-	color: #333;
+	color: #000;
+	font-weight: 600;
 }
 
 .close-button {
 	background: none;
 	border: none;
-	font-size: 24px;
+	font-size: 1.5rem;
 	cursor: pointer;
-	color: #666;
+	color: #000;
 	padding: 0;
-	width: 30px;
-	height: 30px;
+	width: 2rem;
+	height: 2rem;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
 
 .close-button:hover {
-	color: #333;
+	color: #3498db;
 }
 
 .modal-body {
-	padding: 0 20px 20px;
+	padding: 0 1.5rem 1.5rem;
 }
 
 .modal-body label {
 	display: block;
-	margin-bottom: 5px;
+	margin-bottom: 0.5rem;
 	font-weight: 600;
-	color: #333;
+	color: #000;
+	font-size: 1rem;
 }
 
 .modal-body input {
 	width: 100%;
-	padding: 10px;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	font-size: 16px;
+	padding: 0.75rem;
+	border: 1px solid #ddd;
+	font-size: 1rem;
+	font-family: inherit;
 	box-sizing: border-box;
 }
 
 .modal-body input:focus {
 	outline: none;
-	border-color: #007bff;
-	box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+	border-color: #3498db;
 }
 
 .modal-body p {
-	margin: 0 0 10px;
-	color: #333;
+	margin: 0 0 1rem;
+	color: #000;
 }
 
 .warning {
-	color: #856404;
+	color: #000;
 	background-color: #fff3cd;
-	padding: 8px;
-	border-radius: 4px;
-	border: 1px solid #ffeaa7;
+	padding: 0.75rem;
+	border-left: 3px solid #f39c12;
 	font-weight: 500;
 }
 
 .modal-footer {
 	display: flex;
 	justify-content: flex-end;
-	gap: 10px;
-	padding: 20px;
+	gap: 0.75rem;
+	padding: 1.5rem;
 	border-top: 1px solid #e0e0e0;
 }
 
 .cancel-button {
-	background-color: #6c757d;
-	color: white;
+	background-color: #bdc3c7;
+	color: #000;
 	border: none;
-	padding: 10px 20px;
-	border-radius: 4px;
+	padding: 0.75rem 1.5rem;
 	cursor: pointer;
-	font-size: 16px;
-	transition: background-color 0.3s;
+	font-size: 1rem;
+	font-family: inherit;
+	font-weight: 500;
 }
 
 .cancel-button:hover {
-	background-color: #5a6268;
+	background-color: #95a5a6;
 }
 
 .confirm-button {
-	background-color: #007bff;
+	background-color: #3498db;
 	color: white;
 	border: none;
-	padding: 10px 20px;
-	border-radius: 4px;
+	padding: 0.75rem 1.5rem;
 	cursor: pointer;
-	font-size: 16px;
-	transition: background-color 0.3s;
+	font-size: 1rem;
+	font-family: inherit;
+	font-weight: 500;
 }
 
 .confirm-button:hover {
-	background-color: #0056b3;
+	background-color: #2980b9;
 }
 
 .danger-button {
-	background-color: #dc3545;
+	background-color: #e74c3c;
 	color: white;
 	border: none;
-	padding: 10px 20px;
-	border-radius: 4px;
+	padding: 0.75rem 1.5rem;
 	cursor: pointer;
-	font-size: 16px;
-	transition: background-color 0.3s;
+	font-size: 1rem;
+	font-family: inherit;
+	font-weight: 500;
 }
 
 .danger-button:hover {
-	background-color: #c82333;
+	background-color: #c0392b;
 }
 
 .cancel-button:disabled,
 .confirm-button:disabled,
 .danger-button:disabled {
-	opacity: 0.6;
+	opacity: 0.5;
 	cursor: not-allowed;
 }
 

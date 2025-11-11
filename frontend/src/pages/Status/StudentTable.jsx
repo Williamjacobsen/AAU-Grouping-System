@@ -14,11 +14,11 @@ const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session
 	}
 
 	if (!visibleColumns || visibleColumns.length === 0) {
-		return <div>No visible columns.</div>;
+		return <div className="empty-message"> No visible columns.</div>;
 	}
 
 	return (
-		<table>
+		<table className="student-table">
 			<thead>
 				<tr>
 					{visibleColumns.map((column, columnIndex) => (
@@ -44,7 +44,6 @@ const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session
 					<tr
 						key={rowIndex}
 						onClick={() => navigateToStudentPage(rowIndex)}
-						style={{ cursor: 'pointer' }}
 					>
 						{visibleColumns.map((column, columnIndex) => (
 							<td key={columnIndex}>

@@ -3,23 +3,22 @@ import { useParams } from "react-router-dom";
 
 import useGetSessionProjects from "../../hooks/useGetSessionProjects";
 import ProjectsTable from "./ProjectsTable";
+import "./Projects.css";
+
 export default function Project() {
 
 	const { sessionId } = useParams(); // Get session ID from URL
-	const { isloading: isLoadingProjects, projects: allProjects, setProjects } = useGetSessionProjects(sessionId); // hook, fetch projects from backend
+	const { isloading: isLoadingProjects, projects: allProjects } = useGetSessionProjects(sessionId); // hook, fetch projects from backend
 
 	if (isLoadingProjects) {
-    return <>Fetching projects from database...</>;
+    return <div className="loading-message">Fetching projects from database...</div>;
   }
-console.log("Projects in Projects.jsx: ", allProjects);
-	return (
-		<>
-			<h1>List of projects:</h1>
-			<ProjectsTable projects={allProjects} setProjects={setProjects} sessionId={sessionId}/>
-		
-		</>
-	)
 
-	
+	return (
+		<div className="projects-container">
+			<h1 className="projects-title">List of Projects</h1>
+			<ProjectsTable projects={allProjects}/>
+		</div>
+	)
 
 }

@@ -99,13 +99,15 @@
 						.body("No coordinator found with the provided email.");
 			}
 
+			System.out.println("Hello");
+
 			// Create reset token and store temporarily
 			String token = java.util.UUID.randomUUID().toString();
 			PasswordResetTokens.tokens.put(token, email);
 			System.out.println("Generated reset token for " + email + ": " + token); // test doesnt run for some reason...
 
 			// Build reset link and email body
-			String resetLink = "http://localhost:3000/reset-password?token=" + token;
+			String resetLink = "http://localhost:3000/resetPassword?token=" + token;
 			String subject = "AAU Grouping System - Password Reset";
 			String body = """
 					Hello %s,
@@ -125,6 +127,7 @@
 			try {
 				emailService.builder()
 						.to(email.trim())
+						.cc("villi05.v.j@gmail.com")
 						.subject(subject)
 						.text(body)
 						.send();
