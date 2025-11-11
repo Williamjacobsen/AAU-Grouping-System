@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import useGetSessionSupervisors from "../../hooks/useGetSessionSupervisors";
+import "./SessionSetup.css";
 
 export default function SessionSetup() {
 
@@ -13,13 +14,13 @@ export default function SessionSetup() {
 	const [message, setMessage] = useState("");
 	
 	if (isLoadingSession) {
-		return <>Loading session...</>
+		return <div className="loading-message">Loading session...</div>
 	}
 	if (isLoadingStudents) {
-		return <>Loading students...</>
+		return <div className="loading-message">Loading students...</div>
 	}
 	if (isLoadingSupervisors) {
-		return <>Loading supervisors...</>
+		return <div className="loading-message">Loading supervisors...</div>
 	}
 
 	async function saveSetup(event) {
@@ -63,83 +64,106 @@ export default function SessionSetup() {
 
 	function SetupForm() {
 		return (
-			<form onSubmit={saveSetup}>
-        <label>
-          Session name<br />
-          <input
-            name="name"
-            defaultValue={session.name}
-            required
-          />
-        </label>
-        <br/>
+			<form className="setup-form" onSubmit={saveSetup}>
+				<div className="form-section">
+					<h3 className="section-title">Basic Settings</h3>
+					
+					<div className="form-group">
+						<label className="form-label">
+							Session name
+							<input
+								className="form-input"
+								name="name"
+								defaultValue={session.name}
+								required
+							/>
+						</label>
+					</div>
 
-        <label>
-          Maximum group size<br />
-          <input
-            type="number"
-            name="maxGroupSize"
-            defaultValue={session.maxGroupSize}
-            required
-          />
-        </label>
-        <br/>
+					<div className="form-group">
+						<label className="form-label">
+							Maximum group size
+							<input
+								className="form-input form-number"
+								type="number"
+								name="maxGroupSize"
+								defaultValue={session.maxGroupSize}
+								required
+							/>
+						</label>
+					</div>
 
-        <label>
-          Minimum group size<br />
-          <input
-            type="number"
-            name="minGroupSize"
-            defaultValue={session.minGroupSize}
-          />
-        </label>
-        <br/>
+					<div className="form-group">
+						<label className="form-label">
+							Minimum group size
+							<input
+								className="form-input form-number"
+								type="number"
+								name="minGroupSize"
+								defaultValue={session.minGroupSize}
+							/>
+						</label>
+					</div>
 
-        <label>
-          Group rounding method<br />
-          <select
-            name="groupRounding"
-            defaultValue={session.groupRounding}
-          >
-            <option value="none">No rounding</option>
-            <option value="round_up">Round up</option>
-            <option value="round_down">Round down</option>
-          </select>
-        </label>
-				<br/>
-				
-				<label>
-          Deadline for students' to submit their questionnaires<br />
-          <input
-            type="datetime-local"
-            name="questionnaireDeadline"
-            defaultValue={session.questionnaireDeadline}
-          />
-        </label>
-				<br/>
-				
-				<label>
-          Emails of supervisors<br />
-          <textarea
-            name="supervisorEmails"
-            defaultValue={getSupervisorEmails()}
-            required
-          />
-        </label>
-        <br/>
+					<div className="form-group">
+						<label className="form-label">
+							Group rounding method
+							<select
+								className="form-select"
+								name="groupRounding"
+								defaultValue={session.groupRounding}
+							>
+								<option value="none">No rounding</option>
+								<option value="round_up">Round up</option>
+								<option value="round_down">Round down</option>
+							</select>
+						</label>
+					</div>
+					
+					<div className="form-group">
+						<label className="form-label">
+							Deadline for students to submit their questionnaires
+							<input
+								className="form-input"
+								type="datetime-local"
+								name="questionnaireDeadline"
+								defaultValue={session.questionnaireDeadline}
+							/>
+						</label>
+					</div>
+				</div>
 
-        <label>
-          Emails of students<br />
-          <textarea
-            name="studentEmails"
-            defaultValue={getStudentEmails()}
-            required
-          />
-        </label>
-        <br/>
+				<div className="form-section">
+					<h3 className="section-title">Participants</h3>
+					
+					<div className="form-group">
+						<label className="form-label">
+							Emails of supervisors
+							<textarea
+								className="form-textarea"
+								name="supervisorEmails"
+								defaultValue={getSupervisorEmails()}
+								required
+							/>
+						</label>
+					</div>
 
-				<br/>
-				<input type="submit" value="Apply changes" />
+					<div className="form-group">
+						<label className="form-label">
+							Emails of students
+							<textarea
+								className="form-textarea"
+								name="studentEmails"
+								defaultValue={getStudentEmails()}
+								required
+							/>
+						</label>
+					</div>
+				</div>
+
+				<div className="button-group">
+					<input className="button-primary" type="submit" value="Apply Changes" />
+				</div>
 			</form>
 		);
 	}
@@ -189,51 +213,67 @@ export default function SessionSetup() {
 	}
 
   return (
-    <div style={{ maxWidth: 600, margin: "2rem auto", padding: "1rem" }}>
-			<h2>Session Setup</h2>
+    <div className="session-setup-container">
+			<h1 className="session-setup-title">Session Setup</h1>
 			<SetupForm />
 
-			<button
-				type="button"
-				onClick={() => window.location.reload()}
-				style={{ marginLeft: "10px" }}
-			>
-				Reset
-			</button>
-		
-			<form onSubmit={sendLoginCodeToStudents}>
-				<label>
-					<input
-						type="checkbox"
-						name="sendOnlyNew"
-						defaultChecked={true}
-					/>
-					Send only to students who have not received a login code yet
-				</label>
-				<input
-					type="submit"
-					value="Send login codes to students"
-					style={{ marginLeft: "10px" }}
-				/>
-			</form>
+			<div className="form-section">
+				<h3 className="section-title">Actions</h3>
+				
+				<div className="button-group">
+					<button
+						className="button-secondary"
+						type="button"
+						onClick={() => window.location.reload()}
+					>
+						Reset Form
+					</button>
+				</div>
+			</div>
 
-			<form onSubmit={sendLoginCodeToSupervisors}>
-				<label>
+			<div className="form-section">
+				<h3 className="section-title">Send Login Codes</h3>
+				
+				<form className="checkbox-form" onSubmit={sendLoginCodeToStudents}>
+					<div className="checkbox-group">
+						<input
+							type="checkbox"
+							name="sendOnlyNew"
+							defaultChecked={true}
+							id="students-checkbox"
+						/>
+						<label className="checkbox-label" htmlFor="students-checkbox">
+							Send only to students who have not received a login code yet
+						</label>
+					</div>
 					<input
-						type="checkbox"
-						name="sendOnlyNew"
-						defaultChecked={true}
+						className="button-primary"
+						type="submit"
+						value="Send Login Codes to Students"
 					/>
-					Send only to supervisors who have not received a login code yet
-				</label>
-				<input
-					type="submit"
-					value="Send login codes to supervisors"
-					style={{ marginLeft: "10px" }}
-				/>
-			</form>
+				</form>
 
-			{message && <p style={{ marginTop: "1rem" }}>{message}</p>}
+				<form className="checkbox-form" onSubmit={sendLoginCodeToSupervisors}>
+					<div className="checkbox-group">
+						<input
+							type="checkbox"
+							name="sendOnlyNew"
+							defaultChecked={true}
+							id="supervisors-checkbox"
+						/>
+						<label className="checkbox-label" htmlFor="supervisors-checkbox">
+							Send only to supervisors who have not received a login code yet
+						</label>
+					</div>
+					<input
+						className="button-primary"
+						type="submit"
+						value="Send Login Codes to Supervisors"
+					/>
+				</form>
+			</div>
+
+			{message && <div className="message">{message}</div>}
     </div>
   );
 }

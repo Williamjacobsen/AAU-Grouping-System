@@ -26,7 +26,7 @@ export default function SignIn() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ emailOrId, password, role }),
 				credentials: "include"
-			})
+			});
 
 			if (!response.ok) {
 				const error = await response.text();
@@ -38,7 +38,7 @@ export default function SignIn() {
 		} catch (e) {
 			setError(e.message);
 		}
-	}
+	};
 
 	useEffect(() => {
 		if (error) {
@@ -95,7 +95,7 @@ export default function SignIn() {
 					Sign Up
 				</button>
 				<br />
-				{role == userRoleEnum.Coordinator &&
+				{role === userRoleEnum.Coordinator &&
 					<>
 						<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
 							Forgot your password?

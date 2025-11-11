@@ -30,13 +30,13 @@ export default function useStudentFiltering() {
 
 	const SearchFilterInput = useCallback(() => {
 		return (
-			<>
+			<div className="search-filter-input">
 				<input
 					defaultValue={searchFilter}
 					placeholder={"Search..."}
 					onChange={(event) => setSearchFilter(event.target.value)}
 				/>
-			</>
+			</div>
 		);
 	}, []);
 
