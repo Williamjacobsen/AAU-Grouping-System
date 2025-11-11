@@ -105,6 +105,43 @@ public class DatabaseSerializer {
 		Student st8 = studentService.addStudent(se2, "st8", "st8", "Student name 8");
 		Student st9 = studentService.addStudent(se2, "st9", "st9", "Student name 9");
 
+		// Give each student example project priorities
+		st1.getQuestionnaire().setDesiredProjectId1("AI Chatbot");
+		st1.getQuestionnaire().setDesiredProjectId2("Web App");
+		st1.getQuestionnaire().setDesiredProjectId3("Data Science");
+
+		st2.getQuestionnaire().setDesiredProjectId1("Web App");
+		st2.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
+		st2.getQuestionnaire().setDesiredProjectId3("Game Design");
+
+		st3.getQuestionnaire().setDesiredProjectId1("Health Tracker");
+		st3.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
+		st3.getQuestionnaire().setDesiredProjectId3("IoT System");
+
+		st4.getQuestionnaire().setDesiredProjectId1("Finance Dashboard");
+		st4.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
+		st4.getQuestionnaire().setDesiredProjectId3("Smart Home");
+
+		st5.getQuestionnaire().setDesiredProjectId1("Smart Home");
+		st5.getQuestionnaire().setDesiredProjectId2("Web App");
+		st5.getQuestionnaire().setDesiredProjectId3("AI Chatbot");
+
+		st6.getQuestionnaire().setDesiredProjectId1("IoT System");
+		st6.getQuestionnaire().setDesiredProjectId2("Finance Dashboard");
+		st6.getQuestionnaire().setDesiredProjectId3("Health Tracker");
+
+		st7.getQuestionnaire().setDesiredProjectId1("Finance Dashboard");
+		st7.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
+		st7.getQuestionnaire().setDesiredProjectId3("Smart Home");
+
+		st8.getQuestionnaire().setDesiredProjectId1("Smart Home");
+		st8.getQuestionnaire().setDesiredProjectId2("Web App");
+		st8.getQuestionnaire().setDesiredProjectId3("AI Chatbot");
+
+		st9.getQuestionnaire().setDesiredProjectId1("IoT System");
+		st9.getQuestionnaire().setDesiredProjectId2("Finance Dashboard");
+		st9.getQuestionnaire().setDesiredProjectId3("Health Tracker");
+
 		Project p1 = new Project(db, se1.getProjects(), "Project name 1", "Description 1");
 		Project p2 = new Project(db, se1.getProjects(), "Project name 2", "Description 2");
 		Project p3 = new Project(db, se1.getProjects(), "Project name 3", "Description 3");
@@ -112,13 +149,18 @@ public class DatabaseSerializer {
 		Project p5 = new Project(db, se1.getProjects(), "Project name 5", "Description 5");
 
 		Group g1 = new Group(db, se1.getGroups(), su1, p1, "Group email 1", 10, 10);
-		Group g2 = new Group(db, se1.getGroups(), su1, p3, "Group email 2", 10, 10);
-		Group g3 = new Group(db, se1.getGroups(), su2, p1, "Group email 3", 10, 10);
+		Group g2 = new Group(db, se1.getGroups(), su1, p2, "Group email 2", 10, 10);
+		Group g3 = new Group(db, se1.getGroups(), su2, p3, "Group email 3", 10, 10);
 
 		groupService.joinGroup(g1.getId(), st1);
 		groupService.joinGroup(g1.getId(), st3);
 		groupService.joinGroup(g1.getId(), st5);
 		groupService.joinGroup(g2.getId(), st4);
+		groupService.joinGroup(g2.getId(), st2);
+		groupService.joinGroup(g2.getId(), st6);
+		groupService.joinGroup(g3.getId(), st7);
+		groupService.joinGroup(g3.getId(), st8);
+		groupService.joinGroup(g3.getId(), st9);
 
 		// For testing purposes, console log student logins so we can log in as them
 		System.out.println("---- STUDENT test logins ----");
