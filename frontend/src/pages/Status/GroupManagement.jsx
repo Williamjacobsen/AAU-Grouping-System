@@ -50,7 +50,6 @@ export default function GroupManagement() {
 	}, [error])
 
 	const { user, isLoading: isLoadingUser } = useGetUser();
-
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");
 
