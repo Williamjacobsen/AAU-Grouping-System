@@ -197,12 +197,12 @@ export default function GroupManagement() {
 				<div className="group-box" key={group.id}>
 					<h4 onClick={() => handleGroupClick(group.id)}
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
-						{group.name} <br />
-						size: {group.members.length} <br />
-						preferred size: {group.maxStudents}
+						<span className="group-name">{group.name}</span> <br />
+						<span className="group-detail">Size: </span> {group.members.length} <br/> 
+						<span className="group-detail">Preferred size: </span> {group.maxStudents} 
 					</h4>
 					{group.project && (
-						<p className="group-project">
+						<p className="group-detail">
 							Project: <span className="highlight">{group.project}</span>
 						</p>
 					)}
@@ -210,7 +210,7 @@ export default function GroupManagement() {
 						{group.members.map((member, index) => (
 							<li key={index} onClick={() => handleStudentClick(member, group.id)}
 								className={selectedStudent && selectedStudent.member?.name === member.name ? "selected" : ""
-								}> <span classame="student-name"> {member.name} </span>
+								}> <span className="student-name"> {member.name} </span>
 								{member.priority1 || member.priority2 || member.priority3 ? (
 									<span className="student-priorities">
 										— [
