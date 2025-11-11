@@ -87,7 +87,9 @@ public class ProjectController {
 		return ResponseEntity.ok(response);
 	}
 
-	@PutMapping("/update/{projectId}/{newName}/{newDescription}")
+ 	
+	}
+/*@PutMapping("/update/{projectId}/{newName}/{newDescription}")
 	public ResponseEntity<String> updateProject(@PathVariable String projectId, @PathVariable String newName,
 			@PathVariable String newDescription) {
 		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
@@ -103,6 +105,5 @@ public class ProjectController {
 		project.setDescription(newDescription);
 
 		// Return success message with 200 ok
-		return ResponseEntity.ok("Project with id " + projectId + " has been updated successfully.");
-	}
-}
+		return ResponseEntity.ok("Project with id " + projectId + " has been updated successfully."); */
+
