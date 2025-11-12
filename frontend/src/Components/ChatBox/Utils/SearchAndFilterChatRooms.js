@@ -18,6 +18,6 @@ export default function SearchAndFilterChatRooms(
       : "";
 
   return chatRooms
-    .filter((room) => room.toLowerCase().includes(query.toLowerCase()))
+    .filter((room) => room?.toLowerCase().includes(query.toLowerCase()))
     .filter((room) => (filter === "all" ? true : typeOf(room) === filter));
 }

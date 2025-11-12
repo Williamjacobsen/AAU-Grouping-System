@@ -9,15 +9,16 @@ export default function sortChatRooms(
   lastActivityByRoom = {},
   { projects = [], groups = [], students = [] } = {}
 ) {
-  const projectSet = new Set(projects);
-  const groupSet = new Set(groups);
-  const studentSet = new Set(students);
+	const projectSet = new Set(projects.map((p) => p.name).filter(Boolean));
+  const groupSet = new Set(groups.map((g) => g.name).filter(Boolean));
+  const studentSet = new Set(students.map((s) => s.name).filter(Boolean));
 
   function getCategoryRank(name) {
-    if (name === "General") return 0;       // special case
-    if (projectSet.has(name)) return 1;     // projects
-    if (groupSet.has(name)) return 2;       // groups
-    if (studentSet.has(name)) return 3;     // students
+    if (name === "General") return 0; // special case
+    if (projectSet.has(name)) return 1; // projects
+    if (groupSet.has(name)) return 2; // groups
+    if (studentSet.has(name)) return 3; // students
+    return 4;
   }
 
   const rows = chatRooms.map((name) => ({
@@ -28,10 +29,14 @@ export default function sortChatRooms(
   }));
 
   rows.sort((a, b) => {
-    if (b.lastActive !== a.lastActive) return b.lastActive - a.lastActive; 
-    if (b.hasUnread !== a.hasUnread) return (b.hasUnread ? 1 : 0) - (a.hasUnread ? 1 : 0);
+    if (b.lastActive !== a.lastActive) return b.lastActive - a.lastActive;
+    if (b.hasUnread !== a.hasUnread)
+      return (b.hasUnread ? 1 : 0) - (a.hasUnread ? 1 : 0);
     if (a.category !== b.category) return a.category - b.category;
-    return a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: "base" });
+    return (a.name || "").localeCompare(b.name || "", undefined, {
+      numeric: true,
+      sensitivity: "base",
+    });
   });
 
   return rows.map((r) => r.name);
