@@ -219,7 +219,6 @@ export default function GroupManagement() {
 										{member.priority3 ? ", " + member.priority3 : ""}
 										]
 									</span>
-									
 								) : null}
 								<hr></hr>
 							</li>
