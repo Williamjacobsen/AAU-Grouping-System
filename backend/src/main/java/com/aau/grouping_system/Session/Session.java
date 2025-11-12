@@ -16,7 +16,10 @@ public class Session extends DatabaseItem {
 	private DatabaseItemChildGroup students;
 	private DatabaseItemChildGroup projects;
 	private DatabaseItemChildGroup groups;
-	private String name;
+
+	private String name = "";
+	private Integer minGroupSize = -1;
+	private Integer maxGroupSize = -1;
 	private LocalDateTime questionnaireDeadline = null;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
@@ -37,8 +40,7 @@ public class Session extends DatabaseItem {
 
 	// @formatter:off
 	public String getCoordinatorId() { return coordinatorId; }
-	public String getName() { return name; }
-	public void setName(String name) { this.name = name; }
+	
 	public DatabaseItemChildGroup getSupervisors() { return supervisors; }
 	public void setSupervisors(DatabaseItemChildGroup supervisors) { this.supervisors = supervisors; }
 	public DatabaseItemChildGroup getStudents() { return students; }
@@ -47,6 +49,13 @@ public class Session extends DatabaseItem {
 	public void setProjects(DatabaseItemChildGroup projects) { this.projects = projects; }
 	public DatabaseItemChildGroup getGroups() { return groups; }
 	public void setGroups(DatabaseItemChildGroup groups) { this.groups = groups; }
+
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
+	public Integer getMaxGroupSize() { return maxGroupSize; }
+	public void setMaxGroupSize(Integer maxGroupSize) { this.maxGroupSize = maxGroupSize; }
+	public Integer getMinGroupSize() { return minGroupSize; }
+	public void setMinGroupSize(Integer minGroupSize) { this.minGroupSize = minGroupSize; }
 	public LocalDateTime getQuestionnaireDeadline() { return questionnaireDeadline; }
 	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
 
