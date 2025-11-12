@@ -112,7 +112,7 @@ public class SessionSetupController {
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		// BUG: "Dear Not specifed"  
+		// BUG: "Dear Not specified"  
 
 		Session session = requestRequirementService.requireSessionExists(sessionId);
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
