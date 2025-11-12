@@ -1,6 +1,7 @@
 package com.aau.grouping_system.Session;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
@@ -27,16 +28,19 @@ public class SessionSetupController {
 	private final RequestRequirementService requestRequirementService;
 	private final SessionSetupService sessionSetupService;
 	private final UserService userService;
+	private final EmailService emailService;
 
 	public SessionSetupController(
 			Database db,
 			RequestRequirementService requestRequirementService,
 			SessionSetupService sessionSetupService,
-			UserService userService) {
+			UserService userService,
+			EmailService emailService) {
 		this.db = db;
 		this.requestRequirementService = requestRequirementService;
 		this.sessionSetupService = sessionSetupService;
 		this.userService = userService;
+		this.emailService = emailService;
 	}
 
 	@PostMapping("/{sessionId}/saveSetup")
@@ -100,6 +104,69 @@ public class SessionSetupController {
 		userService.applyAndEmailLoginCodes(session, supervisors);
 
 		return ResponseEntity.ok("Emails have been sent to supervisors.");
+	}
+
+	@SuppressWarnings("unchecked")
+	@PostMapping("/{sessionId}/notify")
+	public ResponseEntity<String> notifyParticipants(
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
+
+		Session session = requirementService.requireSessionExists(sessionId);
+		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+
+		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
+		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
+
+		String subject = String.format("Groups ready for session: %s", session.getName());
+		String bodyTemplate = "Dear %s,\n\nAll groups for the session \"%s\" have now been created. "
+				+ "Please log in to the grouping system to view your group and next steps.\n\n"
+				+ "Best regards,\n%s";
+
+		try {
+			for (User student : students) {
+				if (student.getEmail() == null || student.getEmail().isBlank())
+					continue;
+
+				String studentName = (student.getName() == null || student.getName().isBlank())
+						? "Student"
+						: student.getName();
+
+				String body = String.format(bodyTemplate, studentName, session.getName(),
+						coordinator.getName() != null ? coordinator.getName() : "Course Coordinator");
+
+				emailService.builder()
+						.to(student.getEmail())
+						.subject(subject)
+						.text(body)
+						.send();
+			}
+
+			for (User supervisor : supervisors) {
+				if (supervisor.getEmail() == null || supervisor.getEmail().isBlank())
+					continue;
+
+				String supervisorName = (supervisor.getName() == null || supervisor.getName().isBlank())
+						? "Supervisor"
+						: supervisor.getName();
+
+				String body = String.format(bodyTemplate, supervisorName, session.getName(),
+						coordinator.getName() != null ? coordinator.getName() : "Course Coordinator");
+
+				emailService.builder()
+						.to(supervisor.getEmail())
+						.subject(subject)
+						.text(body)
+						.send();
+			}
+
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to send notifications: " + e.getMessage());
+		}
+
+		return ResponseEntity.ok("Notifications sent successfully to participants.");
 	}
 
 }
