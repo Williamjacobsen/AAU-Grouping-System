@@ -13,7 +13,7 @@ import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,21 +26,21 @@ public class StudentController {
 
 	private final StudentService studentService;
 	private final SessionService sessionService;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 
 	public StudentController(StudentService studentService,
-			SessionService sessionService, RequirementService requirementService) {
+			SessionService sessionService, RequestRequirementService requestRequirementService) {
 		this.studentService = studentService;
 		this.sessionService = sessionService;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 	}
 
 	@PostMapping("/saveQuestionnaireAnswers")
 	public ResponseEntity<String> saveQuestionnaireAnswers(HttpServletRequest servlet,
 			@Valid @RequestBody StudentQuestionnaireRecord record) {
 
-		Student student = requirementService.requireUserStudentExists(servlet);
-		Session session = requirementService.requireSessionExists(student.getSessionId());
+		Student student = requestRequirementService.requireUserStudentExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(student.getSessionId());
 
 		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
@@ -61,7 +61,7 @@ public class StudentController {
 	@PostMapping("/create")
 	public ResponseEntity<String> createStudent(@Valid @RequestBody CreateStudentRecord record) {
 
-		Session session = requirementService.requireSessionExists(record.sessionId);
+		Session session = requestRequirementService.requireSessionExists(record.sessionId);
 
 		Student student = studentService.addStudent(session, record.email, record.password, record.name);
 

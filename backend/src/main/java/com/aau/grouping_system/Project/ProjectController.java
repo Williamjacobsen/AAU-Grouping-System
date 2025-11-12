@@ -3,7 +3,10 @@ package com.aau.grouping_system.Project;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Session.Session;
+
+import jakarta.validation.constraints.NotBlank;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -34,7 +37,8 @@ public class ProjectController {
 	}
 
 	@GetMapping("/getSessionProjects/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error
@@ -50,7 +54,8 @@ public class ProjectController {
 	}
 
 	@DeleteMapping("/delete/{projectId}")
-	public ResponseEntity<String> deleteProject(@PathVariable String projectId) {
+	public ResponseEntity<String> deleteProject(
+			@NoDangerousCharacters @NotBlank @PathVariable String projectId) {
 		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
 
 		// Check if project exists if not throw error
@@ -67,8 +72,10 @@ public class ProjectController {
 	}
 
 	@PostMapping("/create/{sessionId}/{projectName}/{description}")
-	public ResponseEntity<Map<String, Object>> createProject(@PathVariable String sessionId,
-			@PathVariable String projectName, @PathVariable String description) {
+	public ResponseEntity<Map<String, Object>> createProject(
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String projectName,
+			@NoDangerousCharacters @NotBlank @PathVariable String description) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error
@@ -88,8 +95,10 @@ public class ProjectController {
 	}
 
 	@PutMapping("/update/{projectId}/{newName}/{newDescription}")
-	public ResponseEntity<String> updateProject(@PathVariable String projectId, @PathVariable String newName,
-			@PathVariable String newDescription) {
+	public ResponseEntity<String> updateProject(
+			@NoDangerousCharacters @NotBlank @PathVariable String projectId,
+			@NoDangerousCharacters @NotBlank @PathVariable String newName,
+			@NoDangerousCharacters @NotBlank @PathVariable String newDescription) {
 		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
 
 		// Check if project exists if not throw error

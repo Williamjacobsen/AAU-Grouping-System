@@ -5,7 +5,7 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -24,17 +24,17 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class SessionSetupController {
 
 	private final Database db;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 	private final SessionSetupService sessionSetupService;
 	private final UserService userService;
 
 	public SessionSetupController(
 			Database db,
-			RequirementService requirementService,
+			RequestRequirementService requestRequirementService,
 			SessionSetupService sessionSetupService,
 			UserService userService) {
 		this.db = db;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 		this.sessionSetupService = sessionSetupService;
 		this.userService = userService;
 	}
@@ -45,9 +45,9 @@ public class SessionSetupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody SessionSetupRecord record) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(httpRequest);
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(httpRequest);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		sessionSetupService.updateSessionSetup(session, record);
 
@@ -65,10 +65,10 @@ public class SessionSetupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody SendLoginCodeRecord record) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
 		if (record.sendOnlyNew) {
@@ -87,10 +87,10 @@ public class SessionSetupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody SendLoginCodeRecord record) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
 		if (record.sendOnlyNew) {

@@ -24,7 +24,7 @@ import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -38,14 +38,14 @@ public class SessionController {
 	private final Database db;
 	private final SessionService sessionService;
 	private final AuthService authService;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 
 	public SessionController(Database db, SessionService sessionService, AuthService authService,
-			RequirementService requirementService) {
+			RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.sessionService = sessionService;
 		this.authService = authService;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 	}
 
 	private record CreateSessionRecord(
@@ -56,7 +56,7 @@ public class SessionController {
 	public ResponseEntity<Session> createSession(HttpServletRequest servlet,
 			@Valid @RequestBody CreateSessionRecord record) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		try {
 			Session newSession = sessionService.createSession(record.name.trim(), coordinator);
@@ -68,7 +68,7 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest servlet) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
@@ -78,9 +78,9 @@ public class SessionController {
 	public ResponseEntity<Session> getSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		return ResponseEntity.ok(session);
 	}
@@ -90,9 +90,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
 				.getItems(db);
@@ -105,9 +105,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
 
@@ -138,9 +138,9 @@ public class SessionController {
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
 
@@ -151,7 +151,7 @@ public class SessionController {
 	public ResponseEntity<String> deleteSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {

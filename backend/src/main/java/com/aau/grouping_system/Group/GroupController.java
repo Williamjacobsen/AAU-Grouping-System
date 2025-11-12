@@ -23,7 +23,7 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -36,21 +36,21 @@ public class GroupController {
 
 	private final Database db;
 	private final GroupService groupService;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 
-	public GroupController(Database db, GroupService groupService, RequirementService requirementService) {
+	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.groupService = groupService;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 	}
 
 	private Coordinator validateCoordinatorAccess(HttpServletRequest servlet) {
-		return requirementService.requireUserCoordinatorExists(servlet);
+		return requestRequirementService.requireUserCoordinatorExists(servlet);
 	}
 
 	private Student validateStudentAccess(HttpServletRequest servlet, String studentId) {
-		Student authenticatedStudent = requirementService.requireUserStudentExists(servlet);
-		Student targetStudent = requirementService.requireStudentExists(studentId);
+		Student authenticatedStudent = requestRequirementService.requireUserStudentExists(servlet);
+		Student targetStudent = requestRequirementService.requireStudentExists(studentId);
 
 		if (!authenticatedStudent.getId().equals(targetStudent.getId())) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Students can only perform operations on themselves");
@@ -60,8 +60,8 @@ public class GroupController {
 	}
 
 	private User validateUserAccess(HttpServletRequest servlet, String groupId) {
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireGroupExists(groupId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireGroupExists(groupId);
 		return user;
 	}
 
@@ -73,8 +73,8 @@ public class GroupController {
 
 		validateCoordinatorAccess(servlet);
 
-		Group group = requirementService.requireGroupExists(groupId);
-		Student student = requirementService.requireStudentExists(studentId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
+		Student student = requestRequirementService.requireStudentExists(studentId);
 
 		try {
 			groupService.acceptJoinRequest(groupId, student);
@@ -91,7 +91,7 @@ public class GroupController {
 
 		validateCoordinatorAccess(servlet);
 
-		Group group = requirementService.requireGroupExists(groupId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
 
 		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
 
@@ -106,7 +106,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requirementService.requireGroupExists(groupId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
@@ -123,7 +123,7 @@ public class GroupController {
 
 		validateUserAccess(servlet, groupId);
 
-		Group group = requirementService.requireGroupExists(groupId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
 		return ResponseEntity.ok(group);
 	}
 
@@ -195,7 +195,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requirementService.requireGroupExists(groupId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.joinGroup(groupId, student);
@@ -213,7 +213,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requirementService.requireGroupExists(groupId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.leaveGroup(groupId, student);
@@ -233,11 +233,12 @@ public class GroupController {
 		validateCoordinatorAccess(servlet);
 
 		try {
-			Student student = requirementService.requireStudentExists(studentId);
-			Group fromGroup = requirementService.requireGroupExists(fromGroupId);
-			Group toGroup = requirementService.requireGroupExists(toGroupId);
+			Student student = requestRequirementService.requireStudentExists(studentId);
+			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
+			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
-			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
+			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from
+																								// the max students session setup page
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 						.body("Target group is full");
 			}
@@ -263,18 +264,20 @@ public class GroupController {
 		validateCoordinatorAccess(servlet);
 
 		try {
-			Group fromGroup = requirementService.requireGroupExists(fromGroupId);
-			Group toGroup = requirementService.requireGroupExists(toGroupId);
+			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
+			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
+			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change
+																																									// so that it gets the number from the
+																																									// max students session setup page
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
-				Student student = requirementService.requireStudentExists(studentId);
+				Student student = requestRequirementService.requireStudentExists(studentId);
 				groupService.leaveGroup(fromGroupId, student);
 				groupService.joinGroup(toGroupId, student);
 			}

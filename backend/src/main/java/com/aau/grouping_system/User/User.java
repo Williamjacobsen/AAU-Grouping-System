@@ -21,7 +21,7 @@ public abstract class User extends DatabaseItem {
 	public enum Role {
 		Coordinator,
 		Supervisor,
-		Student;
+		Student
 	}
 
 	public abstract Role getRole();

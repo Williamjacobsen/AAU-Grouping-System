@@ -24,14 +24,14 @@ export default function Profile() {
 			const timer = setTimeout(() => setError(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [error])
+	}, [error]);
 
 	useEffect(() => {
 		if (succes) {
 			const timer = setTimeout(() => setSucces(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [succes])
+	}, [succes]);
 
 
 	if (isLoadingUser) return <>Checking authentication...</>;
@@ -39,22 +39,22 @@ export default function Profile() {
 
 	const handleEmailChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyEmail`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyEmail`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ newEmail }),
+				body: JSON.stringify({ newEmail, userRole: user.role }),
 				credentials: "include"
-			})
+			});
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
-				setSucces("")
+				setSucces("");
 				return Promise.resolve();
 			}
 
 			navigate("/profile");
-			setSucces("Email updated succesfully")
+			setSucces("Email updated succesfully");
 			setError("");
 			setUser(prev => ({ ...prev, email: newEmail }));
 
@@ -65,12 +65,12 @@ export default function Profile() {
 
 	const handlePasswordChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyPassword`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyPassword`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newPassword }),
 				credentials: "include"
-			})
+			});
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
@@ -94,7 +94,7 @@ export default function Profile() {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/signOut`, {
 				method: "POST",
 				credentials: "include"
-			})
+			});
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
@@ -128,39 +128,36 @@ export default function Profile() {
 				<p><b>Role:</b> {user.role}</p>
 			</div>
 
-			{user.role === userRoleEnum.Coordinator &&
-				<>
-				<hr />
-					<div className="text">
-						<label className="label">
-							Change Email
-							<input
-								type="email"
-								placeholder="New email"
-								onChange={(e) => setNewEmail(e.target.value)}
-							/>
-						</label>
-						<button className="sign-in" onClick={handleEmailChange}>
-							Update Email
-						</button>
-					</div>
+			<hr />
+			<div className="text">
+				<label className="label">
+					Change Email
+					<input
+						type="email"
+						placeholder="New email"
+						onChange={(e) => setNewEmail(e.target.value)}
+					/>
+				</label>
+				<button className="sign-in" onClick={handleEmailChange}>
+					Update Email
+				</button>
+			</div>
 
-					<div className="text">
-						<label className="label">
-							Change Password
-							<input
-								type="password"
-								placeholder="New password"
-								onChange={(e) => setNewPassword(e.target.value)}
-							/>
-						</label>
-						<button className="sign-in" onClick={handlePasswordChange}>
-							Update Password
-						</button>
-					</div>
-					<hr />
-				</>
-			}
+			<div className="text">
+				<label className="label">
+					Change Password
+					<input
+						type="password"
+						placeholder="New password"
+						onChange={(e) => setNewPassword(e.target.value)}
+					/>
+				</label>
+				<button className="sign-in" onClick={handlePasswordChange}>
+					Update Password
+				</button>
+			</div>
+			<hr />
+
 			<button className="sign-up" onClick={handleLogout}>
 				Log Out
 			</button>
