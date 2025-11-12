@@ -1,6 +1,7 @@
 package com.aau.grouping_system.Group;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.User;
@@ -134,120 +136,53 @@ public class GroupController {
 	// ---TEST------TEST------TEST------TEST---
 	@GetMapping
 	public ResponseEntity<Object> getAllGroups() {
+		Map<String, Group> allGroups = db.getGroups().getAllItems();
+		Map<String, Object> response = new LinkedHashMap<>();
 
-		Map<String, Object> mockGroups = Map.of(
-				"1", Map.of(
-						"id", "1",
-						"name", "Group 1",
-						"project", "AI Chatbot",
-						"members", List.of(
-								Map.of("name", "Student 1", "priority1", "AI Chatbot", "priority2", "Web App", "priority3",
-										"Data Science"))),
-				"2", Map.of(
-						"id", "2",
-						"name", "Group 2",
-						"project", "Web App",
-						"members", List.of(
-								Map.of("name", "Student 2", "priority1", "Web App", "priority2", "AI Chatbot", "priority3",
-										"Game Design"),
-								Map.of("name", "Student 3", "priority1", "Game Design", "priority2", "Web App", "priority3",
-										"AI Chatbot"))),
-				"3", Map.of(
-						"id", "3",
-						"name", "Group 3",
-						"project", "Health Tracker",
-						"members", List.of(
-								Map.of("name", "Student 4", "priority1", "Health Tracker", "priority2", "AI Chatbot", "priority3",
-										"IoT System"),
-								Map.of("name", "Student 5", "priority1", "IoT System", "priority2", "Health Tracker", "priority3",
-										"Game Design"),
-								Map.of("name", "Student 6", "priority1", "Game Design", "priority2", "Health Tracker", "priority3",
-										"AI Chatbot"))),
-				"4", Map.of(
-						"id", "4",
-						"name", "Group 4",
-						"project", "Smart Home",
-						"members", List.of(
-								Map.of("name", "Student 7", "priority1", "Smart Home", "priority2", "Web App", "priority3",
-										"Health Tracker"),
-								Map.of("name", "Student 8", "priority1", "Web App", "priority2", "Smart Home", "priority3",
-										"AI Chatbot"),
-								Map.of("name", "Student 9", "priority1", "Health Tracker", "priority2", "AI Chatbot", "priority3",
-										"Smart Home"),
-								Map.of("name", "Student 10", "priority1", "AI Chatbot", "priority2", "Web App", "priority3",
-										"Smart Home"))),
-				"5", Map.of(
-						"id", "5",
-						"name", "Group 5",
-						"project", "Finance Dashboard",
-						"members", List.of(
-								Map.of("name", "Student 11", "priority1", "Finance Dashboard", "priority2", "AI Chatbot", "priority3",
-										"Web App"),
-								Map.of("name", "Student 12", "priority1", "AI Chatbot", "priority2", "Finance Dashboard", "priority3",
-										"Health Tracker"),
-								Map.of("name", "Student 13", "priority1", "Web App", "priority2", "Health Tracker", "priority3",
-										"Finance Dashboard"),
-								Map.of("name", "Student 14", "priority1", "Health Tracker", "priority2", "Web App", "priority3",
-										"Finance Dashboard"),
-								Map.of("name", "Student 15", "priority1", "Game Design", "priority2", "AI Chatbot", "priority3",
-										"Finance Dashboard"))),
-				"6", Map.of(
-						"id", "6",
-						"name", "Group 6",
-						"project", "E-Commerce Site",
-						"members", List.of(
-								Map.of("name", "Student 16", "priority1", "E-Commerce Site", "priority2", "Finance Dashboard",
-										"priority3", "Web App"),
-								Map.of("name", "Student 17", "priority1", "Web App", "priority2", "E-Commerce Site", "priority3",
-										"Smart Home"),
-								Map.of("name", "Student 18", "priority1", "Finance Dashboard", "priority2", "Smart Home", "priority3",
-										"E-Commerce Site"),
-								Map.of("name", "Student 19", "priority1", "Health Tracker", "priority2", "Web App", "priority3",
-										"E-Commerce Site"),
-								Map.of("name", "Student 20", "priority1", "AI Chatbot", "priority2", "Smart Home", "priority3",
-										"E-Commerce Site"),
-								Map.of("name", "Student 21", "priority1", "Game Design", "priority2", "AI Chatbot", "priority3",
-										"E-Commerce Site"))),
-				"7", Map.of(
-						"id", "7",
-						"name", "Group 7",
-						"project", "Game Design",
-						"members", List.of(
-								Map.of("name", "Student 22", "priority1", "Game Design", "priority2", "AI Chatbot", "priority3",
-										"Web App"),
-								Map.of("name", "Student 23", "priority1", "AI Chatbot", "priority2", "Game Design", "priority3",
-										"Finance Dashboard"),
-								Map.of("name", "Student 24", "priority1", "Finance Dashboard", "priority2", "AI Chatbot", "priority3",
-										"Health Tracker"),
-								Map.of("name", "Student 25", "priority1", "Web App", "priority2", "Game Design", "priority3",
-										"Smart Home"),
-								Map.of("name", "Student 26", "priority1", "Smart Home", "priority2", "Finance Dashboard", "priority3",
-										"Web App"),
-								Map.of("name", "Student 27", "priority1", "IoT System", "priority2", "Health Tracker", "priority3",
-										"Smart Home"),
-								Map.of("name", "Student 28", "priority1", "Health Tracker", "priority2", "Game Design", "priority3",
-										"Finance Dashboard"))),
-				"8", Map.of(
-						"id", "8",
-						"name", "Group 8",
-						"project", "IoT System",
-						"members", List.of(
-								Map.of("name", "Student 29", "priority1", "IoT System", "priority2", "Smart Home", "priority3",
-										"Web App"),
-								Map.of("name", "Student 30", "priority1", "Smart Home", "priority2", "IoT System", "priority3",
-										"Health Tracker"),
-								Map.of("name", "Student 31", "priority1", "Health Tracker", "priority2", "Smart Home", "priority3",
-										"IoT System"),
-								Map.of("name", "Student 32", "priority1", "AI Chatbot", "priority2", "Finance Dashboard", "priority3",
-										"IoT System"),
-								Map.of("name", "Student 33", "priority1", "Finance Dashboard", "priority2", "IoT System", "priority3",
-										"AI Chatbot"),
-								Map.of("name", "Student 34", "priority1", "Game Design", "priority2", "AI Chatbot", "priority3",
-										"IoT System"),
-								Map.of("name", "Student 35", "priority1", "Web App", "priority2", "Finance Dashboard", "priority3",
-										"IoT System"))));
+		for (Map.Entry<String, Group> entry : allGroups.entrySet()) {
+			Group group = entry.getValue();
 
-		return ResponseEntity.ok(mockGroups);
+			// Get project name safely
+			String projectName = "No project";
+			if (group.getProjectId() != null && !group.getProjectId().isEmpty()) {
+				Project project = db.getProjects().getItem(group.getProjectId());
+				if (project != null) {
+					projectName = project.getName();
+				}
+			}
+
+			// Build members list
+			List<Map<String, Object>> membersList = new ArrayList<>();
+			for (String studentId : group.getStudentIds()) {
+				Student student = db.getStudents().getItem(studentId);
+				if (student == null)
+					continue;
+
+				Map<String, Object> studentInfo = new LinkedHashMap<>();
+				studentInfo.put("id", student.getId());
+				studentInfo.put("name", student.getName());
+
+				if (student.getQuestionnaire() != null) {
+					studentInfo.put("priority1", student.getQuestionnaire().getDesiredProjectId1());
+					studentInfo.put("priority2", student.getQuestionnaire().getDesiredProjectId2());
+					studentInfo.put("priority3", student.getQuestionnaire().getDesiredProjectId3());
+				}
+
+				membersList.add(studentInfo);
+			}
+
+			// Build group data
+			Map<String, Object> groupData = new LinkedHashMap<>();
+			groupData.put("id", group.getId());
+			groupData.put("name", "Group " + group.getId()); // if there’s no explicit name property
+			groupData.put("project", projectName);
+			groupData.put("maxStudents", group.getMaxStudents());
+			groupData.put("members", membersList);
+
+			response.put(entry.getKey(), groupData);
+		}
+
+		return ResponseEntity.ok(response);
 	}
 
 	// ---TEST------TEST------TEST------TEST---
@@ -302,6 +237,11 @@ public class GroupController {
 			Group fromGroup = requirementService.requireGroupExists(fromGroupId);
 			Group toGroup = requirementService.requireGroupExists(toGroupId);
 
+			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+						.body("Target group is full");
+			}
+
 			// Remove student from old group
 			groupService.leaveGroup(fromGroupId, student);
 			groupService.joinGroup(toGroupId, student);
@@ -327,7 +267,7 @@ public class GroupController {
 			Group toGroup = requirementService.requireGroupExists(toGroupId);
 
 			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > toGroup.getMaxStudents()) {
+			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change so that it gets the number from the max students session setup page
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 

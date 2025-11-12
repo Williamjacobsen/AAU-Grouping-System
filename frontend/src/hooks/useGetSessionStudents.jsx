@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 
-import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionStudents(sessionId) {
-	return await fetchWithDefaultErrorHandling(
+	const response = await fetchWithDefaultErrorHandling(
 		`/sessions/${sessionId}/getStudents`,
 		{
+			credentials: "include",
 			method: "GET"
 		}
 	);
+	return await response.json();
 }
 
 export default function useGetSessionStudents(sessionId) {

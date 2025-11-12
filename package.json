@@ -1,6 +1,9 @@
 {
   "dependencies": {
+    "@stomp/stompjs": "^7.2.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-csv": "^2.2.2",
+    "react-dom": "^19.2.0",
+    "sockjs-client": "^1.6.1"
   }
 }

@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 
-import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionSupervisors(sessionId) {
-	return await fetchWithDefaultErrorHandling(
+	const response = await fetchWithDefaultErrorHandling(
 		`/sessions/${sessionId}/getSupervisors`,
 		{
+			credentials: "include",
 			method: "GET",
 		}
 	);
+	return await response.json();
 }
 
 export default function useGetSessionSupervisors(sessionId) {
