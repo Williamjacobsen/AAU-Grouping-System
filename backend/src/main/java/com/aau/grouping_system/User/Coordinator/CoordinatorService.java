@@ -20,13 +20,4 @@ public class CoordinatorService {
 		String passwordHash = passwordEncoder.encode(password);
 		return new Coordinator(db, null, email, passwordHash, name);
 	}
-
-	public boolean isEmailDuplicate(String email) {
-		for (Coordinator existingCoordinator : db.getCoordinators().getAllItems().values()) {
-			if (existingCoordinator.getEmail().equals(email)) {
-				return true;
-			}
-		}
-		return false;
-	}
 }

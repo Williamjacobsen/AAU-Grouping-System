@@ -16,7 +16,8 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 			// <input type="datetime-local"/> gives an ISO string in the format "2007-12-03T10:15",
 			// but the backend only takes a full ISO string in the format "2007-12-03T10:15:30.00Z",
 			// so we must convert it.
-			sessionSetupRecord.questionnaireDeadlineISOString = convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISOString);
+			sessionSetupRecord.questionnaireDeadlineISODateString =
+				convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISODateString);
 
 			await fetchWithDefaultErrorHandling(
 				`/sessionSetup/${sessionId}/saveSetup`,
@@ -112,7 +113,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 						<input
 							className="form-input"
 							type="datetime-local"
-							name="questionnaireDeadlineISOString"
+							name="questionnaireDeadlineISODateString"
 							defaultValue={session.questionnaireDeadline}
 							required
 						/>

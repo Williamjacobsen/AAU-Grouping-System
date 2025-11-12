@@ -10,6 +10,7 @@ import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 
@@ -18,18 +19,21 @@ import jakarta.servlet.http.HttpServletRequest;
 @Service
 /// Service for HTTP request requirements, for example requiring that a specific
 /// coordinator exists in the database.
-public class RequirementService {
+public class RequestRequirementService {
 
 	private final Database db;
 	private final AuthService authService;
 	private final SessionService sessionService;
+	private final UserService userService;
 
-	public RequirementService(Database db,
+	public RequestRequirementService(Database db,
 			AuthService authService,
-			SessionService sessionService) {
+			SessionService sessionService,
+			UserService userService) {
 		this.db = db;
 		this.authService = authService;
 		this.sessionService = sessionService;
+		this.userService = userService;
 	}
 
 	// Require X to exist
@@ -93,6 +97,14 @@ public class RequirementService {
 	public void requireCoordinatorIsAuthorizedSession(String sessionId, Coordinator coordinator) {
 		if (!sessionService.isUserAuthorizedSession(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Coordinator user is not authorized session");
+		}
+	}
+
+	// Require user stuff
+
+	public void requireEmailNotDuplicate(String newEmail, User user) {
+		if (userService.isEmailDuplicate(newEmail, user)) {
+			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another " + user.getRole());
 		}
 	}
 

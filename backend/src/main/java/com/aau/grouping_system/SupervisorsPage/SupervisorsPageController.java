@@ -28,7 +28,7 @@ import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -42,27 +42,27 @@ public class SupervisorsPageController {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 	private final EmailService emailService;
 	private final UserService userService;
 
 	public SupervisorsPageController(
 			Database db,
 			PasswordEncoder passwordEncoder,
-			RequirementService requirementService,
+			RequestRequirementService requestRequirementService,
 			EmailService emailService,
 			UserService userService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 		this.emailService = emailService;
 		this.userService = userService;
 	}
 
 	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		Session session = requirementService.requireSessionExists(sessionId);
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 		return session;
 	}
 

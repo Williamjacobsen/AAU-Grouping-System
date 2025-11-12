@@ -25,7 +25,7 @@ import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Student.StudentQuestionnaire;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -38,16 +38,17 @@ public class StudentPageController {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 	private final EmailService emailService;
 	private final UserService userService;
 
-	public StudentPageController(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService,
+	public StudentPageController(Database db, PasswordEncoder passwordEncoder,
+			RequestRequirementService requestRequirementService,
 			EmailService emailService,
 			UserService userService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 		this.emailService = emailService;
 		this.userService = userService;
 	}
@@ -87,7 +88,7 @@ public class StudentPageController {
 
 	private StudentSessionData validateCoordinatorAndStudent(HttpServletRequest servlet, String sessionId,
 			String studentId) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		if (coordinator == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
 		}
