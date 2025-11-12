@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Session;
 
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -84,8 +85,7 @@ public class SessionController {
 		return ResponseEntity.ok(session);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getSupervisors")
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -100,8 +100,7 @@ public class SessionController {
 		return ResponseEntity.ok(supervisors);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getStudents")
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -115,8 +114,7 @@ public class SessionController {
 		return ResponseEntity.ok(students);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here despite Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getProjects")
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -135,8 +133,7 @@ public class SessionController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -162,36 +159,6 @@ public class SessionController {
 		} else {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied or session not found");
 		}
-	}
-
-	// TODO: Needs content inside its parameter.
-	private record SaveSetupRecord() {
-	}
-
-	@PostMapping("/{sessionId}/saveSetup")
-	public ResponseEntity<String> saveSetup(HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
-			@Valid @RequestBody SaveSetupRecord record) {
-
-		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
-		// Hint: Tjek linje 86-89 i denne fil.
-
-		// 2) Få useren via "httpRequest" og tjek, at han eksisterer og har adgang til
-		// sessionen.
-		// Hint: Tjek linje 91-94 i denne fil.
-
-		// 3) Ekstraher data fra "request" og gem dem i nogle variable.
-		// Hint:
-		// String name = request.get("name");
-		// String studentEmails = request.get("studentEmails");
-		// osv.
-
-		// 4) Kald en funktion kaldet "applySetup", som jeg har lavet til dig i
-		// "SessionService.java"-filen (du skal dog selv fylde den ud, den er tom lige
-		// nu).
-		// Funktionen's parametre skal være den data, som du fik ekstraheret i trin 3).
-
-		return ResponseEntity.ok("Session setup saved successfully!");
 	}
 
 }

@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 export async function fetchSession(sessionId) {
-	return await fetchWithDefaultErrorHandling(
+	const response = await fetchWithDefaultErrorHandling(
 		`/sessions/${sessionId}`,
 		{
+			credentials: "include",
 			method: "GET"
 		}
 	);
+	return await response.json();
 }
 
 function useGetSession(sessionId) {
@@ -23,7 +25,7 @@ function useGetSession(sessionId) {
 				setIsLoading(false);
 				return;
 			}
-	
+
 			try {
 				setSession(await fetchSession(sessionId));
 				setIsLoading(false);
@@ -42,7 +44,7 @@ export function useGetSessionByParameter() {
 }
 
 export function useGetSessionByUser(user) {
-	const [ sessionId, setSessionId ] = useState(null);
+	const [sessionId, setSessionId] = useState(null);
 
 	useEffect(() => {
 		setSessionId(user?.sessionId);
@@ -63,7 +65,7 @@ export function useGetSessionByUserOrParameter(user) {
 	useEffect(() => {
 		setSession(sessionByUser ? sessionByUser : sessionByParameter);
 		setIsLoading(IsLoadingSessionByParameter || IsLoadingSessionByUser);
-	}, [sessionByUser, sessionByParameter, IsLoadingSessionByUser, IsLoadingSessionByParameter, ]);
+	}, [sessionByUser, sessionByParameter, IsLoadingSessionByUser, IsLoadingSessionByParameter,]);
 
 	return { isLoading, session };
 }

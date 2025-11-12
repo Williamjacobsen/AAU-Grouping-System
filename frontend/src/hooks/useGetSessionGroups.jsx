@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 
-import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers"
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 export async function fetchSessionGroups(sessionId) {
-	return await fetchWithDefaultErrorHandling(
+	const response = await fetchWithDefaultErrorHandling(
 		`/sessions/${sessionId}/getGroups`,
 		{
+			credentials: "include",
 			method: "GET"
 		}
 	);
+	return await response.json();
 }
 
 export default function useGetSessionGroups(sessionId) {
