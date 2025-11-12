@@ -16,13 +16,11 @@ public class Session extends DatabaseItem {
 	private DatabaseItemChildGroup students;
 	private DatabaseItemChildGroup projects;
 	private DatabaseItemChildGroup groups;
-	private String name;
-	private String questionnaireDeadline = null;
-	private String description;
-	private String coordinatorName;
-	private String initialProjects;
-	private String optionalQuestionnaire;
-	private int groupSize;
+
+	private String name = "";
+	private Integer minGroupSize = -1;
+	private Integer maxGroupSize = -1;
+	private LocalDateTime questionnaireDeadline = null;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
 			Coordinator coordinator, String name) {
@@ -42,8 +40,7 @@ public class Session extends DatabaseItem {
 
 	// @formatter:off
 	public String getCoordinatorId() { return coordinatorId; }
-	public String getName() { return name; }
-	public void setName(String name) { this.name = name; }
+	
 	public DatabaseItemChildGroup getSupervisors() { return supervisors; }
 	public void setSupervisors(DatabaseItemChildGroup supervisors) { this.supervisors = supervisors; }
 	public DatabaseItemChildGroup getStudents() { return students; }
@@ -52,22 +49,14 @@ public class Session extends DatabaseItem {
 	public void setProjects(DatabaseItemChildGroup projects) { this.projects = projects; }
 	public DatabaseItemChildGroup getGroups() { return groups; }
 	public void setGroups(DatabaseItemChildGroup groups) { this.groups = groups; }
-	public String getQuestionnaireDeadline() { return questionnaireDeadline; }
-	public void setQuestionnaireDeadline(String questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
 
-	public String getDescription() { return description; }
-	public void setDescription(String description) { this.description = description; }
-
-	public String getCoordinatorName() { return coordinatorName; }
-	public void setCoordinatorName(String coordinatorName) { this.coordinatorName = coordinatorName; }
-
-	public String getInitialProjects() { return initialProjects; }
-	public void setInitialProjects(String initialProjects) { this.initialProjects = initialProjects; }
-
-	public String getOptionalQuestionnaire() { return optionalQuestionnaire; }
-	public void setOptionalQuestionnaire(String optionalQuestionnaire) { this.optionalQuestionnaire = optionalQuestionnaire; }
-
-	public int getGroupSize() { return groupSize; }
-	public void setGroupSize(int groupSize) { this.groupSize = groupSize; }
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
+	public Integer getMaxGroupSize() { return maxGroupSize; }
+	public void setMaxGroupSize(Integer maxGroupSize) { this.maxGroupSize = maxGroupSize; }
+	public Integer getMinGroupSize() { return minGroupSize; }
+	public void setMinGroupSize(Integer minGroupSize) { this.minGroupSize = minGroupSize; }
+	public LocalDateTime getQuestionnaireDeadline() { return questionnaireDeadline; }
+	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
 
 }

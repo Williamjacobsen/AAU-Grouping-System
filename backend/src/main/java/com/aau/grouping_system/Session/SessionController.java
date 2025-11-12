@@ -85,8 +85,7 @@ public class SessionController {
 		return ResponseEntity.ok(session);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getSupervisors")
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -101,8 +100,7 @@ public class SessionController {
 		return ResponseEntity.ok(supervisors);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getStudents")
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -116,8 +114,7 @@ public class SessionController {
 		return ResponseEntity.ok(students);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here despite Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getProjects")
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -136,8 +133,7 @@ public class SessionController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -163,39 +159,6 @@ public class SessionController {
 		} else {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied or session not found");
 		}
-	}
-
-	// TODO: Needs content inside its parameter.
-	private record SaveSetupRecord() {
-	}
-
-	public ResponseEntity<String> saveSetup(HttpServletRequest httpRequest, @PathVariable String sessionId,
-			@RequestBody Map<String, String> request) {
-
-		Session session = db.getSessions().getItem(sessionId);
-		if (session == null) {
-			return ResponseEntity.notFound().build();
-		}
-
-		User user = authService.getUser(httpRequest);
-		if (user == null || !sessionService.isUserAuthorizedSession(sessionId, user)) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-		}
-
-		String name = request.get("name");
-		String description = request.get("description");
-		String studentEmails = request.get("studentEmails");
-		String supervisorEmails = request.get("supervisorEmails");
-		String coordinatorName = request.get("coordinatorName");
-		String questionnaireDeadline = request.get("questionnaireDeadline");
-		String initialProjects = request.get("initialProjects");
-		String optionalQuestionnaire = request.get("optionalQuestionnaire");
-		int groupSize = Integer.parseInt(request.get("groupSize"));
-
-		sessionService.applySetup(session, name, description, studentEmails, supervisorEmails,
-				coordinatorName, questionnaireDeadline, initialProjects, optionalQuestionnaire, groupSize);
-
-		return ResponseEntity.ok("Session setup saved successfully!");
 	}
 
 }

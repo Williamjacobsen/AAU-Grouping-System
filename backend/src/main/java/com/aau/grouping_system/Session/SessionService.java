@@ -38,8 +38,7 @@ public class SessionService {
 		return db.getSessions().getItem(sessionId);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
 		return (CopyOnWriteArrayList<Session>) coordinator.getSessions().getItems(db);
 	}
@@ -53,7 +52,7 @@ public class SessionService {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
 		Session s = getSession(sessionId);
 		if (s == null)
@@ -61,7 +60,7 @@ public class SessionService {
 		return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
 		Session s = getSession(sessionId);
 		if (s == null)
@@ -72,33 +71,10 @@ public class SessionService {
 	public boolean isQuestionnaireDeadlineExceeded(Session session) {
 		if (session == null)
 			return false;
-		String raw = session.getQuestionnaireDeadline();
-		if (raw == null || raw.isBlank())
-			return false; // no deadline set => not exceeded
-		LocalDateTime deadline = parseDeadline(raw);
+		LocalDateTime deadline = session.getQuestionnaireDeadline();
 		if (deadline == null)
 			return false; // unparsable => treat as not exceeded
 		return LocalDateTime.now().isAfter(deadline);
-	}
-
-	private LocalDateTime parseDeadline(String s) {
-		try {
-			return LocalDateTime.parse(s);
-		} catch (DateTimeParseException ignored) {
-		}
-		try {
-			return LocalDate.parse(s).atTime(23, 59, 59);
-		} catch (DateTimeParseException ignored) {
-		}
-		try {
-			return OffsetDateTime.parse(s).toLocalDateTime();
-		} catch (DateTimeParseException ignored) {
-		}
-		try {
-			return Instant.parse(s).atZone(ZoneId.systemDefault()).toLocalDateTime();
-		} catch (DateTimeParseException ignored) {
-		}
-		return null;
 	}
 
 	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
@@ -127,61 +103,5 @@ public class SessionService {
 	public Boolean isUserAuthorizedSession(String sessionId, Coordinator coordinator) {
 		User.Role[] authorizedRoles = { User.Role.Coordinator };
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
-	}
-
-	public void applySetup(
-			Session session,
-			String name,
-			String description,
-			String studentEmails,
-			String supervisorEmails,
-			String coordinatorName,
-			String questionnaireDeadline,
-			String initialProjects,
-			String optionalQuestionnaire,
-			int groupSize) {
-
-		if (session == null)
-			return;
-
-		String[] studentEmailArray;
-		if (studentEmails == null) {
-			studentEmailArray = new String[0];
-		} else {
-			studentEmailArray = studentEmails.split("\\r?\\n");
-		}
-
-		List<String> studentEmailList = Arrays.stream(studentEmailArray)
-				.map(String::trim)
-				.filter(s -> !s.isEmpty())
-				.toList();
-
-		String[] supervisorEmailArray;
-		if (supervisorEmails == null) {
-			supervisorEmailArray = new String[0];
-		} else {
-			supervisorEmailArray = supervisorEmails.split("\\r?\\n");
-		}
-
-		List<String> supervisorEmailList = Arrays.stream(supervisorEmailArray)
-				.map(String::trim)
-				.filter(s -> !s.isEmpty())
-				.toList();
-
-		for (String email : studentEmailList) {
-			new Student(db, session.getStudents(), email, "", "Student", session);
-		}
-
-		for (String email : supervisorEmailList) {
-			new Supervisor(db, session.getSupervisors(), email, "", "Supervisor", session);
-		}
-
-		session.setName(name);
-		session.setDescription(description);
-		session.setCoordinatorName(coordinatorName);
-		session.setQuestionnaireDeadline(questionnaireDeadline);
-		session.setInitialProjects(initialProjects);
-		session.setOptionalQuestionnaire(optionalQuestionnaire);
-		session.setGroupSize(groupSize);
 	}
 }

@@ -89,21 +89,21 @@ public class DatabaseSerializer {
 		Session se2 = new Session(db, c1.getSessions(), c1, "Session name 2");
 		Session se3 = new Session(db, c2.getSessions(), c2, "Session name 3");
 
-		Supervisor su1 = supervisorService.addSupervisor(se1, "su1", "su1", "Supervisor name 1");
-		Supervisor su2 = supervisorService.addSupervisor(se1, "su2", "su2", "Supervisor name 2");
-		Supervisor su3 = supervisorService.addSupervisor(se1, "su3", "su3", "Supervisor name 3");
-		Supervisor su4 = supervisorService.addSupervisor(se2, "su4", "su4", "Supervisor name 4");
-		Supervisor su5 = supervisorService.addSupervisor(se2, "su5", "su5", "Supervisor name 5");
+		Supervisor su1 = supervisorService.addSupervisor(se1, "su1@example.com", "su1", "Supervisor name 1");
+		Supervisor su2 = supervisorService.addSupervisor(se1, "su2@example.com", "su2", "Supervisor name 2");
+		Supervisor su3 = supervisorService.addSupervisor(se1, "su3@example.com", "su3", "Supervisor name 3");
+		Supervisor su4 = supervisorService.addSupervisor(se2, "su4@example.com", "su4", "Supervisor name 4");
+		Supervisor su5 = supervisorService.addSupervisor(se2, "su5@example.com", "su5", "Supervisor name 5");
 
-		Student st1 = studentService.addStudent(se1, "st1", "st1", "Student name 1");
-		Student st2 = studentService.addStudent(se1, "st2", "st2", "Student name 2");
-		Student st3 = studentService.addStudent(se1, "st3", "st3", "Student name 3");
-		Student st4 = studentService.addStudent(se1, "st4", "st4", "Student name 4");
-		Student st5 = studentService.addStudent(se1, "st5", "st5", "Student name 5");
-		Student st6 = studentService.addStudent(se1, "st6", "st6", "Student name 6");
-		Student st7 = studentService.addStudent(se2, "st7", "st7", "Student name 7");
-		Student st8 = studentService.addStudent(se2, "st8", "st8", "Student name 8");
-		Student st9 = studentService.addStudent(se2, "st9", "st9", "Student name 9");
+		Student st1 = studentService.addStudent(se1, "st1@example.com", "st1", "Student name 1");
+		Student st2 = studentService.addStudent(se1, "st2@example.com", "st2", "Student name 2");
+		Student st3 = studentService.addStudent(se1, "st3@example.com", "st3", "Student name 3");
+		Student st4 = studentService.addStudent(se1, "st4@example.com", "st4", "Student name 4");
+		Student st5 = studentService.addStudent(se1, "st5@example.com", "st5", "Student name 5");
+		Student st6 = studentService.addStudent(se1, "st6@example.com", "st6", "Student name 6");
+		Student st7 = studentService.addStudent(se2, "st7@example.com", "st7", "Student name 7");
+		Student st8 = studentService.addStudent(se2, "st8@example.com", "st8", "Student name 8");
+		Student st9 = studentService.addStudent(se2, "st9@example.com", "st9", "Student name 9");
 
 		// Give each student example project priorities
 		st1.getQuestionnaire().setDesiredProjectId1("AI Chatbot");

@@ -11,13 +11,20 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 			setMessage("Saving session...");
 
 			const formData = new FormData(event.currentTarget);
+			const sessionSetupRecord = Object.fromEntries(formData);
 
-			const response = await fetchWithDefaultErrorHandling(
-				`/sessions/${sessionId}/saveSetup`,
+			// <input type="datetime-local"/> gives an ISO string in the format "2007-12-03T10:15",
+			// but the backend only takes a full ISO string in the format "2007-12-03T10:15:30.00Z",
+			// so we must convert it.
+			sessionSetupRecord.questionnaireDeadlineISOString = convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISOString);
+
+			await fetchWithDefaultErrorHandling(
+				`/sessionSetup/${sessionId}/saveSetup`,
 				{
+					credentials: "include",
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify(formData),
+					body: JSON.stringify(sessionSetupRecord),
 				}
 			);
 
@@ -27,6 +34,10 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 		} catch (error) {
 			alert(error);
 		}
+	}
+
+	function convertToFullISODate(datetimeLocalString) {
+		return new Date(datetimeLocalString).toISOString();
 	}
 
 	function getSupervisorEmails() {
@@ -48,7 +59,9 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 	return (
 		<form className="setup-form" onSubmit={saveSetup}>
 			<div className="form-section">
-				<h3 className="section-title">Basic Settings</h3>
+				<h3 className="section-title">
+					Basic Settings
+				</h3>
 
 				<div className="form-group">
 					<label className="form-label">
@@ -64,41 +77,32 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 				<div className="form-group">
 					<label className="form-label">
-						Maximum group size
+						Minimum group size ("-1" means no preference)
+						<input
+							className="form-input form-number"
+							type="number"
+							name="minGroupSize"
+							defaultValue={session.minGroupSize}
+							min={-1}
+							max={100000}
+							step={1}
+						/>
+					</label>
+				</div>
+
+				<div className="form-group">
+					<label className="form-label">
+						Maximum group size ("-1" means no preference)
 						<input
 							className="form-input form-number"
 							type="number"
 							name="maxGroupSize"
 							defaultValue={session.maxGroupSize}
 							required
+							min={-1}
+							max={100000}
+							step={1}
 						/>
-					</label>
-				</div>
-
-				<div className="form-group">
-					<label className="form-label">
-						Minimum group size
-						<input
-							className="form-input form-number"
-							type="number"
-							name="minGroupSize"
-							defaultValue={session.minGroupSize}
-						/>
-					</label>
-				</div>
-
-				<div className="form-group">
-					<label className="form-label">
-						Group rounding method
-						<select
-							className="form-select"
-							name="groupRounding"
-							defaultValue={session.groupRounding}
-						>
-							<option value="none">No rounding</option>
-							<option value="round_up">Round up</option>
-							<option value="round_down">Round down</option>
-						</select>
 					</label>
 				</div>
 
@@ -108,15 +112,18 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 						<input
 							className="form-input"
 							type="datetime-local"
-							name="questionnaireDeadline"
+							name="questionnaireDeadlineISOString"
 							defaultValue={session.questionnaireDeadline}
+							required
 						/>
 					</label>
 				</div>
 			</div>
 
 			<div className="form-section">
-				<h3 className="section-title">Participants</h3>
+				<h3 className="section-title">
+					Participants
+				</h3>
 
 				<div className="form-group">
 					<label className="form-label">

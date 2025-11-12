@@ -66,7 +66,7 @@ public class SupervisorsPageController {
 		return session;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	private CopyOnWriteArrayList<Supervisor> getSessionSupervisors(Session session) {
 		return (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
 	}

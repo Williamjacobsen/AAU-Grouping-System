@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
-const SendLoginCodesForm = memo(({ sessionId, setMessage, targetUsers }) => {
+const SendLoginCodesForm = memo(({ sessionId, targetUsers, setMessage }) => {
 
 	const [sendOnlyNew, setSendOnlyNew] = useState(true);
 
@@ -13,9 +13,10 @@ const SendLoginCodesForm = memo(({ sessionId, setMessage, targetUsers }) => {
 		try {
 			setMessage(`Sending login codes to ${targetUsers}...`);
 
-			const response = await fetchWithDefaultErrorHandling(
+			await fetchWithDefaultErrorHandling(
 				`/sessionSetup/${sessionId}/sendLoginCodeTo/${targetUsers}`,
 				{
+					credentials: "include",
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({ sendOnlyNew })

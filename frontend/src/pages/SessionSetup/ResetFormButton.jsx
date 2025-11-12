@@ -8,7 +8,7 @@ const ResetFormButton = memo(() => {
 				type="button"
 				onClick={() => window.location.reload()}
 			>
-				Reset form
+				Reset changes to form
 			</button>
 		</div>
 	);
