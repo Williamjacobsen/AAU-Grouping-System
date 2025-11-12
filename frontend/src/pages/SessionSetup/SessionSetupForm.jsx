@@ -132,7 +132,6 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 							className="form-textarea"
 							name="supervisorEmails"
 							defaultValue={getSupervisorEmails()}
-							required
 						/>
 					</label>
 				</div>
@@ -144,7 +143,6 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 							className="form-textarea"
 							name="studentEmails"
 							defaultValue={getStudentEmails()}
-							required
 						/>
 					</label>
 				</div>
