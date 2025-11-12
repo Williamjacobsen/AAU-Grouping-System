@@ -163,7 +163,7 @@ select:focus {
 }
 
 .group-container {
-	max-width: 1200px;
+	max-width: 1400px;
 	margin: 0 auto;
 	padding: 1.5rem;
 	font-family: inherit;
@@ -179,7 +179,7 @@ select:focus {
 }
 
 .group-box {
-	width: 220px;               
+	width: 400px;               
 	height: auto;               
 	background-color: #fff;
 	border: 1px solid #ccc;
@@ -225,7 +225,7 @@ select:focus {
   margin-bottom: 10px;
 }
 
-.group-project .highlight {
+ .highlight {
   color: #333;
   font-weight: 600;
 }
@@ -233,6 +233,19 @@ select:focus {
 .student-priorities {
   font-size: 0.85rem;
   color: #777;
+}
+
+.group-name {
+  font-weight: 700;
+  color: #204098; 
+}
+
+
+.student-name {
+  font-weight: 600;
+  padding: 0px 2px;
+  border-radius: 6px;
+  margin-right: 4px;
 }
 
 .undo-box {
