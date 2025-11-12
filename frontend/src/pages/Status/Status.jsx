@@ -53,7 +53,7 @@ export default function Status() {
 			</div>
 			<StudentTable
 				visibleColumns={visibleColumns}
-				students={visibleStudents}
+				visibleStudents={visibleStudents}
 				sessionId={sessionId}
 				session={session}
 				user={user} />
