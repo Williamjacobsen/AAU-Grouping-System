@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Session;
 
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -23,7 +24,7 @@ import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,14 +38,14 @@ public class SessionController {
 	private final Database db;
 	private final SessionService sessionService;
 	private final AuthService authService;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 
 	public SessionController(Database db, SessionService sessionService, AuthService authService,
-			RequirementService requirementService) {
+			RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.sessionService = sessionService;
 		this.authService = authService;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 	}
 
 	private record CreateSessionRecord(
@@ -55,7 +56,7 @@ public class SessionController {
 	public ResponseEntity<Session> createSession(HttpServletRequest servlet,
 			@Valid @RequestBody CreateSessionRecord record) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		try {
 			Session newSession = sessionService.createSession(record.name.trim(), coordinator);
@@ -67,7 +68,7 @@ public class SessionController {
 
 	@GetMapping
 	public ResponseEntity<CopyOnWriteArrayList<Session>> getAllSessions(HttpServletRequest servlet) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		CopyOnWriteArrayList<Session> sessions = sessionService.getSessionsByCoordinator(coordinator);
 		return ResponseEntity.ok(sessions);
@@ -77,22 +78,21 @@ public class SessionController {
 	public ResponseEntity<Session> getSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		return ResponseEntity.ok(session);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getSupervisors")
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
 				.getItems(db);
@@ -100,23 +100,21 @@ public class SessionController {
 		return ResponseEntity.ok(supervisors);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getStudents")
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
 
 		return ResponseEntity.ok(students);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here despite Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getProjects")
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -135,15 +133,14 @@ public class SessionController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		User user = requirementService.requireUserExists(servlet);
-		requirementService.requireUserIsAuthorizedSession(sessionId, user);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
 		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
 
@@ -154,7 +151,7 @@ public class SessionController {
 	public ResponseEntity<String> deleteSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		boolean deleted = sessionService.deleteSession(sessionId, coordinator);
 		if (deleted) {
@@ -162,36 +159,6 @@ public class SessionController {
 		} else {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Access denied or session not found");
 		}
-	}
-
-	// TODO: Needs content inside its parameter.
-	private record SaveSetupRecord() {
-	}
-
-	@PostMapping("/{sessionId}/saveSetup")
-	public ResponseEntity<String> saveSetup(HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
-			@Valid @RequestBody SaveSetupRecord record) {
-
-		// 1) Få sessionen via "sessionId" og tjek, at den eksisterer.
-		// Hint: Tjek linje 86-89 i denne fil.
-
-		// 2) Få useren via "httpRequest" og tjek, at han eksisterer og har adgang til
-		// sessionen.
-		// Hint: Tjek linje 91-94 i denne fil.
-
-		// 3) Ekstraher data fra "request" og gem dem i nogle variable.
-		// Hint:
-		// String name = request.get("name");
-		// String studentEmails = request.get("studentEmails");
-		// osv.
-
-		// 4) Kald en funktion kaldet "applySetup", som jeg har lavet til dig i
-		// "SessionService.java"-filen (du skal dog selv fylde den ud, den er tom lige
-		// nu).
-		// Funktionen's parametre skal være den data, som du fik ekstraheret i trin 3).
-
-		return ResponseEntity.ok("Session setup saved successfully!");
 	}
 
 }

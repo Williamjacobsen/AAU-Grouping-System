@@ -49,6 +49,12 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 				}
 			),
 			createColumn(
+				"Email",
+				function (student) {
+					return student.email;
+				}
+			),
+			createColumn(
 				"Group number",
 				function (student) {
 					return groupsWithNumbers.find(

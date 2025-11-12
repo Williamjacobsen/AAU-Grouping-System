@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
 
 		CopyOnWriteArrayList<String> validationErrors = new CopyOnWriteArrayList<>();
 		ex.getBindingResult().getFieldErrors().forEach(error -> {
-			String seperatorText = validationErrors.size() != 0 ? " +" : "";
+			String seperatorText = validationErrors.size() != 0 ? "\n +" : "";
 			validationErrors.add(seperatorText + " '" + error.getField() + "': " + error.getDefaultMessage());
 		});
 

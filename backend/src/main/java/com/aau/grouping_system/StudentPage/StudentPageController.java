@@ -21,10 +21,11 @@ import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Student.StudentQuestionnaire;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -37,15 +38,19 @@ public class StudentPageController {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 	private final EmailService emailService;
+	private final UserService userService;
 
-	public StudentPageController(Database db, PasswordEncoder passwordEncoder, RequirementService requirementService,
-			EmailService emailService) {
+	public StudentPageController(Database db, PasswordEncoder passwordEncoder,
+			RequestRequirementService requestRequirementService,
+			EmailService emailService,
+			UserService userService) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-		this.requirementService = requirementService;
+		this.requestRequirementService = requestRequirementService;
 		this.emailService = emailService;
+		this.userService = userService;
 	}
 
 	private static final String NOT_SPECIFIED = "Not specified";
@@ -57,21 +62,22 @@ public class StudentPageController {
 	private static final String NO_MAX = "No max";
 	private static final String NO_PREFERENCE = "NoPreference";
 
-	private void sendPasswordResetEmail(String email, String sessionName, String studentId, String password) throws Exception {
+	private void sendPasswordResetEmail(String email, String sessionName, String studentId, String password)
+			throws Exception {
 		String subject = "AAU Grouping System - New Password";
 		String body = """
-			Hello,
+				Hello,
 
-			Your password for the AAU Grouping System has been reset for session: %s
+				Your password for the AAU Grouping System has been reset for session: %s
 
-			Your login credentials are:
-			ID: %s
-			Password: %s
+				Your login credentials are:
+				ID: %s
+				Password: %s
 
-			Please use your ID and password to access the AAU Grouping System.
+				Please use your ID and password to access the AAU Grouping System.
 
-			Best regards,
-			AAU Grouping System""".formatted(sessionName, studentId, password);
+				Best regards,
+				AAU Grouping System""".formatted(sessionName, studentId, password);
 
 		emailService.builder()
 				.to(email)
@@ -80,9 +86,9 @@ public class StudentPageController {
 				.send();
 	}
 
-
-	private StudentSessionData validateCoordinatorAndStudent(HttpServletRequest servlet, String sessionId, String studentId) {
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
+	private StudentSessionData validateCoordinatorAndStudent(HttpServletRequest servlet, String sessionId,
+			String studentId) {
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		if (coordinator == null) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized");
 		}
@@ -155,7 +161,7 @@ public class StudentPageController {
 		return minStr + " - " + maxStr;
 	}
 
-	private String formatWorkingEnvironment(StudentQuestionnaire.WorkLocation location, 
+	private String formatWorkingEnvironment(StudentQuestionnaire.WorkLocation location,
 			StudentQuestionnaire.WorkStyle style) {
 		if (location == null || style == null) {
 			return NOT_SPECIFIED;
@@ -163,7 +169,7 @@ public class StudentPageController {
 
 		String locationStr = location.name();
 		String styleStr = style.name();
-		
+
 		if (NO_PREFERENCE.equals(locationStr) && NO_PREFERENCE.equals(styleStr)) {
 			return NOT_SPECIFIED;
 		}
@@ -186,7 +192,7 @@ public class StudentPageController {
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
-		
+
 		StudentSessionData validation = validateCoordinatorAndStudent(servlet, sessionId, studentId);
 
 		StudentQuestionnaireRecord questionnaireRecord = buildQuestionnaireRecord(validation.student);
@@ -244,10 +250,10 @@ public class StudentPageController {
 		String project3Name = questionnaire.getDesiredProjectId3();
 
 		String groupSizePreference = formatGroupSizePreference(
-				questionnaire.getDesiredGroupSizeMin(), 
+				questionnaire.getDesiredGroupSizeMin(),
 				questionnaire.getDesiredGroupSizeMax());
 		String workingEnvironment = formatWorkingEnvironment(
-				questionnaire.getDesiredWorkLocation(), 
+				questionnaire.getDesiredWorkLocation(),
 				questionnaire.getDesiredWorkStyle());
 
 		return new StudentQuestionnaireRecord(
@@ -267,7 +273,7 @@ public class StudentPageController {
 
 	private StudentGroupRecord buildGroupRecord(Student student) {
 		Group group = findGroupByStudentId(student.getId());
-		
+
 		if (group != null) {
 			String projectName = NO_PROJECT_ASSIGNED;
 			if (group.getProjectId() != null) {
@@ -310,8 +316,8 @@ public class StudentPageController {
 
 			return ResponseEntity.ok("Student removed successfully");
 		} catch (Exception e) {
-			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, 
-				"Failed to remove student: " + e.getMessage());
+			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Failed to remove student: " + e.getMessage());
 		}
 	}
 
@@ -325,12 +331,11 @@ public class StudentPageController {
 
 		// Generate new UUID password
 		String newPassword = UUID.randomUUID().toString();
-		String passwordHash = passwordEncoder.encode(newPassword);
-		validation.student.setPasswordHash(passwordHash);
+		userService.modifyPassword(newPassword, validation.student);
 
 		// Send new password via email
 		try {
-			sendPasswordResetEmail(validation.student.getEmail(), validation.session.getName(), 
+			sendPasswordResetEmail(validation.student.getEmail(), validation.session.getName(),
 					validation.student.getId(), newPassword);
 			return ResponseEntity.ok("New password sent successfully to " + validation.student.getEmail());
 		} catch (Exception e) {

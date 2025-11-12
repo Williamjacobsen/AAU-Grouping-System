@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
-import "../User/User.css";
+import "./GroupM.css";
 
 export default function GroupManagement() {
 
@@ -50,7 +50,6 @@ export default function GroupManagement() {
 	}, [error])
 
 	const { user, isLoading: isLoadingUser } = useGetUser();
-
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");
 
@@ -198,20 +197,20 @@ export default function GroupManagement() {
 				<div className="group-box" key={group.id}>
 					<h4 onClick={() => handleGroupClick(group.id)}
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
-						{group.name} <br />
-						size: {group.members.length} <br />
-						preferred size: {group.maxStudents}
+						<span className="group-name">{group.name}</span> <br />
+						<span className="group-detail">Size: </span> {group.members.length} <br/> 
+						<span className="group-detail">Preferred size: </span> {group.maxStudents} 
 					</h4>
 					{group.project && (
-						<p className="group-project">
+						<p className="group-detail">
 							Project: <span className="highlight">{group.project}</span>
 						</p>
 					)}
 					<ul>
 						{group.members.map((member, index) => (
 							<li key={index} onClick={() => handleStudentClick(member, group.id)}
-								className={selectedStudent && selectedStudent.member?.name === member.name ? "selected" : ""
-								}> <span classame="student-name"> {member.name} </span>
+								className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+								}> <span className="student-name"> {member.name} </span>
 								{member.priority1 || member.priority2 || member.priority3 ? (
 									<span className="student-priorities">
 										— [
@@ -221,6 +220,7 @@ export default function GroupManagement() {
 										]
 									</span>
 								) : null}
+								<hr></hr>
 							</li>
 						))}
 					</ul>

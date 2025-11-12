@@ -1,6 +1,13 @@
 package com.aau.grouping_system.Session;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +15,8 @@ import org.springframework.stereotype.Service;
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 
 @Service
@@ -29,8 +38,7 @@ public class SessionService {
 		return db.getSessions().getItem(sessionId);
 	}
 
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here because Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
 		return (CopyOnWriteArrayList<Session>) coordinator.getSessions().getItems(db);
 	}
@@ -42,6 +50,31 @@ public class SessionService {
 
 		db.getSessions().cascadeRemove(db, sessionId);
 		return true;
+	}
+
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
+	public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
+		Session s = getSession(sessionId);
+		if (s == null)
+			return new CopyOnWriteArrayList<>();
+		return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
+	}
+
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
+	public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
+		Session s = getSession(sessionId);
+		if (s == null)
+			return new CopyOnWriteArrayList<>();
+		return (CopyOnWriteArrayList<Supervisor>) s.getSupervisors().getItems(db);
+	}
+
+	public boolean isQuestionnaireDeadlineExceeded(Session session) {
+		if (session == null)
+			return false;
+		LocalDateTime deadline = session.getQuestionnaireDeadline();
+		if (deadline == null)
+			return false; // unparsable => treat as not exceeded
+		return LocalDateTime.now().isAfter(deadline);
 	}
 
 	private Boolean isUserAuthorizedSession(String sessionId, User user, User.Role[] authorizedRoles) {
@@ -71,40 +104,4 @@ public class SessionService {
 		User.Role[] authorizedRoles = { User.Role.Coordinator };
 		return isUserAuthorizedSession(sessionId, coordinator, authorizedRoles);
 	}
-
-	public Boolean isQuestionnaireDeadlineExceeded(Session session) {
-		LocalDateTime deadline = session.getQuestionnaireDeadline();
-		if (deadline == null) {
-			return false;
-		}
-		return deadline.isBefore(LocalDateTime.now());
-	}
-
-	// 1) Tilføj selv parametre til den data, som du har ekstraheret i
-	// StudentController.java.
-	public void applySetup(Session session) {
-
-		// 2) Lige nu er din variabel "studentEmails" bare en lang String.
-		// Hver email er separeret af en "\n" (AKA new line character).
-		// Du skal nu finde en måde at opdele hver email i deres eget String-objekt,
-		// som du så indsætter i en liste (brug CopyOnWriteArrayList<String>).
-
-		// 3) Gør det samme med supervisorEmails.
-
-		// 4) Lav et enhanced for-loop, som cycler igennem hver email i din liste af
-		// student emails.
-		// For hver email skal du bare lave et nyt Student-objekt (så "new
-		// Student(.......)").
-		// Dette tilføjer automatisk disse students til din session.
-		// Hint: Tjek "fillDatabaseWithExampleData"-funktionen i
-		// "DatabaseSerializer.java". Her er nemlig et eksempel på, at jeg laver nye
-		// Student-objekter.
-
-		// 5) Gør det samme med din liste af supervisor emails.
-
-		// 6) Sæt resten af den nye data ind i din session.
-		// Hint: Er meget simpelt. Bare gør, fx "session.setName(newName)"
-
-	}
-
 }

@@ -8,7 +8,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserController;
+import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,18 +27,13 @@ import jakarta.validation.constraints.*;
 public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;
-	private final RequirementService requirementService;
+	private final RequestRequirementService requestRequirementService;
 
-	public CoordinatorController(CoordinatorService coordinatorService,
-			RequirementService requirementService) {
+	public CoordinatorController(
+			CoordinatorService coordinatorService,
+			RequestRequirementService requestRequirementService) {
 		this.coordinatorService = coordinatorService;
-		this.requirementService = requirementService;
-	}
-
-	void requireEmailNotDuplicate(String email) {
-		if (coordinatorService.isEmailDuplicate(email)) {
-			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another coordinator");
-		}
+		this.requestRequirementService = requestRequirementService;
 	}
 
 	private record SignUpRecord(
@@ -47,49 +45,13 @@ public class CoordinatorController {
 	@PostMapping("/signUp")
 	public ResponseEntity<String> signUp(@Valid @RequestBody SignUpRecord record) {
 
-		requireEmailNotDuplicate(record.email);
+		requestRequirementService.requireEmailNotDuplicate(record.email, null);
 
 		coordinatorService.addCoordinator(record.email, record.password, record.name);
 
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body("Coordinator has been added to database.");
-	}
-
-	private record ModifyEmailRecord(
-			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String newEmail) {
-	}
-
-	@PostMapping("/modifyEmail")
-	public ResponseEntity<String> modifyEmail(HttpServletRequest servlet,
-			@Valid @RequestBody ModifyEmailRecord record) {
-
-		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
-
-		requireEmailNotDuplicate(record.newEmail);
-
-		coordinatorService.modifyEmail(record.newEmail, user.getId());
-
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body("Email has been changed.");
-	}
-
-	private record ModifyPasswordRecord(
-			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
-	}
-
-	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(HttpServletRequest servlet,
-			@Valid @RequestBody ModifyPasswordRecord record) {
-
-		Coordinator user = requirementService.requireUserCoordinatorExists(servlet);
-
-		coordinatorService.modifyPassword(record.newPassword, user.getId());
-
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body("Password has been changed.");
 	}
 
 }

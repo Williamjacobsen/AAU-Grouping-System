@@ -12,8 +12,7 @@ public abstract class DatabaseItem implements Serializable {
 
 	/// Automatically adds this to its map and to its parent item's appropriate
 	/// child group.
-	@SuppressWarnings("unchecked") // Suppress in-editor warnings about type safety violations because it isn't
-																	// true here despite Java's invariance of generics.
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public DatabaseItem(Database db, DatabaseItemChildGroup parentItemChildGroup) {
 		// Add item to its map
 		((DatabaseMap<DatabaseItem>) getDatabaseMap(db)).add((DatabaseItem) this);

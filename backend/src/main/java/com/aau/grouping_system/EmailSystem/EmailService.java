@@ -32,7 +32,7 @@ public class EmailService {
 
 	private void sendEmail(Builder builder) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
-		MimeMessageHelper helper = new MimeMessageHelper(message);
+		MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
 		helper.setFrom(email);
 		helper.setTo(builder.to);
