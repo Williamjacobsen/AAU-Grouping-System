@@ -157,9 +157,9 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 
 	const visibleColumns = useMemo(() => {
 		return allColumns?.filter(column => enabledLabels.includes(column.label));
-	}, [allColumns, enabledLabels, sortedStudents]);
+	}, [allColumns, enabledLabels]);
 
-	function toggleLabel(label) {
+	const toggleLabel = useCallback((label) => {
 		setEnabledLabels(previousValues => {
 			if (previousValues.includes(label)) {
 				return previousValues.filter(item => item !== label);
@@ -168,34 +168,25 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 				return [...previousValues, label];
 			}
 		});
-	}
+	}, []);
 
 	const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
 	const ColumnSelector = useCallback(() => {
 
 		return (
-			<div style={{ position: 'relative', display: 'inline-block' }}>
+			<div className="column-selector">
 				<button
 					onClick={() => setDropdownIsOpen(!dropdownIsOpen)}
-					style={{ padding: '8px 12px', border: '1px solid #ccc' }}
+					className="column-selector-button"
 				>
 					Select columns ▼
 				</button>
 
 				{dropdownIsOpen && (
-					<div style={{
-						position: 'absolute',
-						top: '100%',
-						left: 0,
-						background: 'white',
-						border: '1px solid #ccc',
-						padding: '8px',
-						zIndex: 1000,
-						minWidth: '400px'
-					}}>
+					<div className="column-selector-dropdown">
 						{allColumns?.map(column => (
-							<label key={column.label} style={{ display: 'block', margin: '4px 0' }}>
+							<div key={column.label} className="column-selector-item">
 								<input
 									type="checkbox"
 									checked={enabledLabels.includes(column.label)}
@@ -207,14 +198,14 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 								>
 									Sort by
 								</button>
-								<span style={{ marginLeft: '8px' }}>{column.label}</span>
-							</label>
+								<span>{column.label}</span>
+							</div>
 						))}
 					</div>
 				)}
 			</div>
 		);
-	}, [enabledLabels, allColumns, toggleLabel]);
+	}, [enabledLabels, allColumns, toggleLabel, dropdownIsOpen]);
 
 	return { visibleColumns, ColumnSelector };
 }

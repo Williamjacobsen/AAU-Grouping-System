@@ -10,8 +10,15 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -19,14 +26,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Authentication.AuthService;
+import com.aau.grouping_system.Config.CorsConfig;
+import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseMap;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
+import com.aau.grouping_system.Utils.RequirementService;
+import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @WebMvcTest(StudentController.class)
+@AutoConfigureWebMvc
+@ComponentScan(basePackages = {"com.aau.grouping_system.User.Student", "com.aau.grouping_system.Config", "com.aau.grouping_system.Exceptions"})
+@Import({StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class})
 class StudentControllerIntegrationTest {
 
     @Autowired
@@ -43,6 +58,9 @@ class StudentControllerIntegrationTest {
 
     @MockitoBean
     private Database database;
+
+    @MockitoBean
+    private RequirementService requirementService;
 
     private Student testStudent;
     private Session testSession;
@@ -70,8 +88,7 @@ class StudentControllerIntegrationTest {
             }
             """;
 
-        when(database.getSessions()).thenReturn(mock(DatabaseMap.class));
-        when(database.getSessions().getItem("session-123")).thenReturn(testSession);
+        when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
         when(studentService.addStudent(testSession, "john.doe@student.aau.dk", "password123", "John Doe"))
             .thenReturn(testStudent);
 
@@ -82,7 +99,7 @@ class StudentControllerIntegrationTest {
                 .andExpect(status().isCreated())
                 .andExpect(content().string("Student created successfully with ID: student-123"));
 
-        verify(database.getSessions()).getItem("session-123");
+        verify(requirementService).requireSessionExists("session-123");
         verify(studentService).addStudent(testSession, "john.doe@student.aau.dk", "password123", "John Doe");
     }
 
@@ -117,8 +134,8 @@ class StudentControllerIntegrationTest {
             }
             """;
 
-        when(database.getSessions()).thenReturn(mock(DatabaseMap.class));
-        when(database.getSessions().getItem("nonexistent-session")).thenReturn(null);
+        when(requirementService.requireSessionExists("nonexistent-session"))
+            .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
         // Act & Assert
         mockMvc.perform(post("/student/create")
@@ -126,7 +143,7 @@ class StudentControllerIntegrationTest {
                 .content(requestBody))
                 .andExpect(status().isNotFound());
 
-        verify(database.getSessions()).getItem("nonexistent-session");
+        verify(requirementService).requireSessionExists("nonexistent-session");
         verify(studentService, never()).addStudent(any(), anyString(), anyString(), anyString());
     }
 
@@ -135,14 +152,24 @@ class StudentControllerIntegrationTest {
         // Arrange
         String requestBody = """
             {
-                "projectPriorities": ["project-1", "project-2", "project-3"]
+                "desiredProjectId1": "project-1",
+                "desiredProjectId2": "project-2", 
+                "desiredProjectId3": "project-3",
+                "desiredGroupSizeMin": 2,
+                "desiredGroupSizeMax": 4,
+                "desiredWorkLocation": "NoPreference",
+                "desiredWorkStyle": "NoPreference",
+                "personalSkills": "Java, Spring Boot",
+                "specialNeeds": "None",
+                "academicInterests": "Software Engineering",
+                "comments": "Looking forward to working on this project"
             }
             """;
 
-        when(authService.getStudentByUser(any(HttpServletRequest.class)))
+        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
             .thenReturn(testStudent);
-        when(database.getSessions()).thenReturn(mock(DatabaseMap.class));
-        when(database.getSessions().getItem("session-123")).thenReturn(testSession);
+        when(requirementService.requireSessionExists("session-123"))
+            .thenReturn(testSession);
         when(sessionService.isQuestionnaireDeadlineExceeded(testSession))
             .thenReturn(false);
 
@@ -153,7 +180,7 @@ class StudentControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Saved questionnaire answers successfully."));
 
-        verify(authService).getStudentByUser(any(HttpServletRequest.class));
+        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
         verify(sessionService).isQuestionnaireDeadlineExceeded(testSession);
         verify(studentService).applyQuestionnaireAnswers(eq(testStudent), any());
     }
@@ -163,20 +190,30 @@ class StudentControllerIntegrationTest {
         // Arrange
         String requestBody = """
             {
-                "projectPriorities": ["project-1", "project-2", "project-3"]
+                "desiredProjectId1": "project-1",
+                "desiredProjectId2": "project-2", 
+                "desiredProjectId3": "project-3",
+                "desiredGroupSizeMin": 2,
+                "desiredGroupSizeMax": 4,
+                "desiredWorkLocation": "NoPreference",
+                "desiredWorkStyle": "NoPreference",
+                "personalSkills": "Java, Spring Boot",
+                "specialNeeds": "None",
+                "academicInterests": "Software Engineering",
+                "comments": "Looking forward to working on this project"
             }
             """;
 
-        when(authService.getStudentByUser(any(HttpServletRequest.class)))
-            .thenReturn(null);
+        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
+            .thenThrow(new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student"));
 
         // Act & Assert
         mockMvc.perform(post("/student/saveQuestionnaireAnswers")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
 
-        verify(authService).getStudentByUser(any(HttpServletRequest.class));
+        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
         verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
     }
 
@@ -185,14 +222,24 @@ class StudentControllerIntegrationTest {
         // Arrange
         String requestBody = """
             {
-                "projectPriorities": ["project-1", "project-2", "project-3"]
+                "desiredProjectId1": "project-1",
+                "desiredProjectId2": "project-2", 
+                "desiredProjectId3": "project-3",
+                "desiredGroupSizeMin": 2,
+                "desiredGroupSizeMax": 4,
+                "desiredWorkLocation": "NoPreference",
+                "desiredWorkStyle": "NoPreference",
+                "personalSkills": "Java, Spring Boot",
+                "specialNeeds": "None",
+                "academicInterests": "Software Engineering",
+                "comments": "Looking forward to working on this project"
             }
             """;
 
-        when(authService.getStudentByUser(any(HttpServletRequest.class)))
+        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
             .thenReturn(testStudent);
-        when(database.getSessions()).thenReturn(mock(DatabaseMap.class));
-        when(database.getSessions().getItem("session-123")).thenReturn(testSession);
+        when(requirementService.requireSessionExists("session-123"))
+            .thenReturn(testSession);
         when(sessionService.isQuestionnaireDeadlineExceeded(testSession))
             .thenReturn(true);
 
@@ -202,8 +249,13 @@ class StudentControllerIntegrationTest {
                 .content(requestBody))
                 .andExpect(status().isUnauthorized());
 
-        verify(authService).getStudentByUser(any(HttpServletRequest.class));
+        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
         verify(sessionService).isQuestionnaireDeadlineExceeded(testSession);
         verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
+    }
+
+    @Configuration
+    static class TestConfig {
+        // Configuration class
     }
 }

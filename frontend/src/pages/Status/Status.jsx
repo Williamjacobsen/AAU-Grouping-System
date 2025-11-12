@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 
@@ -51,12 +51,14 @@ export default function Status() {
 				<SearchFilterInput />
 				<ColumnSelector />
 			</div>
-			<StudentTable
-				visibleColumns={visibleColumns}
-				students={visibleStudents}
-				sessionId={sessionId}
-				session={session}
-				user={user} />
+			<div className="table-wrapper">
+				<StudentTable
+					visibleColumns={visibleColumns}
+					visibleStudents={visibleStudents}
+					sessionId={sessionId}
+					session={session}
+					user={user} />
+			</div>
 			{user?.role === "Coordinator" &&
 				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
 			}

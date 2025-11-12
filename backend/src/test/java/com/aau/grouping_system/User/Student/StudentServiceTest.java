@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import static org.mockito.ArgumentMatchers.argThat;
 import org.mockito.Mock;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -18,7 +19,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.Student.StudentQuestionnaire;
 
 @ExtendWith(MockitoExtension.class)
 class StudentServiceTest {
@@ -34,13 +37,20 @@ class StudentServiceTest {
 
 	@Mock
 	private DatabaseItemChildGroup mockStudentsGroup;
+	
+	@Mock
+	private DatabaseMap<Student> mockStudentsMap;
 
 	private StudentService studentService;
 
 	@BeforeEach
 	void setUp() {
 		studentService = new StudentService(mockDatabase, mockPasswordEncoder);
-		when(mockSession.getStudents()).thenReturn(mockStudentsGroup);
+		
+		// Setup mock returns
+		lenient().when(mockSession.getStudents()).thenReturn(mockStudentsGroup);
+		lenient().when(mockSession.getId()).thenReturn("test-session-id");
+		lenient().when(mockDatabase.getStudents()).thenReturn(mockStudentsMap);
 	}
 
 	@Test
