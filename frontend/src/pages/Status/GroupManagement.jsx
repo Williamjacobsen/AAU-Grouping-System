@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
-import "../User/User.css";
+import "./GroupM.css";
 
 export default function GroupManagement() {
 
@@ -219,7 +219,9 @@ export default function GroupManagement() {
 										{member.priority3 ? ", " + member.priority3 : ""}
 										]
 									</span>
+									
 								) : null}
+								<hr>
 							</li>
 						))}
 					</ul>
