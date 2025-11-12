@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 
@@ -53,7 +53,7 @@ export default function Status() {
 			</div>
 			<StudentTable
 				visibleColumns={visibleColumns}
-				students={visibleStudents}
+				visibleStudents={visibleStudents}
 				sessionId={sessionId}
 				session={session}
 				user={user} />
