@@ -33,7 +33,7 @@ public class ProjectController {
 		this.db = db;
 	}
 
-	@GetMapping("/getSessionProjects/{sessionId}")
+	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" })
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
@@ -49,21 +49,21 @@ public class ProjectController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@DeleteMapping("/delete/{projectId}")
-	public ResponseEntity<String> deleteProject(@PathVariable String projectId) {
-		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
+	@DeleteMapping("/{id}")
+	public ResponseEntity<String> deleteProject(@PathVariable String id) {
+		Project project = db.getProjects().getItem(id); // ask the database for project with certain id
 
 		// Check if project exists if not throw error
 		if (project == null) {
 			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
-					.body("Project with id " + projectId + " does not exist.");
+					.body("Project with id " + id + " does not exist.");
 		}
 
 		// Delete the project from the database
 		db.getProjects().cascadeRemove(db, project);
 
 		// Return success message with 200 ok
-		return ResponseEntity.ok("Project with id " + projectId + " has been deleted successfully.");
+		return ResponseEntity.ok("Project with id " + id + " has been deleted successfully.");
 	}
 
 	@PostMapping("/create/{sessionId}/{projectName}/{description}")
