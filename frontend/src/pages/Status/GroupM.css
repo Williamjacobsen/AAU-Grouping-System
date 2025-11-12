@@ -49,7 +49,7 @@
 }
 
 .selected {
-	background-color: #3498db;
+	background-color: #3B82F6;
 	color: #fff;
 	border: 1px solid #2980b9;
 	border-radius: 4px;
@@ -69,11 +69,12 @@
 
 .student-priorities {
   font-size: 0.85rem;
-  color: #777;
+  color: #000000;
 }
 
 .group-name {
   font-weight: 700;
+	font-size: large;
   color: #204098; 
 }
 
@@ -91,7 +92,7 @@
 }
 
 .undo-box button {
-  background-color: #f04e4e;
+  background-color: #000000;
   color: white;
   border: none;
   padding: 6px 12px;

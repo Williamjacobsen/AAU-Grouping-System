@@ -209,7 +209,7 @@ export default function GroupManagement() {
 					<ul>
 						{group.members.map((member, index) => (
 							<li key={index} onClick={() => handleStudentClick(member, group.id)}
-								className={selectedStudent && selectedStudent.member?.name === member.name ? "selected" : ""
+								className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
 								}> <span className="student-name"> {member.name} </span>
 								{member.priority1 || member.priority2 || member.priority3 ? (
 									<span className="student-priorities">
@@ -221,7 +221,7 @@ export default function GroupManagement() {
 									</span>
 									
 								) : null}
-								
+								<hr></hr>
 							</li>
 						))}
 					</ul>
