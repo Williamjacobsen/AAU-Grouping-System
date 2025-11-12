@@ -221,7 +221,7 @@ export default function GroupManagement() {
 									</span>
 									
 								) : null}
-								<hr>
+								
 							</li>
 						))}
 					</ul>
