@@ -112,9 +112,11 @@ public class SessionSetupController {
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		Session session = requirementService.requireSessionExists(sessionId);
-		Coordinator coordinator = requirementService.requireUserCoordinatorExists(servlet);
-		requirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+		// BUG: "Dear Not specifed"  
+
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
 		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
