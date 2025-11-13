@@ -22,7 +22,7 @@ import Status from "./pages/Status/Status";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
 import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire";
-import GroupManagement from "./pages/Status/GroupManagement";
+import GroupManagement from "./pages/GroupManagement/GroupManagement";
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage";
 import StudentPage from "./pages/StudentPage/StudentPage";
