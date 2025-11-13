@@ -57,8 +57,7 @@ AAU-Grouping-System is a complete redesign that focuses on:
 
 ## Tech Stack
 
-Frontend: React.js
-Backend: Java Spring Boot
+I will do this later
 
 ## Project Structure
 
