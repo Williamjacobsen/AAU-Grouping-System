@@ -96,7 +96,7 @@ export default function ChatBox() {
             right: "5rem",
             bottom: 0,
             width: "60rem",
-            height: "50rem",
+            height: "70vh",
             backgroundColor: "#f9fafb",
             boxShadow: "0 4px 16px rgba(0,0,0,0.15)",
             overflow: "hidden",

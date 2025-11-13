@@ -36,6 +36,8 @@ export default function Sidebar({
         width: "35rem",
         height: "100%",
         borderRight: "2px solid #e5e7eb",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <SearchAndFilter
@@ -44,15 +46,17 @@ export default function Sidebar({
         filter={filter}
         setFilter={setFilter}
       />
-      <ChatRooms
-        filteredChatRooms={filteredChatRooms}
-        setSelectedChatRoom={setSelectedChatRoom}
-        selectedChatRoom={selectedChatRoom}
-        projectSet={projectSet}
-        groupSet={groupSet}
-        studentSet={studentSet}
-        unreadMessagesByRoom={unreadMessagesByRoom}
-      />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <ChatRooms
+          filteredChatRooms={filteredChatRooms}
+          setSelectedChatRoom={setSelectedChatRoom}
+          selectedChatRoom={selectedChatRoom}
+          projectSet={projectSet}
+          groupSet={groupSet}
+          studentSet={studentSet}
+          unreadMessagesByRoom={unreadMessagesByRoom}
+        />
+      </div>
     </div>
   );
 }
