@@ -15,9 +15,9 @@ export default function Sidebar({
   const [filter, setFilter] = useState("all"); // all | general | projects | groups | students
   const [query, setQuery] = useState("");
 
-  const projectSet = new Set(projects);
-  const groupSet = new Set(groups);
-  const studentSet = new Set(students);
+  const projectSet = new Set(projects.map((p) => p.name));
+  const groupSet = new Set(groups.map((g) => g.name));
+  const studentSet = new Set(students.map((s) => s.name));
 
   const filteredChatRooms = SearchAndFilterChatRooms(
     chatRooms,
