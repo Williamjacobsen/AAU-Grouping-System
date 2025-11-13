@@ -55,19 +55,19 @@ AAU-Grouping-System is a complete redesign that focuses on:
 - Custom lightweight file-based database (serialised objects, UUID-based IDs)
 - Clean, consistent styling across all pages
 
-### Tech Stack
+## Tech Stack
 
 Frontend: React.js
 Backend: Java Spring Boot
 
-### Project Structure
+## Project Structure
 
 I will do this later
 
-### How To Run
+## How To Run
 
 I will do this later
 
-### Email Configuration
+## Email Configuration
 
 I will do this later
