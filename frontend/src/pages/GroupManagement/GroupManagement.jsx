@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
+import useGetSessionStudents from "hooks/useGetSessionStudents";
 import "./GroupM.css";
 
 export default function GroupManagement() {
@@ -12,13 +13,15 @@ export default function GroupManagement() {
 	const [previousGroups, setPreviousGroups] = useState([]);
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
+	const [ sessionId ] = useParams();
+	
 	const navigate = useNavigate();
 
 	// Default is max = 7, needs to change so that it gets the number from the max students session setup page
 	const completedGroups = groups.filter(group => group.members.length === 7);
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
-
+	const studentsWithNoGroup = useGetSessionStudents(sessionId)
 
 	useEffect(() => {
 		const fetchGroups = async () => {
