@@ -1,10 +1,9 @@
 import React, { useState, memo } from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
-// TODO: make it so the button is green and cant be pressed after having send the emails (prevent email spam and provide user with feedback).
-
 const NotifyButton = memo(({ sessionId, setMessage }) => {
   const [isSending, setIsSending] = useState(false);
+  const [hasSent, setHasSent] = useState(false);
 
   if (!sessionId) return null;
 
@@ -15,9 +14,10 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
         credentials: "include",
         method: "POST",
       });
-
-      if (setMessage) setMessage("Notifications sent successfully!");
-    } catch (error) {
+      setHasSent(true);
+    
+			if (setMessage) setMessage("Notifications sent successfully!"); 
+		} catch (error) {
       if (setMessage) setMessage(`Error sending notifications: ${error}`);
     } finally {
       setIsSending(false);
@@ -26,7 +26,10 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
 
   return (
     <div className="checkbox-form">
-      <div className="checkbox-group" style={{ display: "inline" }}>
+      <div
+        className="checkbox-group"
+        style={{ display: "inline", gap: "1rem" }}
+      >
         <label className="checkbox-label">
           When all groups have been made, send emails to students and
           supervisors:
@@ -34,9 +37,14 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
         <button
           className="button-primary"
           onClick={sendNotifications}
-          disabled={isSending}
+          disabled={isSending || hasSent}
+          style={{ backgroundColor: hasSent ? "green" : undefined }}
         >
-          {isSending ? "Sending notifications..." : "Notify participants"}
+          {isSending
+            ? "Sending notifications..."
+            : hasSent
+            ? "Notifications sent"
+            : "Notify participants"}
         </button>
       </div>
     </div>

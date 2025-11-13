@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 import useGetSessionStudents from "hooks/useGetSessionStudents";
 import "./GroupM.css";
+import NotifyButton from "Components/NotifyButton/NotifyButton";
 
 export default function GroupManagement() {
 
@@ -14,6 +15,7 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 	const { sessionId } = useParams();
+	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
 	
 	const navigate = useNavigate();
 
@@ -272,6 +274,8 @@ export default function GroupManagement() {
 
 			<h2 className="incomplete-groups">Incomplete Groups</h2>
 			<div className="group-row">{RenderGroups(incompleteGroups)}</div>
+
+			<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
 		</div>
 	)
 }

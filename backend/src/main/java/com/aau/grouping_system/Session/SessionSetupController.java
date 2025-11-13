@@ -1,7 +1,6 @@
 package com.aau.grouping_system.Session;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
@@ -12,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -28,19 +26,16 @@ public class SessionSetupController {
 	private final RequestRequirementService requestRequirementService;
 	private final SessionSetupService sessionSetupService;
 	private final UserService userService;
-	private final EmailService emailService;
 
 	public SessionSetupController(
 			Database db,
 			RequestRequirementService requestRequirementService,
 			SessionSetupService sessionSetupService,
-			UserService userService,
-			EmailService emailService) {
+			UserService userService) {
 		this.db = db;
 		this.requestRequirementService = requestRequirementService;
 		this.sessionSetupService = sessionSetupService;
 		this.userService = userService;
-		this.emailService = emailService;
 	}
 
 	@PostMapping("/{sessionId}/saveSetup")
