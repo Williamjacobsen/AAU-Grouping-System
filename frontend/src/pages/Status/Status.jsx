@@ -51,12 +51,14 @@ export default function Status() {
 				<SearchFilterInput />
 				<ColumnSelector />
 			</div>
-			<StudentTable
-				visibleColumns={visibleColumns}
-				visibleStudents={visibleStudents}
-				sessionId={sessionId}
-				session={session}
-				user={user} />
+			<div className="table-wrapper">
+				<StudentTable
+					visibleColumns={visibleColumns}
+					visibleStudents={visibleStudents}
+					sessionId={sessionId}
+					session={session}
+					user={user} />
+			</div>
 			{user?.role === "Coordinator" &&
 				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
 			}

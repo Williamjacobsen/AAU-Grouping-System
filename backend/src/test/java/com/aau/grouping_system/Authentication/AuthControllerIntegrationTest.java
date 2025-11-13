@@ -10,7 +10,11 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -20,6 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.aau.grouping_system.Config.CorsConfig;
+import com.aau.grouping_system.Config.SecurityConfig;
+import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.User;
@@ -27,6 +34,9 @@ import com.aau.grouping_system.User.User;
 import jakarta.servlet.http.HttpServletRequest;
 
 @WebMvcTest(AuthController.class)
+@AutoConfigureWebMvc
+@ComponentScan(basePackages = {"com.aau.grouping_system.Authentication", "com.aau.grouping_system.Exceptions"})
+@Import({AuthControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class})
 class AuthControllerIntegrationTest {
 
     @Autowired
@@ -34,6 +44,9 @@ class AuthControllerIntegrationTest {
 
     @MockitoBean
     private AuthService authService;
+    
+    @MockitoBean
+    private EmailService emailService;
 
     private Coordinator testCoordinator;
     private Student testStudent;
@@ -63,7 +76,6 @@ class AuthControllerIntegrationTest {
         when(authService.isPasswordCorrect("password123", testCoordinator))
             .thenReturn(true);
 
-        // Act & Assert
         mockMvc.perform(post("/auth/signIn")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody))
@@ -201,30 +213,24 @@ class AuthControllerIntegrationTest {
         verify(authService).invalidateOldSession(any(HttpServletRequest.class));
     }
 
-    @Test
+        @Test
     void testGetUser_ValidSession_ReturnsUser() throws Exception {
-        // Arrange
-        when(authService.getUser(any(HttpServletRequest.class)))
-            .thenReturn(testCoordinator);
-
         // Act & Assert
-        mockMvc.perform(get("/auth/getUser"))
+        mockMvc.perform(get("/auth/getUser")
+                .sessionAttr("user", testCoordinator))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("coordinator@test.com"));
-
-        verify(authService).getUser(any(HttpServletRequest.class));
     }
 
     @Test
     void testGetUser_NoSession_ReturnsUnauthorized() throws Exception {
-        // Arrange
-        when(authService.getUser(any(HttpServletRequest.class)))
-            .thenReturn(null);
-
         // Act & Assert
         mockMvc.perform(get("/auth/getUser"))
                 .andExpect(status().isUnauthorized());
+    }
 
-        verify(authService).getUser(any(HttpServletRequest.class));
+    @Configuration
+    static class TestConfig {
+        // Configuration class
     }
 }
