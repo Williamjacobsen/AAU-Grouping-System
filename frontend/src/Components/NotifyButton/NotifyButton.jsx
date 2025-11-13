@@ -11,7 +11,7 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
   async function sendNotifications() {
     try {
       setIsSending(true);
-      await fetchWithDefaultErrorHandling(`/sessionSetup/${sessionId}/notify`, {
+      await fetchWithDefaultErrorHandling(`/${sessionId}/notify`, {
         credentials: "include",
         method: "POST",
       });

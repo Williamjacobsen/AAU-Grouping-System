@@ -8,7 +8,7 @@ import "./SessionSetup.css";
 import SessionSetupForm from "./SessionSetupForm";
 import SendLoginCodesForm from "./SendLoginCodesForm";
 import ResetFormButton from "./ResetFormButton";
-import NotifyButton from "./NotifyButton";
+import NotifyButton from "../../Components/NotifyButton/NotifyButton";
 
 export default function SessionSetup() {
   const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"
