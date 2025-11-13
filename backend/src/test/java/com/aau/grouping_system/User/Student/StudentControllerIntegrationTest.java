@@ -33,7 +33,7 @@ import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
-import com.aau.grouping_system.Utils.RequirementService;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,7 +60,7 @@ class StudentControllerIntegrationTest {
     private Database database;
 
     @MockitoBean
-    private RequirementService requirementService;
+    private RequestRequirementService requirementService;
 
     private Student testStudent;
     private Session testSession;
