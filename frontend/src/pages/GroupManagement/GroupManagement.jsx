@@ -13,7 +13,7 @@ export default function GroupManagement() {
 	const [previousGroups, setPreviousGroups] = useState([]);
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
-	const [ sessionId ] = useParams();
+	const { sessionId } = useParams();
 	
 	const navigate = useNavigate();
 
