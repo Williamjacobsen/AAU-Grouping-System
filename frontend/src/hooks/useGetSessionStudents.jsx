@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
@@ -30,5 +31,10 @@ export default function useGetSessionStudents(sessionId) {
 	}, [sessionId]);
 
 	return { isLoading, students };
+}
+
+export function useGetSessionStudentsByParam() {
+	const { sessionId } = useParams();
+	return useGetSessionStudents(sessionId);
 }
 
