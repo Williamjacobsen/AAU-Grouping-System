@@ -21,11 +21,11 @@ export default function GroupManagement() {
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
 
-	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 	const { isLoading: isLoadingUser, user } = useGetUser();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
-
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
+	
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
