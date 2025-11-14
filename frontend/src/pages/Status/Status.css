@@ -1,5 +1,5 @@
 .status-container {
-	max-width: 800px;
+	max-width: 100%;
 	margin: 0 auto;
 	padding: 2rem;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -7,6 +7,7 @@
 		sans-serif;
 	line-height: 1.5;
 	color: #000;
+	overflow-x: auto;
 }
 
 .status-title {
@@ -28,7 +29,7 @@
 
 .search-filter-input {
 	flex: 2;
-	min-width: 250px;
+	min-width: 15.75rem;
 	display: flex;
 }
 
@@ -66,7 +67,7 @@
 	color: #000;
 	background-color: white;
 	box-sizing: border-box;
-	min-width: 140px;
+	min-width: 8.75rem;
 	margin: 0;
 	line-height: 1.25;
 }
@@ -76,14 +77,119 @@
 	border-color: #3498db;
 }
 
+.column-selector {
+	position: relative;
+	display: inline-block;
+	flex-shrink: 0;
+}
+
+.column-selector-button {
+	padding: 1rem;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	font-family: inherit;
+	color: #000;
+	background-color: white;
+	box-sizing: border-box;
+	min-width: 8.75rem;
+	margin: 0;
+	line-height: 1.25;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.column-selector-button:hover {
+	background-color: #f8f9fa;
+}
+
+.column-selector-button:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.column-selector-dropdown {
+	position: absolute;
+	top: 100%;
+	right: 0;
+	background: white;
+	border: 1px solid #ccc;
+	border-radius: 0.25rem;
+	padding: 0.5rem;
+	z-index: 1000;
+	min-width: 20rem;
+	max-width: 90vw;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.column-selector-item {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	margin: 0.25rem 0;
+	padding: 0.25rem;
+}
+
+.column-selector-item input[type="checkbox"] {
+	margin: 0;
+}
+
+.column-selector-item button {
+	padding: 0.25rem 0.5rem;
+	font-size: 0.75rem;
+	border: 1px solid #ccc;
+	background: white;
+	cursor: pointer;
+	border-radius: 0.125rem;
+}
+
+.column-selector-item button:hover:not(:disabled) {
+	background-color: #f0f0f0;
+}
+
+.column-selector-item button:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.column-selector-item span {
+	flex: 1;
+}
+
+.table-wrapper {
+	overflow-x: auto;
+	margin-bottom: 2rem;
+	border-radius: 0.25rem;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+	scrollbar-width: thin;
+	scrollbar-color: #ccc transparent;
+}
+
+.table-wrapper::-webkit-scrollbar {
+	height: 0.5rem;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+	background: #f1f1f1;
+	border-radius: 0.25rem;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+	background: #ccc;
+	border-radius: 0.25rem;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb:hover {
+	background: #999;
+}
+
 .student-table {
 	width: 100%;
 	border-collapse: collapse;
-	margin-bottom: 2rem;
+	min-width: 37.5rem;
 }
 
 .student-table thead {
-	border-bottom: 3px solid #3498db;
+	border-bottom: 0.25rem solid #3498db;
 }
 
 .student-table th {
@@ -92,12 +198,15 @@
 	font-weight: 600;
 	color: #000;
 	font-size: 1rem;
+	white-space: nowrap;
+	background-color: #f8f9fa;
 }
 
 .student-table td {
 	padding: 0.75rem 1rem;
 	color: #000;
 	border-bottom: 1px solid #eee;
+	white-space: nowrap;
 }
 
 .student-table tbody tr {
@@ -148,14 +257,15 @@
 	padding: 2rem;
 	color: #e74c3c;
 	font-size: 1rem;
-	border-left: 4px solid #e74c3c;
+	border-left: 0.25rem solid #e74c3c;
 	margin: 2rem auto;
-	max-width: 400px;
+	max-width: 25rem;
 }
 
 @media (max-width: 768px) {
 	.status-container {
 		padding: 1rem;
+		overflow-x: visible;
 	}
 	
 	.status-title {
@@ -166,9 +276,23 @@
 		flex-direction: column;
 		align-items: stretch;
 	}
+
+	.table-wrapper {
+		margin-left: -1rem;
+		margin-right: -1rem;
+		border-radius: 0;
+	}
+	
+	.column-selector-dropdown {
+		right: -1rem;
+		left: -1rem;
+		max-width: none;
+		min-width: auto;
+		border-radius: 0;
+	}
 	
 	.student-table {
-		font-size: 1rem;
+		font-size: 0.875rem;
 	}
 	
 	.student-table th,

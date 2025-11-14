@@ -34,8 +34,8 @@ POST http://localhost:8080/student/create
 Content-Type: application/json
 
 {
-  "sessionId": "",
-  "email": "st1",
+  "sessionId": "1414f627-30c9-4f63-af6e-45a744c1deb8",
+  "email": "st1@test.com",
   "password": "st1", 
   "name": "Joe Biden"
 }
@@ -56,7 +56,7 @@ POST http://localhost:8080/auth/signIn
 Content-Type: application/json
 
 {
-  "emailOrId": "",
+  "emailOrId": "d14b9bfb-eb99-4b00-ad80-14673cb5c32c",
   "password": "st1",
   "role": "Student"
 }

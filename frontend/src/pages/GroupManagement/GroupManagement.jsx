@@ -1,8 +1,14 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
-import "../User/User.css";
+
+import "./GroupM.css";
+import { useGetSessionStudentsByParam } from "hooks/useGetSessionStudents";
 import { useGetSessionByParameter } from "hooks/useGetSession";
+import NotifyButton from "Components/NotifyButton/NotifyButton";
+import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
+import useSplitGroupsIntoSections from "./useSplitGroupsIntoSections";
 
 export default function GroupManagement() {
 
@@ -12,8 +18,13 @@ export default function GroupManagement() {
 	// I'll let you fix it, but if you're stuck, just ask me.
 	// - Jesp
 
+	const { sessionId } = useParams();
+	const navigate = useNavigate();
+
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 	const { isLoading: isLoadingUser, user } = useGetUser();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
+	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
 
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
@@ -23,24 +34,9 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 
-	const navigate = useNavigate();
+	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
 
-	const almostCompleteFraction = 0.5; // Fraction of min group size required to call a group "almost completed" instead of "incomplete"
-	const completedGroups = useMemo(() => {
-		return groups.filter(group =>
-			group.members.length >= session?.minGroupSize && group.members.length <= session?.maxGroupSize
-		);
-	}, [groups, session]);
-	const almostCompletedGroups = useMemo(() => {
-		return groups.filter(group =>
-			group.members.length >= session?.minGroupSize * almostCompleteFraction && group.members.length < session?.minGroupSize
-		);
-	}, [groups, session]);
-	const incompleteGroups = useMemo(() => {
-		return groups.filter(group =>
-			group.members.length < session?.minGroupSize * almostCompleteFraction
-		);
-	}, [groups, session]);
+	const { completedGroups, almostCompletedGroups, incompleteGroups } = useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
 		const fetchGroups = async () => {
@@ -52,7 +48,6 @@ export default function GroupManagement() {
 					setError(errorMessage);
 					return;
 				}
-
 				const data = await response.json();
 				const groupArray = Object.values(data); //convert object into an array
 				setGroups(groupArray);
@@ -74,6 +69,7 @@ export default function GroupManagement() {
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return navigate("/sign-in");
 	if (isLoadingSession) return <div className="loading-message">Loading session...</div>;
+	if (isLoadingStudents) return <div className="loading-message">Loading students...</div>;
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -230,7 +226,7 @@ export default function GroupManagement() {
 					<ul>
 						{group.members.map((member, index) => (
 							<li key={index} onClick={() => handleStudentClick(member, group.id)}
-								className={selectedStudent && selectedStudent.member?.name === member.name ? "selected" : ""
+								className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
 								}> <span className="student-name"> {member.name} </span>
 								{member.priority1 || member.priority2 || member.priority3 ? (
 									<span className="student-priorities">
@@ -241,6 +237,7 @@ export default function GroupManagement() {
 										]
 									</span>
 								) : null}
+								<hr></hr>
 							</li>
 						))}
 					</ul>
@@ -250,45 +247,52 @@ export default function GroupManagement() {
 	}
 
 	return (
-		<div className="group-container">
-			<h1> Group Management</h1>
+		<>
+			{isDeadlineExceeded() && (
+				<div className="group-container">
+					<h1> Group Management</h1>
 
-			{error && <div className="error-box">{error}</div>}
+					{error && <div className="error-box">{error}</div>}
 
-			{canUndo && (
-				<div className="undo-box">
-					<button
-						onClick={async () => {
-							try {
-								setGroups(previousGroups);
-								setError("");
-								if (lastAction) {
-									if (lastAction.type === "student") {
-										await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
-									} else if (lastAction.type === "group") {
-										await moveAllMembers(lastAction.to, lastAction.from);
+					{canUndo && (
+						<div className="undo-box">
+							<button
+								onClick={async () => {
+									try {
+										setGroups(previousGroups);
+										setError("");
+										if (lastAction) {
+											if (lastAction.type === "student") {
+												await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
+											} else if (lastAction.type === "group") {
+												await moveAllMembers(lastAction.to, lastAction.from);
+											}
+										}
+									} catch (err) {
+										setError("Failed to undo: " + err.message);
 									}
-								}
-							} catch (err) {
-								setError("Failed to undo: " + err.message);
-							}
-							setCanUndo(false);
-							setLastAction(null);
-						}}
-					>
-						Undo last change
-					</button>
+									setCanUndo(false);
+									setLastAction(null);
+								}}
+							>
+								Undo last change
+							</button>
+						</div>
+					)}
+
+					<h2 className="completed-groups" >Completed Groups</h2>
+					<div className="group-row">{RenderGroups(completedGroups)}</div>
+
+					<h2 className="almost-completed-groups">Almost Completed Groups</h2>
+					<div className="group-row">{RenderGroups(almostCompletedGroups)}</div>
+
+					<h2 className="incomplete-groups">Incomplete Groups</h2>
+					<div className="group-row">{RenderGroups(incompleteGroups)}</div>
+
+					<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
 				</div>
 			)}
-
-			<h2 className="completed-groups" >Completed Groups</h2>
-			<div className="group-row">{RenderGroups(completedGroups)}</div>
-
-			<h2 className="almost-completed-groups">Almost Completed Groups</h2>
-			<div className="group-row">{RenderGroups(almostCompletedGroups)}</div>
-
-			<h2 className="incomplete-groups">Incomplete Groups</h2>
-			<div className="group-row">{RenderGroups(incompleteGroups)}</div>
-		</div>
+		</>
 	);
 }
+

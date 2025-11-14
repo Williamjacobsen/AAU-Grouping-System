@@ -71,11 +71,6 @@ export default function useStudentData(sessionId, studentId) {
 		loading,
 		error,
 		isCoordinator,
-		refetch: () => {
-			if (sessionId && studentId) {
-				fetchStudentData();
-			}
-		},
 		removeStudent: async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/session/${sessionId}/student/${studentId}`, {

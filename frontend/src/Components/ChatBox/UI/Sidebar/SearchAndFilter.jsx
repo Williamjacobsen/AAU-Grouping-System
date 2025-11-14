@@ -4,7 +4,8 @@ export default function SearchAndFilter({ query, setQuery, filter, setFilter }) 
       style={{
         display: "flex",
         gap: "0.5rem",
-        padding: "0.7rem 0.8rem",
+        padding: "0.2rem 0.8rem",
+				paddingBottom: "0",
         borderBottom: "1px solid #e5e7eb",
       }}
     >
@@ -14,10 +15,12 @@ export default function SearchAndFilter({ query, setQuery, filter, setFilter }) 
         placeholder="Search…"
         style={{
           flex: 1,
-          padding: "0.5rem 0.6rem",
+          padding: "0.5rem 1rem",
           border: "1px solid #e5e7eb",
           borderRadius: 4,
           outline: "none",
+					height: "1.5rem",
+					marginTop: "0.5rem"
         }}
       />
       <select

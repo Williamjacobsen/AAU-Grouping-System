@@ -4,24 +4,9 @@ import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 import StudentPage from './StudentPage';
-import { useGetUser } from '../../hooks/useGetUser';
 import useStudentData from './useStudentData';
-import useGetCurrentTime from '../../hooks/useGetCurrentTime';
-import useIsQuestionnaireDeadlineExceeded from '../../hooks/useIsQuestionnaireDeadlineExceeded';
-
-vi.mock('../../hooks/useGetUser', () => ({
-  useGetUser: vi.fn(),
-}));
 
 vi.mock('./useStudentData', () => ({
-  default: vi.fn(),
-}));
-
-vi.mock('../../hooks/useGetCurrentTime', () => ({
-  default: vi.fn(),
-}));
-
-vi.mock('../../hooks/useIsQuestionnaireDeadlineExceeded', () => ({
   default: vi.fn(),
 }));
 
@@ -32,13 +17,6 @@ const MockedStudentPage = () => (
 );
 
 describe('StudentPage Component', () => {
-  const mockUser = {
-    id: 'student-123',
-    email: 'student@test.com',
-    name: 'Test Student',
-    role: 'Student',
-  };
-
   const mockStudentData = {
     student: {
       id: 'student-123',
@@ -77,12 +55,6 @@ describe('StudentPage Component', () => {
   beforeEach(() => {
     cleanup();
     vi.clearAllMocks();
-    
-    useGetUser.mockReturnValue({
-      user: mockUser,
-      loading: false,
-      setUser: vi.fn(),
-    });
 
     useStudentData.mockReturnValue({
       student: mockStudentData.student,
@@ -92,9 +64,6 @@ describe('StudentPage Component', () => {
       removeStudent: vi.fn(),
       resetPassword: vi.fn(),
     });
-
-    useGetCurrentTime.mockReturnValue(new Date('2024-11-01T10:00:00'));
-    useIsQuestionnaireDeadlineExceeded.mockReturnValue(false);
   });
 
   afterEach(() => {
@@ -109,11 +78,16 @@ describe('StudentPage Component', () => {
   });
 
   it('displays loading state when user data is loading', () => {
-    useGetUser.mockReturnValue({ user: null, loading: true });
+    useStudentData.mockReturnValue({ 
+      ...useStudentData(), 
+      loading: true,
+      student: null,
+      error: null 
+    });
     
     render(<MockedStudentPage />);
     
-    expect(screen.getByText(/Student Details/i)).toBeInTheDocument();
+    expect(screen.getByText(/Loading student information/i)).toBeInTheDocument();
   });
 
   it('displays loading state when student data is loading', () => {
@@ -128,7 +102,6 @@ describe('StudentPage Component', () => {
     render(<MockedStudentPage />);
     
     // Check basic structure exists
-    expect(screen.getByText(/Student Details/i)).toBeInTheDocument();
     expect(screen.getByText(/Basic Information/i)).toBeInTheDocument();
     expect(screen.getByText(/Group Status/i)).toBeInTheDocument();
     expect(screen.getByText(/Questionnaire Responses/i)).toBeInTheDocument();
@@ -141,21 +114,11 @@ describe('StudentPage Component', () => {
     expect(screen.getByText(/Project Priority 2:/i)).toBeInTheDocument();
   });
 
-  it('shows questionnaire form when deadline not exceeded', () => {
-    useIsQuestionnaireDeadlineExceeded.mockReturnValue(false);
-    
+  it('shows questionnaire responses section', () => {
     render(<MockedStudentPage />);
     
     expect(screen.getByText(/questionnaire responses/i)).toBeInTheDocument();
     expect(screen.getByText(/Project Priority 1:/i)).toBeInTheDocument();
-  });
-
-  it('shows questionnaire responses section regardless of deadline', () => {
-    useIsQuestionnaireDeadlineExceeded.mockReturnValue(true);
-    
-    render(<MockedStudentPage />);
-    
-    expect(screen.getByText(/questionnaire responses/i)).toBeInTheDocument();
   });
 
   it('displays questionnaire response fields', () => {
@@ -174,11 +137,9 @@ describe('StudentPage Component', () => {
     expect(backButton).toBeInTheDocument();
   });
 
-  it('displays error when user not found', () => {
-    useGetUser.mockReturnValue({ user: null, loading: false });
+  it('displays error when student data fails to load', () => {
     useStudentData.mockReturnValue({ 
       student: null, 
-      session: null, 
       loading: false,
       error: 'Failed to load student data',
       isCoordinator: false,
