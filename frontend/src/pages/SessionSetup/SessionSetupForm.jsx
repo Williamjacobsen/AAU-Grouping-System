@@ -19,6 +19,10 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 			sessionSetupRecord.questionnaireDeadlineISODateString =
 				convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISODateString);
 
+			// Convert <input type="checkbox"> value to a boolean value, since the checked value is "on".
+			sessionSetupRecord.allowStudentProjectProposals =
+				sessionSetupRecord.allowStudentProjectProposals == "on" ? true : false;
+
 			await fetchWithDefaultErrorHandling(
 				`/sessionSetup/${sessionId}/saveSetup`,
 				{
@@ -119,6 +123,18 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 						/>
 					</label>
 				</div>
+
+				<div className="form-group">
+					<input
+						type="checkbox"
+						name="allowStudentProjectProposals"
+						defaultChecked={session.allowStudentProjectProposals}
+					/>
+					<label className="checkbox-label">
+						Allow students to create project proposals?
+					</label>
+				</div>
+
 			</div>
 
 			<div className="form-section">

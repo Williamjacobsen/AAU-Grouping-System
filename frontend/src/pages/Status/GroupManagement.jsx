@@ -19,7 +19,6 @@ export default function GroupManagement() {
 	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
 	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
 
-
 	useEffect(() => {
 		const fetchGroups = async () => {
 			try {

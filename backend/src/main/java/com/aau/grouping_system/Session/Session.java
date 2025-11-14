@@ -20,6 +20,7 @@ public class Session extends DatabaseItem {
 	private String name = "";
 	private Integer minGroupSize = -1;
 	private Integer maxGroupSize = -1;
+	private Boolean allowStudentProjectProposals = false;
 	private LocalDateTime questionnaireDeadline = null;
 
 	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
@@ -56,7 +57,8 @@ public class Session extends DatabaseItem {
 	public void setMaxGroupSize(Integer maxGroupSize) { this.maxGroupSize = maxGroupSize; }
 	public Integer getMinGroupSize() { return minGroupSize; }
 	public void setMinGroupSize(Integer minGroupSize) { this.minGroupSize = minGroupSize; }
+	public Boolean getAllowStudentProjectProposals() { return allowStudentProjectProposals;}
+	public void setAllowStudentProjectProposals(Boolean allowStudentProjectProposals) { this.allowStudentProjectProposals = allowStudentProjectProposals;}
 	public LocalDateTime getQuestionnaireDeadline() { return questionnaireDeadline; }
 	public void setQuestionnaireDeadline(LocalDateTime questionnaireDeadline) { this.questionnaireDeadline = questionnaireDeadline; }
-
 }
