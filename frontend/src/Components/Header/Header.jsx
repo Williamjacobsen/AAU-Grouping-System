@@ -1,13 +1,12 @@
-import React, { useEffect, useState } from "react";
-import { Outlet, Link, useParams } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
+import { Outlet, Link } from "react-router-dom";
 import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
+import { useAuth } from "../../ContextProviders/AuthProvider"
 
 import "./Header.css";
 
 export default function Header() {
 
-	const { isLoading: isLoadingUser, user } = useGetUser();
+	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByUserOrParameter(user);
 	
 	if (isLoadingUser) {

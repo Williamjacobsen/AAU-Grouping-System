@@ -1,8 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
-
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./GroupM.css";
 import { useGetSessionStudentsByParam } from "hooks/useGetSessionStudents";
 import { useGetSessionByParameter } from "hooks/useGetSession";
@@ -21,7 +20,7 @@ export default function GroupManagement() {
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
 
-	const { isLoading: isLoadingUser, user } = useGetUser();
+	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);

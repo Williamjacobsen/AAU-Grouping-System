@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from "react";
-import { useAppState } from "../../AppStateContext";
+import { useAppState } from "../../ContextProviders/AppStateContext";
 import ChatSystem from "./Utils/ChatSystem";
 import useFetchMessages from "./Utils/useFetchMessages";
 import handleSubscriptions from "./Utils/handleSubscriptions";
@@ -15,7 +15,7 @@ import useSyncMessagesData from "./Utils/useSyncMessagesData";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
-  const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({}); // TODO: Do for all: // { [room1]: int, [room2]: int }
+  const [unreadMessagesByRoom, setUnreadMessagesByRoom] = useState({});
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [lastActivityByRoom, setLastActivityByRoom] = useState({});
   const [selectedChatRoom, setSelectedChatRoom] = useState(null);
@@ -121,9 +121,9 @@ export default function ChatBox() {
               selectedChatRoom={selectedChatRoom}
               setSelectedChatRoom={setSelectedChatRoom}
               unreadMessagesByRoom={unreadMessagesByRoom}
-							projects={projects}
-							groups={groups}
-							students={students}
+              projects={projects}
+              groups={groups}
+              students={students}
             />
             <ChatArea
               selectedChatRoom={selectedChatRoom}

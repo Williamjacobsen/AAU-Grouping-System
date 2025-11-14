@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./User.css";
 
 export default function Profile() {
@@ -17,7 +17,7 @@ export default function Profile() {
 	const [newPassword, setNewPassword] = useState("");
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
-	const { user, isLoading: isLoadingUser, setUser } = useGetUser();
+	const { user, isLoading: isLoadingUser, setUser } = useAuth();
 
 	useEffect(() => {
 		if (error) {

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 
 import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
@@ -17,7 +17,7 @@ export default function Status() {
 
 	const { sessionId } = useParams();
 
-	const { isLoading: isLoadingUser, user } = useGetUser();
+	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjects(sessionId);

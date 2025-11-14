@@ -1,11 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
-	BrowserRouter,
-	Routes,
-	Route,
-	Outlet,
-	useLocation,
+  BrowserRouter,
+  Routes,
+  Route,
+  Outlet,
 } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
@@ -27,61 +26,58 @@ import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage";
 import StudentPage from "./pages/StudentPage/StudentPage";
 import ChatBox from "./Components/ChatBox/ChatBox";
-import { AppStateProvider } from "./AppStateContext";
-
-function LayoutWithConditionalChat() {
-	const location = useLocation();
-
-	const isSessionRoute = location.pathname.startsWith("/session");
-
-	return (
-		<>
-			<Outlet />
-			{isSessionRoute && <ChatBox />}
-		</>
-	);
-}
+import { AppStateProvider } from "./ContextProviders/AppStateContext";
+import { AuthProvider } from "./ContextProviders/AuthProvider";
 
 export default function App() {
-	return (
-		<React.StrictMode>
-			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Header />}>
-						<Route index element={<About />} />
-						<Route path="sign-in" element={<SignIn />} />
-						<Route path="sign-up" element={<SignUp />} />
-						<Route path="profile" element={<Profile />} />
-						<Route path="forgotPassword" element={<ForgotPassword />} />
-						<Route path="resetPassword" element={<ResetPassword />} />
-						<Route path="sessions" element={<Sessions />} />
-						<Route
-							path="session/:sessionId"
-							element={
-								<AppStateProvider>
-									<Outlet />
-								</AppStateProvider>
-							}
-						>
-							<Route element={<LayoutWithConditionalChat />}>
-								<Route path="setup" element={<SessionSetup />} />
-								<Route path="status" element={<Status />} />
-								<Route path="projects" element={<Projects />} />
-								<Route path="groupManagement" element={<GroupManagement />} />
-								<Route
-									path="studentQuestionnaire"
-									element={<StudentQuestionnaire />}
-								/>
-								<Route path="supervisorsPage" element={<SupervisorsPage />} />
-								<Route path="student/:studentId" element={<StudentPage />} />
-							</Route>
-						</Route>
-						<Route path="*" element={<NoPage />} />
-					</Route>
-				</Routes>
-			</BrowserRouter>
-		</React.StrictMode>
-	);
+  return (
+    <React.StrictMode>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Header />}>
+              <Route index element={<About />} />
+              <Route path="sign-in" element={<SignIn />} />
+              <Route path="sign-up" element={<SignUp />} />
+              <Route path="profile" element={<Profile />} />
+              <Route path="forgotPassword" element={<ForgotPassword />} />
+              <Route path="resetPassword" element={<ResetPassword />} />
+              <Route path="sessions" element={<Sessions />} />
+              <Route
+                path="session/:sessionId"
+                element={
+                  <AppStateProvider>
+                    <Outlet />
+                  </AppStateProvider>
+                }
+              >
+                <Route
+                  element={
+                    <>
+                      <Outlet />
+                      <ChatBox />
+                    </>
+                  }
+                >
+                  <Route path="setup" element={<SessionSetup />} />
+                  <Route path="status" element={<Status />} />
+                  <Route path="projects" element={<Projects />} />
+                  <Route path="groupManagement" element={<GroupManagement />} />
+                  <Route
+                    path="studentQuestionnaire"
+                    element={<StudentQuestionnaire />}
+                  />
+                  <Route path="supervisorsPage" element={<SupervisorsPage />} />
+                  <Route path="student/:studentId" element={<StudentPage />} />
+                </Route>
+              </Route>
+              <Route path="*" element={<NoPage />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </React.StrictMode>
+  );
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

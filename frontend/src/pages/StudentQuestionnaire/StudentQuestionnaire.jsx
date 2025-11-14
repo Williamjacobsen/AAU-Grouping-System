@@ -1,5 +1,5 @@
 import React from "react";
-import { useGetUser } from "../../hooks/useGetUser";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import { useGetSessionProjectsByParam } from "../../hooks/useGetSessionProjects";
 import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
@@ -8,7 +8,7 @@ import "./StudentQuestionnaire.css";
 
 export default function StudentQuestionnaire() {
 
-	const { isLoading: isLoadingUser, user } = useGetUser();
+	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjectsByParam();
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);

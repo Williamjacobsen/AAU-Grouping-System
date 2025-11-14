@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { useParams } from "react-router-dom";
-import { fetchWithDefaultErrorHandling } from "./utils/fetchHelpers";
+import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 const AppStateContext = createContext(null);
 
@@ -73,12 +73,6 @@ export function AppStateProvider({ children }) {
     chatRooms,
     isLoading,
   };
-
-  //console.log("chatRooms:", chatRooms);
-  //console.log("students:", students);
-  //console.log("supervisors:", supervisors);
-  //console.log("groups:", groups);
-  //console.log("projects:", projects);
 
   return (
     <AppStateContext.Provider value={value}>
