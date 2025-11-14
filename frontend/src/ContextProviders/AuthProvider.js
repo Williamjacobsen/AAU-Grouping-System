@@ -21,7 +21,7 @@ export function AuthProvider({ children }) {
 					// maybe redirect to login screen?
         }
       } catch (error) {
-        alert(error); 
+        //alert(error); 
       } finally {
         setIsLoading(false);
       }

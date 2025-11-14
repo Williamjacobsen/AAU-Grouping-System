@@ -35,6 +35,7 @@ export default function SignIn() {
 			}
 
 			navigate("/profile");
+			window.location.reload();
 		} catch (e) {
 			setError(e.message);
 		}
