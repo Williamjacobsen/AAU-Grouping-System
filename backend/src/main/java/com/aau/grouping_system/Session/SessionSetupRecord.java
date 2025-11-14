@@ -12,6 +12,7 @@ public record SessionSetupRecord(
 		@NoDangerousCharacters @NotNull String name,
 		@NotNull @Min(-1) @Max(100000) Integer minGroupSize,
 		@NotNull @Min(-1) @Max(100000) Integer maxGroupSize,
+		Boolean allowStudentProjectProposals,
 		@NoDangerousCharacters @NotNull @ValidISODate String questionnaireDeadlineISODateString,
 		@NoDangerousCharacters @NotNull @IsListOfEmails String supervisorEmails,
 		@NoDangerousCharacters @NotNull @IsListOfEmails String studentEmails) {

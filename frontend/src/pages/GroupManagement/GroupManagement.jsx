@@ -1,12 +1,30 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
-import useGetSessionStudents from "hooks/useGetSessionStudents";
+
+import "./GroupM.css";
+import { useGetSessionStudentsByParam } from "hooks/useGetSessionStudents";
+import { useGetSessionByParameter } from "hooks/useGetSession";
 import NotifyButton from "Components/NotifyButton/NotifyButton";
 import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
-import "./GroupM.css";
+import useSplitGroupsIntoSections from "./useSplitGroupsIntoSections";
 
 export default function GroupManagement() {
+
+	// TODO: Munasar, right now the re-rendering is fucked,
+	// so the completedGroups, almostCompletedGroups, and incompleteGroups
+	// don't make the component re-render when they are updated.
+	// I'll let you fix it, but if you're stuck, just ask me.
+	// - Jesp
+
+	const { sessionId } = useParams();
+	const navigate = useNavigate();
+
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
+	const { isLoading: isLoadingUser, user } = useGetUser();
+	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
+	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
 
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
@@ -15,18 +33,10 @@ export default function GroupManagement() {
 	const [previousGroups, setPreviousGroups] = useState([]);
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
-	const { sessionId } = useParams();
-	const { session } = useGetSessionByParameter();
-	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
+
 	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
 
-	const navigate = useNavigate();
-
-	// Default is max = 7, needs to change so that it gets the number from the max students session setup page
-	const completedGroups = groups.filter(group => group.members.length === 7);
-	const almostCompletedGroups = groups.filter(group => group.members.length >= 4 && group.members.length <= 6);
-	const incompleteGroups = groups.filter(group => group.members.length >= 1 && group.members.length <= 3);
-	const studentsWithNoGroup = useGetSessionStudents(sessionId)
+	const { completedGroups, almostCompletedGroups, incompleteGroups } = useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
 		const fetchGroups = async () => {
@@ -45,7 +55,7 @@ export default function GroupManagement() {
 			} catch (error) {
 				setError("Failed to fetch data");
 			}
-		}
+		};
 		fetchGroups();
 	}, []);
 
@@ -54,12 +64,12 @@ export default function GroupManagement() {
 			const timer = setTimeout(() => setError(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [error])
+	}, [error]);
 
-	const { user, isLoading: isLoadingUser } = useGetUser();
-	if (isLoadingUser) return <>Checking authentication...</>;
+	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return navigate("/sign-in");
-
+	if (isLoadingSession) return <div className="loading-message">Loading session...</div>;
+	if (isLoadingStudents) return <div className="loading-message">Loading students...</div>;
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -76,7 +86,7 @@ export default function GroupManagement() {
 		} catch (error) {
 			setError("Error moving student");
 		}
-	}
+	};
 
 	const moveAllMembers = async (fromGroupId, toGroupId) => {
 		try {
@@ -94,7 +104,7 @@ export default function GroupManagement() {
 		} catch (error) {
 			setError("Error moving group members");
 		}
-	}
+	};
 
 	const handleStudentClick = async (member, groupId) => {
 		if (!selectedStudent) {
@@ -129,12 +139,12 @@ export default function GroupManagement() {
 				const newGroups = prevGroups.map(group => {
 					if (group.id === selectedStudent.from) {
 						// Old group keeps all members, except the selected student
-						return { ...group, members: group.members.filter(student => student.name !== selectedStudent.member.name) }
+						return { ...group, members: group.members.filter(student => student.name !== selectedStudent.member.name) };
 					}
 					// Checks if the current group in the loop matches the target group
 					if (group.id === groupId) {
 						// Copy all the members, but add the selected student
-						return { ...group, members: [...group.members, selectedStudent.member] }
+						return { ...group, members: [...group.members, selectedStudent.member] };
 					}
 					return group;
 				});
@@ -145,7 +155,7 @@ export default function GroupManagement() {
 			setError("Failed to move student: " + error.message);
 		}
 		setSelectedStudent(null);
-	}
+	};
 
 
 	const handleGroupClick = async (groupId) => {
@@ -185,17 +195,17 @@ export default function GroupManagement() {
 					if (group.id === groupId)
 						// Copy the group, but update the members
 						// Copy all the members, but add the selected student
-						return { ...group, members: [...group.members, ...fromGroup.members] }
+						return { ...group, members: [...group.members, ...fromGroup.members] };
 					return group;
 				});
 				setPreviousGroups(newGroups);
 				return newGroups;
 			});
 		} catch (error) {
-			setError("Failed to merge groups: " + error.message)
+			setError("Failed to merge groups: " + error.message);
 		}
 		setSelectedGroup(null);
-	}
+	};
 
 
 	function RenderGroups(groups) {
@@ -283,5 +293,6 @@ export default function GroupManagement() {
 				</div>
 			)}
 		</>
-	)
+	);
 }
+

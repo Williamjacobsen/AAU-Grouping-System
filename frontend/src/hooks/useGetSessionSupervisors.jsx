@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
@@ -30,5 +31,10 @@ export default function useGetSessionSupervisors(sessionId) {
 	}, [sessionId]);
 
 	return { isLoading, supervisors };
+}
+
+export function useGetSessionSupervisorsByParam() {
+	const { sessionId } = useParams();
+	return useGetSessionSupervisors(sessionId);
 }
 

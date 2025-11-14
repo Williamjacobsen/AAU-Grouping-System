@@ -1,17 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Outlet,
-  useLocation,
+	BrowserRouter,
+	Routes,
+	Route,
+	Outlet,
+	useLocation,
 } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
 import NoPage from "./pages/NoPage/NoPage";
-import Header from "./pages/Header/Header";
+import Header from "./Components/Header/Header";
 import About from "./pages/About/About";
 import SignIn from "./pages/User/SignIn";
 import SignUp from "./pages/User/SignUp";
@@ -30,58 +30,58 @@ import ChatBox from "./Components/ChatBox/ChatBox";
 import { AppStateProvider } from "./AppStateContext";
 
 function LayoutWithConditionalChat() {
-  const location = useLocation();
+	const location = useLocation();
 
-  const isSessionRoute = location.pathname.startsWith("/session");
+	const isSessionRoute = location.pathname.startsWith("/session");
 
-  return (
-    <>
-      <Outlet />
-      {isSessionRoute && <ChatBox />}
-    </>
-  );
+	return (
+		<>
+			<Outlet />
+			{isSessionRoute && <ChatBox />}
+		</>
+	);
 }
 
 export default function App() {
-  return (
-    <React.StrictMode>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Header />}>
-            <Route index element={<About />} />
-            <Route path="sign-in" element={<SignIn />} />
-            <Route path="sign-up" element={<SignUp />} />
-            <Route path="profile" element={<Profile />} />
-            <Route path="forgotPassword" element={<ForgotPassword />} />
-            <Route path="resetPassword" element={<ResetPassword />} />
-            <Route path="sessions" element={<Sessions />} />
-            <Route
-              path="session/:sessionId"
-              element={
-                <AppStateProvider>
-                  <Outlet />
-                </AppStateProvider>
-              }
-            >
-              <Route element={<LayoutWithConditionalChat />}>
-                <Route path="setup" element={<SessionSetup />} />
-                <Route path="status" element={<Status />} />
-                <Route path="projects" element={<Projects />} />
-                <Route path="groupManagement" element={<GroupManagement />} />
-                <Route
-                  path="studentQuestionnaire"
-                  element={<StudentQuestionnaire />}
-                />
-                <Route path="supervisorsPage" element={<SupervisorsPage />} />
-                <Route path="student/:studentId" element={<StudentPage />} />
-              </Route>
-            </Route>
-            <Route path="*" element={<NoPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </React.StrictMode>
-  );
+	return (
+		<React.StrictMode>
+			<BrowserRouter>
+				<Routes>
+					<Route path="/" element={<Header />}>
+						<Route index element={<About />} />
+						<Route path="sign-in" element={<SignIn />} />
+						<Route path="sign-up" element={<SignUp />} />
+						<Route path="profile" element={<Profile />} />
+						<Route path="forgotPassword" element={<ForgotPassword />} />
+						<Route path="resetPassword" element={<ResetPassword />} />
+						<Route path="sessions" element={<Sessions />} />
+						<Route
+							path="session/:sessionId"
+							element={
+								<AppStateProvider>
+									<Outlet />
+								</AppStateProvider>
+							}
+						>
+							<Route element={<LayoutWithConditionalChat />}>
+								<Route path="setup" element={<SessionSetup />} />
+								<Route path="status" element={<Status />} />
+								<Route path="projects" element={<Projects />} />
+								<Route path="groupManagement" element={<GroupManagement />} />
+								<Route
+									path="studentQuestionnaire"
+									element={<StudentQuestionnaire />}
+								/>
+								<Route path="supervisorsPage" element={<SupervisorsPage />} />
+								<Route path="student/:studentId" element={<StudentPage />} />
+							</Route>
+						</Route>
+						<Route path="*" element={<NoPage />} />
+					</Route>
+				</Routes>
+			</BrowserRouter>
+		</React.StrictMode>
+	);
 }
 
 const root = ReactDOM.createRoot(document.getElementById("root"));

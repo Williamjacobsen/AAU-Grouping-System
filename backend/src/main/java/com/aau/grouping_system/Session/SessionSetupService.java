@@ -30,6 +30,7 @@ public class SessionSetupService {
 		session.setName(record.name());
 		session.setMinGroupSize(record.minGroupSize());
 		session.setMaxGroupSize(record.maxGroupSize());
+		session.setAllowStudentProjectProposals(record.allowStudentProjectProposals());
 
 		LocalDateTime questionnaireDeadline = convertToLocalDateTime(record.questionnaireDeadlineISODateString());
 		session.setQuestionnaireDeadline(questionnaireDeadline);
