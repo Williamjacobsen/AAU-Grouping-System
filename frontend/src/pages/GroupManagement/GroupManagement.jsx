@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
 import useGetSessionStudents from "hooks/useGetSessionStudents";
-import "./GroupM.css";
 import NotifyButton from "Components/NotifyButton/NotifyButton";
+import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
+import "./GroupM.css";
 
 export default function GroupManagement() {
 
@@ -15,8 +16,10 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 	const { sessionId } = useParams();
+	const { session } = useGetSessionByParameter();
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
-	
+
 	const navigate = useNavigate();
 
 	// Default is max = 7, needs to change so that it gets the number from the max students session setup page
@@ -35,7 +38,6 @@ export default function GroupManagement() {
 					setError(errorMessage);
 					return;
 				}
-
 				const data = await response.json();
 				const groupArray = Object.values(data); //convert object into an array
 				setGroups(groupArray);
@@ -203,8 +205,8 @@ export default function GroupManagement() {
 					<h4 onClick={() => handleGroupClick(group.id)}
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
 						<span className="group-name">{group.name}</span> <br />
-						<span className="group-detail">Size: </span> {group.members.length} <br/> 
-						<span className="group-detail">Preferred size: </span> {group.maxStudents} 
+						<span className="group-detail">Size: </span> {group.members.length} <br />
+						<span className="group-detail">Preferred size: </span> {group.maxStudents}
 					</h4>
 					{group.project && (
 						<p className="group-detail">
@@ -235,47 +237,51 @@ export default function GroupManagement() {
 	}
 
 	return (
-		<div className="group-container">
-			<h1> Group Management</h1>
+		<>
+			{isDeadlineExceeded() && (
+				<div className="group-container">
+					<h1> Group Management</h1>
 
-			{error && <div className="error-box">{error}</div>}
+					{error && <div className="error-box">{error}</div>}
 
-			{canUndo && (
-				<div className="undo-box">
-					<button
-						onClick={async () => {
-							try {
-								setGroups(previousGroups);
-								setError("");
-								if (lastAction) {
-									if (lastAction.type === "student") {
-										await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
-									} else if (lastAction.type === "group") {
-										await moveAllMembers(lastAction.to, lastAction.from);
+					{canUndo && (
+						<div className="undo-box">
+							<button
+								onClick={async () => {
+									try {
+										setGroups(previousGroups);
+										setError("");
+										if (lastAction) {
+											if (lastAction.type === "student") {
+												await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
+											} else if (lastAction.type === "group") {
+												await moveAllMembers(lastAction.to, lastAction.from);
+											}
+										}
+									} catch (err) {
+										setError("Failed to undo: " + err.message);
 									}
-								}
-							} catch (err) {
-								setError("Failed to undo: " + err.message);
-							}
-							setCanUndo(false);
-							setLastAction(null);
-						}}
-					>
-						Undo last change
-					</button>
+									setCanUndo(false);
+									setLastAction(null);
+								}}
+							>
+								Undo last change
+							</button>
+						</div>
+					)}
+
+					<h2 className="completed-groups" >Completed Groups</h2>
+					<div className="group-row">{RenderGroups(completedGroups)}</div>
+
+					<h2 className="almost-completed-groups">Almost Completed Groups</h2>
+					<div className="group-row">{RenderGroups(almostCompletedGroups)}</div>
+
+					<h2 className="incomplete-groups">Incomplete Groups</h2>
+					<div className="group-row">{RenderGroups(incompleteGroups)}</div>
+
+					<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
 				</div>
 			)}
-
-			<h2 className="completed-groups" >Completed Groups</h2>
-			<div className="group-row">{RenderGroups(completedGroups)}</div>
-
-			<h2 className="almost-completed-groups">Almost Completed Groups</h2>
-			<div className="group-row">{RenderGroups(almostCompletedGroups)}</div>
-
-			<h2 className="incomplete-groups">Incomplete Groups</h2>
-			<div className="group-row">{RenderGroups(incompleteGroups)}</div>
-
-			<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
-		</div>
+		</>
 	)
 }
