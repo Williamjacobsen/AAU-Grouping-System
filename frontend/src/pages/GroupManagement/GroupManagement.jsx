@@ -11,12 +11,6 @@ import useSplitGroupsIntoSections from "./useSplitGroupsIntoSections";
 
 export default function GroupManagement() {
 
-	// TODO: Munasar, right now the re-rendering is fucked,
-	// so the completedGroups, almostCompletedGroups, and incompleteGroups
-	// don't make the component re-render when they are updated.
-	// I'll let you fix it, but if you're stuck, just ask me.
-	// - Jesp
-
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
 
