@@ -18,7 +18,7 @@ export default function GroupManagement() {
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
-	
+
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
@@ -32,10 +32,10 @@ export default function GroupManagement() {
 	const { completedGroups, almostCompletedGroups, incompleteGroups } = useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
+		if (!session) return;
 		const fetchGroups = async () => {
 			try {
 				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups`);
-
 				if (!response.ok) {
 					const errorMessage = await response.text();
 					setError(errorMessage);
@@ -50,7 +50,7 @@ export default function GroupManagement() {
 			}
 		};
 		fetchGroups();
-	}, []);
+	}, [session, students]);
 
 	useEffect(() => {
 		if (error) {
@@ -240,9 +240,11 @@ export default function GroupManagement() {
 	}
 
 	return (
-		<>
-			{isDeadlineExceeded() && (
-				<div className="group-container">
+		<div className="group-container">
+			{!isDeadlineExceeded() ? (
+				<p className="info-text">Waiting for questionnaire deadline to pass...</p>
+			) : (
+				<>
 					<h1> Group Management</h1>
 
 					{error && <div className="error-box">{error}</div>}
@@ -283,9 +285,9 @@ export default function GroupManagement() {
 					<div className="group-row">{RenderGroups(incompleteGroups)}</div>
 
 					<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
-				</div>
+				</>
 			)}
-		</>
+		</div>
 	);
 }
 

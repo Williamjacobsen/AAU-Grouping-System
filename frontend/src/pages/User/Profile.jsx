@@ -103,6 +103,7 @@ export default function Profile() {
 			}
 
 			navigate("/sign-in");
+			window.location.reload();
 
 		} catch (e) {
 			setError(e.message);
