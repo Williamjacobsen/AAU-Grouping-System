@@ -25,5 +25,7 @@ export default function useSplitGroupsIntoSections(groups, session) {
 		);
 	}, [groups, session]);
 
+	// Tilføj liste for studerende som ikke er i en gruppe
+
 	return { completedGroups, almostCompletedGroups, incompleteGroups };
 }
