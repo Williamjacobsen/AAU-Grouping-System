@@ -200,7 +200,7 @@ export default function GroupManagement() {
 		setSelectedGroup(null);
 	};
 
-
+	// Dropdown skal tilføjes her
 	function RenderGroups(groups) {
 		return groups.map((group) => {
 			return (
