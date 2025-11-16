@@ -1,0 +1,112 @@
+
+.group-container {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 1.5rem;
+	font-family: inherit;
+	color: #000;
+}
+
+.group-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 2rem;
+	justify-content: flex-start;
+}
+
+.group-box {
+	width: 400px;               
+	height: auto;               
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 1rem;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.group-box:hover {
+	border-color: #3498db;
+}
+
+.completed-groups {
+	color: #27ae60;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.almost-completed-groups {
+	color: #f1c40f;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.incomplete-groups {
+	color: #e74c3c;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.selected {
+	background-color: #3B82F6;
+	color: #fff;
+	border: 1px solid #2980b9;
+	border-radius: 4px;
+}
+
+.group-project {
+  font-size: 0.9rem;
+  color: #666;
+  margin-top: -5px;
+  margin-bottom: 10px;
+}
+
+ .highlight {
+  color: #333;
+  font-weight: 600;
+}
+
+.student-priorities {
+  font-size: 0.85rem;
+  color: #000000;
+}
+
+.group-name {
+  font-weight: 700;
+	font-size: large;
+  color: #204098; 
+}
+
+
+.student-name {
+  font-weight: 600;
+  padding: 0px 2px;
+  border-radius: 6px;
+  margin-right: 4px;
+}
+
+.undo-box {
+  text-align: center;
+  margin: 10px 0;
+}
+
+.undo-box button {
+  background-color: #000000;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.undo-box button:hover {
+  background-color: #474747;
+}
+
+
+
+	
+
+

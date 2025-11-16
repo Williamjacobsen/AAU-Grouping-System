@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -65,15 +66,14 @@ class AuthServiceTest {
         testStudent = mock(Student.class);
         testSupervisor = mock(Supervisor.class);
         
-        // Setup mock returns
-        when(mockDatabase.getCoordinators()).thenReturn(mockCoordinators);
-        when(mockDatabase.getStudents()).thenReturn(mockStudents);
-        when(mockDatabase.getSupervisors()).thenReturn(mockSupervisors);
+        lenient().when(mockDatabase.getCoordinators()).thenReturn(mockCoordinators);
+        lenient().when(mockDatabase.getStudents()).thenReturn(mockStudents);
+        lenient().when(mockDatabase.getSupervisors()).thenReturn(mockSupervisors);
         
-        when(testCoordinator.getEmail()).thenReturn("coordinator@test.com");
-        when(testCoordinator.getPasswordHash()).thenReturn("hashedPassword");
-        when(testStudent.getPasswordHash()).thenReturn("hashedPassword");
-        when(testSupervisor.getPasswordHash()).thenReturn("hashedPassword");
+        lenient().when(testCoordinator.getEmail()).thenReturn("coordinator@test.com");
+        lenient().when(testCoordinator.getPasswordHash()).thenReturn("hashedPassword");
+        lenient().when(testStudent.getPasswordHash()).thenReturn("hashedPassword");
+        lenient().when(testSupervisor.getPasswordHash()).thenReturn("hashedPassword");
     }
 
     @Test

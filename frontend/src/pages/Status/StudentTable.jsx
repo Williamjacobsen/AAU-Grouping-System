@@ -17,6 +17,10 @@ const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session
 		return <div className="empty-message"> No visible columns.</div>;
 	}
 
+	if (!visibleStudents || !visibleColumns[0] || !visibleColumns[0].rows) {
+		return <div className="empty-message"> No student data available.</div>;
+	}
+
 	return (
 		<table className="student-table">
 			<thead>

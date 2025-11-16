@@ -5,7 +5,7 @@ export default function chatRooms({
   projectSet,
   groupSet,
   studentSet,
-	unreadMessagesByRoom
+  unreadMessagesByRoom,
 }) {
   return (
     <>
@@ -56,6 +56,10 @@ export default function chatRooms({
                 Number(unreadMessagesByRoom[chatRoom]) > 0 ? "20.5px" : "20px",
               fontWeight:
                 Number(unreadMessagesByRoom[chatRoom]) > 0 ? 600 : 500,
+              width: "11rem",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
             }}
           >
             {chatRoom}

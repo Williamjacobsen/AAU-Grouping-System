@@ -10,17 +10,19 @@
 }
 
 .supervisors-header {
-	text-align: center;
-	margin-bottom: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 1.5rem;
+	margin-bottom: 2rem;
+	padding-bottom: 1rem;
+	border-bottom: 3px solid #3498db;
 }
 
 .supervisors-header h2 {
 	font-size: 2.5rem;
 	color: #000;
-	margin-bottom: 1.5rem;
+	margin: 0;
 	font-weight: 600;
-	border-bottom: 3px solid #3498db;
-	padding-bottom: 0.5rem;
 }
 
 .add-supervisor-button {
@@ -279,4 +281,41 @@
 .confirm-button:disabled:hover,
 .danger-button:disabled:hover {
 	background-color: inherit;
+}
+
+.back-button {
+	padding: 0.75rem 1.5rem;
+	background-color: #bdc3c7;
+	color: #000;
+	border: none;
+	font-size: 1rem;
+	font-weight: 500;
+	cursor: pointer;
+	font-family: inherit;
+	text-decoration: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.back-button:hover {
+	background-color: #95a5a6;
+}
+
+.error-message {
+	color: #000;
+	font-weight: 500;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	background-color: #f8d7da;
+	border-left: 3px solid #e74c3c;
+}
+
+.success-message {
+	background-color: #d4edda;
+	color: #000;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border-left: 3px solid #28a745;
+	font-size: 1rem;
 }

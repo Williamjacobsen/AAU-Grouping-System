@@ -1,0 +1,212 @@
+.student-questionnaire-container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2rem;
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+	line-height: 1.5;
+	color: #000;
+}
+
+.questionnaire-title {
+	font-size: 2.5rem;
+	color: #000;
+	text-align: center;
+	margin-bottom: 1.5rem;
+	font-weight: 600;
+	border-bottom: 3px solid #3498db;
+	padding-bottom: 0.5rem;
+}
+
+.deadline-info {
+	text-align: center;
+	margin-bottom: 2rem;
+	padding: 1.5rem;
+	background-color: #f8f9fa;
+	border-left: 4px solid #3498db;
+	font-size: 1rem;
+	color: #000;
+}
+
+.questionnaire-form {
+	background: white;
+	padding: 2rem;
+	border-left: 3px solid #3498db;
+	margin-bottom: 2rem;
+}
+
+.form-section {
+	margin-bottom: 2rem;
+}
+
+.form-section:last-of-type {
+	margin-bottom: 0;
+}
+
+.form-section h2 {
+	color: #000;
+	margin-bottom: 1.5rem;
+	font-size: 1.5rem;
+	font-weight: 600;
+	border-bottom: 2px solid #3498db;
+	padding-bottom: 0.5rem;
+}
+
+.form-group {
+	margin-bottom: 1.5rem;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 500;
+	color: #000;
+	font-size: 1rem;
+}
+
+.form-group input[type="number"],
+.form-group select {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	font-family: inherit;
+	color: #000;
+	background-color: white;
+	box-sizing: border-box;
+}
+
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.form-group textarea {
+	width: 100%;
+	padding: 0.75rem;
+	border: 1px solid #ccc;
+	font-size: 1rem;
+	font-family: inherit;
+	color: #000;
+	background-color: white;
+	box-sizing: border-box;
+	min-height: 100px;
+	resize: vertical;
+}
+
+.form-group textarea:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.form-buttons {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	margin-top: 2rem;
+	padding-top: 1.5rem;
+	border-top: 1px solid #eee;
+}
+
+.submit-button {
+	background-color: #3498db;
+	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.75rem 2rem;
+	border: none;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.submit-button:hover:not(:disabled) {
+	background-color: #2980b9;
+}
+
+.submit-button:disabled {
+	background-color: #95a5a6;
+	cursor: not-allowed;
+}
+
+.reset-button {
+	background-color: transparent;
+	color: #3498db;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.75rem 2rem;
+	border: 1px solid #3498db;
+	cursor: pointer;
+	font-family: inherit;
+}
+
+.reset-button:hover {
+	background-color: #3498db;
+	color: white;
+}
+
+.deadline-exceeded-message {
+	background-color: #f8d7da;
+	color: #000;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	border-left: 4px solid #e74c3c;
+	font-weight: 500;
+	text-align: center;
+}
+
+.loading-message,
+.access-denied-message {
+	text-align: center;
+	padding: 2rem;
+	color: #000;
+	font-size: 1rem;
+}
+
+.access-denied-message {
+	color: #e74c3c;
+	border-left: 4px solid #e74c3c;
+	background-color: #f8d7da;
+	margin: 2rem auto;
+	max-width: 400px;
+}
+
+@media (max-width: 768px) {
+	.student-questionnaire-container {
+		padding: 1rem;
+	}
+	
+	.questionnaire-title {
+		font-size: 2rem;
+	}
+	
+	.questionnaire-form {
+		padding: 1.5rem;
+	}
+	
+	.form-buttons {
+		flex-direction: column;
+		align-items: center;
+	}
+	
+	.submit-button,
+	.reset-button {
+		width: 100%;
+		max-width: 300px;
+	}
+}
+
+@media (max-width: 480px) {
+	.student-questionnaire-container {
+		padding: 0.75rem;
+	}
+	
+	.deadline-info {
+		padding: 1rem;
+	}
+	
+	.questionnaire-form {
+		padding: 1rem;
+	}
+}

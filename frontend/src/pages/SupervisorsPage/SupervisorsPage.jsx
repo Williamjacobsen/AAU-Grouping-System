@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import "./SupervisorsPage.css";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 
 export default function SupervisorsPage() {
 	const { sessionId } = useParams();
+	const navigate = useNavigate();
 	const [supervisors, setSupervisors] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState("");
-	const [isCoordinator, setIsCoordinator] = useState(false);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [showRemoveModal, setShowRemoveModal] = useState(false);
 	const [email, setEmail] = useState("");
@@ -15,22 +16,28 @@ export default function SupervisorsPage() {
 	const [addingSupervisor, setAddingSupervisor] = useState(false);
 	const [removingSupervisor, setRemovingSupervisor] = useState(false);
 	const [sendingPassword, setSendingPassword] = useState(null);
+	
+	const [successMessage, setSuccessMessage] = useState("");
+	const [actionError, setActionError] = useState("");
 
-	const fetchUserRole = async () => {
-		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/getUser`, {
-				method: "GET",
-				credentials: "include",
-			});
-			
-			if (response.ok) {
-				const userData = await response.json();
-				setIsCoordinator(userData.role === "Coordinator");
-			}
-		} catch (err) {
-			console.error("Error fetching user role:", err);
+	const { user } = useAuth();
+	const [isCoordinator, setIsCoordinator] = useState(false);
+	useEffect(() => {
+		if (user) {
+			setIsCoordinator(user.role === "Coordinator");
 		}
+	}, [user]);
+
+	const goBack = () => {
+		navigate(-1);
 	};
+
+	useEffect(() => {
+		if (successMessage) {
+			const timer = setTimeout(() => setSuccessMessage(""), 5000);
+			return () => clearTimeout(timer);
+		}
+	}, [successMessage]);
 
 	const fetchSupervisors = useCallback(async () => {
 		setLoading(true);
@@ -60,10 +67,6 @@ export default function SupervisorsPage() {
 	}, [sessionId]);
 
 	useEffect(() => {
-		fetchUserRole();
-	}, []);
-
-	useEffect(() => {
 		if (sessionId && isCoordinator) {
 			fetchSupervisors();
 		}
@@ -73,11 +76,13 @@ export default function SupervisorsPage() {
 		e.preventDefault();
 		
 		if (!email.trim()) {
-			alert("Please enter an email address.");
+			setActionError("Please enter an email address.");
 			return;
 		}
 
 		setAddingSupervisor(true);
+		setActionError("");
+		setSuccessMessage("");
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
@@ -93,15 +98,15 @@ export default function SupervisorsPage() {
 				setEmail("");
 				setShowAddModal(false);
 				fetchSupervisors();
-				alert("Supervisor added successfully!");
+				setSuccessMessage("Supervisor added successfully!");
 			} else if (response.status === 409) {
-				alert("A supervisor with this email already exists in this session.");
+				setActionError("A supervisor with this email already exists in this session.");
 			} else {
 				const errorText = await response.text();
-				alert("Failed to add supervisor: " + errorText);
+				setActionError("Failed to add supervisor: " + errorText);
 			}
 		} catch (err) {
-			alert("Error adding supervisor: " + err.message);
+			setActionError("Error adding supervisor: " + err.message);
 		} finally {
 			setAddingSupervisor(false);
 		}
@@ -111,6 +116,8 @@ export default function SupervisorsPage() {
 		if (!supervisorToRemove) return;
 
 		setRemovingSupervisor(true);
+		setActionError("");
+		setSuccessMessage("");
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
@@ -122,13 +129,13 @@ export default function SupervisorsPage() {
 				setShowRemoveModal(false);
 				setSupervisorToRemove(null);
 				fetchSupervisors();
-				alert("Supervisor removed successfully!");
+				setSuccessMessage("Supervisor removed successfully!");
 			} else {
 				const errorText = await response.text();
-				alert("Failed to remove supervisor: " + errorText);
+				setActionError("Failed to remove supervisor: " + errorText);
 			}
 		} catch (err) {
-			alert("Error removing supervisor: " + err.message);
+			setActionError("Error removing supervisor: " + err.message);
 		} finally {
 			setRemovingSupervisor(false);
 		}
@@ -136,6 +143,8 @@ export default function SupervisorsPage() {
 
 	const handleSendNewPassword = async (supervisor) => {
 		setSendingPassword(supervisor.id);
+		setActionError("");
+		setSuccessMessage("");
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
@@ -145,13 +154,13 @@ export default function SupervisorsPage() {
 			
 			if (response.ok) {
 				const successMessage = await response.text();
-				alert(successMessage);
+				setSuccessMessage(successMessage);
 			} else {
 				const errorText = await response.text();
-				alert("Failed to send new password: " + errorText);
+				setActionError("Failed to send new password: " + errorText);
 			}
 		} catch (err) {
-			alert("Error sending new password: " + err.message);
+			setActionError("Error sending new password: " + err.message);
 		} finally {
 			setSendingPassword(null);
 		}
@@ -167,14 +176,19 @@ export default function SupervisorsPage() {
 		setShowRemoveModal(false);
 		setSupervisorToRemove(null);
 		setEmail("");
+		setActionError("");
+		setSuccessMessage("");
 	};
 
 	if (!isCoordinator) {
 		return (
 			<div className="supervisors-page">
-				<div className="error">
+				<div className="error-message">
 					Access denied. Only coordinators can manage supervisors.
 				</div>
+				<button onClick={goBack} className="back-button">
+					← Back
+				</button>
 			</div>
 		);
 	}
@@ -190,7 +204,10 @@ export default function SupervisorsPage() {
 	if (error) {
 		return (
 			<div className="supervisors-page">
-				<div className="error">{error}</div>
+				<div className="error-message">{error}</div>
+				<button onClick={goBack} className="back-button">
+					← Back
+				</button>
 			</div>
 		);
 	}
@@ -198,6 +215,9 @@ export default function SupervisorsPage() {
 	return (
 		<div className="supervisors-page">
 			<div className="supervisors-header">
+				<button onClick={goBack} className="back-button">
+					← Back
+				</button>
 				<h2>Session Supervisors</h2>
 				<button 
 					className="add-supervisor-button"
@@ -325,6 +345,19 @@ export default function SupervisorsPage() {
 							</button>
 						</div>
 					</div>
+				</div>
+			)}
+
+			{/* Success and Error Messages */}
+			{successMessage && (
+				<div className="success-message" style={{ marginTop: '20px' }}>
+					{successMessage}
+				</div>
+			)}
+
+			{actionError && (
+				<div className="error-message" style={{ marginTop: '20px' }}>
+					{actionError}
 				</div>
 			)}
 		</div>

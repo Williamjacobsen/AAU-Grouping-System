@@ -16,7 +16,12 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 			// <input type="datetime-local"/> gives an ISO string in the format "2007-12-03T10:15",
 			// but the backend only takes a full ISO string in the format "2007-12-03T10:15:30.00Z",
 			// so we must convert it.
-			sessionSetupRecord.questionnaireDeadlineISOString = convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISOString);
+			sessionSetupRecord.questionnaireDeadlineISODateString =
+				convertToFullISODate(sessionSetupRecord.questionnaireDeadlineISODateString);
+
+			// Convert <input type="checkbox"> value to a boolean value, since the checked value is "on".
+			sessionSetupRecord.allowStudentProjectProposals =
+				sessionSetupRecord.allowStudentProjectProposals == "on" ? true : false;
 
 			await fetchWithDefaultErrorHandling(
 				`/sessionSetup/${sessionId}/saveSetup`,
@@ -112,12 +117,24 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 						<input
 							className="form-input"
 							type="datetime-local"
-							name="questionnaireDeadlineISOString"
+							name="questionnaireDeadlineISODateString"
 							defaultValue={session.questionnaireDeadline}
 							required
 						/>
 					</label>
 				</div>
+
+				<div className="form-group">
+					<input
+						type="checkbox"
+						name="allowStudentProjectProposals"
+						defaultChecked={session.allowStudentProjectProposals}
+					/>
+					<label className="checkbox-label">
+						Allow students to create project proposals?
+					</label>
+				</div>
+
 			</div>
 
 			<div className="form-section">

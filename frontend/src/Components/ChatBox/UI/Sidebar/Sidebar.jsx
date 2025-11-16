@@ -15,9 +15,9 @@ export default function Sidebar({
   const [filter, setFilter] = useState("all"); // all | general | projects | groups | students
   const [query, setQuery] = useState("");
 
-  const projectSet = new Set(projects);
-  const groupSet = new Set(groups);
-  const studentSet = new Set(students);
+  const projectSet = new Set(projects.map((p) => p.name));
+  const groupSet = new Set(groups.map((g) => g.name));
+  const studentSet = new Set(students.map((s) => s.name));
 
   const filteredChatRooms = SearchAndFilterChatRooms(
     chatRooms,
@@ -36,6 +36,8 @@ export default function Sidebar({
         width: "35rem",
         height: "100%",
         borderRight: "2px solid #e5e7eb",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <SearchAndFilter
@@ -44,15 +46,17 @@ export default function Sidebar({
         filter={filter}
         setFilter={setFilter}
       />
-      <ChatRooms
-        filteredChatRooms={filteredChatRooms}
-        setSelectedChatRoom={setSelectedChatRoom}
-        selectedChatRoom={selectedChatRoom}
-        projectSet={projectSet}
-        groupSet={groupSet}
-        studentSet={studentSet}
-        unreadMessagesByRoom={unreadMessagesByRoom}
-      />
+      <div style={{ flex: 1, overflowY: "auto" }}>
+        <ChatRooms
+          filteredChatRooms={filteredChatRooms}
+          setSelectedChatRoom={setSelectedChatRoom}
+          selectedChatRoom={selectedChatRoom}
+          projectSet={projectSet}
+          groupSet={groupSet}
+          studentSet={studentSet}
+          unreadMessagesByRoom={unreadMessagesByRoom}
+        />
+      </div>
     </div>
   );
 }

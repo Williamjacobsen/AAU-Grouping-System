@@ -30,17 +30,18 @@ public class SessionSetupService {
 		session.setName(record.name());
 		session.setMinGroupSize(record.minGroupSize());
 		session.setMaxGroupSize(record.maxGroupSize());
+		session.setAllowStudentProjectProposals(record.allowStudentProjectProposals());
 
-		LocalDateTime questionnaireDeadline = convertToLocalDateTime(record.questionnaireDeadlineISOString());
+		LocalDateTime questionnaireDeadline = convertToLocalDateTime(record.questionnaireDeadlineISODateString());
 		session.setQuestionnaireDeadline(questionnaireDeadline);
 
 		ApplySupervisorEmails(session, record.supervisorEmails());
 		ApplyStudentEmails(session, record.studentEmails());
 	}
 
-	private LocalDateTime convertToLocalDateTime(String isoString) {
+	private LocalDateTime convertToLocalDateTime(String isoDateString) {
 		try {
-			Instant instant = Instant.parse(isoString);
+			Instant instant = Instant.parse(isoDateString);
 			return LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
 		} catch (Exception e) {
 			throw new IllegalArgumentException("Invalid date format");
