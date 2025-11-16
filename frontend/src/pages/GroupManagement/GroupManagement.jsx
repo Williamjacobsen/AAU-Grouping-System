@@ -218,16 +218,16 @@ export default function GroupManagement() {
 			setError("Failed to assign supervisor");
 		}
 	}; 
-
+	
 
 	function RenderGroups(groups) {
 		return groups.map((group) => {
 			return (
 				<div className="group-box" key={group.id}>
 					<div className="AssignSupervisor-button">
-						<p>Current Supervisor: {supervisors?.find(s => s.id === group.supervisor)?.name || "None"} </p>
+						<p>Current Supervisor: </p>
 						<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
-							<option value="" disabled> Select supervisor</option>
+							<option value="" disabled> {supervisors?.find(s => s.id === group.supervisor)?.name || "None"} </option>
 							{supervisors?.map((supervisor) => (
 								<option key={supervisor.id} value={supervisor.id}>
 									{supervisor.name}
