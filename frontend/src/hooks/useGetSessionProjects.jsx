@@ -5,7 +5,7 @@ import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionProjects(sessionId) {
 	const response = await fetchWithDefaultErrorHandling(
-		`/sessions/${sessionId}/getProjects`,
+		`/project/getSessionProjects/${sessionId}`,
 		{
 			credentials: "include",
 			method: "GET"
@@ -70,7 +70,7 @@ export function useUpdateProject() {
 export function useDeleteProject() {
 	return useCallback(async (id) => {
 		const response = await fetchWithDefaultErrorHandling(
-			`http://localhost:8080/project/${id}`,
+			`/project/${id}`,
 			{
 				credentials: "include",
 				method: "DELETE"
