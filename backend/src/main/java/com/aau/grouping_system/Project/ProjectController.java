@@ -1,13 +1,5 @@
 package com.aau.grouping_system.Project;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Session.Session;
-
-import jakarta.validation.constraints.NotBlank;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Session.Session;
+
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated // enables method-level validation
@@ -60,14 +58,14 @@ public class ProjectController {
 		// Check if project exists if not throw error
 		if (project == null) {
 			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
-					.body("Project with id " + id + " does not exist.");
+					.body("Project with id " + projectId + " does not exist.");
 		}
 
 		// Delete the project from the database
 		db.getProjects().cascadeRemove(db, project);
 
 		// Return success message with 200 ok
-		return ResponseEntity.ok("Project with id " + id + " has been deleted successfully.");
+		return ResponseEntity.ok("Project with id " + projectId + " has been deleted successfully.");
 	}
 
 	@PostMapping("/create/{sessionId}/{projectName}/{description}")

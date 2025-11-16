@@ -5,7 +5,7 @@ const ProjectsTable = memo(({ projects, setProjects, sessionId }) => {
     const [newProjectDescription, setNewProjectDescription] = useState("");
 
     const onDelete = (project) => {
-        fetch(`/project/${project.id}`, { method: 'DELETE' })
+        fetch(`http://localhost:8080/project/delete/${project.id}`, { method: 'DELETE' })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
@@ -24,7 +24,7 @@ const ProjectsTable = memo(({ projects, setProjects, sessionId }) => {
             description: newProjectDescription,
         };
 
-        fetch(`/project/create/${sessionId}/${newProjectName}/${newProjectDescription}`, {
+        fetch(`http://localhost:8080/project/create/${sessionId}/${newProjectName}/${newProjectDescription}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,7 +67,7 @@ const ProjectsTable = memo(({ projects, setProjects, sessionId }) => {
                     </tr>
                 ))}
             </tbody>
-            <tfoot>
+            <tfoot style={{ borderTop: "3px solid #3498db" }}>
                 <tr className="add-project-row">
                     <td>
                         <input
