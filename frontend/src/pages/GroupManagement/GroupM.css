@@ -105,6 +105,37 @@
   background-color: #474747;
 }
 
+.AssignSupervisor-button {
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #f7f7f7;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
+
+.AssignSupervisor-button p {
+  margin: 0;
+  font-weight: 500;
+}
+
+.AssignSupervisor-button select {
+  margin-left: 10px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 1px solid #999;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.AssignSupervisor-button select:hover {
+  border-color: #333;
+}
+
+
 
 
 	

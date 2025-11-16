@@ -22,8 +22,11 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Utils.RequestRequirementService;
+import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -37,11 +40,13 @@ public class GroupController {
 	private final Database db;
 	private final GroupService groupService;
 	private final RequestRequirementService requestRequirementService;
+	private final SupervisorsPageController supervisorsPageController;
 
-	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService) {
+	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService, SupervisorsPageController supervisorsPageController) {
 		this.db = db;
 		this.groupService = groupService;
 		this.requestRequirementService = requestRequirementService;
+		this.supervisorsPageController = supervisorsPageController;
 	}
 
 	private Coordinator validateCoordinatorAccess(HttpServletRequest servlet) {
@@ -178,6 +183,7 @@ public class GroupController {
 			groupData.put("project", projectName);
 			groupData.put("maxStudents", group.getMaxStudents());
 			groupData.put("members", membersList);
+			groupData.put("supervisor", group.getSupervisorId());
 
 			response.put(entry.getKey(), groupData);
 		}
@@ -289,4 +295,38 @@ public class GroupController {
 		}
 	}
 
+@PostMapping("/{sessionId}/{groupId}/assign-supervisor/{supervisorId}")
+public ResponseEntity<String> assignSupervisorToGroup(
+        HttpServletRequest servlet,
+        @PathVariable String groupId,
+        @PathVariable String supervisorId,
+				@PathVariable String sessionId) {
+
+    validateCoordinatorAccess(servlet);
+		System.out.println("Assigning supervisor " + supervisorId + " to group " + groupId);
+
+    try {
+        // Find the group
+        Group group = requestRequirementService.requireGroupExists(groupId);
+
+        // Find supervisor in the same session
+       	Session session = supervisorsPageController.validateSessionAccess(servlet, sessionId);
+			 	Supervisor supervisor = supervisorsPageController.findSupervisorInSession(session, supervisorId);
+
+				if (supervisor == null) {
+					throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
+				}
+
+        // Assign supervisor
+        group.setSupervisorId(supervisorId);
+
+        return ResponseEntity.ok("Supervisor assigned successfully!");
+    } catch (RequestException e) {
+        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+    } catch (Exception e) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Failed to assign supervisor: " + e.getMessage());
+    }
 }
+
+ }

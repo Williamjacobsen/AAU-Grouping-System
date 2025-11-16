@@ -8,6 +8,7 @@ import { useGetSessionByParameter } from "hooks/useGetSession";
 import NotifyButton from "Components/NotifyButton/NotifyButton";
 import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
 import useSplitGroupsIntoSections from "./useSplitGroupsIntoSections";
+import useGetSessionSupervisors from "hooks/useGetSessionSupervisors";
 
 export default function GroupManagement() {
 
@@ -18,6 +19,7 @@ export default function GroupManagement() {
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
+	const { isLoading: isLoadingSupervisors, supervisors } = useGetSessionSupervisors(sessionId);
 
 	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
@@ -50,7 +52,7 @@ export default function GroupManagement() {
 			}
 		};
 		fetchGroups();
-	}, [session, students]);
+	}, [session, students, groups]);
 
 	useEffect(() => {
 		if (error) {
@@ -63,6 +65,7 @@ export default function GroupManagement() {
 	if (!user) return navigate("/sign-in");
 	if (isLoadingSession) return <div className="loading-message">Loading session...</div>;
 	if (isLoadingStudents) return <div className="loading-message">Loading students...</div>;
+	if (isLoadingSupervisors) return <div className="loading-message">Loading supervisors...</div>;
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -200,11 +203,38 @@ export default function GroupManagement() {
 		setSelectedGroup(null);
 	};
 
-	// Dropdown skal tilføjes her
+	const assignSupervisor = async (groupId, supervisorId) => {
+		try {
+			await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/${groupId}/assign-supervisor/${supervisorId}`, {
+				method: "POST",
+				credentials: "include",
+			});
+			setGroups((prev) =>
+      prev.map((g) =>
+        g.id === groupId ? { ...g, supervisorId: supervisorId } : g
+      )
+    );
+		} catch {
+			setError("Failed to assign supervisor");
+		}
+	}; 
+
+
 	function RenderGroups(groups) {
 		return groups.map((group) => {
 			return (
 				<div className="group-box" key={group.id}>
+					<div className="AssignSupervisor-button">
+						<p>Current Supervisor: {supervisors?.find(s => s.id === group.supervisor)?.name || "None"} </p>
+						<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
+							<option value="" disabled> Select supervisor</option>
+							{supervisors?.map((supervisor) => (
+								<option key={supervisor.id} value={supervisor.id}>
+									{supervisor.name}
+								</option>
+							))}
+						</select>
+					</div>
 					<h4 onClick={() => handleGroupClick(group.id)}
 						className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
 						<span className="group-name">{group.name}</span> <br />

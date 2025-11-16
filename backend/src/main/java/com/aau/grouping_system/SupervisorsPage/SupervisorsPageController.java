@@ -61,7 +61,7 @@ public class SupervisorsPageController {
 		this.userService = userService;
 	}
 
-	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
+	public Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
@@ -73,7 +73,7 @@ public class SupervisorsPageController {
 		return (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
 	}
 
-	private Supervisor findSupervisorInSession(Session session, String supervisorId) {
+	public Supervisor findSupervisorInSession(Session session, String supervisorId) {
 		CopyOnWriteArrayList<Supervisor> sessionSupervisors = getSessionSupervisors(session);
 		return sessionSupervisors.stream()
 				.filter(s -> s.getId().equals(supervisorId))
