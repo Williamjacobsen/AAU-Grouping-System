@@ -33,7 +33,7 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
         <label className="checkbox-label">
           When all groups have been made, send emails to students and
           supervisors:
-        </label>
+        </label> 
         <button
           className="button-primary"
           onClick={sendNotifications}

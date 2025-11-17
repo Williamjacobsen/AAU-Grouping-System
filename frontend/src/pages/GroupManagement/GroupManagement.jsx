@@ -37,11 +37,9 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
-	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
 
 	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
-	const { completedGroups, almostCompletedGroups,
-		incompleteGroups, groupsWith1Member }
+	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
 
@@ -73,12 +71,12 @@ export default function GroupManagement() {
 	}, [error]);
 
 	useEffect(() => {
-		if (students) {
+		if (students != null) {
 			setLocalStudentsWithNoGroup(students.filter(s => !s.groupId));
 		}
 	}, [students]);
 
-	const handleStudentClick = useStudentClick({
+	const handleStudentClick = useStudentClick({ // function for moving students between groups
 		selectedStudent,
 		setSelectedStudent,
 		setPreviousGroups,
@@ -92,7 +90,7 @@ export default function GroupManagement() {
 		setError
 	});
 
-	const handleGroupClick = useGroupClick({
+	const handleGroupClick = useGroupClick({ // function for moving group members from one group to another
 		groups,
 		setGroups,
 		selectedGroup,
@@ -105,7 +103,7 @@ export default function GroupManagement() {
 		setError
 	});
 
-	const handleUndo = useUndoLogic({
+	const handleUndo = useUndoLogic({ //undo button
 		previousGroups,
 		setGroups,
 		lastAction,
@@ -123,11 +121,11 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			{!isDeadlineExceeded() ? (
-				<p className="info-text">Waiting for questionnaire deadline to pass...</p>
+				<p className="info-text">Waiting for questionnaire deadline to pass...</p> //shows this if deadline isnt exceeded
 			) : (
 				<>
 					<h1>Group Management</h1>
-					
+
 					{error && <div className="error-box">{error}</div>}
 
 					{canUndo && (
@@ -185,7 +183,7 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-					<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
+					<NotifyButton sessionId={sessionId} />
 				</>
 			)}
 		</div>
