@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 
-export default function useColumnSelecting(columns) {
+export default function useColumnSelection(columns) {
 
 	const [enabledLabels, setEnabledLabels] = useState([
 		"Name",

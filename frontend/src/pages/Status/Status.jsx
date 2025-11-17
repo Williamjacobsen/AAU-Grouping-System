@@ -10,7 +10,7 @@ import useGetSessionGroups from "hooks/useGetSessionGroups";
 
 import useColumns from "./useColumns";
 import useColumnSorting from "./useColumnSorting";
-import useColumnSelecting from "./useColumnSelecting";
+import useColumnSelection from "./useColumnSelection";
 import useColumnSearching from "./useColumnSearching";
 
 import SearchFilter from "./SearchFilter";
@@ -32,7 +32,7 @@ export default function Status() {
 	// Getting the columns for the student table
 	const { originalColumns } = useColumns(students, projects, groups);
 	const { sortedColumns, sortColumns } = useColumnSorting(originalColumns);
-	const { enabledColumns, enabledLabels, toggleLabel } = useColumnSelecting(sortedColumns);
+	const { enabledColumns, enabledLabels, toggleLabel } = useColumnSelection(sortedColumns);
 	const { searchedColumns, searchString, setSearchString } = useColumnSearching(enabledColumns);
 
 	// Loading

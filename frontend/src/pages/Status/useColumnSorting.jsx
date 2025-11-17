@@ -22,11 +22,20 @@ export default function useColumnSorting(unsortedColumns) {
 		rowIndeces.sort((a, b) => {
 			let valueA = columnToSortBy.rows[a]?.toString().toLowerCase() || "";
 			let valueB = columnToSortBy.rows[b]?.toString().toLowerCase() || "";
-			if (inAscendingOrder) {
-				return valueA.localeCompare(valueB);
-			} else {
-				return valueB.localeCompare(valueA);
+
+			if (!inAscendingOrder) {
+				// Switch value A and B around
+				const previousValueA = valueA;
+				valueA = valueB;
+				valueB = previousValueA;
 			}
+
+			return valueA.localeCompare(valueB,
+				"en", // Using the English alphabet
+				{
+					numeric: true // Ensure that e.g. "10, 1, 2," is sorted as "1, 2, 10", not "1, 10, 2".
+				}
+			);
 		});
 
 		// Apply the same sort order to all columns

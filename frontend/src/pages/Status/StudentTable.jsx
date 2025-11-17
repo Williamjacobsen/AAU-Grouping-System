@@ -14,9 +14,15 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 	}
 
 	function navigateToStudentPage(rowIndex) {
+		const studentId = getStudentByRowIndex(rowIndex).id;
+		navigate(`/session/${sessionId}/student/${studentId}`);
+	}
+
+	function getStudentByRowIndex(rowIndex) {
 		const idColumn = columns.find(column => column.label === "ID");
 		const studentId = idColumn.rows[rowIndex];
-		navigate(`/session/${sessionId}/student/${studentId}`);
+		const student = students.find(theStudent => theStudent.id === studentId);
+		return student;
 	}
 
 	return (
@@ -66,8 +72,8 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 						{user.role === "Student" &&
 							<td>
 								<StudentGroupActions
-									groupId={students?.[rowIndex]?.group?.id}
-									studentId={students?.[rowIndex]?.id}
+									groupId={getStudentByRowIndex(rowIndex).id}
+									studentId={getStudentByRowIndex(rowIndex)}
 									session={session}
 									user={user}
 								/>
