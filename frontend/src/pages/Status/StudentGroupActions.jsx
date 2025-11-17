@@ -21,7 +21,7 @@ export default function StudentGroupActions({ groupId, studentId, session, user 
   if (user?.role === "Coordinator") {
     return (
       <div style={{ fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
-        Coordinator view
+      
       </div>
     );
   }
