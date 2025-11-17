@@ -125,6 +125,14 @@ export default function GroupManagement() {
 			) : (
 				<>
 					<h1>Group Management</h1>
+					<h3>How to move all group members from A to B?</h3> 
+					<p>Click on the name of group A and then click on the name of group B</p>
+					<h3>How to move a student from A to B?</h3> 
+					<p>Click on the name of the student A and then click on the name of group B</p>
+					<h3>Undo botton</h3>
+					<p>Once a move has been done, it can be undone by clicking on the "undo last change" button. 
+						This pops up at the top of the screen after a move.</p>
+					<p>NOTE: When moving students without a group, this cant be undone</p>
 
 					{error && <div className="error-box">{error}</div>}
 
