@@ -28,10 +28,13 @@ export default function GroupManagement() {
 	const [previousGroups, setPreviousGroups] = useState([]);
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
+	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
+
 
 	const [notifyButtonMessage, setNotifyButtonMessage] = useState();
 
-	const { completedGroups, almostCompletedGroups, incompleteGroups } = useSplitGroupsIntoSections(groups, session);
+	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
+		= useSplitGroupsIntoSections(groups, students, session);
 
 	useEffect(() => {
 		if (!session) return;
@@ -52,7 +55,7 @@ export default function GroupManagement() {
 			}
 		};
 		fetchGroups();
-	}, [session, students, groups]);
+	}, [session, students]);
 
 	useEffect(() => {
 		if (error) {
@@ -60,6 +63,12 @@ export default function GroupManagement() {
 			return () => clearTimeout(timer);
 		}
 	}, [error]);
+
+	useEffect(() => {
+		if (students) {
+			setLocalStudentsWithNoGroup(students.filter(s => !s.groupId));
+		}
+	}, [students]);
 
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return navigate("/sign-in");
@@ -108,7 +117,9 @@ export default function GroupManagement() {
 			return;
 		}
 
-		if (selectedStudent.from === groupId) {
+		const from = selectedStudent.from;
+
+		if (from === groupId) {
 			setSelectedStudent(null);
 			return;
 		}
@@ -117,6 +128,7 @@ export default function GroupManagement() {
 			setPreviousGroups(groups);
 			setCanUndo(true);
 			await moveStudent(selectedStudent.from, groupId, selectedStudent.member.id);
+			selectedStudent.member.groupId = groupId;
 			setLastAction({
 				type: "student",
 				from: selectedStudent.from,
@@ -127,13 +139,13 @@ export default function GroupManagement() {
 				const targetGroup = prevGroups.find(group => group.id === groupId);
 
 				// if the target group is full, we don’t add the student
-				if (targetGroup.members.length >= 7) {
+				if (targetGroup.members.length >= session?.maxGroupSize) {
 					setError("Sorry, adding this student would make the group too big");
 					return prevGroups;
 				}
 
 				const newGroups = prevGroups.map(group => {
-					if (group.id === selectedStudent.from) {
+					if (group.id === from) {
 						// Old group keeps all members, except the selected student
 						return { ...group, members: group.members.filter(student => student.name !== selectedStudent.member.name) };
 					}
@@ -147,6 +159,11 @@ export default function GroupManagement() {
 
 				return newGroups;
 			});
+			if (from == null) {
+				setLocalStudentsWithNoGroup(prev =>
+					prev.filter(s => s.id !== selectedStudent.member.id)
+				);
+			}
 		} catch (error) {
 			setError("Failed to move student: " + error.message);
 		}
@@ -178,8 +195,8 @@ export default function GroupManagement() {
 				const fromGroup = prevGroups.find(group => group.id === selectedGroup.from);
 				const targetGroup = prevGroups.find(group => group.id === groupId);
 
-				// stops if combined size would exceed 7
-				if (targetGroup.members.length + fromGroup.members.length > 7) {
+				// stops if combined size would exceed the maxGroupSize
+				if (targetGroup.members.length + fromGroup.members.length > session?.maxGroupSize) {
 					setError("Sorry, merging these groups would make the group too big");
 					return prevGroups;
 				}
@@ -210,15 +227,77 @@ export default function GroupManagement() {
 				credentials: "include",
 			});
 			setGroups((prev) =>
-      prev.map((g) =>
-        g.id === groupId ? { ...g, supervisorId: supervisorId } : g
-      )
-    );
+				prev.map((g) =>
+					g.id === groupId ? { ...g, supervisorId: supervisorId } : g
+				)
+			);
 		} catch {
 			setError("Failed to assign supervisor");
 		}
-	}; 
-	
+	};
+
+	function RenderStudentsWithNoGroup(localStudentsWithNoGroup, groupsWith1Member) {
+		const hasStudents = localStudentsWithNoGroup && localStudentsWithNoGroup.length > 0;
+		const hasSingleGroups = groupsWith1Member && groupsWith1Member.length > 0;
+
+		if (!hasStudents && !hasSingleGroups) {
+			return <p>No students without a group</p>;
+		}
+
+		return (
+			<div className="group-box no-group-box">
+				<h4>Students without a group</h4>
+
+				{hasStudents && (
+					<ul>
+						{localStudentsWithNoGroup.map((member) => (
+							<li key={member.id} onClick={() => handleStudentClick(member, null)}
+								className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+								}> <span className="student-name"> {member.name} </span>
+								{member.priority1 || member.priority2 || member.priority3 ? (
+									<span className="student-priorities">
+										— [
+										{member.priority1 ? member.priority1 : ""}
+										{member.priority2 ? ", " + member.priority2 : ""}
+										{member.priority3 ? ", " + member.priority3 : ""}
+										]
+									</span>
+								) : null}
+								<hr></hr>
+							</li>
+						))}
+					</ul>
+				)}
+
+
+				{hasSingleGroups && (
+					<>
+						<h4>Students from 1-member groups</h4>
+						<ul>
+							{groupsWith1Member.map((group) =>
+								group.members.map((member) => (
+									<li key={member.id} onClick={() => handleStudentClick(member, group.id)}
+										className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+										}> <span className="student-name"> {member.name} ({group.name})</span>
+										{member.priority1 || member.priority2 || member.priority3 ? (
+											<span className="student-priorities">
+												— [
+												{member.priority1 ? member.priority1 : ""}
+												{member.priority2 ? ", " + member.priority2 : ""}
+												{member.priority3 ? ", " + member.priority3 : ""}
+												]
+											</span>
+										) : null}
+										<hr></hr>
+									</li>
+								))
+							)}
+						</ul>
+					</>
+				)}
+			</div>
+		);
+	}
 
 	function RenderGroups(groups) {
 		return groups.map((group) => {
@@ -313,6 +392,9 @@ export default function GroupManagement() {
 
 					<h2 className="incomplete-groups">Incomplete Groups</h2>
 					<div className="group-row">{RenderGroups(incompleteGroups)}</div>
+
+					<h2 className="students-no-group">Students Without a Group</h2>
+					<div className="group-row">{RenderStudentsWithNoGroup(localStudentsWithNoGroup, groupsWith1Member)} </div>
 
 					<NotifyButton sessionId={sessionId} setMessage={setNotifyButtonMessage} />
 				</>

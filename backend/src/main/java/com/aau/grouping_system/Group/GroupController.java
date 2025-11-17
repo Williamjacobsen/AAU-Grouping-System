@@ -42,7 +42,8 @@ public class GroupController {
 	private final RequestRequirementService requestRequirementService;
 	private final SupervisorsPageController supervisorsPageController;
 
-	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService, SupervisorsPageController supervisorsPageController) {
+	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService,
+			SupervisorsPageController supervisorsPageController) {
 		this.db = db;
 		this.groupService = groupService;
 		this.requestRequirementService = requestRequirementService;
@@ -240,21 +241,26 @@ public class GroupController {
 
 		try {
 			Student student = requestRequirementService.requireStudentExists(studentId);
-			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
+			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from
-																								// the max students session setup page
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Target group is full");
+																									// the max students session setup page
+					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+							.body("Target group is full");
+				}
+			
+			if (fromGroup != null) {
+
+				// Remove student from old group
+				groupService.leaveGroup(fromGroupId, student);
+				groupService.joinGroup(toGroupId, student);
+
+				return ResponseEntity.ok("Student moved successfully.");
 			}
-
-			// Remove student from old group
-			groupService.leaveGroup(fromGroupId, student);
 			groupService.joinGroup(toGroupId, student);
-
+			
 			return ResponseEntity.ok("Student moved successfully.");
-
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Failed to move student: " + e.getMessage());
@@ -295,38 +301,37 @@ public class GroupController {
 		}
 	}
 
-@PostMapping("/{sessionId}/{groupId}/assign-supervisor/{supervisorId}")
-public ResponseEntity<String> assignSupervisorToGroup(
-        HttpServletRequest servlet,
-        @PathVariable String groupId,
-        @PathVariable String supervisorId,
-				@PathVariable String sessionId) {
+	@PostMapping("/{sessionId}/{groupId}/assign-supervisor/{supervisorId}")
+	public ResponseEntity<String> assignSupervisorToGroup(
+			HttpServletRequest servlet,
+			@PathVariable String groupId,
+			@PathVariable String supervisorId,
+			@PathVariable String sessionId) {
 
-    validateCoordinatorAccess(servlet);
-		System.out.println("Assigning supervisor " + supervisorId + " to group " + groupId);
+		validateCoordinatorAccess(servlet);
 
-    try {
-        // Find the group
-        Group group = requestRequirementService.requireGroupExists(groupId);
+		try {
+			// Find the group
+			Group group = requestRequirementService.requireGroupExists(groupId);
 
-        // Find supervisor in the same session
-       	Session session = supervisorsPageController.validateSessionAccess(servlet, sessionId);
-			 	Supervisor supervisor = supervisorsPageController.findSupervisorInSession(session, supervisorId);
+			// Find supervisor in the same session
+			Session session = supervisorsPageController.validateSessionAccess(servlet, sessionId);
+			Supervisor supervisor = supervisorsPageController.findSupervisorInSession(session, supervisorId);
 
-				if (supervisor == null) {
-					throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
-				}
+			if (supervisor == null) {
+				throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
+			}
 
-        // Assign supervisor
-        group.setSupervisorId(supervisorId);
+			// Assign supervisor
+			group.setSupervisorId(supervisorId);
 
-        return ResponseEntity.ok("Supervisor assigned successfully!");
-    } catch (RequestException e) {
-        return ResponseEntity.status(e.getStatus()).body(e.getMessage());
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Failed to assign supervisor: " + e.getMessage());
-    }
+			return ResponseEntity.ok("Supervisor assigned successfully!");
+		} catch (RequestException e) {
+			return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to assign supervisor: " + e.getMessage());
+		}
+	}
+
 }
-
- }

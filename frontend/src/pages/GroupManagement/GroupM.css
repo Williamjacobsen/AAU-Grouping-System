@@ -31,19 +31,19 @@
 }
 
 .completed-groups {
-	color: #27ae60;
+	background-color: #27ae60;
 	font-weight: 500;
 	margin-bottom: 0.75rem;
 }
 
 .almost-completed-groups {
-	color: #f1c40f;
+	background-color: #f1c40f;
 	font-weight: 500;
 	margin-bottom: 0.75rem;
 }
 
 .incomplete-groups {
-	color: #e74c3c;
+	background-color: #e74c3c;
 	font-weight: 500;
 	margin-bottom: 0.75rem;
 }
