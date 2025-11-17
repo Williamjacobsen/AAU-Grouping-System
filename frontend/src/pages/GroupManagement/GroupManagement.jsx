@@ -3,11 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./GroupM.css";
 
-import { useGetSessionStudentsByParam } from "hooks/useGetSessionStudents";
-import { useGetSessionByParameter } from "hooks/useGetSession";
 import NotifyButton from "Components/NotifyButton/NotifyButton";
-import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
-import useGetSessionSupervisors from "hooks/useGetSessionSupervisors";
 
 import useGroupActions from "./hooks/useGroupActions";
 import useSplitGroupsIntoSections from "./hooks/useSplitGroupsIntoSections";
@@ -18,18 +14,15 @@ import useUndoLogic from "./hooks/useUndoLogic";
 import RenderGroups from "./components/RenderGroups";
 import RenderStudentList from "./components/RenderStudentList";
 
+import { useAppState } from "ContextProviders/AppStateContext";
+
 export default function GroupManagement() {
 
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
 
 	const { isLoading: isLoadingUser, user } = useAuth();
-	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
-	const { isLoading: isLoadingStudents, students } = useGetSessionStudentsByParam();
-	const { isLoading: isLoadingSupervisors, supervisors } = useGetSessionSupervisors(sessionId);
-	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 
-	const [groups, setGroups] = useState([]);
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
 	const [error, setError] = useState(null);
@@ -37,11 +30,13 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
+	const [groups, setGroups] = useState([])
+
+	const { isLoading, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
 	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
 	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
-
 
 	useEffect(() => {
 		if (!session) return;
@@ -114,7 +109,7 @@ export default function GroupManagement() {
 		setError
 	});
 
-	if (isLoadingUser || isLoadingSession || isLoadingStudents || isLoadingSupervisors)
+	if (isLoadingUser || isLoading)
 		return <div className="loading-message">Loading...</div>;
 	if (!user) return navigate("/sign-in");
 
