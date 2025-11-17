@@ -2,11 +2,11 @@ import React, { useState, useRef, useEffect } from "react";
 import { fetchSessionGroups } from "../../hooks/useGetSessionGroups";
 import { CSVLink } from "react-csv";
 
-export default function CsvDownloadButton({ allStudents, sessionId }) {
+export default function CsvDownloadButton({ students, sessionId }) {
 
 	const [csvData, setCsvData] = useState([]);
 	const [clickCsvLink, setClickCsvLink] = useState(false);
-	const csvLinkRef = useRef()
+	const csvLinkRef = useRef();
 
 	useEffect(() => {
 		if (clickCsvLink) {
@@ -17,7 +17,7 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 
 	async function startDownload() {
 		try {
-			
+
 			const groups = await fetchSessionGroups(sessionId);
 
 			if (!areAllStudentsAssignedAGroup(groups)) {
@@ -30,20 +30,20 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 			groups.forEach((group) => {
 
 				const groupNumber = ++number;
-				
+
 				group.studentIds.forEach((studentId) => {
 
-					const student = allStudents.find((student) => student.id === studentId);
+					const student = students.find((student) => student.id === studentId);
 
 					if (student === null) {
 						return Promise.reject("Error: The group's student id does not exist in the session's list of students. There must be an error in the database.");
 					}
-					
+
 					newData.push({
-							groupNumber: groupNumber,
-							studentEmail: student.email,
-							studentName: student.name,
-						});
+						groupNumber: groupNumber,
+						studentEmail: student.email,
+						studentName: student.name,
+					});
 				});
 			});
 
@@ -64,15 +64,15 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 		let studentsAssignedAGroupAmount = 0;
 		groups.forEach((group) => {
 			studentsAssignedAGroupAmount += group.studentIds.length;
-		})
+		});
 
-		return studentsAssignedAGroupAmount === allStudents.length;
+		return studentsAssignedAGroupAmount === students.length;
 	}
 
 	return (
 		<>
 			<button className="csv-download-button" onClick={startDownload}>
-				Download CSV file of groups 
+				Download CSV file of groups
 			</button>
 
 			{/* The CSVLink is not visible to the user. When clicked, it starts a download of a CSV file. */}

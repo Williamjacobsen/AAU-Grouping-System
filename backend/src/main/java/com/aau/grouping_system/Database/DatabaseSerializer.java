@@ -126,46 +126,6 @@ public class DatabaseSerializer {
 		Student st29 = studentService.addStudent(se1, "st29@example.com", "st29", "Cody");
 		Student st30 = studentService.addStudent(se1, "st30@example.com", "st30", "Delia");
 
-		st1.getQuestionnaire().setDesiredProjectId1("AI Chatbot");
-		st1.getQuestionnaire().setDesiredProjectId2("Web App");
-		st1.getQuestionnaire().setDesiredProjectId3("Data Science");
-
-		st2.getQuestionnaire().setDesiredProjectId1("Web App");
-		st2.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
-		st2.getQuestionnaire().setDesiredProjectId3("Game Design");
-
-		st3.getQuestionnaire().setDesiredProjectId1("Health Tracker");
-		st3.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
-		st3.getQuestionnaire().setDesiredProjectId3("IoT System");
-
-		st4.getQuestionnaire().setDesiredProjectId1("Finance Dashboard");
-		st4.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
-		st4.getQuestionnaire().setDesiredProjectId3("Smart Home");
-
-		st5.getQuestionnaire().setDesiredProjectId1("Smart Home");
-		st5.getQuestionnaire().setDesiredProjectId2("Web App");
-		st5.getQuestionnaire().setDesiredProjectId3("AI Chatbot");
-
-		st6.getQuestionnaire().setDesiredProjectId1("IoT System");
-		st6.getQuestionnaire().setDesiredProjectId2("Finance Dashboard");
-		st6.getQuestionnaire().setDesiredProjectId3("Health Tracker");
-
-		st7.getQuestionnaire().setDesiredProjectId1("Finance Dashboard");
-		st7.getQuestionnaire().setDesiredProjectId2("AI Chatbot");
-		st7.getQuestionnaire().setDesiredProjectId3("Smart Home");
-
-		st8.getQuestionnaire().setDesiredProjectId1("Smart Home");
-		st8.getQuestionnaire().setDesiredProjectId2("Web App");
-		st8.getQuestionnaire().setDesiredProjectId3("AI Chatbot");
-
-		st9.getQuestionnaire().setDesiredProjectId1("IoT System");
-		st9.getQuestionnaire().setDesiredProjectId2("Finance Dashboard");
-		st9.getQuestionnaire().setDesiredProjectId3("Health Tracker");
-
-		st10.getQuestionnaire().setDesiredProjectId1("IoT System");
-		st10.getQuestionnaire().setDesiredProjectId2("Finance Dashboard");
-		st10.getQuestionnaire().setDesiredProjectId3("Smart Home");
-
 		Project p1 = new Project(db, se1.getProjects(), "AI Chatbot", "AI assistant for customer support");
 		Project p2 = new Project(db, se1.getProjects(), "Web App", "Interactive web platform");
 		Project p3 = new Project(db, se1.getProjects(), "Smart Home", "IoT-based automation system");
@@ -176,6 +136,22 @@ public class DatabaseSerializer {
 		Project p8 = new Project(db, se1.getProjects(), "Social Media", "New generation social app");
 		Project p9 = new Project(db, se1.getProjects(), "Education Portal", "Online learning hub");
 		Project p10 = new Project(db, se1.getProjects(), "Weather Forecast", "Climate analysis system");
+
+		st1.getQuestionnaire().setDesiredProjectId1(p8.getId());
+		st1.getQuestionnaire().setDesiredProjectId2(p4.getId());
+
+		st2.getQuestionnaire().setDesiredProjectId1(p8.getId());
+
+		st3.getQuestionnaire().setDesiredProjectId1(p4.getId());
+		st3.getQuestionnaire().setDesiredProjectId2(p3.getId());
+
+		st4.getQuestionnaire().setDesiredProjectId1(p1.getId());
+		st4.getQuestionnaire().setDesiredProjectId2(p5.getId());
+		st4.getQuestionnaire().setDesiredProjectId3(p9.getId());
+
+		st5.getQuestionnaire().setDesiredProjectId1(p1.getId());
+		st5.getQuestionnaire().setDesiredProjectId2(p3.getId());
+		st5.getQuestionnaire().setDesiredProjectId3(p4.getId());
 
 		Group g1 = new Group(db, se1.getGroups(), su1, p1, "group1@mail.com", 7, 10);
 		Group g2 = new Group(db, se1.getGroups(), su1, p2, "group2@mail.com", 7, 10);

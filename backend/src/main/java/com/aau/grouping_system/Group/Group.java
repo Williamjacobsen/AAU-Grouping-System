@@ -11,6 +11,7 @@ import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 public class Group extends DatabaseItem {
 
+	private String name = "";
 	private String supervisorId;
 	private CopyOnWriteArrayList<String> studentIds;
 	private String projectId;
@@ -37,6 +38,8 @@ public class Group extends DatabaseItem {
 	}
 
 	// @formatter:off
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
 	public String getSupervisorId() { return supervisorId; }
 	public void setSupervisorId(String supervisorId) { this.supervisorId = supervisorId; }
 	public CopyOnWriteArrayList<String> getStudentIds() { return studentIds; }

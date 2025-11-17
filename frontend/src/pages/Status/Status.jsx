@@ -1,42 +1,41 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useGetUser } from "../../hooks/useGetUser";
+import "./Status.css";
 
-import StudentTable from "./StudentTable";
 import useGetSessionStudents from "../../hooks/useGetSessionStudents";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
-import useStudentFiltering from "./useStudentFiltering";
-import CsvDownloadButton from "./CsvDownloadButton";
 import useGetSessionProjects from "hooks/useGetSessionProjects";
 import useGetSessionGroups from "hooks/useGetSessionGroups";
 
-import "./Status.css";
-import useStudentColumns from "./useStudentColumns";
+import useColumns from "./useColumns";
+import useColumnSorting from "./useColumnSorting";
+import useColumnSelecting from "./useColumnSelecting";
+import useColumnSearching from "./useColumnSearching";
+
+import SearchFilter from "./SearchFilter";
+import ColumnsDropdown from "./ColumnsDropdown";
+import StudentTable from "./StudentTable";
+import CsvDownloadButton from "./CsvDownloadButton";
 
 export default function Status() {
 
 	const { sessionId } = useParams();
 
+	// Get hooks
 	const { isLoading: isLoadingUser, user } = useGetUser();
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
-	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
+	const { isLoading: isLoadingStudents, students } = useGetSessionStudents(sessionId);
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjects(sessionId);
 	const { isLoading: isLoadingGroups, groups } = useGetSessionGroups(sessionId);
 
-	const { toFiltered, SearchFilterInput } = useStudentFiltering();
+	// Getting the columns for the student table
+	const { originalColumns } = useColumns(students, projects, groups);
+	const { sortedColumns, sortColumns } = useColumnSorting(originalColumns);
+	const { enabledColumns, enabledLabels, toggleLabel } = useColumnSelecting(sortedColumns);
+	const { searchedColumns, searchString, setSearchString } = useColumnSearching(enabledColumns);
 
-	const visibleStudents = useMemo(() => {
-
-		if (!allStudents) return null;
-
-		let result = allStudents;
-		result = toFiltered(result);
-
-		return result;
-	}, [allStudents, toFiltered]);
-
-	const { visibleColumns, ColumnSelector } = useStudentColumns(visibleStudents, projects, groups);
-
+	// Loading
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return <div className="access-denied-message">Access denied: Not logged in.</div>;
 	if (isLoadingSession) return <div className="loading-message">Loading session information...</div>;
@@ -46,21 +45,35 @@ export default function Status() {
 
 	return (
 		<div className="status-container">
-			<h1 className="status-title">Student Status</h1>
+			<h1 className="status-title">
+				Student Status
+			</h1>
+			<h3>
+				Students are allowed to make changes until this deadline: {session.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
+			</h3>
 			<div className="status-controls">
-				<SearchFilterInput />
-				<ColumnSelector />
+				<SearchFilter
+					searchString={searchString}
+					setSearchString={setSearchString}
+				/>
+				<ColumnsDropdown
+					originalColumns={originalColumns}
+					columns={sortedColumns}
+					enabledLabels={enabledLabels}
+					toggleLabel={toggleLabel}
+					sortColumns={sortColumns}
+				/>
 			</div>
 			<div className="table-wrapper">
 				<StudentTable
-					visibleColumns={visibleColumns}
-					visibleStudents={visibleStudents}
+					columns={searchedColumns}
+					students={students}
 					sessionId={sessionId}
 					session={session}
 					user={user} />
 			</div>
 			{user?.role === "Coordinator" &&
-				<CsvDownloadButton allStudents={allStudents} sessionId={sessionId} />
+				<CsvDownloadButton students={students} sessionId={sessionId} />
 			}
 		</div>
 	);

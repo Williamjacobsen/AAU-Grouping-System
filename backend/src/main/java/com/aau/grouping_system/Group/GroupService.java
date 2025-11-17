@@ -20,7 +20,8 @@ public class GroupService {
 		this.db = db;
 	}
 
-	private void logGroupActivity(@NotBlank String activity, @NotNull Student student, @NoDangerousCharacters @NotBlank String groupId) {
+	private void logGroupActivity(@NotBlank String activity, @NotNull Student student,
+			@NoDangerousCharacters @NotBlank String groupId) {
 		System.out.println(student.getName() + " " + activity + " group " + groupId + ".");
 	}
 
