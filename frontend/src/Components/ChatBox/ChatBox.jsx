@@ -12,6 +12,7 @@ import getUnreadMessagesCounters from "./Utils/getUnreadMessagesCounters";
 import getLastChatRoomActivityCounters from "./Utils/getLastChatRoomActivityCounters";
 import sortChatRooms from "./Utils/sortChatRooms";
 import useSyncMessagesData from "./Utils/useSyncMessagesData";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
@@ -23,18 +24,19 @@ export default function ChatBox() {
   const [messagesByRoom, setMessagesByRoom] = useState({});
 
   const chatSystem = useRef(null);
-  const username = "My username";
   const { projects, groups, students, chatRooms } = useAppState();
 
-  useFetchMessages(setMessagesByRoom, selectedChatRoom, username);
+  const { user } = useAuth();
+
+  useFetchMessages(setMessagesByRoom, selectedChatRoom, user.name);
 
   useSyncMessagesData(messagesByRoom, setLastActivityByRoom);
 
   useEffect(() => {
-    chatSystem.current = new ChatSystem("http://localhost:8080/ws", username);
+    chatSystem.current = new ChatSystem("http://localhost:8080/ws", user.name);
 
     chatSystem.current.connect(() => {
-      handleSubscriptions(chatRooms, chatSystem, setMessagesByRoom, username);
+      handleSubscriptions(chatRooms, chatSystem, setMessagesByRoom, user.name);
     });
 
     return () => {
@@ -51,16 +53,16 @@ export default function ChatBox() {
 
   useEffect(() => {
     if (!selectedChatRoom) return;
-    sendReadReceipt(selectedChatRoom, username, roomMessages, chatSystem);
-  }, [selectedChatRoom, roomMessages, username]);
+    sendReadReceipt(selectedChatRoom, user.name, roomMessages, chatSystem);
+  }, [selectedChatRoom, roomMessages, user.name]);
 
   useEffect(() => {
     getUnreadMessagesCounters(
-      username,
+      user.name,
       setUnreadMessagesByRoom,
       setUnreadMessagesCount
     );
-    getLastChatRoomActivityCounters(username, setLastActivityByRoom);
+    getLastChatRoomActivityCounters(user.name, setLastActivityByRoom);
   }, []);
 
   const orderedChatRooms = useMemo(
@@ -83,6 +85,11 @@ export default function ChatBox() {
   useEffect(() => {
     console.log(messagesByRoom);
   }, [messagesByRoom]);
+
+  if (!user) return <div>Access denied: Not logged in.</div>;
+  if (user.role !== "Student") {
+    return;
+  }
 
   return (
     <>
@@ -121,6 +128,7 @@ export default function ChatBox() {
               selectedChatRoom={selectedChatRoom}
               setSelectedChatRoom={setSelectedChatRoom}
               unreadMessagesByRoom={unreadMessagesByRoom}
+              setUnreadMessagesByRoom={setUnreadMessagesByRoom}
               projects={projects}
               groups={groups}
               students={students}
@@ -128,7 +136,7 @@ export default function ChatBox() {
             <ChatArea
               selectedChatRoom={selectedChatRoom}
               roomMessages={roomMessages}
-              username={username}
+              username={user.name}
               messageInput={messageInput}
               setMessageInput={setMessageInput}
               chatSystem={chatSystem}

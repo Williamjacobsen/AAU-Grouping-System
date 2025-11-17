@@ -11,6 +11,7 @@ export default function Sidebar({
   projects,
   groups,
   students,
+  setUnreadMessagesByRoom,
 }) {
   const [filter, setFilter] = useState("all"); // all | general | projects | groups | students
   const [query, setQuery] = useState("");
@@ -55,6 +56,7 @@ export default function Sidebar({
           groupSet={groupSet}
           studentSet={studentSet}
           unreadMessagesByRoom={unreadMessagesByRoom}
+          setUnreadMessagesByRoom={setUnreadMessagesByRoom}
         />
       </div>
     </div>
