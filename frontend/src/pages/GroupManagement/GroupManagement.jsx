@@ -65,7 +65,7 @@ export default function GroupManagement() {
 
 	useEffect(() => {
 		if (error) {
-			const timer = setTimeout(() => setError(""), 5000);
+			const timer = setTimeout(() => setError(""), 10000);
 			return () => clearTimeout(timer);
 		}
 	}, [error]);
