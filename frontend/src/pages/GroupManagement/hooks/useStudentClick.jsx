@@ -1,8 +1,8 @@
 
 export default function useStudentClick({
-    selectedStudent, setSelectedStudent, setPreviousGroups,
-    setCanUndo, setLastAction, setGroups, setLocalStudentsWithNoGroup,
-    moveStudent, session, groups, setError
+	selectedStudent, setSelectedStudent, setPreviousGroups,
+	setCanUndo, setLastAction, setGroups, setLocalStudentsWithNoGroup,
+	moveStudent, session, groups, setError
 }) {
 
 	const handleStudentClick = async (member, groupId) => {
@@ -32,6 +32,11 @@ export default function useStudentClick({
 			setGroups(prevGroups => {
 				const targetGroup = prevGroups.find(group => group.id === groupId);
 
+				if (!targetGroup) {
+					setError("You cannot move a student into the - Students without a group - list");
+					return prevGroups;
+				}
+
 				if (targetGroup.members.length >= session?.maxGroupSize) {
 					setError("Sorry, adding this student would make the group too big");
 					return prevGroups;
@@ -60,5 +65,5 @@ export default function useStudentClick({
 		setSelectedStudent(null);
 	};
 
-	return  handleStudentClick;
+	return handleStudentClick;
 }

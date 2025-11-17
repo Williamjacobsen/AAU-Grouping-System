@@ -230,12 +230,13 @@ public class GroupController {
 		}
 	}
 
-	@PostMapping("/{fromGroupId}/move-student/{toGroupId}/{studentId}")
+	@PostMapping("/{fromGroupId}/move-student/{toGroupId}/{studentId}/{sessionId}")
 	public ResponseEntity<String> moveStudentBetweenGroups(
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		validateCoordinatorAccess(servlet);
 
@@ -243,16 +244,18 @@ public class GroupController {
 			Student student = requestRequirementService.requireStudentExists(studentId);
 			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
+			
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			int maxGroupSize = session.getMaxGroupSize();
 
-			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from
-																									// the max students session setup page
+			if (toGroup.getStudentIds().size() >= maxGroupSize) {
 					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 							.body("Target group is full");
 				}
 			
 			if (fromGroup != null) {
 
-				// Remove student from old group
+				// Remove student from old group and add student to new group
 				groupService.leaveGroup(fromGroupId, student);
 				groupService.joinGroup(toGroupId, student);
 
@@ -267,11 +270,12 @@ public class GroupController {
 		}
 	}
 
-	@PostMapping("/{fromGroupId}/move-members/{toGroupId}")
+	@PostMapping("/{fromGroupId}/move-members/{toGroupId}/{sessionId}")
 	public ResponseEntity<String> moveAllMembersBetweenGroups(
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
+			@PathVariable String sessionId) {
 
 		validateCoordinatorAccess(servlet);
 
@@ -279,10 +283,11 @@ public class GroupController {
 			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			int maxGroupSize = session.getMaxGroupSize();
+
 			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change
-																																									// so that it gets the number from the
-																																									// max students session setup page
+			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > maxGroupSize) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 

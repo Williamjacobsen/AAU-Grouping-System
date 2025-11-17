@@ -3,7 +3,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
@@ -20,7 +20,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 	const moveAllMembers = async (fromGroupId, toGroupId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
