@@ -138,7 +138,9 @@ export default function Profile() {
 				return Promise.resolve();
 			}
 
+
 			navigate("/sign-in");
+			window.location.reload(); // To refresh the header
 
 		} catch (e) {
 			setError(e.message);
