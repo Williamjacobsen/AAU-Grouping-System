@@ -225,11 +225,11 @@ public class DatabaseSerializer {
 		// For testing purposes, console log student logins so we can log in as them
 		System.out.println("\n\n\n---- STUDENT test logins ----");
 		for (int i = 0; i < st.size(); i++) {
-			System.out.println("Password: st" + (i + 1) + "ID: " + st.get(i).getId());
+			System.out.println("Password: st" + (i + 1) + " ID: " + st.get(i).getId());
 		}
 		System.out.println("---- SUPERVISOR test logins ----");
 		for (int i = 0; i < su.size(); i++) {
-			System.out.println("Password: su" + (i + 1) + "ID: " + su.get(i).getId());
+			System.out.println("Password: su" + (i + 1) + " ID: " + su.get(i).getId());
 		}
 	}
 
