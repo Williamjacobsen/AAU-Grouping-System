@@ -2,12 +2,12 @@ import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./SupervisorsPage.css";
 import { useAuth } from "../../ContextProviders/AuthProvider";
+import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function SupervisorsPage() {
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
-	const [supervisors, setSupervisors] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const { supervisors, setSupervisors, isLoading: loading } = useAppState();
 	const [error, setError] = useState("");
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [showRemoveModal, setShowRemoveModal] = useState(false);
@@ -39,7 +39,6 @@ export default function SupervisorsPage() {
 	}, [message]);
 
 	const fetchSupervisors = useCallback(async () => {
-		setLoading(true);
 		setError("");
 		
 		try {
@@ -60,16 +59,8 @@ export default function SupervisorsPage() {
 			}
 		} catch (err) {
 			setError("Error loading supervisors: " + err.message);
-		} finally {
-			setLoading(false);
-		}
+		} 
 	}, [sessionId]);
-
-	useEffect(() => {
-		if (sessionId && isCoordinator) {
-			fetchSupervisors();
-		}
-	}, [sessionId, isCoordinator, fetchSupervisors]);
 
 	const handleAddSupervisor = async (e) => {
 		e.preventDefault();

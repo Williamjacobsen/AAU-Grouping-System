@@ -148,6 +148,7 @@
 .checkbox-label {
 	margin: 0;
 	font-weight: normal;
+	padding-right: 40px;
 }
 
 .message {

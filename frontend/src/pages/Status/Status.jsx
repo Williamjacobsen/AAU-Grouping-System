@@ -3,25 +3,20 @@ import { useParams } from "react-router-dom";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 
 import StudentTable from "./StudentTable";
-import useGetSessionStudents from "../../hooks/useGetSessionStudents";
-import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useStudentFiltering from "./useStudentFiltering";
 import CsvDownloadButton from "./CsvDownloadButton";
-import useGetSessionProjects from "hooks/useGetSessionProjects";
-import useGetSessionGroups from "hooks/useGetSessionGroups";
 
 import "./Status.css";
 import useStudentColumns from "./useStudentColumns";
+
+import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function Status() {
 
 	const { sessionId } = useParams();
 
 	const { isLoading: isLoadingUser, user } = useAuth();
-	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
-	const { isLoading: isLoadingStudents, students: allStudents } = useGetSessionStudents(sessionId);
-	const { isLoading: isLoadingProjects, projects } = useGetSessionProjects(sessionId);
-	const { isLoading: isLoadingGroups, groups } = useGetSessionGroups(sessionId);
+	const { isLoading: isLoadingApp, session, students: allStudents, projects, groups } = useAppState();
 
 	const { toFiltered, SearchFilterInput } = useStudentFiltering();
 
@@ -39,10 +34,7 @@ export default function Status() {
 
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return <div className="access-denied-message">Access denied: Not logged in.</div>;
-	if (isLoadingSession) return <div className="loading-message">Loading session information...</div>;
-	if (isLoadingStudents) return <div className="loading-message">Loading session information...</div>;
-	if (isLoadingProjects) return <div className="loading-message">Loading session projects...</div>;
-	if (isLoadingGroups) return <div className="loading-message">Loading session groups...</div>;
+	if (isLoadingApp) return <div className="loading-message">Loading information...</div>;
 
 	return (
 		<div className="status-container">

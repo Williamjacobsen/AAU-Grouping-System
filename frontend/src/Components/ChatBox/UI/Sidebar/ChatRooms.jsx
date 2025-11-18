@@ -6,13 +6,17 @@ export default function chatRooms({
   groupSet,
   studentSet,
   unreadMessagesByRoom,
+  setUnreadMessagesByRoom,
 }) {
   return (
     <>
       {filteredChatRooms.map((chatRoom) => (
         <div
           key={chatRoom}
-          onClick={() => setSelectedChatRoom(chatRoom)}
+          onClick={() => {
+            setSelectedChatRoom(chatRoom);
+            setUnreadMessagesByRoom((prev) => ({ ...prev, [chatRoom]: 0 }));
+          }}
           style={{
             backgroundColor:
               selectedChatRoom === chatRoom ? "#dbeafe" : "#f1f5f9",

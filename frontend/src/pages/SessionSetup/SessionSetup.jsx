@@ -1,30 +1,23 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { useGetSessionByParameter } from "../../hooks/useGetSession";
-import useGetSessionStudents from "../../hooks/useGetSessionStudents";
-import useGetSessionSupervisors from "../../hooks/useGetSessionSupervisors";
 import "./SessionSetup.css";
 import SessionSetupForm from "./SessionSetupForm";
 import SendLoginCodesForm from "./SendLoginCodesForm";
 import ResetFormButton from "./ResetFormButton";
 import NotifyButton from "../../Components/NotifyButton/NotifyButton";
 
+import { useAppState } from "ContextProviders/AppStateContext";
+
 export default function SessionSetup() {
   const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"
-  const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
-  const { isLoading: isLoadingStudents, students } =
-    useGetSessionStudents(sessionId);
-  const { isLoading: isLoadingSupervisors, supervisors } =
-    useGetSessionSupervisors(sessionId);
+	
+	const { isLoading, students, session, supervisors } = useAppState();
+
   const [message, setMessage] = useState("");
 
-  if (isLoadingSession)
-    return <div className="loading-message">Loading session...</div>;
-  if (isLoadingStudents)
-    return <div className="loading-message">Loading students...</div>;
-  if (isLoadingSupervisors)
-    return <div className="loading-message">Loading supervisors...</div>;
+  if (isLoading)
+    return <div className="loading-message">Loading information...</div>;
 
   return (
     <div className="session-setup-container">

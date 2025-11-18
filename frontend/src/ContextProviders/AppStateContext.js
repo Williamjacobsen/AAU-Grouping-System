@@ -5,52 +5,60 @@ import React, {
   useState,
   useMemo,
 } from "react";
-import { useParams } from "react-router-dom";
-import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
+
+import { useGetSessionByParameter } from "../hooks/useGetSession";
+import { useGetSessionGroupsByParam } from "../hooks/useGetSessionGroups";
+import { useGetSessionProjectsByParam } from "../hooks/useGetSessionProjects";
+import { useGetSessionStudentsByParam } from "../hooks/useGetSessionStudents";
+import { useGetSessionSupervisorsByParam } from "../hooks/useGetSessionSupervisors";
+import useIsQuestionnaireDeadlineExceeded from "../hooks/useIsQuestionnaireDeadlineExceeded";
 
 const AppStateContext = createContext(null);
 
 export function AppStateProvider({ children }) {
-  const { sessionId } = useParams();
+  const { isLoading: loadingSession, session: sessionData } =
+    useGetSessionByParameter();
+  const { isLoading: loadingProjects, projects: projectData } =
+    useGetSessionProjectsByParam();
+  const { isLoading: loadingGroups, groups: groupData } =
+    useGetSessionGroupsByParam();
+  const { isLoading: loadingStudents, students: studentData } =
+    useGetSessionStudentsByParam();
+  const { isLoading: loadingSupervisors, supervisors: supervisorData } =
+    useGetSessionSupervisorsByParam();
 
-  const [students, setStudents] = useState([]);
-  const [groups, setGroups] = useState([]);
+  const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
+  const [groups, setGroups] = useState([]);
+  const [students, setStudents] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!sessionId) return;
-    (async () => {
-      try {
-        const [projectsRes, groupsRes, studentsRes, supervisorsRes] =
-          await Promise.all([
-            fetchWithDefaultErrorHandling(
-              `/sessions/${sessionId}/getProjects`,
-              { credentials: "include" }
-            ),
-            fetchWithDefaultErrorHandling(`/sessions/${sessionId}/getGroups`, {
-              credentials: "include",
-            }),
-            fetchWithDefaultErrorHandling(
-              `/sessions/${sessionId}/getStudents`,
-              { credentials: "include" }
-            ),
-            fetchWithDefaultErrorHandling(
-              `/sessions/${sessionId}/getSupervisors`,
-              { credentials: "include" }
-            ),
-          ]).then((responses) => Promise.all(responses.map((r) => r.json())));
+    if (sessionData) setSession(sessionData);
+  }, [sessionData]);
 
-        setProjects(projectsRes);
-        setGroups(groupsRes);
-        setStudents(studentsRes);
-        setSupervisors(supervisorsRes);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [sessionId]);
+  useEffect(() => {
+    if (projectData) setProjects(projectData);
+  }, [projectData]);
+
+  useEffect(() => {
+    if (groupData) setGroups(groupData);
+  }, [groupData]);
+
+  useEffect(() => {
+    if (studentData) setStudents(studentData);
+  }, [studentData]);
+
+  useEffect(() => {
+    if (supervisorData) setSupervisors(supervisorData);
+  }, [supervisorData]);
+
+  const isLoading =
+    loadingSession ||
+    loadingProjects ||
+    loadingGroups ||
+    loadingStudents ||
+    loadingSupervisors;
 
   const chatRooms = useMemo(() => {
     return [
@@ -62,16 +70,22 @@ export function AppStateProvider({ children }) {
   }, [projects, groups, students]);
 
   const value = {
-    students,
-    setStudents,
-    groups,
-    setGroups,
     projects,
-    setProjects,
+    groups,
+    students,
     supervisors,
-    setSupervisors,
     chatRooms,
     isLoading,
+		session,
+
+    setSession,
+    setProjects,
+    setGroups,
+    setStudents,
+    setSupervisors,
+
+    isDeadlineExceeded:
+      useIsQuestionnaireDeadlineExceeded(session).isDeadlineExceeded,
   };
 
   return (

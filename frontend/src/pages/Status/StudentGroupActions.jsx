@@ -17,6 +17,15 @@ export default function StudentGroupActions({ groupId, studentId, session, user 
   // If current user is a student and the deadline is exceeded, disable editing actions
   const editingLockedForStudent = user?.role === "Student" && isDeadlineExceeded && isDeadlineExceeded();
 
+  // Don't show action buttons for Coordinators - they should only view student status
+  if (user?.role === "Coordinator") {
+    return (
+      <div style={{ fontSize: '12px', color: '#666', fontStyle: 'italic' }}>
+      
+      </div>
+    );
+  }
+
   async function onRequest() {
     setLoading(true);
     setMessage(null);

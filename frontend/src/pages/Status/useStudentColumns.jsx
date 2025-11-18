@@ -8,6 +8,14 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 		setSortedStudents(visibleStudents);
 	}, [visibleStudents]);
 
+	function normalizeValue(value) {
+    if (typeof value === "object") {
+      return value.name;
+    }
+		return String(value)
+  }
+
+
 	const allColumns = useMemo(() => {
 
 		if (!sortedStudents || !projects || !groups) {
@@ -22,7 +30,14 @@ export default function useStudentColumns(visibleStudents, projects, groups) {
 
 		function createColumn(label, getFunction) {
 
-			const rows = sortedStudents.map(student => getFunction(student));
+			const rows = sortedStudents.map(student => {
+        try {
+          const raw = getFunction(student);
+          return normalizeValue(raw);
+        } catch (err) {
+          return "";
+        }
+      });
 
 			function sortingFunction() {
 				// Create a copy and sort it
