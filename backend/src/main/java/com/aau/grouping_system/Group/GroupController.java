@@ -160,7 +160,7 @@ public class GroupController {
 			groupData.put("name", group.getName()); // if there’s no explicit name property
 			groupData.put("project", projectName);
 			groupData.put("members", membersList);
-			groupData.put("supervisor", group.getSupervisorId());
+			groupData.put("supervisorId", group.getSupervisorId());
 
 			response.put(entry.getKey(), groupData);
 		}

@@ -12,7 +12,7 @@ export default function RenderGroups({
 				<div className="AssignSupervisor-button">
 					<p>Current Supervisor: </p>
 					<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
-						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisor)?.name || "None"} </option>
+						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
 						{supervisors?.map((supervisor) => (
 							<option key={supervisor.id} value={supervisor.id}>
 								{supervisor.name}
