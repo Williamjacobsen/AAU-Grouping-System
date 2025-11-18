@@ -9,6 +9,5 @@ public record StudentGroupRecord(
 		@NoDangerousCharacters @NoWhitespace String id,
 		@NotNull Boolean hasGroup,
 		@NoDangerousCharacters String project,
-		Integer groupSize,
-		Integer maxSize) {
+		Integer groupSize) {
 }

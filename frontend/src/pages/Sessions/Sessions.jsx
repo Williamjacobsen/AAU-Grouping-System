@@ -10,7 +10,7 @@ export default function Sessions() {
 	const [sessionToDelete, setSessionToDelete] = useState(null);
 	const [deletingSession, setDeletingSession] = useState(false);
 	const navigate = useNavigate();
-	
+
 	const {
 		sessions,
 		loading,
@@ -20,7 +20,7 @@ export default function Sessions() {
 	} = useSessionManager();
 
 	const { user, isLoading: isLoadingUser } = useAuth();
-	
+
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");
 
@@ -34,7 +34,7 @@ export default function Sessions() {
 
 	const handleDeleteSession = async (sessionId) => {
 		setDeletingSession(true);
-		
+
 		try {
 			await deleteSession(sessionId);
 			setShowDeleteModal(false);
@@ -112,45 +112,45 @@ export default function Sessions() {
 						{sessions
 							.filter(session => session != null)
 							.map((session) => (
-							<div key={session.id} className="session-card">
-								<div className="session-header">
-									<h3 className="session-name">
-										{session.name || `Session ${session.id}`}
-									</h3>
-								</div>
+								<div key={session.id} className="session-card">
+									<div className="session-header">
+										<h3 className="session-name">
+											{session.name || `Session ${session.id}`}
+										</h3>
+									</div>
 
-								<div className="session-actions">
-									<button
-										onClick={() => openSession(session.id)}
-										className="open-button"
-										disabled={loading}
-									>
-										Open Session
-									</button>
-									<button
-										onClick={() => editSetup(session.id)}
-										className="edit-button"
-										disabled={loading}
-									>
-										Edit Setup
-									</button>
-									<button
-										onClick={() => manageSupervisors(session.id)}
-										className="supervisors-button"
-										disabled={loading}
-									>
-										Manage Supervisors
-									</button>
-									<button
-										onClick={() => openDeleteModal(session)}
-										className="delete-button"
-										disabled={loading}
-									>
-										Delete
-									</button>
+									<div className="session-actions">
+										<button
+											onClick={() => openSession(session.id)}
+											className="open-button"
+											disabled={loading}
+										>
+											Open Session
+										</button>
+										<button
+											onClick={() => editSetup(session.id)}
+											className="edit-button"
+											disabled={loading}
+										>
+											Edit Setup
+										</button>
+										<button
+											onClick={() => manageSupervisors(session.id)}
+											className="supervisors-button"
+											disabled={loading}
+										>
+											Manage Supervisors
+										</button>
+										<button
+											onClick={() => openDeleteModal(session)}
+											className="delete-button"
+											disabled={loading}
+										>
+											Delete
+										</button>
+									</div>
 								</div>
-							</div>
-						))}
+							))}
 					</div>
 				)}
 			</div>
@@ -170,16 +170,16 @@ export default function Sessions() {
 							<p className="warning">This action cannot be undone.</p>
 						</div>
 						<div className="modal-footer">
-							<button 
-								type="button" 
-								className="cancel-button" 
+							<button
+								type="button"
+								className="cancel-button"
 								onClick={closeDeleteModal}
 								disabled={deletingSession}
 							>
 								Cancel
 							</button>
-							<button 
-								type="button" 
+							<button
+								type="button"
 								className="danger-button"
 								onClick={() => handleDeleteSession(sessionToDelete.id)}
 								disabled={deletingSession}

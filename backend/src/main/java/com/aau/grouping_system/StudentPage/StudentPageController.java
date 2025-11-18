@@ -287,15 +287,13 @@ public class StudentPageController {
 					group.getId(),
 					true,
 					projectName,
-					group.getStudentIds().size(),
-					group.getMaxStudents());
+					group.getStudentIds().size());
 		}
 
 		return new StudentGroupRecord(
 				null,
 				false,
 				NOT_IN_GROUP,
-				0,
 				0);
 	}
 

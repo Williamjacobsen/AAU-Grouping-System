@@ -16,9 +16,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController
@@ -27,13 +31,32 @@ import jakarta.validation.constraints.NotBlank;
 public class ProjectController {
 
 	private final Database db; // storage in db (final never changes once set)
+	private final RequestRequirementService requestRequirementService;
 
 	// constructor
 	// dependency injection
-	public ProjectController(Database db) {
+	public ProjectController(
+			Database db,
+			RequestRequirementService requestRequirementService) {
 		this.db = db;
+		this.requestRequirementService = requestRequirementService;
 	}
 
+	private void requireAllowStudentProjectProposals(Session session) {
+		if (!session.getAllowStudentProjectProposals()) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED,
+					"Your coordinator does not allow student project proposals in this session");
+		}
+	}
+
+	private void requireUserIsCreatorOfTheProject(User user, Project project) {
+		if (!project.getCreatorUserId().equals(user.getId())) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED,
+					"User is neither the coordinator or the creator of the project");
+		}
+	}
+
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" })
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
@@ -50,15 +73,20 @@ public class ProjectController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@DeleteMapping("/delete/{projectId}")
+	@DeleteMapping("/delete/{projectId}/{sessionId}")
 	public ResponseEntity<String> deleteProject(
-			@NoDangerousCharacters @NotBlank @PathVariable String projectId) {
-		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
+			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String projectId,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		// Check if project exists if not throw error
-		if (project == null) {
-			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
-					.body("Project with id " + projectId + " does not exist.");
+		Project project = requestRequirementService.requireProjectExists(projectId);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		User user = requestRequirementService.requireUserExists(servlet);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		if (user.getRole() != User.Role.Coordinator) {
+			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
+			requireUserIsCreatorOfTheProject(user, project);
 		}
 
 		// Delete the project from the database
@@ -70,17 +98,22 @@ public class ProjectController {
 
 	@PostMapping("/create/{sessionId}/{projectName}/{description}")
 	public ResponseEntity<Map<String, Object>> createProject(
+			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String projectName,
 			@NoDangerousCharacters @NotBlank @PathVariable String description) {
-		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
-		// Check if session exists if not throw error
-		if (session == null) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-					.body(Collections.singletonMap("error", "Session with id " + sessionId + " does not exist."));
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+
+		if (user.getRole() != User.Role.Coordinator) {
+			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
 		}
-		Project newProject = new Project(db, session.getProjects(), projectName, description);
+		if (user.getRole() == User.Role.Student) {
+			requireAllowStudentProjectProposals(session);
+		}
+
+		Project newProject = new Project(db, session.getProjects(), projectName, description, user);
 
 		// Create a response map
 		Map<String, Object> response = new HashMap<>();
@@ -91,28 +124,36 @@ public class ProjectController {
 		return ResponseEntity.ok(response);
 	}
 
- 	
-	}
-/*@PutMapping("/update/{projectId}/{newName}/{newDescription}")
-	public ResponseEntity<String> updateProject(@PathVariable String projectId, @PathVariable String newName,
-			@PathVariable String newDescription) {
-	@PutMapping("/update/{projectId}/{newName}/{newDescription}")
-	public ResponseEntity<String> updateProject(
-			@NoDangerousCharacters @NotBlank @PathVariable String projectId,
-			@NoDangerousCharacters @NotBlank @PathVariable String newName,
-			@NoDangerousCharacters @NotBlank @PathVariable String newDescription) {
-		Project project = db.getProjects().getItem(projectId); // ask the database for project with certain id
-
-		// Check if project exists if not throw error
-		if (project == null) {
-			return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
-					.body("Project with id " + projectId + " does not exist.");
-		}
-
-		// Update project details
-		project.setName(newName);
-		project.setDescription(newDescription);
-
-		// Return success message with 200 ok
-		return ResponseEntity.ok("Project with id " + projectId + " has been updated successfully."); */
-
+}
+/*
+ * @PutMapping("/update/{projectId}/{newName}/{newDescription}")
+ * public ResponseEntity<String> updateProject(@PathVariable String
+ * projectId, @PathVariable String newName,
+ * 
+ * @PathVariable String newDescription) {
+ * 
+ * @PutMapping("/update/{projectId}/{newName}/{newDescription}")
+ * public ResponseEntity<String> updateProject(
+ * 
+ * @NoDangerousCharacters @NotBlank @PathVariable String projectId,
+ * 
+ * @NoDangerousCharacters @NotBlank @PathVariable String newName,
+ * 
+ * @NoDangerousCharacters @NotBlank @PathVariable String newDescription) {
+ * Project project = db.getProjects().getItem(projectId); // ask the database
+ * for project with certain id
+ * 
+ * // Check if project exists if not throw error
+ * if (project == null) {
+ * return ResponseEntity.status(org.springframework.http.HttpStatus.BAD_REQUEST)
+ * .body("Project with id " + projectId + " does not exist.");
+ * }
+ * 
+ * // Update project details
+ * project.setName(newName);
+ * project.setDescription(newDescription);
+ * 
+ * // Return success message with 200 ok
+ * return ResponseEntity.ok("Project with id " + projectId +
+ * " has been updated successfully.");
+ */

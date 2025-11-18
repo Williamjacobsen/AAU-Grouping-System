@@ -9,13 +9,12 @@ export default function useIsQuestionnaireDeadlineExceeded(session) {
 		if (!(session?.questionnaireDeadline)) {
 			return false;
 		}
-		
+
 		// "session.questionnaireDeadline" is an ISO string, so we can easily convert it to a Date object.
 		const deadline = new Date(session.questionnaireDeadline);
 		return deadline.getTime() < currentTime.getTime();
 	}, [currentTime, session]);
 
-	return { isDeadlineExceeded }
+	return { isDeadlineExceeded };
 
 }
-	
