@@ -80,6 +80,35 @@ public class UserService {
 		return false;
 	}
 
+	/// Apart from coordinators, users in the same session cannot have
+	/// duplicate names.
+	@SuppressWarnings({ "unchecked", "unused" }) // Type-safety violations aren't true here.
+	public boolean isNameDuplicate(String name, User user) {
+
+		Collection<? extends User> existingUsers;
+		switch (user) {
+			case Coordinator coordinator:
+				return false;
+			case Supervisor supervisor:
+				Session supervisorSession = db.getSessions().getItem(supervisor.getSessionId());
+				existingUsers = (Collection<User>) supervisorSession.getSupervisors().getItems(db);
+				break;
+			case Student student:
+				Session studentSession = db.getSessions().getItem(student.getSessionId());
+				existingUsers = (Collection<User>) studentSession.getStudents().getItems(db);
+				break;
+			default:
+				throw new IllegalArgumentException("Passed in a User.Role that is not a valid value.");
+		}
+
+		for (User existingUser : existingUsers) {
+			if (existingUser.getName().equals(name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void modifyEmail(String newEmail, User user) {
 		user.setEmail(newEmail);
 	}
@@ -89,6 +118,10 @@ public class UserService {
 		String passwordHash = passwordEncoder.encode(newPassword);
 		user.setPasswordHash(passwordHash);
 		user.setLoginCode(null); // Ensure login code is not regarded as activated
+	}
+
+	public void modifyName(String newName, User user) {
+		user.setName(newName);
 	}
 
 	public String ensureLoginCodeIsActivated(User user) {
