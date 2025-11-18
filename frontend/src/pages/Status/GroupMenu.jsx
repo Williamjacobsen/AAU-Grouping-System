@@ -169,6 +169,10 @@ export default function GroupMenu({ session, user, groups, projects, students })
 		}
 	}
 
+	if (!students || students.length === 0 || !groups) {
+		return <div>Loading group information...</div>;
+	}
+
 	return (
 		<div>
 			{getUserGroup() &&

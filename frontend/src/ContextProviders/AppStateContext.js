@@ -13,9 +13,13 @@ import { useGetSessionStudentsByParam } from "../hooks/useGetSessionStudents";
 import { useGetSessionSupervisorsByParam } from "../hooks/useGetSessionSupervisors";
 import useIsQuestionnaireDeadlineExceeded from "../hooks/useIsQuestionnaireDeadlineExceeded";
 
+import { useAuth } from "./AuthProvider";
+
 const AppStateContext = createContext(null);
 
 export function AppStateProvider({ children }) {
+  const { user } = useAuth();
+
   const { isLoading: loadingSession, session: sessionData } =
     useGetSessionByParameter();
   const { isLoading: loadingProjects, projects: projectData } =
@@ -53,6 +57,14 @@ export function AppStateProvider({ children }) {
     if (supervisorData) setSupervisors(supervisorData);
   }, [supervisorData]);
 
+  useEffect(() => {
+    setSession(null);
+    setProjects([]);
+    setGroups([]);
+    setStudents([]);
+    setSupervisors([]);
+  }, [user?.id]);
+
   const isLoading =
     loadingSession ||
     loadingProjects ||
@@ -76,7 +88,7 @@ export function AppStateProvider({ children }) {
     supervisors,
     chatRooms,
     isLoading,
-		session,
+    session,
 
     setSession,
     setProjects,
