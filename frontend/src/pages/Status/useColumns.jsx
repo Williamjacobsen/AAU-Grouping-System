@@ -50,7 +50,7 @@ export default function useColumns(students, projects, groups) {
 				function (student) {
 					return projects.find(
 						project => project.id === groups.find(
-							group => group.id === student.groupId))?.name
+							group => group.id === student.groupId)?.projectId)?.name
 						?? "";
 				}
 			),

@@ -1,37 +1,33 @@
-import React, { useState } from 'react';
-import useGroupRequests from './useGroupRequests';
+import React from 'react';
 import useIsQuestionnaireDeadlineExceeded from '../../hooks/useIsQuestionnaireDeadlineExceeded';
+import { fetchWithDefaultErrorHandling } from 'utils/fetchHelpers';
 
 // Small UI for requesting to join or accepting a join request on a group.
 // - session: session object (used for questionnaire deadline)
 // - user: current logged in user (used to decide if the user is a student)
-export default function StudentGroupActions({ groupId, studentId, session, user }) {
-	const { requestToJoin, acceptJoinRequest } = useGroupRequests();
-	const [loading, setLoading] = useState(false);
-	const [message, setMessage] = useState(null);
-	const [error, setError] = useState(null);
+export default function StudentGroupActions({ groupId, session, user }) {
 
 	// Determine if the questionnaire submission deadline has passed for this session
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 
-	async function onRequest() {
-		setLoading(true);
-		setMessage(null);
-		setError(null);
-		const res = await requestToJoin(groupId, studentId);
-		setLoading(false);
-		if (res.ok) setMessage(res.message || 'Request sent');
-		else setError(res.error || 'Failed to send request');
+	function getIsUserAlreadyInTheGroup() {
+		return user.groupId === groupId;
 	}
 
-	async function onAccept() {
-		setLoading(true);
-		setMessage(null);
-		setError(null);
-		const res = await acceptJoinRequest(groupId, studentId);
-		setLoading(false);
-		if (res.ok) setMessage(res.message || 'Accepted');
-		else setError(res.error || 'Failed to accept request');
+	async function sendJoinRequest() {
+		try {
+			await fetchWithDefaultErrorHandling(
+				`/groups/${session.id}/${groupId}/request-to-join`,
+				{
+					method: 'POST',
+					credentials: 'include',
+					headers: { 'Content-Type': 'application/json' },
+				});
+			alert("Request succesfully sent");
+			window.location.reload(); // Reload page to refresh changes
+		} catch (error) {
+			alert(error);
+		}
 	}
 
 	return (
@@ -39,11 +35,8 @@ export default function StudentGroupActions({ groupId, studentId, session, user 
 
 			{!isDeadlineExceeded() && (
 				<>
-					<button onClick={onRequest} disabled={loading || !groupId || !studentId}>
-						{loading ? 'Please wait...' : 'Request to join'}
-					</button>
-					<button onClick={onAccept} disabled={loading || !groupId || !studentId}>
-						{loading ? 'Please wait...' : 'Accept request'}
+					<button onClick={sendJoinRequest} disabled={!groupId || getIsUserAlreadyInTheGroup()}>
+						Request to join group
 					</button>
 				</>
 			)}
@@ -53,10 +46,6 @@ export default function StudentGroupActions({ groupId, studentId, session, user 
 					<span style={{ color: 'crimson', marginLeft: 8 }}>Deadline exceeded: Groups locked.</span>
 				</>
 			)}
-
-			{message && <span style={{ color: 'green' }}>{message}</span>}
-			{error && <span style={{ color: 'crimson' }}>{error}</span>}
-
 		</div>
 	);
 }

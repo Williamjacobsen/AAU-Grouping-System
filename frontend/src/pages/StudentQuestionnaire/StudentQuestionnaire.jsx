@@ -5,6 +5,7 @@ import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useIsQuestionnaireDeadlineExceeded from "../../hooks/useIsQuestionnaireDeadlineExceeded";
 import "./StudentQuestionnaire.css";
+import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
 export default function StudentQuestionnaire() {
 
@@ -12,22 +13,22 @@ export default function StudentQuestionnaire() {
 	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
 	const { isLoading: isLoadingProjects, projects } = useGetSessionProjectsByParam();
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
-	
+
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return <div className="access-denied-message">Access denied: Not logged in.</div>;
-	if (user.role !== "Student") return <div className="access-denied-message">Access denied: Not a student.</div>
+	if (user.role !== "Student") return <div className="access-denied-message">Access denied: Not a student.</div>;
 	if (isLoadingSession) return <div className="loading-message">Loading session...</div>;
 	if (isLoadingProjects) return <div className="loading-message">Loading projects...</div>;
 
 	async function saveQuestionnaireAnswers(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
-			
+
 			const formData = new FormData(event.currentTarget);
 			const updatedQuestionnaire = Object.fromEntries(formData);
 
 			await requestSaveQuestionnaireAnswers(updatedQuestionnaire);
-			
+
 			window.location.reload(); // Reload the page (to refresh changes)
 		} catch (error) {
 			alert(error);
@@ -35,34 +36,26 @@ export default function StudentQuestionnaire() {
 	}
 
 	async function requestSaveQuestionnaireAnswers(updatedQuestionnaire) {
-		try {
-			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/student/saveQuestionnaireAnswers`,
-				{
-					method: "POST",
-					credentials: "include", // Ensures cookies are sent with the request
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(
-						updatedQuestionnaire
-					),
-				}
-			);
-
-			if (!response.ok) {
-				return Promise.reject("Status code " + response.status + ": " + await response.text());
+		const response = await fetchWithDefaultErrorHandling(
+			"/student/saveQuestionnaireAnswers",
+			{
+				method: "POST",
+				credentials: "include", // Ensures cookies are sent with the request
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(
+					updatedQuestionnaire
+				),
 			}
-
-		} catch (error) {
-			return Promise.reject(error);
-		}
+		);
+		return response;
 	}
 
 	return (
 		<div className="student-questionnaire-container">
 			<h1 className="questionnaire-title">Student Questionnaire</h1>
-			
+
 			<div className="deadline-info">
 				<strong>Submission deadline:</strong> {session.questionnaireDeadline
 					? session.questionnaireDeadline
@@ -93,12 +86,12 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="desiredGroupSizeMin">
 							Preferred minimum group size (-1 means no preference):
 						</label>
-						<input 
+						<input
 							id="desiredGroupSizeMin"
-							name="desiredGroupSizeMin" 
-							defaultValue={user.questionnaire.desiredGroupSizeMin} 
-							type="number" 
-							min={-1} 
+							name="desiredGroupSizeMin"
+							defaultValue={user.questionnaire.desiredGroupSizeMin}
+							type="number"
+							min={-1}
 							step="1"
 						/>
 					</div>
@@ -107,12 +100,12 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="desiredGroupSizeMax">
 							Preferred maximum group size (-1 means no preference):
 						</label>
-						<input 
+						<input
 							id="desiredGroupSizeMax"
-							name="desiredGroupSizeMax" 
-							defaultValue={user.questionnaire.desiredGroupSizeMax} 
-							type="number" 
-							min={-1} 
+							name="desiredGroupSizeMax"
+							defaultValue={user.questionnaire.desiredGroupSizeMax}
+							type="number"
+							min={-1}
 							step="1"
 						/>
 					</div>
@@ -124,9 +117,9 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="desiredWorkLocation">
 							Preferred working location:
 						</label>
-						<select 
+						<select
 							id="desiredWorkLocation"
-							name="desiredWorkLocation" 
+							name="desiredWorkLocation"
 							defaultValue={user.questionnaire.desiredWorkLocation}
 						>
 							<option value="NoPreference">No preference</option>
@@ -139,9 +132,9 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="desiredWorkStyle">
 							Preferred working style:
 						</label>
-						<select 
+						<select
 							id="desiredWorkStyle"
-							name="desiredWorkStyle" 
+							name="desiredWorkStyle"
 							defaultValue={user.questionnaire.desiredWorkStyle}
 						>
 							<option value="NoPreference">No preference</option>
@@ -157,11 +150,11 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="personalSkills">
 							Personal skills:
 						</label>
-						<textarea 
+						<textarea
 							id="personalSkills"
-							name="personalSkills" 
-							defaultValue={user.questionnaire.personalSkills} 
-							maxLength={200} 
+							name="personalSkills"
+							defaultValue={user.questionnaire.personalSkills}
+							maxLength={200}
 							placeholder="Describe your technical skills, programming languages, tools, etc."
 						/>
 					</div>
@@ -170,11 +163,11 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="specialNeeds">
 							Special needs:
 						</label>
-						<textarea 
+						<textarea
 							id="specialNeeds"
-							name="specialNeeds" 
-							defaultValue={user.questionnaire.specialNeeds} 
-							maxLength={200} 
+							name="specialNeeds"
+							defaultValue={user.questionnaire.specialNeeds}
+							maxLength={200}
 							placeholder="Any accessibility requirements, scheduling constraints, etc."
 						/>
 					</div>
@@ -183,11 +176,11 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="academicInterests">
 							Academic interests:
 						</label>
-						<textarea 
+						<textarea
 							id="academicInterests"
-							name="academicInterests" 
-							defaultValue={user.questionnaire.academicInterests} 
-							maxLength={200} 
+							name="academicInterests"
+							defaultValue={user.questionnaire.academicInterests}
+							maxLength={200}
 							placeholder="Research areas, topics you're passionate about, etc."
 						/>
 					</div>
@@ -196,11 +189,11 @@ export default function StudentQuestionnaire() {
 						<label htmlFor="comments">
 							Other comments:
 						</label>
-						<textarea 
+						<textarea
 							id="comments"
-							name="comments" 
-							defaultValue={user.questionnaire.comments} 
-							maxLength={200} 
+							name="comments"
+							defaultValue={user.questionnaire.comments}
+							maxLength={200}
 							placeholder="Any additional information you'd like to share..."
 						/>
 					</div>
@@ -214,13 +207,13 @@ export default function StudentQuestionnaire() {
 
 				<div className="form-buttons">
 					{!isDeadlineExceeded() && (
-						<input 
-							type="submit" 
-							value="Apply Changes" 
+						<input
+							type="submit"
+							value="Apply Changes"
 							className="submit-button"
 						/>
 					)}
-					
+
 					<button
 						type="button"
 						onClick={() => window.location.reload()}

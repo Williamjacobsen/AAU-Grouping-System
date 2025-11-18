@@ -11,6 +11,7 @@ public class Student extends User {
 
 	private String sessionId;
 	private String groupId = null;
+	private String activeJoinRequestGroupId = null;
 
 	private StudentQuestionnaire questionnaire = new StudentQuestionnaire();
 
@@ -36,4 +37,6 @@ public class Student extends User {
 	public void setQuestionnaire(StudentQuestionnaire questionnaire) { this.questionnaire = questionnaire; }
 	public String getGroupId() { return groupId; }
 	public void setGroupId(String groupId) { this.groupId = groupId; }
+	public String getActiveJoinRequestGroupId() { return activeJoinRequestGroupId; }
+	public void setActiveJoinRequestGroupId(String requestToJoinGroupId) { this.activeJoinRequestGroupId = requestToJoinGroupId; }
 }

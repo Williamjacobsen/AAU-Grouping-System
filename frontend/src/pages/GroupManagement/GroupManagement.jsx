@@ -73,7 +73,7 @@ export default function GroupManagement() {
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/${fromGroupId}/move-student/${toGroupId}/${studentId}`, {
 				method: "POST",
 				credentials: "include"
 			});

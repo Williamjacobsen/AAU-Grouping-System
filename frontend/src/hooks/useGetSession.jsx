@@ -14,7 +14,7 @@ export async function fetchSession(sessionId) {
 	return await response.json();
 }
 
-function useGetSession(sessionId) {
+export function useGetSession(sessionId) {
 
 	const [isLoading, setIsLoading] = useState(true);
 	const [session, setSession] = useState(null);

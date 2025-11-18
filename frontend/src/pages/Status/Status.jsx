@@ -17,6 +17,7 @@ import SearchFilter from "./SearchFilter";
 import ColumnsDropdown from "./ColumnsDropdown";
 import StudentTable from "./StudentTable";
 import CsvDownloadButton from "./CsvDownloadButton";
+import GroupMenu from "./GroupMenu";
 
 export default function Status() {
 
@@ -48,9 +49,19 @@ export default function Status() {
 			<h1 className="status-title">
 				Student Status
 			</h1>
-			<h3>
-				Students are allowed to make changes until this deadline: {session.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
-			</h3>
+			<div>
+				<b>Students are allowed to make changes until this deadline: </b>
+				{session.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
+			</div>
+			<div>
+				<GroupMenu
+					session={session}
+					user={user}
+					groups={groups}
+					projects={projects}
+					students={students}
+				/>
+			</div>
 			<div className="status-controls">
 				<SearchFilter
 					searchString={searchString}

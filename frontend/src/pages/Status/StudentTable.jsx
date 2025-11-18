@@ -2,8 +2,6 @@ import React, { memo } from "react";
 import StudentGroupActions from './StudentGroupActions';
 import { useNavigate } from "react-router-dom";
 
-// const StudentTable = memo(({ columns, students, sessionId, session, user }) => {
-
 const StudentTable = (({ columns, students, sessionId, session, user }) => {
 
 	const navigate = useNavigate();
@@ -38,9 +36,9 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 							}
 						</>
 					))}
-					{user.role === "Student" &&
-						<th>Actions</th>
-					}
+					<th>
+						Actions
+					</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -57,7 +55,6 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 					// This way React can handle the minimal DOM change." And else you get a warning.
 					<tr
 						key={rowIndex}
-						onClick={() => navigateToStudentPage(rowIndex)}
 					>
 						{columns.map((column, columnIndex) => (
 							<>
@@ -69,16 +66,20 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 								}
 							</>
 						))}
-						{user.role === "Student" &&
-							<td>
+						<td key="actions">
+							<input
+								type="button"
+								onClick={() => navigateToStudentPage(rowIndex)}
+								value="Go to student page"
+							/>
+							{user.role === "Student" &&
 								<StudentGroupActions
-									groupId={getStudentByRowIndex(rowIndex).id}
-									studentId={getStudentByRowIndex(rowIndex)}
+									groupId={getStudentByRowIndex(rowIndex).groupId}
 									session={session}
 									user={user}
 								/>
-							</td>
-						}
+							}
+						</td>
 					</tr>
 				))}
 			</tbody>

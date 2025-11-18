@@ -68,8 +68,8 @@ public class DatabaseSerializer {
 			throw new RuntimeException(
 					"Error loading database data from save file: Save file is a not of the (newest) type of DatabaseData.");
 		} catch (FileNotFoundException exception) {
-			// TODO: This should be updated before product deployment. But it's fine here in
-			// the prototyping stage.
+			// TODO: This exception should be updated to be handled with more care before
+			// product deployment. But it's fine here in the prototyping stage.
 			System.out.println("No database data save file found. Reverting to default data.");
 			fillDatabaseWithExampleData();
 		} catch (IOException exception) {
@@ -86,8 +86,11 @@ public class DatabaseSerializer {
 		Coordinator c4 = coordinatorService.addCoordinator("c4", "c4", "Coordinator name 4");
 
 		Session se1 = new Session(db, c1.getSessions(), c1, "Session name 1");
+		se1.setMaxGroupSize(10);
 		Session se2 = new Session(db, c1.getSessions(), c1, "Session name 2");
+		se2.setMaxGroupSize(10);
 		Session se3 = new Session(db, c2.getSessions(), c2, "Session name 3");
+		se3.setMaxGroupSize(10);
 
 		Supervisor su1 = supervisorService.addSupervisor(se1, "su1@example.com", "su1", "Supervisor name 1");
 		Supervisor su2 = supervisorService.addSupervisor(se1, "su2@example.com", "su2", "Supervisor name 2");
@@ -153,56 +156,66 @@ public class DatabaseSerializer {
 		st5.getQuestionnaire().setDesiredProjectId2(p3.getId());
 		st5.getQuestionnaire().setDesiredProjectId3(p4.getId());
 
-		Group g1 = new Group(db, se1.getGroups(), su1, p1, "group1@mail.com", 7, 10);
-		Group g2 = new Group(db, se1.getGroups(), su1, p2, "group2@mail.com", 7, 10);
-		Group g3 = new Group(db, se1.getGroups(), su2, p3, "group3@mail.com", 7, 10);
-		Group g4 = new Group(db, se1.getGroups(), su2, p4, "group4@mail.com", 7, 10);
-		Group g5 = new Group(db, se1.getGroups(), su2, p5, "group5@mail.com", 7, 10);
-		Group g6 = new Group(db, se1.getGroups(), su3, p6, "group6@mail.com", 7, 10);
-		Group g7 = new Group(db, se1.getGroups(), su3, p7, "group7@mail.com", 7, 10);
-		Group g8 = new Group(db, se1.getGroups(), su3, p8, "group8@mail.com", 7, 10);
-		Group g9 = new Group(db, se1.getGroups(), su4, p9, "group9@mail.com", 7, 10);
-		Group g10 = new Group(db, se1.getGroups(), su4, p10, "group10@mail.com", 7, 10);
+		Group g1 = new Group(db, se1.getGroups(), se1, "Group name 1");
+		g1.setProjectId(p4.getId());
+		Group g2 = new Group(db, se1.getGroups(), se1, "Group name 2");
+		g2.setProjectId(p5.getId());
+		Group g3 = new Group(db, se1.getGroups(), se1, "Group name 3");
+		g3.setProjectId(p5.getId());
+		Group g4 = new Group(db, se1.getGroups(), se1, "Group name 4");
+		g4.setProjectId(p2.getId());
+		Group g5 = new Group(db, se1.getGroups(), se1, "Group name 5");
+		g5.setProjectId(p3.getId());
+		Group g6 = new Group(db, se1.getGroups(), se1, "Group name 6");
+		g6.setProjectId(p2.getId());
+		Group g7 = new Group(db, se1.getGroups(), se1, "Group name 7");
+		g7.setProjectId(p2.getId());
+		Group g8 = new Group(db, se1.getGroups(), se1, "Group name 8");
+		g8.setProjectId(p8.getId());
+		Group g9 = new Group(db, se1.getGroups(), se1, "Group name 9");
+		g9.setProjectId(p10.getId());
+		Group g10 = new Group(db, se1.getGroups(), se1, "Group name 10");
+		g10.setProjectId(p1.getId());
 
-		groupService.joinGroup(g1.getId(), st1);
-		groupService.joinGroup(g1.getId(), st2);
-		groupService.joinGroup(g1.getId(), st3);
+		groupService.joinGroup(g1, st1);
+		groupService.joinGroup(g1, st2);
+		groupService.joinGroup(g1, st3);
 
-		groupService.joinGroup(g2.getId(), st4);
-		groupService.joinGroup(g2.getId(), st5);
-		groupService.joinGroup(g2.getId(), st6);
-		groupService.joinGroup(g2.getId(), st7);
+		groupService.joinGroup(g2, st4);
+		groupService.joinGroup(g2, st5);
+		groupService.joinGroup(g2, st6);
+		groupService.joinGroup(g2, st7);
 
-		groupService.joinGroup(g3.getId(), st8);
-		groupService.joinGroup(g3.getId(), st9);
-		groupService.joinGroup(g3.getId(), st10);
+		groupService.joinGroup(g3, st8);
+		groupService.joinGroup(g3, st9);
+		groupService.joinGroup(g3, st10);
 
-		groupService.joinGroup(g4.getId(), st11);
-		groupService.joinGroup(g4.getId(), st12);
-		groupService.joinGroup(g4.getId(), st13);
-		groupService.joinGroup(g4.getId(), st14);
+		groupService.joinGroup(g4, st11);
+		groupService.joinGroup(g4, st12);
+		groupService.joinGroup(g4, st13);
+		groupService.joinGroup(g4, st14);
 
-		groupService.joinGroup(g5.getId(), st15);
-		groupService.joinGroup(g5.getId(), st16);
+		groupService.joinGroup(g5, st15);
+		groupService.joinGroup(g5, st16);
 
-		groupService.joinGroup(g6.getId(), st17);
-		groupService.joinGroup(g6.getId(), st18);
-		groupService.joinGroup(g6.getId(), st19);
-		groupService.joinGroup(g6.getId(), st20);
+		groupService.joinGroup(g6, st17);
+		groupService.joinGroup(g6, st18);
+		groupService.joinGroup(g6, st19);
+		groupService.joinGroup(g6, st20);
 
-		groupService.joinGroup(g7.getId(), st21);
-		groupService.joinGroup(g7.getId(), st22);
+		groupService.joinGroup(g7, st21);
+		groupService.joinGroup(g7, st22);
 
-		groupService.joinGroup(g8.getId(), st23);
-		groupService.joinGroup(g8.getId(), st24);
-		groupService.joinGroup(g8.getId(), st25);
+		groupService.joinGroup(g8, st23);
+		groupService.joinGroup(g8, st24);
+		groupService.joinGroup(g8, st25);
 
-		groupService.joinGroup(g9.getId(), st26);
-		groupService.joinGroup(g9.getId(), st27);
+		groupService.joinGroup(g9, st26);
+		groupService.joinGroup(g9, st27);
 
-		groupService.joinGroup(g10.getId(), st28);
-		groupService.joinGroup(g10.getId(), st29);
-		groupService.joinGroup(g10.getId(), st30);
+		groupService.joinGroup(g10, st28);
+		groupService.joinGroup(g10, st29);
+		groupService.joinGroup(g10, st30);
 
 		// For testing purposes, console log student logins so we can log in as them
 		System.out.println("---- STUDENT test logins ----");
