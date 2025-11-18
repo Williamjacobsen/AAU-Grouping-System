@@ -44,32 +44,34 @@ public class MessagesService {
 			String key = groupEntry.getKey();
 
 			result.put(key, getGroupUnreadCount(key, username));
-		}	
+		}
 
 		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
 			String key = groupEntry.getKey();
 
-			result.put(key, getPrivateUnreadCount(key, username));
-		}	
+			if (key.contains(username)) {
+				result.put(key, getPrivateUnreadCount(key, username));
+			}
+		}
 
 		return result;
 	}
 
 	public ConcurrentHashMap<String, Long> getChatRoomLastActivityTimestamps(String username) {
 		ConcurrentHashMap<String, Long> result = new ConcurrentHashMap<>();
-		
+
 		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.groupMessages.entrySet()) {
 			String key = groupEntry.getKey();
 
 			result.put(key, webSocketService.groupMessages.get(key).peekLast().timestamp());
-		}	
+		}
 
 		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
 			String key = groupEntry.getKey();
 
-			result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());		
+			result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());
 		}
-		
+
 		return result;
 	}
 }

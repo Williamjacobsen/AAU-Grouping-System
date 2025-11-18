@@ -13,6 +13,8 @@ import getLastChatRoomActivityCounters from "./Utils/getLastChatRoomActivityCoun
 import sortChatRooms from "./Utils/sortChatRooms";
 import useSyncMessagesData from "./Utils/useSyncMessagesData";
 import { useAuth } from "../../ContextProviders/AuthProvider";
+import isDirectRoom from "./Utils/isDirectRoom";
+import getConversationKey from "./Utils/getConversationKey";
 
 export default function ChatBox() {
   const [showChatBox, setShowChatBox] = useState(false);
@@ -28,7 +30,7 @@ export default function ChatBox() {
 
   const { user } = useAuth();
 
-  useFetchMessages(setMessagesByRoom, selectedChatRoom, user.name);
+  useFetchMessages(setMessagesByRoom, selectedChatRoom, user.name, students);
 
   useSyncMessagesData(messagesByRoom, setLastActivityByRoom);
 
@@ -46,15 +48,29 @@ export default function ChatBox() {
     };
   }, [chatRooms]);
 
+  const messageKey = useMemo(() => {
+    if (!selectedChatRoom) return null;
+    const isDirect = isDirectRoom(selectedChatRoom, students);
+    return isDirect
+      ? getConversationKey(user.name, selectedChatRoom)
+      : selectedChatRoom;
+  }, [selectedChatRoom, students, user.name]);
+
   const roomMessages = useMemo(
-    () => messagesByRoom[selectedChatRoom] ?? [],
-    [messagesByRoom, selectedChatRoom]
+    () => messagesByRoom[messageKey] ?? [],
+    [messagesByRoom, messageKey]
   );
 
   useEffect(() => {
     if (!selectedChatRoom) return;
-    sendReadReceipt(selectedChatRoom, user.name, roomMessages, chatSystem);
-  }, [selectedChatRoom, roomMessages, user.name]);
+    sendReadReceipt(
+      selectedChatRoom,
+      user.name,
+      roomMessages,
+      chatSystem,
+      students
+    );
+  }, [selectedChatRoom, roomMessages, user.name, students]);
 
   useEffect(() => {
     getUnreadMessagesCounters(
@@ -71,6 +87,7 @@ export default function ChatBox() {
         projects,
         groups,
         students,
+        currentUsername: user.name,
       }),
     [
       chatRooms,
@@ -79,6 +96,7 @@ export default function ChatBox() {
       projects,
       groups,
       students,
+      user.name,
     ]
   );
 
@@ -132,6 +150,7 @@ export default function ChatBox() {
               projects={projects}
               groups={groups}
               students={students}
+							username={user.name}
             />
             <ChatArea
               selectedChatRoom={selectedChatRoom}
