@@ -195,11 +195,11 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-
-
-					<NotifyButton sessionId={sessionId} />
-
-					<CsvDownloadButton students={students} groups={groups} />
+					<p> 
+						You can download the CSV file after all groups have been made, 
+						and supervisors have been assigned to the groups <br></br>
+						<CsvDownloadButton students={students} groups={groups} /> 
+					</p>
 				</>
 			)}
 		</div>
