@@ -7,12 +7,14 @@ import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Group.Group;
+import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -86,6 +88,22 @@ public class RequestRequirementService {
 		return group;
 	}
 
+	public Supervisor requireSupervisorExists(String supervisorId) {
+		Supervisor supervisor = db.getSupervisors().getItem(supervisorId);
+		if (supervisor == null) {
+			throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found");
+		}
+		return supervisor;
+	}
+
+	public Project requireProjectExists(String projectId) {
+		Project project = db.getProjects().getItem(projectId);
+		if (project == null) {
+			throw new RequestException(HttpStatus.NOT_FOUND, "Project not found");
+		}
+		return project;
+	}
+
 	// Require authorization
 
 	public void requireUserIsAuthorizedSession(String sessionId, User user) {
@@ -105,6 +123,14 @@ public class RequestRequirementService {
 	public void requireEmailNotDuplicate(String newEmail, User user) {
 		if (userService.isEmailDuplicate(newEmail, user)) {
 			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another " + user.getRole());
+		}
+	}
+
+	// miscellaneous
+
+	public void requireQuestionnaireDeadlineNotExceeded(Session session) {
+		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
+			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
 		}
 	}
 

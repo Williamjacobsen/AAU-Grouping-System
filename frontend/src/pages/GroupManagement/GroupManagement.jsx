@@ -4,6 +4,7 @@ import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./GroupM.css";
 
 import NotifyButton from "Components/NotifyButton/NotifyButton";
+import CsvDownloadButton from "./components/CsvDownloadButton";
 
 import useGroupActions from "./hooks/useGroupActions";
 import useSplitGroupsIntoSections from "./hooks/useSplitGroupsIntoSections";
@@ -30,7 +31,7 @@ export default function GroupManagement() {
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
-	const [groups, setGroups] = useState([])
+	const [groups, setGroups] = useState([]);
 
 	const { isLoading, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
@@ -128,12 +129,12 @@ export default function GroupManagement() {
 			) : (
 				<>
 					<h1>Group Management</h1>
-					<h3>How to move all group members from A to B?</h3> 
+					<h3>How to move all group members from A to B?</h3>
 					<p>Click on the name of group A and then click on the name of group B</p>
-					<h3>How to move a student from A to B?</h3> 
+					<h3>How to move a student from A to B?</h3>
 					<p>Click on the name of the student A and then click on the name of group B</p>
-					<h3>Undo botton</h3>
-					<p>Once a move has been done, it can be undone by clicking on the "undo last change" button. 
+					<h3>Undo button</h3>
+					<p>Once a move has been done, it can be undone by clicking on the "undo last change" button.
 						This pops up at the top of the screen after a move.</p>
 					<p>NOTE: When moving students without a group, this cant be undone</p>
 
@@ -194,7 +195,11 @@ export default function GroupManagement() {
 						/>
 					</div>
 
+
+
 					<NotifyButton sessionId={sessionId} />
+
+					<CsvDownloadButton students={students} groups={groups} />
 				</>
 			)}
 		</div>

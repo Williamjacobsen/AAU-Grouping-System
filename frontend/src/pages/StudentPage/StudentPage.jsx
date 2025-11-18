@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useStudentData from "./useStudentData";
 import "./StudentPage.css";
+import { useGetSession } from "hooks/useGetSession";
 
 export default function StudentPage() {
 	const { sessionId, studentId } = useParams();
@@ -13,6 +14,11 @@ export default function StudentPage() {
 	const [isResettingPassword, setIsResettingPassword] = useState(false);
 	const [resetPasswordError, setResetPasswordError] = useState("");
 	const [resetPasswordSuccess, setResetPasswordSuccess] = useState("");
+
+	const { isLoading: isLoadingSession, session } = useGetSession(sessionId);
+
+	if (isLoadingSession) return <div className="loading-message">Loading session information...</div>;
+
 
 	const goBack = () => {
 		navigate(-1);
@@ -26,16 +32,16 @@ export default function StudentPage() {
 	const handleConfirmRemove = async () => {
 		setIsRemoving(true);
 		setRemoveError("");
-		
+
 		const result = await removeStudent();
-		
+
 		if (result.success) {
 			navigate(`/session/${sessionId}`);
 		} else {
 			setRemoveError(result.message);
 			setIsRemoving(false);
 		}
-		
+
 		setShowConfirmDialog(false);
 	};
 
@@ -48,15 +54,15 @@ export default function StudentPage() {
 		setIsResettingPassword(true);
 		setResetPasswordError("");
 		setResetPasswordSuccess("");
-		
+
 		const result = await resetPassword();
-		
+
 		if (result.success) {
 			setResetPasswordSuccess(result.message);
 		} else {
 			setResetPasswordError(result.message);
 		}
-		
+
 		setIsResettingPassword(false);
 	};
 
@@ -99,8 +105,8 @@ export default function StudentPage() {
 				<h1>Student</h1>
 				{isCoordinator && (
 					<div className="header-buttons">
-						<button 
-							onClick={handleResetPassword} 
+						<button
+							onClick={handleResetPassword}
 							className="reset-password-button"
 							disabled={isResettingPassword}
 						>
@@ -142,7 +148,7 @@ export default function StudentPage() {
 							</div>
 							<div className="info-item">
 								<label>Group Size:</label>
-								<span>{student.group.groupSize}/{student.group.maxSize}</span>
+								<span>{student.group.groupSize}/{session.maxGroupSize}</span>
 							</div>
 						</div>
 					) : (
@@ -186,7 +192,7 @@ export default function StudentPage() {
 							<div className="info-item full-width">
 								<label>Personal Skills:</label>
 								<span>
-									{student.questionnaire.personalSkills && Array.isArray(student.questionnaire.personalSkills) 
+									{student.questionnaire.personalSkills && Array.isArray(student.questionnaire.personalSkills)
 										? student.questionnaire.personalSkills.join(", ")
 										: student.questionnaire.personalSkills || "Not specified"
 									}
@@ -195,7 +201,7 @@ export default function StudentPage() {
 							<div className="info-item full-width">
 								<label>Academic Interests:</label>
 								<span>
-									{student.questionnaire.academicInterests && Array.isArray(student.questionnaire.academicInterests) 
+									{student.questionnaire.academicInterests && Array.isArray(student.questionnaire.academicInterests)
 										? student.questionnaire.academicInterests.join(", ")
 										: student.questionnaire.academicInterests || "Not specified"
 									}
@@ -247,15 +253,15 @@ export default function StudentPage() {
 							This action cannot be undone.
 						</p>
 						<div className="modal-buttons">
-							<button 
-								onClick={handleCancelRemove} 
+							<button
+								onClick={handleCancelRemove}
 								className="cancel-button"
 								disabled={isRemoving}
 							>
 								Cancel
 							</button>
-							<button 
-								onClick={handleConfirmRemove} 
+							<button
+								onClick={handleConfirmRemove}
 								className="confirm-remove-button"
 								disabled={isRemoving}
 							>

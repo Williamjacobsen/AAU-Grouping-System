@@ -15,9 +15,14 @@ export default function Profile() {
 
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
+	const [newName, setNewName] = useState("");
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
 	const { user, isLoading: isLoadingUser, setUser } = useAuth();
+
+	function isUserNameNotSpecifiedYet() {
+		return user?.name === "Not specified";
+	}
 
 	useEffect(() => {
 		if (error) {
@@ -33,16 +38,21 @@ export default function Profile() {
 		}
 	}, [succes]);
 
+	useEffect(() => {
+		if (isUserNameNotSpecifiedYet()) {
+			alert("You have not yet specified your name. \nPlease do so.");
+		}
+	}, [user]);
 
 	if (isLoadingUser) return <>Checking authentication...</>;
-	if (!user) return navigate("/sign-in");;
+	if (!user) return navigate("/sign-in");
 
 	const handleEmailChange = async () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyEmail`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ newEmail, userRole: user.role }),
+				body: JSON.stringify({ newEmail }),
 				credentials: "include"
 			});
 
@@ -89,6 +99,32 @@ export default function Profile() {
 		}
 	};
 
+	const handleNameChange = async () => {
+		try {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyName`, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ newName }),
+				credentials: "include"
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				setSucces("");
+				return Promise.resolve();
+			}
+
+			navigate("/profile");
+			setSucces("Name updated succesfully");
+			setError("");
+			setUser(prev => ({ ...prev, name: newName }));
+
+		} catch (e) {
+			setError(e.message);
+		}
+	};
+
 	const handleLogout = async () => {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/signOut`, {
@@ -102,9 +138,9 @@ export default function Profile() {
 				return Promise.resolve();
 			}
 
-			navigate("/sign-in");
-			window.location.reload();
 
+			navigate("/sign-in");
+			window.location.reload(); // To refresh the header
 		} catch (e) {
 			setError(e.message);
 		}
@@ -130,6 +166,22 @@ export default function Profile() {
 			</div>
 
 			<hr />
+
+			<div className="text">
+				<label className="label" style={isUserNameNotSpecifiedYet() ? { color: "crimson" } : null}>
+					Change Name
+					<input
+						type="text"
+						placeholder="New name"
+						style={isUserNameNotSpecifiedYet() ? { backgroundColor: "crimson" } : null}
+						onChange={(e) => setNewName(e.target.value)}
+					/>
+				</label>
+				<button className="sign-in" onClick={handleNameChange}>
+					Update Name
+				</button>
+			</div>
+
 			<div className="text">
 				<label className="label">
 					Change Email
@@ -157,6 +209,7 @@ export default function Profile() {
 					Update Password
 				</button>
 			</div>
+
 			<hr />
 
 			<button className="sign-up" onClick={handleLogout}>

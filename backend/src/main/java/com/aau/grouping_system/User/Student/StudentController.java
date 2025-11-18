@@ -42,9 +42,7 @@ public class StudentController {
 		Student student = requestRequirementService.requireUserStudentExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(student.getSessionId());
 
-		if (sessionService.isQuestionnaireDeadlineExceeded(session)) {
-			throw new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded.");
-		}
+		requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
 
 		studentService.applyQuestionnaireAnswers(student, record.toQuestionnaire());
 

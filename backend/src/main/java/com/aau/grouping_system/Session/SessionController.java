@@ -53,7 +53,8 @@ public class SessionController {
 	}
 
 	@PostMapping
-	public ResponseEntity<Session> createSession(HttpServletRequest servlet,
+	public ResponseEntity<Session> createSession(
+			HttpServletRequest servlet,
 			@Valid @RequestBody CreateSessionRecord record) {
 
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
