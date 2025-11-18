@@ -81,37 +81,37 @@
 	.projects-container {
 		padding: 1rem;
 	}
-	
+
 	.projects-title {
 		font-size: 2rem;
 	}
-	
+
 	.projects-table {
 		font-size: 1rem;
 	}
-	
+
 	.projects-table th,
 	.projects-table td {
 		padding: 0.5rem;
 	}
-	
+
 	/* Stack table on mobile for better readability */
 	.projects-table thead {
 		display: none;
 	}
-	
+
 	.projects-table tbody,
 	.projects-table tr,
 	.projects-table td {
 		display: block;
 	}
-	
+
 	.projects-table tr {
 		margin-bottom: 1rem;
 		border-left: 4px solid #3498db;
 		padding-left: 1rem;
 	}
-	
+
 	.projects-table td:before {
 		content: attr(data-label) ": ";
 		font-weight: 600;
