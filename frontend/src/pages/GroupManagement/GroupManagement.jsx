@@ -113,8 +113,13 @@ export default function GroupManagement() {
 		return <div className="loading-message">Loading...</div>;
 	if (!user) 
 		return navigate("/sign-in");
-	if (user.role !== "Coordinator") 
-		return;
+	if (user.role !== "Coordinator") {
+		return (
+				<div className="error-message">
+					Access denied. Only coordinators can manage groups.
+				</div>
+		);
+	}
 
 	return (
 		<div className="group-container">
