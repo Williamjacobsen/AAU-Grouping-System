@@ -69,7 +69,9 @@ public class MessagesService {
 		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
 			String key = groupEntry.getKey();
 
-			result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());
+			if (key.contains(username)) {
+				result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());
+			}
 		}
 
 		return result;
