@@ -52,11 +52,15 @@ public class SessionSetupController {
 
 		return ResponseEntity.ok("Session setup saved successfully!");
 	}
+	// Record for sending login codes
+	// sendOnlyNew: if true, only send codes to users without existing codes
 
 	record SendLoginCodeRecord(
 			Boolean sendOnlyNew) {
 	}
-
+// unchecked cast + CopyOnWriteArrayList:
+// getItems returns a raw CopyOnWriteArrayList from the database module.
+// We know the content is always User, so the cast is safe.
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@PostMapping("/{sessionId}/sendLoginCodeTo/students")
 	public ResponseEntity<String> sendLoginCodeToStudents(
@@ -70,7 +74,7 @@ public class SessionSetupController {
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
-		if (record.sendOnlyNew) {
+		if (record.sendOnlyNew) { // If sendOnlyNew=true, do NOT re-send login codes to users who already have one.
 			students.removeIf(student -> student.getLoginCode() != null);
 		}
 
@@ -96,7 +100,7 @@ public class SessionSetupController {
 			supervisors.removeIf(supervisor -> supervisor.getLoginCode() != null);
 		}
 
-		userService.applyAndEmailLoginCodes(session, supervisors);
+		userService.applyAndEmailLoginCodes(session, supervisors); // Generates login codes for all given users and sends them via email.
 
 		return ResponseEntity.ok("Emails have been sent to supervisors.");
 	}

@@ -1,11 +1,11 @@
 
 
-import React, { memo } from "react";
+import React, { memo } from "react"; // memo() prevents unnecessary re-renders of this component
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
 const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setMessage }) => {
 
-	async function saveSetup(event) {
+	async function saveSetup(event) { // Handles the "Apply Changes" submit event. Converts form data and sends it to the backend.
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 			setMessage("Saving session...");
@@ -35,7 +35,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 			setMessage("Setup saved successfully!");
 
-			window.location.reload(); // Reload the page (to refresh changes)
+			window.location.reload(); // Reload the page to refresh changes (backend updates session object)
 		} catch (error) {
 			alert(error);
 		}
