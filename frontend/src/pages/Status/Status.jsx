@@ -1,12 +1,9 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
 import "./Status.css";
 
-import useGetSessionStudents from "../../hooks/useGetSessionStudents";
-import { useGetSessionByParameter } from "../../hooks/useGetSession";
-import useGetSessionProjects from "hooks/useGetSessionProjects";
-import useGetSessionGroups from "hooks/useGetSessionGroups";
+import { useAuth } from "../../ContextProviders/AuthProvider";
+import { useAppState } from "ContextProviders/AppStateContext";
 
 import useColumns from "./useColumns";
 import useColumnSorting from "./useColumnSorting";
@@ -16,7 +13,6 @@ import useColumnSearching from "./useColumnSearching";
 import SearchFilter from "./SearchFilter";
 import ColumnsDropdown from "./ColumnsDropdown";
 import StudentTable from "./StudentTable";
-import CsvDownloadButton from "./CsvDownloadButton";
 import GroupMenu from "./GroupMenu";
 
 export default function Status() {
@@ -24,11 +20,8 @@ export default function Status() {
 	const { sessionId } = useParams();
 
 	// Get hooks
-	const { isLoading: isLoadingUser, user } = useGetUser();
-	const { isLoading: isLoadingSession, session } = useGetSessionByParameter();
-	const { isLoading: isLoadingStudents, students } = useGetSessionStudents(sessionId);
-	const { isLoading: isLoadingProjects, projects } = useGetSessionProjects(sessionId);
-	const { isLoading: isLoadingGroups, groups } = useGetSessionGroups(sessionId);
+	const { isLoading: isLoadingUser, user } = useAuth();
+	const { isLoading: isLoadingApp, session, students, projects, groups } = useAppState();
 
 	// Getting the columns for the student table
 	const { originalColumns } = useColumns(students, projects, groups);
@@ -39,10 +32,7 @@ export default function Status() {
 	// Loading
 	if (isLoadingUser) return <div className="loading-message">Checking authentication...</div>;
 	if (!user) return <div className="access-denied-message">Access denied: Not logged in.</div>;
-	if (isLoadingSession) return <div className="loading-message">Loading session information...</div>;
-	if (isLoadingStudents) return <div className="loading-message">Loading session information...</div>;
-	if (isLoadingProjects) return <div className="loading-message">Loading session projects...</div>;
-	if (isLoadingGroups) return <div className="loading-message">Loading session groups...</div>;
+	if (isLoadingApp) return <div className="loading-message">Loading information...</div>;
 
 	return (
 		<div className="status-container">
@@ -51,7 +41,7 @@ export default function Status() {
 			</h1>
 			<div>
 				<b>Students are allowed to make changes until this deadline: </b>
-				{session.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
+				{session?.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
 			</div>
 			<div>
 				<GroupMenu
@@ -83,9 +73,6 @@ export default function Status() {
 					session={session}
 					user={user} />
 			</div>
-			{user?.role === "Coordinator" &&
-				<CsvDownloadButton students={students} sessionId={sessionId} />
-			}
 		</div>
 	);
 }

@@ -1,14 +1,14 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./SupervisorsPage.css";
+import { useAuth } from "../../ContextProviders/AuthProvider";
+import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function SupervisorsPage() {
 	const { sessionId } = useParams();
 	const navigate = useNavigate();
-	const [supervisors, setSupervisors] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const { supervisors, setSupervisors, isLoading: loading } = useAppState();
 	const [error, setError] = useState("");
-	const [isCoordinator, setIsCoordinator] = useState(false);
 	const [showAddModal, setShowAddModal] = useState(false);
 	const [showRemoveModal, setShowRemoveModal] = useState(false);
 	const [email, setEmail] = useState("");
@@ -19,6 +19,14 @@ export default function SupervisorsPage() {
 	
 	const [successMessage, setSuccessMessage] = useState("");
 	const [actionError, setActionError] = useState("");
+
+	const { user } = useAuth();
+	const [isCoordinator, setIsCoordinator] = useState(false);
+	useEffect(() => {
+		if (user) {
+			setIsCoordinator(user.role === "Coordinator");
+		}
+	}, [user]);
 
 	const goBack = () => {
 		navigate(-1);
@@ -31,24 +39,7 @@ export default function SupervisorsPage() {
 		}
 	}, [successMessage]);
 
-	const fetchUserRole = async () => {
-		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/getUser`, {
-				method: "GET",
-				credentials: "include",
-			});
-			
-			if (response.ok) {
-				const userData = await response.json();
-				setIsCoordinator(userData.role === "Coordinator");
-			}
-		} catch (err) {
-			console.error("Error fetching user role:", err);
-		}
-	};
-
 	const fetchSupervisors = useCallback(async () => {
-		setLoading(true);
 		setError("");
 		
 		try {
@@ -69,20 +60,8 @@ export default function SupervisorsPage() {
 			}
 		} catch (err) {
 			setError("Error loading supervisors: " + err.message);
-		} finally {
-			setLoading(false);
-		}
+		} 
 	}, [sessionId]);
-
-	useEffect(() => {
-		fetchUserRole();
-	}, []);
-
-	useEffect(() => {
-		if (sessionId && isCoordinator) {
-			fetchSupervisors();
-		}
-	}, [sessionId, isCoordinator, fetchSupervisors]);
 
 	const handleAddSupervisor = async (e) => {
 		e.preventDefault();

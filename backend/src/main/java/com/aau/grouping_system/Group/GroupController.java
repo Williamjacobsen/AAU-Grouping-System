@@ -23,9 +23,11 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.Utils.RequestRequirementService;
+import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -40,11 +42,14 @@ public class GroupController {
 	private final Database db;
 	private final GroupService groupService;
 	private final RequestRequirementService requestRequirementService;
+	private final SupervisorsPageController supervisorsPageController;
 
-	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService) {
+	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService,
+			SupervisorsPageController supervisorsPageController) {
 		this.db = db;
 		this.groupService = groupService;
 		this.requestRequirementService = requestRequirementService;
+		this.supervisorsPageController = supervisorsPageController;
 	}
 
 	@PostMapping("/{sessionId}/{groupId}/accept-request/{studentId}")
@@ -155,6 +160,7 @@ public class GroupController {
 			groupData.put("name", "Group " + group.getId()); // if there’s no explicit name property
 			groupData.put("project", projectName);
 			groupData.put("members", membersList);
+			groupData.put("supervisor", group.getSupervisorId());
 
 			response.put(entry.getKey(), groupData);
 		}
@@ -197,45 +203,49 @@ public class GroupController {
 		}
 	}
 
-	@PostMapping("/{sessionId}/{fromGroupId}/move-student/{toGroupId}/{studentId}")
+	@PostMapping("/{fromGroupId}/move-student/{toGroupId}/{studentId}/{sessionId}")
 	public ResponseEntity<String> moveStudentBetweenGroups(
 			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String studentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		try {
 			Student student = requestRequirementService.requireStudentExists(studentId);
-			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
+			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
-			if (toGroup.getStudentIds().size() >= 7) {// Default is max = 7, needs to change so that it gets the number from
-																								// the max students session setup page
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-						.body("Target group is full");
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			int maxGroupSize = session.getMaxGroupSize();
+
+			if (fromGroup != null) {
+
+				// Remove student from old group and add student to new group
+				groupService.leaveGroup(fromGroup, student);
+				groupService.joinGroup(toGroup, student);
+
+				return ResponseEntity.ok("Student moved successfully.");
 			}
 
-			// Remove student from old group
-			groupService.leaveGroup(fromGroup, student);
 			groupService.joinGroup(toGroup, student);
 
 			return ResponseEntity.ok("Student moved successfully.");
-
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Failed to move student: " + e.getMessage());
 		}
 	}
 
-	@PostMapping("/{fromGroupId}/move-members/{toGroupId}")
+	@PostMapping("/{fromGroupId}/move-members/{toGroupId}/{sessionId}")
 	public ResponseEntity<String> moveAllMembersBetweenGroups(
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String fromGroupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
+			@PathVariable String sessionId) {
 
 		requestRequirementService.requireUserCoordinatorExists(servlet);
 
@@ -243,10 +253,11 @@ public class GroupController {
 			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			int maxGroupSize = session.getMaxGroupSize();
+
 			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > 7) {// Default is max = 7, needs to change
-																																									// so that it gets the number from the
-																																									// max students session setup page
+			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > maxGroupSize) {
 				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
 			}
 
@@ -388,4 +399,37 @@ public class GroupController {
 				.body("Group supervisor succesfully modified");
 	}
 
+	@PostMapping("/{sessionId}/{groupId}/assign-supervisor/{supervisorId}")
+	public ResponseEntity<String> assignSupervisorToGroup(
+			HttpServletRequest servlet,
+			@PathVariable String groupId,
+			@PathVariable String supervisorId,
+			@PathVariable String sessionId) {
+
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+
+		try {
+			// Find the group
+			Group group = requestRequirementService.requireGroupExists(groupId);
+
+			// Find supervisor in the same session
+			Session session = supervisorsPageController.validateSessionAccess(servlet, sessionId);
+			Supervisor supervisor = supervisorsPageController.findSupervisorInSession(session, supervisorId);
+
+			if (supervisor == null) {
+				throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
+			}
+
+			// Assign supervisor
+			group.setSupervisorId(supervisorId);
+
+			return ResponseEntity.ok("Supervisor assigned successfully!");
+		} catch (RequestException e) {
+			return ResponseEntity.status(e.getStatus()).body(e.getMessage());
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Failed to assign supervisor: " + e.getMessage());
+		}
+	}
 }

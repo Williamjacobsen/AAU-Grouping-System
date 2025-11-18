@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import useSessionManager from "./useSessionManager";
 import "./Sessions.css";
 
@@ -19,7 +19,7 @@ export default function Sessions() {
 		deleteSession
 	} = useSessionManager();
 
-	const { user, isLoading: isLoadingUser } = useGetUser();
+	const { user, isLoading: isLoadingUser } = useAuth();
 	
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");

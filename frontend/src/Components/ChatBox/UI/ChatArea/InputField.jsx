@@ -12,7 +12,7 @@ export default function InputField({
     <div
       style={{
         position: "absolute",
-        bottom: 20,
+        bottom: 0,
         right: 0,
         width: "60%",
         height: "4rem",

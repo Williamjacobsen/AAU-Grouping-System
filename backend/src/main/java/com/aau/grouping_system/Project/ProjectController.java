@@ -1,13 +1,5 @@
 package com.aau.grouping_system.Project;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Session.Session;
-
-import jakarta.validation.constraints.NotBlank;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -20,8 +12,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Session.Session;
+
+import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated // enables method-level validation
@@ -36,9 +34,8 @@ public class ProjectController {
 		this.db = db;
 	}
 
-	@GetMapping("/getSessionProjects/{sessionId}")
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
+	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" })
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error
@@ -94,6 +91,11 @@ public class ProjectController {
 		return ResponseEntity.ok(response);
 	}
 
+ 	
+	}
+/*@PutMapping("/update/{projectId}/{newName}/{newDescription}")
+	public ResponseEntity<String> updateProject(@PathVariable String projectId, @PathVariable String newName,
+			@PathVariable String newDescription) {
 	@PutMapping("/update/{projectId}/{newName}/{newDescription}")
 	public ResponseEntity<String> updateProject(
 			@NoDangerousCharacters @NotBlank @PathVariable String projectId,
@@ -112,6 +114,5 @@ public class ProjectController {
 		project.setDescription(newDescription);
 
 		// Return success message with 200 ok
-		return ResponseEntity.ok("Project with id " + projectId + " has been updated successfully.");
-	}
-}
+		return ResponseEntity.ok("Project with id " + projectId + " has been updated successfully."); */
+

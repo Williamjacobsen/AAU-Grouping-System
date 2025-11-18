@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useGetUser } from "../../hooks/useGetUser";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./User.css";
 
 export default function Profile() {
@@ -18,7 +18,7 @@ export default function Profile() {
 	const [newName, setNewName] = useState("");
 	const [error, setError] = useState("");
 	const [succes, setSucces] = useState("");
-	const { user, isLoading: isLoadingUser, setUser } = useGetUser();
+	const { user, isLoading: isLoadingUser, setUser } = useAuth();
 
 	function isUserNameNotSpecifiedYet() {
 		return user?.name === "Not specified";
@@ -141,7 +141,6 @@ export default function Profile() {
 
 			navigate("/sign-in");
 			window.location.reload(); // To refresh the header
-
 		} catch (e) {
 			setError(e.message);
 		}
