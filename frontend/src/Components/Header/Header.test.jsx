@@ -5,11 +5,11 @@ import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 
 import Header from "./Header";
-import { useGetUser } from '../../hooks/useGetUser';
+import { useAuth } from '../../ContextProviders/AuthProvider';
 import { useGetSessionByUserOrParameter } from '../../hooks/useGetSession';
 
-vi.mock('../../hooks/useGetUser', () => ({
-  useGetUser: vi.fn(),
+vi.mock('../../ContextProviders/AuthProvider', () => ({
+  useAuth: vi.fn(),
 }));
 
 vi.mock('../../hooks/useGetSession', () => ({
@@ -39,7 +39,7 @@ describe('Header Component', () => {
   });
 
   it('renders header when no user is provided', () => {
-    useGetUser.mockReturnValue({ user: null, isLoading: false });
+    useAuth.mockReturnValue({ user: null, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -53,7 +53,7 @@ describe('Header Component', () => {
       name: 'Test User',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -66,7 +66,7 @@ describe('Header Component', () => {
       role: 'Coordinator',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -74,7 +74,7 @@ describe('Header Component', () => {
   });
 
   it('shows sign in link when no user is logged in', () => {
-    useGetUser.mockReturnValue({ user: null, isLoading: false });
+    useAuth.mockReturnValue({ user: null, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -92,7 +92,7 @@ describe('Header Component', () => {
       role: 'Coordinator',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -106,7 +106,7 @@ describe('Header Component', () => {
       role: 'Coordinator',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -120,7 +120,7 @@ describe('Header Component', () => {
       role: 'Student',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -135,7 +135,7 @@ describe('Header Component', () => {
       role: 'Supervisor',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -149,7 +149,7 @@ describe('Header Component', () => {
       role: 'Coordinator',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     
@@ -158,7 +158,7 @@ describe('Header Component', () => {
   });
 
   it('shows loading state when user data is loading', () => {
-    useGetUser.mockReturnValue({ user: null, isLoading: true });
+    useAuth.mockReturnValue({ user: null, isLoading: true });
     
     render(<MockedHeader />);
     
@@ -174,7 +174,7 @@ describe('Header Component', () => {
       role: 'Coordinator',
     };
     
-    useGetUser.mockReturnValue({ user: mockUser, isLoading: false });
+    useAuth.mockReturnValue({ user: mockUser, isLoading: false });
     
     render(<MockedHeader />);
     

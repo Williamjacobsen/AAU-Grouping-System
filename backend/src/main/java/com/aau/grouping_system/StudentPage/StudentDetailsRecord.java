@@ -2,6 +2,7 @@ package com.aau.grouping_system.StudentPage;
 
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
+import com.aau.grouping_system.User.Student.StudentQuestionnaireRecord;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;

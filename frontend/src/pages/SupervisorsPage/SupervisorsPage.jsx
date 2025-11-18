@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./SupervisorsPage.css";
 import { useAuth } from "../../ContextProviders/AuthProvider";
@@ -17,8 +17,7 @@ export default function SupervisorsPage() {
 	const [removingSupervisor, setRemovingSupervisor] = useState(false);
 	const [sendingPassword, setSendingPassword] = useState(null);
 	
-	const [successMessage, setSuccessMessage] = useState("");
-	const [actionError, setActionError] = useState("");
+	const [message, setMessage] = useState({ text: "", type: "" }); // 'success' or 'error'
 
 	const { user } = useAuth();
 	const [isCoordinator, setIsCoordinator] = useState(false);
@@ -33,11 +32,11 @@ export default function SupervisorsPage() {
 	};
 
 	useEffect(() => {
-		if (successMessage) {
-			const timer = setTimeout(() => setSuccessMessage(""), 5000);
+		if (message.text && message.type === "success") {
+			const timer = setTimeout(() => setMessage({ text: "", type: "" }), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [successMessage]);
+	}, [message]);
 
 	const fetchSupervisors = useCallback(async () => {
 		setLoading(true);
@@ -76,13 +75,12 @@ export default function SupervisorsPage() {
 		e.preventDefault();
 		
 		if (!email.trim()) {
-			setActionError("Please enter an email address.");
+			setMessage({ text: "Please enter an email address.", type: "error" });
 			return;
 		}
 
 		setAddingSupervisor(true);
-		setActionError("");
-		setSuccessMessage("");
+		setMessage({ text: "", type: "" });
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
@@ -98,15 +96,15 @@ export default function SupervisorsPage() {
 				setEmail("");
 				setShowAddModal(false);
 				fetchSupervisors();
-				setSuccessMessage("Supervisor added successfully!");
+				setMessage({ text: "Supervisor added successfully!", type: "success" });
 			} else if (response.status === 409) {
-				setActionError("A supervisor with this email already exists in this session.");
+				setMessage({ text: "A supervisor with this email already exists in this session.", type: "error" });
 			} else {
 				const errorText = await response.text();
-				setActionError("Failed to add supervisor: " + errorText);
+				setMessage({ text: "Failed to add supervisor: " + errorText, type: "error" });
 			}
 		} catch (err) {
-			setActionError("Error adding supervisor: " + err.message);
+			setMessage({ text: "Error adding supervisor: " + err.message, type: "error" });
 		} finally {
 			setAddingSupervisor(false);
 		}
@@ -116,8 +114,7 @@ export default function SupervisorsPage() {
 		if (!supervisorToRemove) return;
 
 		setRemovingSupervisor(true);
-		setActionError("");
-		setSuccessMessage("");
+		setMessage({ text: "", type: "" });
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
@@ -129,13 +126,13 @@ export default function SupervisorsPage() {
 				setShowRemoveModal(false);
 				setSupervisorToRemove(null);
 				fetchSupervisors();
-				setSuccessMessage("Supervisor removed successfully!");
+				setMessage({ text: "Supervisor removed successfully!", type: "success" });
 			} else {
 				const errorText = await response.text();
-				setActionError("Failed to remove supervisor: " + errorText);
+				setMessage({ text: "Failed to remove supervisor: " + errorText, type: "error" });
 			}
 		} catch (err) {
-			setActionError("Error removing supervisor: " + err.message);
+			setMessage({ text: "Error removing supervisor: " + err.message, type: "error" });
 		} finally {
 			setRemovingSupervisor(false);
 		}
@@ -143,8 +140,7 @@ export default function SupervisorsPage() {
 
 	const handleSendNewPassword = async (supervisor) => {
 		setSendingPassword(supervisor.id);
-		setActionError("");
-		setSuccessMessage("");
+		setMessage({ text: "", type: "" });
 		
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
@@ -153,14 +149,14 @@ export default function SupervisorsPage() {
 			});
 			
 			if (response.ok) {
-				const successMessage = await response.text();
-				setSuccessMessage(successMessage);
+				const successText = await response.text();
+				setMessage({ text: successText, type: "success" });
 			} else {
 				const errorText = await response.text();
-				setActionError("Failed to send new password: " + errorText);
+				setMessage({ text: "Failed to send new password: " + errorText, type: "error" });
 			}
 		} catch (err) {
-			setActionError("Error sending new password: " + err.message);
+			setMessage({ text: "Error sending new password: " + err.message, type: "error" });
 		} finally {
 			setSendingPassword(null);
 		}
@@ -176,8 +172,7 @@ export default function SupervisorsPage() {
 		setShowRemoveModal(false);
 		setSupervisorToRemove(null);
 		setEmail("");
-		setActionError("");
-		setSuccessMessage("");
+		setMessage({ text: "", type: "" });
 	};
 
 	if (!isCoordinator) {
@@ -349,15 +344,9 @@ export default function SupervisorsPage() {
 			)}
 
 			{/* Success and Error Messages */}
-			{successMessage && (
-				<div className="success-message" style={{ marginTop: '20px' }}>
-					{successMessage}
-				</div>
-			)}
-
-			{actionError && (
-				<div className="error-message" style={{ marginTop: '20px' }}>
-					{actionError}
+			{message.text && (
+				<div className={message.type === "success" ? "success-message" : "error-message"} style={{ marginTop: '20px' }}>
+					{message.text}
 				</div>
 			)}
 		</div>

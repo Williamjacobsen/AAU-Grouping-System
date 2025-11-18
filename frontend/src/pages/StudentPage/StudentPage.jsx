@@ -8,11 +8,7 @@ export default function StudentPage() {
 	const navigate = useNavigate();
 	const { student, loading, error, isCoordinator, removeStudent, resetPassword } = useStudentData(sessionId, studentId);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-	const [isRemoving, setIsRemoving] = useState(false);
-	const [removeError, setRemoveError] = useState("");
-	const [isResettingPassword, setIsResettingPassword] = useState(false);
-	const [resetPasswordError, setResetPasswordError] = useState("");
-	const [resetPasswordSuccess, setResetPasswordSuccess] = useState("");
+	const [operationState, setOperationState] = useState({ type: "", loading: false, message: "", messageType: "" });
 
 	const goBack = () => {
 		navigate(-1);
@@ -20,20 +16,18 @@ export default function StudentPage() {
 
 	const handleRemoveClick = () => {
 		setShowConfirmDialog(true);
-		setRemoveError("");
+		setOperationState({ type: "remove", loading: false, message: "", messageType: "" });
 	};
 
 	const handleConfirmRemove = async () => {
-		setIsRemoving(true);
-		setRemoveError("");
+		setOperationState({ type: "remove", loading: true, message: "", messageType: "" });
 		
 		const result = await removeStudent();
 		
 		if (result.success) {
 			navigate(`/session/${sessionId}`);
 		} else {
-			setRemoveError(result.message);
-			setIsRemoving(false);
+			setOperationState({ type: "remove", loading: false, message: result.message, messageType: "error" });
 		}
 		
 		setShowConfirmDialog(false);
@@ -41,23 +35,19 @@ export default function StudentPage() {
 
 	const handleCancelRemove = () => {
 		setShowConfirmDialog(false);
-		setRemoveError("");
+		setOperationState({ type: "", loading: false, message: "", messageType: "" });
 	};
 
 	const handleResetPassword = async () => {
-		setIsResettingPassword(true);
-		setResetPasswordError("");
-		setResetPasswordSuccess("");
+		setOperationState({ type: "reset", loading: true, message: "", messageType: "" });
 		
 		const result = await resetPassword();
 		
 		if (result.success) {
-			setResetPasswordSuccess(result.message);
+			setOperationState({ type: "reset", loading: false, message: result.message, messageType: "success" });
 		} else {
-			setResetPasswordError(result.message);
+			setOperationState({ type: "reset", loading: false, message: result.message, messageType: "error" });
 		}
-		
-		setIsResettingPassword(false);
 	};
 
 	if (loading) {
@@ -102,9 +92,9 @@ export default function StudentPage() {
 						<button 
 							onClick={handleResetPassword} 
 							className="reset-password-button"
-							disabled={isResettingPassword}
+							disabled={operationState.type === "reset" && operationState.loading}
 						>
-							{isResettingPassword ? "Sending..." : "Send New Password"}
+							{operationState.type === "reset" && operationState.loading ? "Sending..." : "Send New Password"}
 						</button>
 						<button onClick={handleRemoveClick} className="remove-button">
 							Remove Student
@@ -159,15 +149,15 @@ export default function StudentPage() {
 						<div className="questionnaire-grid">
 							<div className="info-item">
 								<label>Project Priority 1:</label>
-								<span>{student.questionnaire.projectPriority1}</span>
+								<span>{student.questionnaire.desiredProjectId1}</span>
 							</div>
 							<div className="info-item">
 								<label>Project Priority 2:</label>
-								<span>{student.questionnaire.projectPriority2}</span>
+								<span>{student.questionnaire.desiredProjectId2}</span>
 							</div>
 							<div className="info-item">
 								<label>Project Priority 3:</label>
-								<span>{student.questionnaire.projectPriority3}</span>
+								<span>{student.questionnaire.desiredProjectId3}</span>
 							</div>
 							{student.questionnaire.desiredGroupMembers !== undefined && (
 								<div className="info-item">
@@ -177,11 +167,23 @@ export default function StudentPage() {
 							)}
 							<div className="info-item">
 								<label>Desired Group Size:</label>
-								<span>{student.questionnaire.desiredGroupSize} members</span>
+								<span>
+									{student.questionnaire.desiredGroupSizeMin === -1 && student.questionnaire.desiredGroupSizeMax === -1
+										? "No preference"
+										: student.questionnaire.desiredGroupSizeMin === student.questionnaire.desiredGroupSizeMax && student.questionnaire.desiredGroupSizeMin !== -1
+										? `${student.questionnaire.desiredGroupSizeMin} members`
+										: `${student.questionnaire.desiredGroupSizeMin === -1 ? 'No min' : student.questionnaire.desiredGroupSizeMin} - ${student.questionnaire.desiredGroupSizeMax === -1 ? 'No max' : student.questionnaire.desiredGroupSizeMax} members`
+									}
+								</span>
 							</div>
 							<div className="info-item">
 								<label>Working Environment:</label>
-								<span>{student.questionnaire.workingEnvironment}</span>
+								<span>
+									{student.questionnaire.desiredWorkLocation === 'NoPreference' && student.questionnaire.desiredWorkStyle === 'NoPreference'
+										? "No preference"
+										: `${student.questionnaire.desiredWorkLocation === 'Located' ? 'Located together' : student.questionnaire.desiredWorkLocation === 'Remote' ? 'Remote' : 'No preference'}, ${student.questionnaire.desiredWorkStyle === 'Solo' ? 'Work independently' : student.questionnaire.desiredWorkStyle === 'Together' ? 'Work together' : 'No preference'}`
+									}
+								</span>
 							</div>
 							<div className="info-item full-width">
 								<label>Personal Skills:</label>
@@ -207,10 +209,10 @@ export default function StudentPage() {
 									<span>{student.questionnaire.specialNeeds}</span>
 								</div>
 							)}
-							{student.questionnaire.otherComments && (
+							{student.questionnaire.comments && (
 								<div className="info-item full-width">
 									<label>Additional Comments:</label>
-									<span>{student.questionnaire.otherComments}</span>
+									<span>{student.questionnaire.comments}</span>
 								</div>
 							)}
 						</div>
@@ -218,21 +220,9 @@ export default function StudentPage() {
 				)}
 			</div>
 
-			{resetPasswordSuccess && (
-				<div className="success-message" style={{ marginTop: '20px' }}>
-					{resetPasswordSuccess}
-				</div>
-			)}
-
-			{resetPasswordError && (
-				<div className="error-message" style={{ marginTop: '20px' }}>
-					{resetPasswordError}
-				</div>
-			)}
-
-			{removeError && (
-				<div className="error-message" style={{ marginTop: '20px' }}>
-					{removeError}
+			{operationState.message && (
+				<div className={operationState.messageType === "success" ? "success-message" : "error-message"} style={{ marginTop: '20px' }}>
+					{operationState.message}
 				</div>
 			)}
 
@@ -250,16 +240,16 @@ export default function StudentPage() {
 							<button 
 								onClick={handleCancelRemove} 
 								className="cancel-button"
-								disabled={isRemoving}
+								disabled={operationState.type === "remove" && operationState.loading}
 							>
 								Cancel
 							</button>
 							<button 
 								onClick={handleConfirmRemove} 
 								className="confirm-remove-button"
-								disabled={isRemoving}
+								disabled={operationState.type === "remove" && operationState.loading}
 							>
-								{isRemoving ? "Removing..." : "Remove Student"}
+								{operationState.type === "remove" && operationState.loading ? "Removing..." : "Remove Student"}
 							</button>
 						</div>
 					</div>
