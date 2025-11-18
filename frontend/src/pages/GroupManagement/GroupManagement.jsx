@@ -112,7 +112,10 @@ export default function GroupManagement() {
 
 	if (isLoadingUser || isLoading)
 		return <div className="loading-message">Loading...</div>;
-	if (!user) return navigate("/sign-in");
+	if (!user) 
+		return navigate("/sign-in");
+	if (user.role !== "Coordinator") 
+		return;
 
 	return (
 		<div className="group-container">
