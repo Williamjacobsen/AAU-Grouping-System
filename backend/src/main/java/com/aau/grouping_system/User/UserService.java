@@ -146,7 +146,7 @@ public class UserService {
 		for (User user : users) {
 
 			String loginCode = ensureLoginCodeIsActivated(user);
-			System.out.println("User id:" + user.getId() + "\nLogin code: " + loginCode);
+			System.out.println("User id: " + user.getId() + "\nLogin code: " + loginCode);
 
 			String subject = "Grouping Formation System - Your Login Code";
 			String body = String.format("""

@@ -1,11 +1,12 @@
 
 export default function RenderGroups({
-	groups, supervisors, assignSupervisor, 
-	handleGroupClick, selectedGroup, 
+	groups, supervisors, assignSupervisor,
+	handleGroupClick, selectedGroup,
 	handleStudentClick, selectedStudent
 }) {
 
 	return groups.map((group) => {
+		console.log(group);
 		return (
 			<div className="group-box" key={group.id}>
 				<div className="AssignSupervisor-button">
