@@ -41,7 +41,7 @@ public class SupervisorsPageController {
 		this.supervisorsPageService = supervisorsPageService;
 	}
 
-	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
+	public Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
@@ -92,5 +92,16 @@ public class SupervisorsPageController {
 
 		String result = supervisorsPageService.sendNewPassword(session, supervisor);
 		return ResponseEntity.ok(result);
+	}
+
+	public Supervisor findSupervisorInSession(Session session, String supervisorId) {
+		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
+		
+		// Check if the supervisor belongs to this session
+		if (!supervisor.getSessionId().equals(session.getId())) {
+			return null;
+		}
+		
+		return supervisor;
 	}
 }

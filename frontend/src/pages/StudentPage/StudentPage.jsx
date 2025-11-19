@@ -1,12 +1,14 @@
 import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useStudentData from "./useStudentData";
+import useGetSessionProjects from "../../hooks/useGetSessionProjects";
 import "./StudentPage.css";
 
 export default function StudentPage() {
 	const { sessionId, studentId } = useParams();
 	const navigate = useNavigate();
 	const { student, loading, error, isCoordinator, removeStudent, resetPassword } = useStudentData(sessionId, studentId);
+	const { projects } = useGetSessionProjects(sessionId);
 	const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 	const [operationState, setOperationState] = useState({ type: "", loading: false, message: "", messageType: "" });
 
@@ -48,6 +50,12 @@ export default function StudentPage() {
 		} else {
 			setOperationState({ type: "reset", loading: false, message: result.message, messageType: "error" });
 		}
+	};
+
+	const getProjectName = (projectId) => {
+		if (!projects || !projectId) return "";
+		const project = projects.find(p => p.id === projectId);
+		return project ? project.name : projectId;
 	};
 
 	if (loading) {
@@ -149,15 +157,15 @@ export default function StudentPage() {
 						<div className="questionnaire-grid">
 							<div className="info-item">
 								<label>Project Priority 1:</label>
-								<span>{student.questionnaire.desiredProjectId1}</span>
+								<span>{getProjectName(student.questionnaire.desiredProjectId1)}</span>
 							</div>
 							<div className="info-item">
 								<label>Project Priority 2:</label>
-								<span>{student.questionnaire.desiredProjectId2}</span>
+								<span>{getProjectName(student.questionnaire.desiredProjectId2)}</span>
 							</div>
 							<div className="info-item">
 								<label>Project Priority 3:</label>
-								<span>{student.questionnaire.desiredProjectId3}</span>
+								<span>{getProjectName(student.questionnaire.desiredProjectId3)}</span>
 							</div>
 							<div className="info-item">
 								<label>Desired Group Size:</label>

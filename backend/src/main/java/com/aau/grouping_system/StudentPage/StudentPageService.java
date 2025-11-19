@@ -133,8 +133,7 @@ public class StudentPageService {
                         group.getId(),
                         true,
                         projectName,
-                        group.getStudentIds().size(),
-                        group.getMaxStudents());
+                        group.getStudentIds().size());
             }
         }
 
@@ -142,7 +141,6 @@ public class StudentPageService {
                 null,
                 false,
                 NOT_IN_GROUP,
-                0,
                 0);
     }
 
@@ -152,7 +150,10 @@ public class StudentPageService {
             // Remove student from group
             String groupId = validation.student.getGroupId();
             if (groupId != null) {
-                groupService.leaveGroup(groupId, validation.student);
+                Group group = db.getGroups().getItem(groupId);
+                if (group != null) {
+                    groupService.leaveGroup(group, validation.student);
+                }
             }
 
             // Remove student from database
