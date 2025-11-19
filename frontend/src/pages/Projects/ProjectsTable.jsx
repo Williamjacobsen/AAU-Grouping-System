@@ -2,8 +2,13 @@ import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadline
 import React, { useState, memo } from "react";
 
 const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
+
 	const [newProjectName, setNewProjectName] = useState("");
 	const [newProjectDescription, setNewProjectDescription] = useState("");
+
+	const [expandedProjectId, setExpandedProjectId] = useState(null);
+	const toggleExpanded = (projectId) =>
+		setExpandedProjectId((prev) => (prev === projectId ? null : projectId));
 
 	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
 
@@ -82,7 +87,20 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 				{projects !== null && projects.map((project) => (
 					<tr key={project.id || project._id || project.name}>
 						<td className="project-name">{project.name}</td>
-						<td className="project-description">{project.description}</td>
+						<td className="project-description">
+							<div
+								className={`description-content ${expandedProjectId === project.id ? "expanded" : "collapsed"
+									}`}
+							>
+								{project.description}
+							</div>
+							<button
+								className="btn-expand"
+								onClick={() => toggleExpanded(project.id)}
+							>
+								{expandedProjectId === project.id ? "Show Less" : "Show More"}
+							</button>
+						</td>
 						<td className="project-actions">
 							<button
 								className="btn-delete"
@@ -118,11 +136,12 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 									/>
 								</td>
 								<td>
-									<input
+									<textarea
 										value={newProjectDescription}
 										onChange={(e) => setNewProjectDescription(e.target.value)}
 										placeholder="New Project Description"
 										className="input-project-description"
+										style={{ width: "100%", resize: 'vertical' }}
 									/>
 								</td>
 								<td>

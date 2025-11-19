@@ -73,7 +73,96 @@
 
 .project-description {
 	color: #000;
-	line-height: 1.5;
+	font-size: 1.05rem;
+	line-height: 1.6;
+	display: flex;
+  flex-direction: column;
+	overflow: visible;
+	max-width: 400px;
+	word-break: break-word;
+	overflow-wrap: break-word;
+}
+.description-content {
+    overflow: hidden;
+    transition: max-height 0.28s ease-in-out;
+    white-space: pre-wrap; /* preserve line breaks */
+    word-wrap: break-word;
+		word-wrap: break-word;
+		overflow-wrap: break-word;
+}
+
+.description-content.collapsed {
+    /* show roughly 2 lines, with ellipsis on WebKit when possible */
+    max-height: calc(1.6rem * 2);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+		line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.description-content.expanded {
+    max-height: none; /* large enough for long descriptions */
+		overflow: visible;
+	}
+
+/* Expand/collapse button */
+.btn-expand {
+    align-self: flex-start;
+    margin-top: 0.95rem;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background-color 0.15s ease;
+}
+
+.btn-expand:hover {
+    background-color: #2b86c9;
+}
+
+/* highlight expanded row slightly */
+.expanded-row {
+    background-color: #f6fbff;
+}
+
+/* Actions styling */
+.project-actions {
+    white-space: nowrap;
+}
+
+.btn-delete {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-delete:hover {
+    background-color: #c0392b;
+}
+
+.btn-add {
+    background-color: #27ae60;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.btn-add:hover {
+    background-color: #229954;
 }
 
 @media (max-width: 768px) {
@@ -116,4 +205,6 @@
 		display: inline-block;
 		width: 100px;
 	}
+
+	
 }
