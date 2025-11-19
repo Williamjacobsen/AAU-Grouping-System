@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,15 +20,17 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
@@ -50,72 +52,45 @@ public class GroupController {
 		this.supervisorsPageController = supervisorsPageController;
 	}
 
-	private Coordinator validateCoordinatorAccess(HttpServletRequest servlet) {
-		return requestRequirementService.requireUserCoordinatorExists(servlet);
-	}
-
-	private Student validateStudentAccess(HttpServletRequest servlet, String studentId) {
-		Student authenticatedStudent = requestRequirementService.requireUserStudentExists(servlet);
-		Student targetStudent = requestRequirementService.requireStudentExists(studentId);
-
-		if (!authenticatedStudent.getId().equals(targetStudent.getId())) {
-			throw new RequestException(HttpStatus.FORBIDDEN, "Students can only perform operations on themselves");
-		}
-
-		return targetStudent;
-	}
-
-	private User validateUserAccess(HttpServletRequest servlet, String groupId) {
-		User user = requestRequirementService.requireUserExists(servlet);
-		requestRequirementService.requireGroupExists(groupId);
-		return user;
-	}
-
-	@PostMapping("/{groupId}/accept-request/{studentId}")
+	@PostMapping("/{sessionId}/{groupId}/accept-request/{studentId}")
 	public ResponseEntity<String> acceptJoinRequest(
 			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		validateCoordinatorAccess(servlet);
-
+		User user = requestRequirementService.requireUserExists(servlet);
 		Group group = requestRequirementService.requireGroupExists(groupId);
-		Student student = requestRequirementService.requireStudentExists(studentId);
+		Student requestingStudent = requestRequirementService.requireStudentExists(studentId);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
+		groupService.requireUserOwnsGroup(group, user);
 
 		try {
-			groupService.acceptJoinRequest(groupId, student);
+			groupService.acceptJoinRequest(group, requestingStudent);
 			return ResponseEntity.ok("Join request accepted successfully");
 		} catch (Exception e) {
 			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to accept request: " + e.getMessage());
 		}
 	}
 
-	@GetMapping("/{groupId}/requests")
-	public ResponseEntity<CopyOnWriteArrayList<Student>> getJoinRequests(
-			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
-
-		validateCoordinatorAccess(servlet);
-
-		Group group = requestRequirementService.requireGroupExists(groupId);
-
-		CopyOnWriteArrayList<Student> joinRequestStudents = db.getStudents().getItems(group.getJoinRequestStudentIds());
-
-		return ResponseEntity.ok(joinRequestStudents);
-	}
-
-	@PostMapping("/{groupId}/request-join/{studentId}")
+	@PostMapping("/{sessionId}/{groupId}/request-to-join")
 	public ResponseEntity<String> requestToJoin(
 			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
-		Student student = validateStudentAccess(servlet, studentId);
-
+		Student requestingStudentUser = requestRequirementService.requireUserStudentExists(servlet);
 		Group group = requestRequirementService.requireGroupExists(groupId);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, requestingStudentUser);
+		requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
 
 		try {
-			groupService.requestToJoin(groupId, student);
+			groupService.requestToJoin(group, requestingStudentUser);
 			return ResponseEntity.ok("Join request submitted successfully");
 		} catch (Exception e) {
 			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to submit request: " + e.getMessage());
@@ -127,7 +102,9 @@ public class GroupController {
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId) {
 
-		validateUserAccess(servlet, groupId);
+		User user = requestRequirementService.requireUserExists(servlet);
+
+		requestRequirementService.requireGroupExists(groupId);
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
 		return ResponseEntity.ok(group);
@@ -180,11 +157,10 @@ public class GroupController {
 			// Build group data
 			Map<String, Object> groupData = new LinkedHashMap<>();
 			groupData.put("id", group.getId());
-			groupData.put("name", "Group " + group.getId()); // if there’s no explicit name property
+			groupData.put("name", group.getName()); // if there’s no explicit name property
 			groupData.put("project", projectName);
-			groupData.put("maxStudents", group.getMaxStudents());
 			groupData.put("members", membersList);
-			groupData.put("supervisor", group.getSupervisorId());
+			groupData.put("supervisorId", group.getSupervisorId());
 
 			response.put(entry.getKey(), groupData);
 		}
@@ -194,36 +170,33 @@ public class GroupController {
 
 	// ---TEST------TEST------TEST------TEST---
 
-	@PostMapping("/{groupId}/join/{studentId}")
-	public ResponseEntity<String> joinGroup(
-			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
-			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
-
-		Student student = validateStudentAccess(servlet, studentId);
-
-		Group group = requestRequirementService.requireGroupExists(groupId);
-
-		try {
-			groupService.joinGroup(groupId, student);
-			return ResponseEntity.ok("Successfully joined the group");
-		} catch (Exception e) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to join group: " + e.getMessage());
-		}
-	}
-
-	@PostMapping("/{groupId}/leave/{studentId}")
+	@PostMapping("/{sessionId}/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
 			HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId) {
 
-		Student student = validateStudentAccess(servlet, studentId);
+		User user = requestRequirementService.requireUserExists(servlet);
+
+		// Coordinators are allowed to make students leave, but students are only
+		// allowed to make themselves leave
+		if (user.getRole() == User.Role.Coordinator) {
+			requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, (Coordinator) user);
+		} else {
+			requestRequirementService.requireStudentExists(user.getId());
+			if (!user.getId().equals(studentId)) {
+				throw new RequestException(HttpStatus.UNAUTHORIZED, "Student users cannot make other students leave a group.");
+			}
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
+		}
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
+		Student student = requestRequirementService.requireStudentExists(studentId);
 
 		try {
-			groupService.leaveGroup(groupId, student);
+			groupService.leaveGroup(group, student);
 			return ResponseEntity.ok("Successfully left the group");
 		} catch (Exception e) {
 			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to leave group: " + e.getMessage());
@@ -238,31 +211,28 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String studentId,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
 
-		validateCoordinatorAccess(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		try {
 			Student student = requestRequirementService.requireStudentExists(studentId);
 			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
-			
+
 			Session session = requestRequirementService.requireSessionExists(sessionId);
 			int maxGroupSize = session.getMaxGroupSize();
 
-			if (toGroup.getStudentIds().size() >= maxGroupSize) {
-					return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-							.body("Target group is full");
-				}
-			
 			if (fromGroup != null) {
 
 				// Remove student from old group and add student to new group
-				groupService.leaveGroup(fromGroupId, student);
-				groupService.joinGroup(toGroupId, student);
+				groupService.leaveGroup(fromGroup, student);
+				groupService.joinGroup(toGroup, student);
 
 				return ResponseEntity.ok("Student moved successfully.");
 			}
-			groupService.joinGroup(toGroupId, student);
-			
+
+			groupService.joinGroup(toGroup, student);
+
 			return ResponseEntity.ok("Student moved successfully.");
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -277,7 +247,7 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String toGroupId,
 			@PathVariable String sessionId) {
 
-		validateCoordinatorAccess(servlet);
+		requestRequirementService.requireUserCoordinatorExists(servlet);
 
 		try {
 			Group fromGroup = requestRequirementService.requireGroupExists(fromGroupId);
@@ -295,8 +265,8 @@ public class GroupController {
 			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
 				Student student = requestRequirementService.requireStudentExists(studentId);
-				groupService.leaveGroup(fromGroupId, student);
-				groupService.joinGroup(toGroupId, student);
+				groupService.leaveGroup(fromGroup, student);
+				groupService.joinGroup(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
@@ -306,6 +276,129 @@ public class GroupController {
 		}
 	}
 
+	@PostMapping("/cancelJoinRequest")
+	public ResponseEntity<String> cancelJoinRequest(HttpServletRequest servlet) {
+
+		Student student = requestRequirementService.requireUserStudentExists(servlet);
+
+		groupService.cancelJoinRequest(student);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Group join request succesfully canceled");
+	}
+
+	private record CreateGroupRecord(
+			@NoDangerousCharacters @NotBlank String name,
+			@NoDangerousCharacters @NotBlank String studentId) {
+	}
+
+	@PostMapping("/{sessionId}/createGroup")
+	public ResponseEntity<String> createGroup(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@Valid @RequestBody CreateGroupRecord record) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Student foundingMember = requestRequirementService.requireStudentExists(record.studentId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		groupService.requireUserCanAssignFoundingMember(user, foundingMember);
+		groupService.requireGroupNameNotDuplicate(session, record.name);
+
+		groupService.createGroup(session, record.name, foundingMember);
+
+		return ResponseEntity
+				.status(HttpStatus.CREATED)
+				.body("Group succesfully created");
+	}
+
+	private record ModifyGroupNameRecord(
+			@NoDangerousCharacters @NotBlank String newName) {
+	}
+
+	@PostMapping("/{sessionId}/modifyGroupName/{groupId}")
+	public ResponseEntity<String> modifyGroupName(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@Valid @RequestBody ModifyGroupNameRecord record) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		groupService.requireGroupNameNotDuplicate(session, record.newName);
+		groupService.requireUserOwnsGroup(group, user);
+		if (user.getRole() == User.Role.Student) {
+			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
+		}
+
+		groupService.modifyGroupName(group, record.newName);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Group name succesfully modified");
+	}
+
+	private record ModifyGroupProjectRecord(
+			@NoDangerousCharacters String newProjectId) {
+	}
+
+	@PostMapping("/{sessionId}/modifyGroupProject/{groupId}")
+	public ResponseEntity<String> modifyGroupProject(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@Valid @RequestBody ModifyGroupProjectRecord record) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
+
+		Project project;
+		if (record.newProjectId == null) {
+			project = null;
+		} else {
+			project = requestRequirementService.requireProjectExists(record.newProjectId);
+		}
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		groupService.requireUserOwnsGroup(group, user);
+		if (user.getRole() == User.Role.Student) {
+			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
+		}
+
+		groupService.modifyGroupProject(group, project);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Group project succesfully modified");
+	}
+
+	private record ModifyGroupSupervisorRecord(
+			@NoDangerousCharacters @NotBlank String newSupervisorId) {
+	}
+
+	@PostMapping("/{sessionId}/modifyGroupSupervisor/{groupId}")
+	public ResponseEntity<String> modifyGroupSupervisor(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupId,
+			@Valid @RequestBody ModifyGroupSupervisorRecord record) {
+
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Group group = requestRequirementService.requireGroupExists(groupId);
+		Supervisor supervisor = requestRequirementService.requireSupervisorExists(record.newSupervisorId);
+
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+
+		groupService.modifyGroupSupervisor(group, supervisor);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Group supervisor succesfully modified");
+	}
+
 	@PostMapping("/{sessionId}/{groupId}/assign-supervisor/{supervisorId}")
 	public ResponseEntity<String> assignSupervisorToGroup(
 			HttpServletRequest servlet,
@@ -313,7 +406,8 @@ public class GroupController {
 			@PathVariable String supervisorId,
 			@PathVariable String sessionId) {
 
-		validateCoordinatorAccess(servlet);
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		try {
 			// Find the group
@@ -338,5 +432,4 @@ public class GroupController {
 					.body("Failed to assign supervisor: " + e.getMessage());
 		}
 	}
-
 }

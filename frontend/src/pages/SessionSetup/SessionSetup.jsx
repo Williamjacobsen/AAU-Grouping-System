@@ -10,52 +10,50 @@ import NotifyButton from "../../Components/NotifyButton/NotifyButton";
 import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function SessionSetup() {
-  const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"
-	
-	const { isLoading, students, session, supervisors } = useAppState();
+	const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"
 
-  const [message, setMessage] = useState("");
+	const { isLoading, students, session, supervisors } = useAppState(); // Custom hooks that fetch session, students and supervisors from the backend
 
-  if (isLoading)
-    return <div className="loading-message">Loading information...</div>;
+	const [message, setMessage] = useState(""); // Used for displaying status messages from child components
 
-  return (
-    <div className="session-setup-container">
-      <h1 className="session-setup-title">Session Setup</h1>
+	if (isLoading)
+		return <div className="loading-message">Loading information...</div>;
 
-      <SessionSetupForm
-        sessionId={sessionId}
-        session={session}
-        supervisors={supervisors}
-        students={students}
-        setMessage={setMessage}
-      />
+	return (
+		<div className="session-setup-container">
+			<h1 className="session-setup-title">Session Setup</h1>
 
-      <ResetFormButton />
+			<SessionSetupForm
+				sessionId={sessionId}
+				session={session}
+				supervisors={supervisors}
+				students={students}
+				setMessage={setMessage}
+			/>
 
-      <div>
-        Do remember to go to the "Projects" menu and add project proposals.
-      </div>
+			<ResetFormButton />
 
-      <div className="form-section">
-        <h3 className="section-title">Actions</h3>
+			<div>
+				Do remember to go to the "Projects" menu and add project proposals.
+			</div>
 
-        <SendLoginCodesForm
-          sessionId={sessionId}
-          targetUsers="supervisors"
-          setMessage={setMessage}
-        />
+			<div className="form-section">
+				<h3 className="section-title">Actions</h3>
 
-        <SendLoginCodesForm
-          sessionId={sessionId}
-          targetUsers="students"
-          setMessage={setMessage}
-        />
+				<SendLoginCodesForm
+					sessionId={sessionId}
+					targetUsers="supervisors"
+					setMessage={setMessage}
+				/>
 
-        <NotifyButton sessionId={sessionId} />
-      </div>
+				<SendLoginCodesForm
+					sessionId={sessionId}
+					targetUsers="students"
+					setMessage={setMessage}
+				/>
+			</div>
 
-      {message && <div className="message">{message}</div>}
-    </div>
-  );
+			{message && <div className="message">{message}</div>}
+		</div>
+	);
 }

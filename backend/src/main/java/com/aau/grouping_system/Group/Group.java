@@ -6,29 +6,25 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Database.DatabaseMap;
-import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.Session.Session;
 
 public class Group extends DatabaseItem {
 
-	private String supervisorId;
-	private CopyOnWriteArrayList<String> studentIds;
-	private String projectId;
-	private String groupEmail;
-	private CopyOnWriteArrayList<String> joinRequestStudentIds;
-	private int maxStudents;
-	private int maxRequests;
+	private String sessionId;
+	private String name = "";
+	private String supervisorId = null;
+	private String projectId = null;
+	private CopyOnWriteArrayList<String> studentIds = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<String> joinRequestStudentIds = new CopyOnWriteArrayList<>();
 
-	public Group(Database db, DatabaseItemChildGroup parentItemChildIdList,
-			Supervisor supervisor, Project project, String groupEmail, int maxStudents, int maxRequests) {
+	public Group(
+			Database db,
+			DatabaseItemChildGroup parentItemChildIdList,
+			Session session,
+			String name) {
 		super(db, parentItemChildIdList);
-		this.supervisorId = supervisor.getId();
-		this.projectId = project.getId();
-		this.groupEmail = groupEmail;
-		this.maxStudents = maxStudents;
-		this.maxRequests = maxRequests;
-		this.studentIds = new CopyOnWriteArrayList<>();
-		this.joinRequestStudentIds = new CopyOnWriteArrayList<>();
+		this.sessionId = session.getId();
+		this.name = name;
 	}
 
 	@Override
@@ -37,16 +33,14 @@ public class Group extends DatabaseItem {
 	}
 
 	// @formatter:off
+	public String getSessionId() { return sessionId; }
+	public void setSessionId(String sessionId) { this.sessionId = sessionId; }
+	public String getName() { return name; }
+	public void setName(String name) { this.name = name; }
 	public String getSupervisorId() { return supervisorId; }
 	public void setSupervisorId(String supervisorId) { this.supervisorId = supervisorId; }
 	public CopyOnWriteArrayList<String> getStudentIds() { return studentIds; }
 	public String getProjectId() { return projectId; }
-	public void setProject(String projectId) { this.projectId = projectId; }
-	public String getGroupEmail() { return groupEmail; }
-	public void setGroupEmail(String groupEmail) { this.groupEmail = groupEmail; }
+	public void setProjectId(String projectId) { this.projectId = projectId; }
 	public CopyOnWriteArrayList<String> getJoinRequestStudentIds() { return joinRequestStudentIds; }
-	public int getMaxStudents() { return maxStudents; }
-	public void setMaxStudents(int maxStudents) { this.maxStudents = maxStudents; }
-	public int getMaxRequests() { return maxRequests; }
-	public void setMaxRequests(int maxRequests) { this.maxRequests = maxRequests; }
 }

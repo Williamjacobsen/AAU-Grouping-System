@@ -1,12 +1,13 @@
-import React, { useState, useRef, useEffect } from "react";
-import { fetchSessionGroups } from "../../hooks/useGetSessionGroups";
+import React, { useState, useRef, useEffect, memo } from "react";
 import { CSVLink } from "react-csv";
 
-export default function CsvDownloadButton({ allStudents, sessionId }) {
+const CsvDownloadButton = memo(({ students, groups, supervisors }) => {
+
+	console.log("reloading");
 
 	const [csvData, setCsvData] = useState([]);
 	const [clickCsvLink, setClickCsvLink] = useState(false);
-	const csvLinkRef = useRef()
+	const csvLinkRef = useRef();
 
 	useEffect(() => {
 		if (clickCsvLink) {
@@ -17,12 +18,9 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 
 	async function startDownload() {
 		try {
-			
-			const groups = await fetchSessionGroups(sessionId);
 
 			if (!areAllStudentsAssignedAGroup(groups)) {
-				alert("CSV file cannot be generated: Not all students have been assigned a group.");
-				return Promise.resolve();
+				alert("Warning: Not all students have been assigned a group!");
 			}
 
 			const newData = [];
@@ -30,20 +28,25 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 			groups.forEach((group) => {
 
 				const groupNumber = ++number;
-				
+
 				group.studentIds.forEach((studentId) => {
 
-					const student = allStudents.find((student) => student.id === studentId);
+					const student = students.find((student) => student.id === studentId);
 
 					if (student === null) {
 						return Promise.reject("Error: The group's student id does not exist in the session's list of students. There must be an error in the database.");
 					}
-					
+
+					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
+
 					newData.push({
-							groupNumber: groupNumber,
-							studentEmail: student.email,
-							studentName: student.name,
-						});
+						groupName: group.name,
+						groupNumber: groupNumber,
+						studentEmail: student.email,
+						studentName: student.name,
+						supervisorEmail: groupSupervisor.email ?? "Not specified",
+						supervisorName: groupSupervisor.name ?? "Not specified"
+					});
 				});
 			});
 
@@ -62,30 +65,35 @@ export default function CsvDownloadButton({ allStudents, sessionId }) {
 	function areAllStudentsAssignedAGroup(groups) {
 
 		let studentsAssignedAGroupAmount = 0;
-		groups.forEach((group) => {
+		groups.forEach(group => {
 			studentsAssignedAGroupAmount += group.studentIds.length;
-		})
+		});
 
-		return studentsAssignedAGroupAmount === allStudents.length;
+		return studentsAssignedAGroupAmount === students.length;
 	}
 
 	return (
 		<>
 			<button className="csv-download-button" onClick={startDownload}>
-				Download CSV file of groups 
+				Download CSV file of groups
 			</button>
 
 			{/* The CSVLink is not visible to the user. When clicked, it starts a download of a CSV file. */}
 			<CSVLink
 				filename={`Groups.csv`}
 				headers={[
+					{ label: "Group name", key: "groupName" },
 					{ label: "Group number", key: "groupNumber" },
 					{ label: "Student email", key: "studentEmail" },
-					{ label: "Student name", key: "studentName" }
+					{ label: "Student name", key: "studentName" },
+					{ label: "Supervisor email", key: "supervisorEmail" },
+					{ label: "Supervisor name", key: "supervisorName" }
 				]}
 				data={csvData}
 				ref={csvLinkRef}
 			/>
 		</>
 	);
-}
+});
+
+export default CsvDownloadButton;

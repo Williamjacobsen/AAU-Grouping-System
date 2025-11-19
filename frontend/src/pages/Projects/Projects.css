@@ -165,7 +165,6 @@
     background-color: #229954;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
 	.projects-container {
 		padding: 1rem;
@@ -184,7 +183,6 @@
 		padding: 0.5rem;
 	}
 	
-	/* Stack table on mobile for better readability */
 	.projects-table thead {
 		display: none;
 	}

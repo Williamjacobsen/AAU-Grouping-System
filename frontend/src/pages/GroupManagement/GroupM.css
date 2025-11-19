@@ -135,6 +135,16 @@
   border-color: #333;
 }
 
+.error-message {
+	color: #000;
+	font-weight: 500;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	background-color: #f8d7da;
+	border-left: 3px solid #e74c3c;
+	
+}
+
 
 
 

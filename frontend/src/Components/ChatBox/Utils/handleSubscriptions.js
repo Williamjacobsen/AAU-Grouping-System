@@ -1,10 +1,13 @@
+import getConversationKey from "./getConversationKey";
+
 function handleSubscriptions(
   chatRooms,
   chatSystem,
   setMessagesByRoom,
-  username,
+  username
 ) {
-  chatRooms.forEach((roomName) => { // TODO: chatRoom includes students, which it shouldn't.
+  chatRooms.forEach((roomName) => {
+    // TODO: chatRoom includes students, which it shouldn't.
     chatSystem.current.subscribe(`/group/${roomName}/messages`, (message) => {
       console.log(`Received message in group ${roomName}:`, message);
 
@@ -21,8 +24,8 @@ function handleSubscriptions(
   chatSystem.current.subscribe("/user/private/reply", (message) => {
     console.log("Private message:", message);
 
-    const conversationKey =
-      message.sender === username ? message.target : message.sender;
+    const conversationKey = getConversationKey(message.sender, message.target);
+
     setMessagesByRoom((prev) => {
       const prevMessages = prev[conversationKey] ?? [];
       return { ...prev, [conversationKey]: [...prevMessages, message] };
