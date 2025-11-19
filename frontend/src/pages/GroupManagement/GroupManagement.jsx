@@ -112,13 +112,13 @@ export default function GroupManagement() {
 
 	if (isLoadingUser || isLoading)
 		return <div className="loading-message">Loading...</div>;
-	if (!user) 
+	if (!user)
 		return navigate("/sign-in");
 	if (user.role !== "Coordinator") {
 		return (
-				<div className="error-message">
-					Access denied. Only coordinators can manage groups.
-				</div>
+			<div className="error-message">
+				Access denied. Only coordinators can manage groups.
+			</div>
 		);
 	}
 
@@ -195,10 +195,14 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-					<p> 
-						You can download the CSV file after all groups have been made, 
+					<p>
+						You can download the CSV file after all groups have been made,
 						and supervisors have been assigned to the groups <br></br>
-						<CsvDownloadButton students={students} groups={groups} /> 
+						<CsvDownloadButton
+							students={students}
+							groups={groups}
+							supervisors={supervisors}
+						/>
 					</p>
 				</>
 			)}

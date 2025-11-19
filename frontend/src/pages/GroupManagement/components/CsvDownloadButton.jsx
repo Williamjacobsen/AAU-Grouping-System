@@ -1,7 +1,9 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, memo } from "react";
 import { CSVLink } from "react-csv";
 
-export default function CsvDownloadButton({ students, groups }) {
+const CsvDownloadButton = memo(({ students, groups, supervisors }) => {
+
+	console.log("reloading");
 
 	const [csvData, setCsvData] = useState([]);
 	const [clickCsvLink, setClickCsvLink] = useState(false);
@@ -18,8 +20,7 @@ export default function CsvDownloadButton({ students, groups }) {
 		try {
 
 			if (!areAllStudentsAssignedAGroup(groups)) {
-				alert("CSV file cannot be generated: Not all students have been assigned a group.");
-				return Promise.resolve();
+				alert("Warning: Not all students have been assigned a group!");
 			}
 
 			const newData = [];
@@ -36,10 +37,15 @@ export default function CsvDownloadButton({ students, groups }) {
 						return Promise.reject("Error: The group's student id does not exist in the session's list of students. There must be an error in the database.");
 					}
 
+					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
+
 					newData.push({
+						groupName: group.name,
 						groupNumber: groupNumber,
 						studentEmail: student.email,
 						studentName: student.name,
+						supervisorEmail: groupSupervisor.email ?? "Not specified",
+						supervisorName: groupSupervisor.name ?? "Not specified"
 					});
 				});
 			});
@@ -59,7 +65,7 @@ export default function CsvDownloadButton({ students, groups }) {
 	function areAllStudentsAssignedAGroup(groups) {
 
 		let studentsAssignedAGroupAmount = 0;
-		groups.forEach((group) => {
+		groups.forEach(group => {
 			studentsAssignedAGroupAmount += group.studentIds.length;
 		});
 
@@ -76,13 +82,18 @@ export default function CsvDownloadButton({ students, groups }) {
 			<CSVLink
 				filename={`Groups.csv`}
 				headers={[
+					{ label: "Group name", key: "groupName" },
 					{ label: "Group number", key: "groupNumber" },
 					{ label: "Student email", key: "studentEmail" },
-					{ label: "Student name", key: "studentName" }
+					{ label: "Student name", key: "studentName" },
+					{ label: "Supervisor email", key: "supervisorEmail" },
+					{ label: "Supervisor name", key: "supervisorName" }
 				]}
 				data={csvData}
 				ref={csvLinkRef}
 			/>
 		</>
 	);
-}
+});
+
+export default CsvDownloadButton;

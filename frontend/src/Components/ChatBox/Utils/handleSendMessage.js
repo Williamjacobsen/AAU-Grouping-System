@@ -7,11 +7,12 @@ const handleSendMessage = async (
   setMessageInput,
   chatSystem,
   setMessagesByRoom,
+  students
 ) => {
   const content = messageInput.trim();
   if (!content || !selectedChatRoom) return;
 
-  const isDirect = isDirectRoom(selectedChatRoom);
+  const isDirect = isDirectRoom(selectedChatRoom, students);
   const destination = isDirect
     ? "/private/send"
     : `/group/${selectedChatRoom}/send`;

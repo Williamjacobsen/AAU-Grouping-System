@@ -37,6 +37,7 @@ export default function InputField({
               setMessageInput,
               chatSystem,
               setMessagesByRoom,
+							students
             );
           }
         }}
