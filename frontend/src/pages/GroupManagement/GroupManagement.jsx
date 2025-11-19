@@ -112,9 +112,9 @@ export default function GroupManagement() {
 
 	if (isLoadingUser || isLoading)
 		return <div className="loading-message">Loading...</div>;
-	if (!user) 
+	if (!user)
 		return navigate("/sign-in");
-	if (user.role !== "Coordinator") 
+	if (user.role !== "Coordinator")
 		return;
 
 	return (
@@ -194,7 +194,11 @@ export default function GroupManagement() {
 
 					<NotifyButton sessionId={sessionId} />
 
-					<CsvDownloadButton students={students} groups={groups} />
+					<CsvDownloadButton
+						students={students}
+						groups={groups}
+						supervisors={supervisors}
+					/>
 				</>
 			)}
 		</div>

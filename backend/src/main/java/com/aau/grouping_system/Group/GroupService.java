@@ -44,6 +44,13 @@ public class GroupService {
 		requireStudentNotAlreadyInTheGroup(group, student);
 		requireGroupNotFull(group);
 
+		// Leave previous group
+		String previousGroupId = student.getGroupId();
+		if (previousGroupId != null) {
+			Group previousGroup = db.getGroups().getItem(previousGroupId);
+			leaveGroup(previousGroup, student);
+		}
+
 		group.getStudentIds().add(student.getId());
 		student.setGroupId(group.getId());
 		cancelJoinRequest(student);

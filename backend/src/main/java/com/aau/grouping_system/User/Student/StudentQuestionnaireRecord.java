@@ -2,14 +2,15 @@ package com.aau.grouping_system.User.Student;
 
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record StudentQuestionnaireRecord(
 		@NoDangerousCharacters @NotNull String desiredProjectId1,
 		@NoDangerousCharacters @NotNull String desiredProjectId2,
 		@NoDangerousCharacters @NotNull String desiredProjectId3,
-		@NotNull Integer desiredGroupSizeMin,
-		@NotNull Integer desiredGroupSizeMax,
+		@NotNull @Min(-1) Integer desiredGroupSizeMin,
+		@NotNull @Min(-1) Integer desiredGroupSizeMax,
 		// "@NotNull" is enough validation for enums, because if the input isn't exactly
 		// one of the valid enum types, it is considered as null.
 		@NotNull StudentQuestionnaire.WorkLocation desiredWorkLocation,

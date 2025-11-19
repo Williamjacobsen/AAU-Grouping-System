@@ -1,12 +1,12 @@
+import React, { memo } from "react";
 
-export default function RenderGroups({
+const RenderGroups = memo(({
 	groups, supervisors, assignSupervisor,
 	handleGroupClick, selectedGroup,
 	handleStudentClick, selectedStudent
-}) {
+}) => {
 
 	return groups.map((group) => {
-		console.log(group);
 		return (
 			<div className="group-box" key={group.id}>
 				<div className="AssignSupervisor-button">
@@ -52,4 +52,6 @@ export default function RenderGroups({
 			</div>
 		);
 	});
-}
+});
+
+export default RenderGroups;

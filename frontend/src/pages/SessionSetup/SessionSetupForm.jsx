@@ -82,13 +82,13 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 				<div className="form-group">
 					<label className="form-label">
-						Minimum group size ("-1" means no preference)
+						Minimum group size
 						<input
 							className="form-input form-number"
 							type="number"
 							name="minGroupSize"
 							defaultValue={session?.minGroupSize}
-							min={-1}
+							min={0}
 							max={100000}
 							step={1}
 						/>
@@ -97,14 +97,14 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 				<div className="form-group">
 					<label className="form-label">
-						Maximum group size ("-1" means no preference)
+						Maximum group size
 						<input
 							className="form-input form-number"
 							type="number"
 							name="maxGroupSize"
 							defaultValue={session?.maxGroupSize}
 							required
-							min={-1}
+							min={0}
 							max={100000}
 							step={1}
 						/>

@@ -89,8 +89,14 @@ public class DatabaseSerializer {
 
 		ArrayList<Session> se = new ArrayList<>();
 		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 1"));
+		se.get(0).setMinGroupSize(6);
+		se.get(0).setMinGroupSize(7);
 		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 2"));
+		se.get(1).setMinGroupSize(3);
+		se.get(1).setMinGroupSize(5);
 		se.add(new Session(db, co.get(1).getSessions(), co.get(1), "Session name 3"));
+		se.get(2).setMinGroupSize(6);
+		se.get(2).setMinGroupSize(7);
 
 		ArrayList<Supervisor> su = new ArrayList<>();
 		su.add(supervisorService.addSupervisor(se.get(0), "su1@example.com", "su1", "Supervisor name 1"));
@@ -222,7 +228,7 @@ public class DatabaseSerializer {
 		groupService.joinGroup(gr.get(9), st.get(28));
 		groupService.joinGroup(gr.get(9), st.get(29));
 
-		// For testing purposes, console log student logins so we can log in as them
+		// For testing purposes, console log logins so we can log in as them
 		System.out.println("\n\n\n---- STUDENT test logins ----");
 		for (int i = 0; i < st.size(); i++) {
 			System.out.println("Password: st" + (i + 1) + " ID: " + st.get(i).getId());
