@@ -159,12 +159,6 @@ export default function StudentPage() {
 								<label>Project Priority 3:</label>
 								<span>{student.questionnaire.desiredProjectId3}</span>
 							</div>
-							{student.questionnaire.desiredGroupMembers !== undefined && (
-								<div className="info-item">
-									<label>Desired Group Members:</label>
-									<span>{student.questionnaire.desiredGroupMembers}</span>
-								</div>
-							)}
 							<div className="info-item">
 								<label>Desired Group Size:</label>
 								<span>

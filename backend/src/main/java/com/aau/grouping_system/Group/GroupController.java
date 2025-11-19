@@ -20,13 +20,12 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Project.Project;
+import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
-import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotBlank;
@@ -40,14 +39,11 @@ public class GroupController {
 	private final Database db;
 	private final GroupService groupService;
 	private final RequestRequirementService requestRequirementService;
-	private final SupervisorsPageController supervisorsPageController;
 
-	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService,
-			SupervisorsPageController supervisorsPageController) {
+	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.groupService = groupService;
 		this.requestRequirementService = requestRequirementService;
-		this.supervisorsPageController = supervisorsPageController;
 	}
 
 	private Coordinator validateCoordinatorAccess(HttpServletRequest servlet) {
@@ -79,7 +75,7 @@ public class GroupController {
 
 		validateCoordinatorAccess(servlet);
 
-		Group group = requestRequirementService.requireGroupExists(groupId);
+		requestRequirementService.requireGroupExists(groupId);
 		Student student = requestRequirementService.requireStudentExists(studentId);
 
 		try {
@@ -112,7 +108,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requestRequirementService.requireGroupExists(groupId);
+		requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.requestToJoin(groupId, student);
@@ -202,7 +198,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requestRequirementService.requireGroupExists(groupId);
+		requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.joinGroup(groupId, student);
@@ -220,7 +216,7 @@ public class GroupController {
 
 		Student student = validateStudentAccess(servlet, studentId);
 
-		Group group = requestRequirementService.requireGroupExists(groupId);
+		requestRequirementService.requireGroupExists(groupId);
 
 		try {
 			groupService.leaveGroup(groupId, student);
@@ -318,14 +314,9 @@ public class GroupController {
 		try {
 			// Find the group
 			Group group = requestRequirementService.requireGroupExists(groupId);
-
-			// Find supervisor in the same session
-			Session session = supervisorsPageController.validateSessionAccess(servlet, sessionId);
-			Supervisor supervisor = supervisorsPageController.findSupervisorInSession(session, supervisorId);
-
-			if (supervisor == null) {
-				throw new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found in this session");
-			}
+			requestRequirementService.requireSessionExists(sessionId);
+			Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
+			requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
 
 			// Assign supervisor
 			group.setSupervisorId(supervisorId);
