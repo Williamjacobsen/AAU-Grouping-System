@@ -16,6 +16,8 @@ export default function SupervisorsPage() {
 	const [addingSupervisor, setAddingSupervisor] = useState(false);
 	const [removingSupervisor, setRemovingSupervisor] = useState(false);
 	const [sendingPassword, setSendingPassword] = useState(null);
+	const [editingMaxGroups, setEditingMaxGroups] = useState(null);
+	const [tempMaxGroups, setTempMaxGroups] = useState({});
 	
 	const [message, setMessage] = useState({ text: "", type: "" }); // 'success' or 'error'
 
@@ -153,6 +155,54 @@ export default function SupervisorsPage() {
 		}
 	};
 
+	const handleMaxGroupsClick = (supervisor) => {
+		setEditingMaxGroups(supervisor.id);
+		setTempMaxGroups({ ...tempMaxGroups, [supervisor.id]: supervisor.maxGroups || 1 });
+	};
+
+	const handleMaxGroupsChange = (supervisorId, value) => {
+		const numValue = parseInt(value) || 1;
+		setTempMaxGroups({ ...tempMaxGroups, [supervisorId]: numValue });
+	};
+
+	const handleMaxGroupsSave = async (supervisorId) => {
+		const maxGroups = tempMaxGroups[supervisorId];
+		
+		if (!maxGroups || maxGroups < 1 || maxGroups > 100) {
+			setMessage({ text: "Max groups must be between 1 and 100", type: "error" });
+			return;
+		}
+
+		try {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorId}/max-groups`, {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({ maxGroups }),
+			});
+			
+			if (response.ok) {
+				setSupervisors(prev => prev.map(s => 
+					s.id === supervisorId ? { ...s, maxGroups } : s
+				));
+				setEditingMaxGroups(null);
+				setMessage({ text: "Max groups updated successfully!", type: "success" });
+			} else {
+				const errorText = await response.text();
+				setMessage({ text: "Failed to update max groups: " + errorText, type: "error" });
+			}
+		} catch (err) {
+			setMessage({ text: "Error updating max groups: " + err.message, type: "error" });
+		}
+	};
+
+	const handleMaxGroupsCancel = () => {
+		setEditingMaxGroups(null);
+		setTempMaxGroups({});
+	};
+
 	const openRemoveModal = (supervisor) => {
 		setSupervisorToRemove(supervisor);
 		setShowRemoveModal(true);
@@ -224,6 +274,7 @@ export default function SupervisorsPage() {
 							<tr>
 								<th>Name</th>
 								<th>Email</th>
+								<th>Max Groups</th>
 								<th>Actions</th>
 							</tr>
 						</thead>
@@ -232,6 +283,39 @@ export default function SupervisorsPage() {
 								<tr key={supervisor.id}>
 									<td>{supervisor.name}</td>
 									<td>{supervisor.email}</td>
+									<td>
+										{editingMaxGroups === supervisor.id ? (
+											<div className="max-groups-edit">
+												<input
+													type="number"
+													min="1"
+													max="100"
+													value={tempMaxGroups[supervisor.id] || 1}
+													onChange={(e) => handleMaxGroupsChange(supervisor.id, e.target.value)}
+													className="max-groups-input"
+												/>
+												<button
+													className="save-max-groups-button"
+													onClick={() => handleMaxGroupsSave(supervisor.id)}
+												>
+													✓
+												</button>
+												<button
+													className="cancel-max-groups-button"
+													onClick={handleMaxGroupsCancel}
+												>
+													✗
+												</button>
+											</div>
+										) : (
+											<span
+												className="max-groups-display"
+												onClick={() => handleMaxGroupsClick(supervisor)}
+											>
+												{supervisor.maxGroups || 1}
+											</span>
+										)}
+									</td>
 									<td>
 										<button
 											className="send-password-button"

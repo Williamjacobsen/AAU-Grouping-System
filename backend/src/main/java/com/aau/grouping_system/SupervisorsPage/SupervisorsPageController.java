@@ -94,6 +94,25 @@ public class SupervisorsPageController {
 		return ResponseEntity.ok(result);
 	}
 
+	@PostMapping("/{supervisorId}/max-groups")
+	public ResponseEntity<String> updateSupervisorMaxGroups(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId,
+			@Valid @RequestBody UpdateMaxGroupsRequest request) {
+
+		validateSessionAccess(servlet, sessionId);
+	
+		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
+		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
+
+		supervisor.setMaxGroups(request.maxGroups);
+		return ResponseEntity.ok("Supervisor max groups updated successfully");
+	}
+
+	public record UpdateMaxGroupsRequest(
+			@jakarta.validation.constraints.Min(1) @jakarta.validation.constraints.Max(100) Integer maxGroups) {
+	}
+
 	public Supervisor findSupervisorInSession(Session session, String supervisorId) {
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 		

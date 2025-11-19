@@ -319,3 +319,69 @@
 	border-left: 3px solid #28a745;
 	font-size: 1rem;
 }
+
+.max-groups-edit {
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+}
+
+.max-groups-input {
+	width: 60px;
+	padding: 0.25rem;
+	border: 1px solid #ddd;
+	font-size: 0.9rem;
+	font-family: inherit;
+	text-align: center;
+}
+
+.max-groups-input:focus {
+	outline: none;
+	border-color: #3498db;
+}
+
+.save-max-groups-button,
+.cancel-max-groups-button {
+	padding: 0.25rem 0.5rem;
+	border: none;
+	cursor: pointer;
+	font-size: 0.8rem;
+	font-family: inherit;
+	font-weight: 500;
+	min-width: 25px;
+}
+
+.save-max-groups-button {
+	background-color: #28a745;
+	color: white;
+}
+
+.save-max-groups-button:hover {
+	background-color: #218838;
+}
+
+.cancel-max-groups-button {
+	background-color: #6c757d;
+	color: white;
+}
+
+.cancel-max-groups-button:hover {
+	background-color: #5a6268;
+}
+
+.max-groups-display {
+	cursor: pointer;
+	padding: 0.25rem 0.5rem;
+	background-color: #f8f9fa;
+	border: 1px solid #e9ecef;
+	border-radius: 3px;
+	display: inline-block;
+	min-width: 30px;
+	text-align: center;
+	transition: background-color 0.2s ease;
+}
+
+.max-groups-display:hover {
+	background-color: #e9ecef;
+	border-color: #3498db;
+}
