@@ -54,6 +54,7 @@ public class SupervisorsPageService {
                     supervisorMap.put("id", supervisor.getId());
                     supervisorMap.put("email", supervisor.getEmail());
                     supervisorMap.put("name", supervisor.getName());
+                    supervisorMap.put("maxGroups", supervisor.getMaxGroups());
                     return supervisorMap;
                 })
                 .collect(Collectors.toList());
