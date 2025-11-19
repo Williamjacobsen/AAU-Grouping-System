@@ -10,11 +10,11 @@ import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
-import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -115,6 +115,12 @@ public class RequestRequirementService {
 	public void requireCoordinatorIsAuthorizedSession(String sessionId, Coordinator coordinator) {
 		if (!sessionService.isUserAuthorizedSession(sessionId, coordinator)) {
 			throw new RequestException(HttpStatus.FORBIDDEN, "Coordinator user is not authorized session");
+		}
+	}
+
+	public void requireSupervisorIsAuthorizedSession(String sessionId, Supervisor supervisor) {
+		if (!sessionService.isUserAuthorizedSession(sessionId, supervisor)) {
+			throw new RequestException(HttpStatus.FORBIDDEN, "Supervisor user is not authorized session");
 		}
 	}
 

@@ -1,3 +1,4 @@
+import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
 import { useAuth } from "../../ContextProviders/AuthProvider";

@@ -1,3 +1,5 @@
+import getConversationKey from "./getConversationKey";
+
 // Sort order:
 // 1) Most recent activity (newest first)
 // 2) Rooms with unread messages
@@ -7,9 +9,9 @@ export default function sortChatRooms(
   chatRooms,
   unreadByRoom = {},
   lastActivityByRoom = {},
-  { projects = [], groups = [], students = [] } = {}
+  { projects = [], groups = [], students = [], currentUsername = "" } = {}
 ) {
-	const projectSet = new Set(projects.map((p) => p.name).filter(Boolean));
+  const projectSet = new Set(projects.map((p) => p.name).filter(Boolean));
   const groupSet = new Set(groups.map((g) => g.name).filter(Boolean));
   const studentSet = new Set(students.map((s) => s.name).filter(Boolean));
 
@@ -21,12 +23,22 @@ export default function sortChatRooms(
     return 4;
   }
 
-  const rows = chatRooms.map((name) => ({
-    name,
-    lastActive: Number(lastActivityByRoom?.[name] ?? 0),
-    hasUnread: Number(unreadByRoom?.[name] ?? 0) > 0,
-    category: getCategoryRank(name),
-  }));
+  function getStorageKey(roomName) {
+    if (studentSet.has(roomName) && currentUsername) {
+      return getConversationKey(currentUsername, roomName);
+    }
+    return roomName;
+  }
+
+  const rows = chatRooms.map((name) => {
+    const storageKey = getStorageKey(name);
+    return {
+      name,
+      lastActive: Number(lastActivityByRoom?.[storageKey] ?? 0),
+      hasUnread: Number(unreadByRoom?.[storageKey] ?? 0) > 0,
+      category: getCategoryRank(name),
+    };
+  });
 
   rows.sort((a, b) => {
     if (b.lastActive !== a.lastActive) return b.lastActive - a.lastActive;

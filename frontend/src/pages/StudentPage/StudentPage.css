@@ -141,7 +141,6 @@
 	font-style: italic;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
 	.student-page {
 		padding: 1rem;
@@ -187,7 +186,6 @@
 	}
 }
 
-/* Remove Student Button */
 .remove-button {
 	padding: 0.75rem 1.5rem;
 	background-color: #e74c3c;
@@ -209,14 +207,12 @@
 	cursor: not-allowed;
 }
 
-/* Header buttons container */
 .header-buttons {
 	display: flex;
 	gap: 1rem;
 	margin-left: auto;
 }
 
-/* Reset Password Button */
 .reset-password-button {
 	padding: 0.75rem 1.5rem;
 	background-color: #3498db;
@@ -237,7 +233,6 @@
 	cursor: not-allowed;
 }
 
-/* Success message */
 .success-message {
 	background-color: #d4edda;
 	color: #000;
@@ -247,7 +242,6 @@
 	font-size: 1rem;
 }
 
-/* Modal Styles */
 .modal-overlay {
 	position: fixed;
 	top: 0;
@@ -341,7 +335,6 @@
 	cursor: not-allowed;
 }
 
-/* Update header layout to accommodate remove button */
 .student-page-header {
 	display: flex;
 	align-items: center;
