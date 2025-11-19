@@ -138,17 +138,37 @@ public class DatabaseSerializer {
 		st.add(studentService.addStudent(se.get(0), "st30@example.com", "st30", "Delia"));
 
 		ArrayList<Project> pr = new ArrayList<>();
-		pr.add(new Project(db, se.get(0).getProjects(), "AI Chatbot", "AI assistant for customer support", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Web App", "Interactive web platform", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Smart Home", "IoT-based automation system", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Health Tracker", "Fitness and health monitoring app", su.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "AI Chatbot",
+				"AI assistant for customer support. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Web App",
+				"Interactive web platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Smart Home",
+				"IoT-based automation system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Health Tracker",
+				"Fitness and health monitoring app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				su.get(0)));
 		pr.add(
-				new Project(db, se.get(0).getProjects(), "Finance Dashboard", "Financial data visualization tool", su.get(1)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Game Design", "Multiplayer online game", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "E-commerce", "Online shopping platform", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Social Media", "New generation social app", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Education Portal", "Online learning hub", co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Weather Forecast", "Climate analysis system", co.get(0)));
+				new Project(db, se.get(0).getProjects(), "Finance Dashboard",
+						"Financial data visualization tool. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+						su.get(1)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Game Design",
+				"Multiplayer online game. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "E-commerce",
+				"Online shopping platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Social Media",
+				"New generation social app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Education Portal",
+				"Online learning hub. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
+		pr.add(new Project(db, se.get(0).getProjects(), "Weather Forecast",
+				"Climate analysis system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				co.get(0)));
 
 		st.get(0).getQuestionnaire().setDesiredProjectId1(pr.get(3).getId());
 		st.get(0).getQuestionnaire().setDesiredProjectId2(pr.get(2).getId());
