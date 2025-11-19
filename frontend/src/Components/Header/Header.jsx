@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
 import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
-import { useAuth } from "../../ContextProviders/AuthProvider"
+import { useAuth } from "../../ContextProviders/AuthProvider";
 
 import "./Header.css";
 
@@ -9,13 +9,13 @@ export default function Header() {
 
 	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByUserOrParameter(user);
-	
+
 	if (isLoadingUser) {
-		return <>Loading user...</>
+		return <>Loading user...</>;
 	}
 	if (isLoadingSession) {
-		return <>Loading session...</>
-	}	
+		return <>Loading session...</>;
+	}
 
 	return (
 		<>
@@ -46,7 +46,7 @@ export default function Header() {
 					<div className="header">
 						<ul>
 							<li>
-								<b>Session</b>: {session.name}
+								<b>Session</b>: {session?.name}
 							</li>
 							{user?.role !== "Supervisor" &&
 								<li>

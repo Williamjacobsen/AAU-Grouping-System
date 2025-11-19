@@ -74,7 +74,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 						<input
 							className="form-input"
 							name="name"
-							defaultValue={session.name}
+							defaultValue={session?.name}
 							required
 						/>
 					</label>
@@ -87,7 +87,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 							className="form-input form-number"
 							type="number"
 							name="minGroupSize"
-							defaultValue={session.minGroupSize}
+							defaultValue={session?.minGroupSize}
 							min={-1}
 							max={100000}
 							step={1}
@@ -102,7 +102,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 							className="form-input form-number"
 							type="number"
 							name="maxGroupSize"
-							defaultValue={session.maxGroupSize}
+							defaultValue={session?.maxGroupSize}
 							required
 							min={-1}
 							max={100000}
@@ -118,7 +118,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 							className="form-input"
 							type="datetime-local"
 							name="questionnaireDeadlineISODateString"
-							defaultValue={session.questionnaireDeadline}
+							defaultValue={session?.questionnaireDeadline}
 							required
 						/>
 					</label>
@@ -128,7 +128,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 					<input
 						type="checkbox"
 						name="allowStudentProjectProposals"
-						defaultChecked={session.allowStudentProjectProposals}
+						defaultChecked={session?.allowStudentProjectProposals}
 					/>
 					<label className="checkbox-label">
 						Allow students to create project proposals?

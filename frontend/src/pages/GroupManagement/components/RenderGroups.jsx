@@ -1,17 +1,18 @@
 
 export default function RenderGroups({
-	groups, supervisors, assignSupervisor, 
-	handleGroupClick, selectedGroup, 
+	groups, supervisors, assignSupervisor,
+	handleGroupClick, selectedGroup,
 	handleStudentClick, selectedStudent
 }) {
 
 	return groups.map((group) => {
+		console.log(group);
 		return (
 			<div className="group-box" key={group.id}>
 				<div className="AssignSupervisor-button">
 					<p>Current Supervisor: </p>
 					<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
-						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisor)?.name || "None"} </option>
+						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
 						{supervisors?.map((supervisor) => (
 							<option key={supervisor.id} value={supervisor.id}>
 								{supervisor.name}

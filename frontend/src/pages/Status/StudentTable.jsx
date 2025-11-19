@@ -2,39 +2,47 @@ import React, { memo } from "react";
 import StudentGroupActions from './StudentGroupActions';
 import { useNavigate } from "react-router-dom";
 
-const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session, user }) => {
+const StudentTable = (({ columns, students, sessionId, session, user }) => {
 
 	const navigate = useNavigate();
 
-	function navigateToStudentPage(studentIndex) {
-		const student = visibleStudents[studentIndex];
-		if (student && student.id) {
-			navigate(`/session/${sessionId}/student/${student.id}`);
-		}
-	}
-
-	if (!visibleColumns || visibleColumns.length === 0) {
+	// Check that the inputted columns contain at least one unhidden column
+	if (!columns || !columns?.some(column => column.isHidden === false)) {
 		return <div className="empty-message"> No visible columns.</div>;
 	}
 
-	if (!visibleStudents || !visibleColumns[0] || !visibleColumns[0].rows) {
-		return <div className="empty-message"> No student data available.</div>;
+	function navigateToStudentPage(rowIndex) {
+		const studentId = getStudentByRowIndex(rowIndex).id;
+		navigate(`/session/${sessionId}/student/${studentId}`);
+	}
+
+	function getStudentByRowIndex(rowIndex) {
+		const idColumn = columns.find(column => column.label === "ID");
+		const studentId = idColumn.rows[rowIndex];
+		const student = students.find(theStudent => theStudent.id === studentId);
+		return student;
 	}
 
 	return (
 		<table className="student-table">
 			<thead>
 				<tr>
-					{visibleColumns.map((column, columnIndex) => (
-						<th key={columnIndex}>
-							{column.label}
-						</th>
+					{columns.map((column, columnIndex) => (
+						<>
+							{!column.isHidden &&
+								<th key={columnIndex}>
+									{column.label}
+								</th>
+							}
+						</>
 					))}
-					<th>Actions</th>
+					<th>
+						Actions
+					</th>
 				</tr>
 			</thead>
 			<tbody>
-				{visibleColumns[0].rows.map((_, rowIndex) => (
+				{columns[0].rows.map((_, rowIndex) => (
 					// Why "visibleColumns[0]"?: It gets an array of the first rows of the first column,
 					// and since each column has the same amount of rows, this basically works
 					// as a for loop on the amount of rows in a column.
@@ -47,20 +55,30 @@ const StudentTable = memo(({ visibleColumns, visibleStudents, sessionId, session
 					// This way React can handle the minimal DOM change." And else you get a warning.
 					<tr
 						key={rowIndex}
-						onClick={() => navigateToStudentPage(rowIndex)}
 					>
-						{visibleColumns.map((column, columnIndex) => (
-							<td key={columnIndex}>
-								{column.rows[rowIndex]}
-							</td>
+						{columns.map((column, columnIndex) => (
+							<>
+								{
+									!column.isHidden &&
+									<td key={columnIndex}>
+										{column.rows[rowIndex]}
+									</td>
+								}
+							</>
 						))}
-						<td>
-							<StudentGroupActions
-								groupId={visibleStudents?.[rowIndex]?.group?.id}
-								studentId={visibleStudents?.[rowIndex]?.id}
-								session={session}
-								user={user}
+						<td key="actions">
+							<input
+								type="button"
+								onClick={() => navigateToStudentPage(rowIndex)}
+								value="Go to student page"
 							/>
+							{user.role === "Student" &&
+								<StudentGroupActions
+									groupId={getStudentByRowIndex(rowIndex).groupId}
+									session={session}
+									user={user}
+								/>
+							}
 						</td>
 					</tr>
 				))}

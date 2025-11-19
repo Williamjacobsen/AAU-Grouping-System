@@ -5,14 +5,15 @@ export default function sendReadReceipt(
   selectedChatRoom,
   username,
   roomMessages,
-  chatSystemRef
+  chatSystemRef,
+	students
 ) {
   if (!selectedChatRoom || !roomMessages?.length || !chatSystemRef.current)
     return;
 
   const upToMessageId = roomMessages[roomMessages.length - 1].id;
 
-  if (isDirectRoom(selectedChatRoom)) {
+  if (isDirectRoom(selectedChatRoom, students)) {
     const conversationKey = getConversationKey(username, selectedChatRoom);
     chatSystemRef.current.publish("/private/readUpTo", {
       conversationKey,

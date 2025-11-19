@@ -18,8 +18,8 @@ public class Session extends DatabaseItem {
 	private DatabaseItemChildGroup groups;
 
 	private String name = "";
-	private Integer minGroupSize = -1;
-	private Integer maxGroupSize = -1;
+	private Integer minGroupSize = 0;
+	private Integer maxGroupSize = 100000;
 	private Boolean allowStudentProjectProposals = false;
 	private LocalDateTime questionnaireDeadline = null;
 
