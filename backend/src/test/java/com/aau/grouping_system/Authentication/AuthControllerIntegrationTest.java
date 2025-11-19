@@ -30,6 +30,7 @@ import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -47,6 +48,9 @@ class AuthControllerIntegrationTest {
     
     @MockitoBean
     private EmailService emailService;
+    
+    @MockitoBean
+    private UserService userService;
 
     private Coordinator testCoordinator;
     private Student testStudent;

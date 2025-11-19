@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -170,8 +171,6 @@ class StudentControllerIntegrationTest {
             .thenReturn(testStudent);
         when(requirementService.requireSessionExists("session-123"))
             .thenReturn(testSession);
-        when(sessionService.isQuestionnaireDeadlineExceeded(testSession))
-            .thenReturn(false);
 
         // Act & Assert
         mockMvc.perform(post("/student/saveQuestionnaireAnswers")
@@ -181,11 +180,10 @@ class StudentControllerIntegrationTest {
                 .andExpect(content().string("Saved questionnaire answers successfully."));
 
         verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
-        verify(sessionService).isQuestionnaireDeadlineExceeded(testSession);
+        verify(requirementService).requireSessionExists("session-123");
+        verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
         verify(studentService).applyQuestionnaireAnswers(eq(testStudent), any());
-    }
-
-    @Test
+    }    @Test
     void testSaveQuestionnaireAnswers_StudentNotFound_ReturnsNotFound() throws Exception {
         // Arrange
         String requestBody = """
@@ -240,8 +238,8 @@ class StudentControllerIntegrationTest {
             .thenReturn(testStudent);
         when(requirementService.requireSessionExists("session-123"))
             .thenReturn(testSession);
-        when(sessionService.isQuestionnaireDeadlineExceeded(testSession))
-            .thenReturn(true);
+        doThrow(new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded."))
+            .when(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
 
         // Act & Assert
         mockMvc.perform(post("/student/saveQuestionnaireAnswers")
@@ -250,7 +248,8 @@ class StudentControllerIntegrationTest {
                 .andExpect(status().isUnauthorized());
 
         verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
-        verify(sessionService).isQuestionnaireDeadlineExceeded(testSession);
+        verify(requirementService).requireSessionExists("session-123");
+        verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
         verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
     }
 
