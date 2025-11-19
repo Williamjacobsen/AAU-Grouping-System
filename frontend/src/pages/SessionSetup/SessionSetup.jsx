@@ -12,9 +12,9 @@ import { useAppState } from "ContextProviders/AppStateContext";
 export default function SessionSetup() {
 	const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"
 
-	const { isLoading, students, session, supervisors } = useAppState();
+	const { isLoading, students, session, supervisors } = useAppState(); // Custom hooks that fetch session, students and supervisors from the backend
 
-	const [message, setMessage] = useState("");
+	const [message, setMessage] = useState(""); // Used for displaying status messages from child components
 
 	if (isLoading)
 		return <div className="loading-message">Loading information...</div>;
