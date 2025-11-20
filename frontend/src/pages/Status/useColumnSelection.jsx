@@ -4,8 +4,8 @@ export default function useColumnSelection(columns) {
 
 	const [enabledLabels, setEnabledLabels] = useState([
 		"Name",
-		"Group name",
-		"Group project",
+		"Group: Name",
+		"Group: 1st project priority",
 		"1st project priority",
 		"Special needs",
 		"Other comments"

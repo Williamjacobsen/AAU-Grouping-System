@@ -1,3 +1,4 @@
+import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
 export default function useGroupActions(setError, sessionId, setGroups) {
 
@@ -38,17 +39,20 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 	const assignSupervisor = async (groupId, supervisorId) => {
 		try {
-			await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/${groupId}/assign-supervisor/${supervisorId}`, {
-				method: "POST",
-				credentials: "include",
-			});
+			await fetchWithDefaultErrorHandling(
+				`/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
+				{
+					method: "POST",
+					credentials: "include",
+				}
+			);
 			setGroups((prev) =>
 				prev.map((g) =>
 					g.id === groupId ? { ...g, supervisorId: supervisorId } : g
 				)
 			);
-		} catch {
-			setError("Failed to assign supervisor");
+		} catch (error) {
+			setError("Failed to assign supervisor: " + error);
 		}
 	};
 

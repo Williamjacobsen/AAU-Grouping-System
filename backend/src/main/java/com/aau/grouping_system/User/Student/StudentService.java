@@ -25,4 +25,8 @@ public class StudentService {
 	public void applyQuestionnaireAnswers(Student student, StudentQuestionnaire updatedQuestionnaire) {
 		student.setQuestionnaire(updatedQuestionnaire);
 	}
+
+	public void removeStudent(Student student) {
+		db.getStudents().cascadeRemove(db, student);
+	}
 }

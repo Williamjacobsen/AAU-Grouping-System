@@ -38,7 +38,7 @@ export default function useColumns(students, projects, groups) {
 				}
 			),
 			createColumn(
-				"Group name",
+				"Group: Name",
 				function (student) {
 					return groups.find(
 						group => group.id === student.groupId)?.name
@@ -46,11 +46,53 @@ export default function useColumns(students, projects, groups) {
 				}
 			),
 			createColumn(
-				"Group project",
+				"Group: Desired group size",
+				function (student) {
+					const group = groups.find(group => group.id === student.groupId);
+					if (!group) {
+						return "";
+					}
+
+					let min = group.desiredGroupSizeMin;
+					let max = group.desiredGroupSizeMax;
+					if (min === -1 && max === -1) {
+						return "No preference";
+					}
+					else if (min === -1) {
+						return "Max: " + max;
+					}
+					else if (group.desiredGroupSizeMax === -1) {
+						return "Min: " + min;
+					}
+					else {
+						return min + " to " + max;
+					}
+				}
+			),
+			createColumn(
+				"Group: 1st project priority",
 				function (student) {
 					return projects.find(
 						project => project.id === groups.find(
-							group => group.id === student.groupId)?.projectId)?.name
+							group => group.id === student.groupId)?.desiredProjectId1)?.name
+						?? "";
+				}
+			),
+			createColumn(
+				"Group: 2nd project priority",
+				function (student) {
+					return projects.find(
+						project => project.id === groups.find(
+							group => group.id === student.groupId)?.desiredProjectId2)?.name
+						?? "";
+				}
+			),
+			createColumn(
+				"Group: 3rd project priority",
+				function (student) {
+					return projects.find(
+						project => project.id === groups.find(
+							group => group.id === student.groupId)?.desiredProjectId3)?.name
 						?? "";
 				}
 			),
@@ -79,7 +121,7 @@ export default function useColumns(students, projects, groups) {
 				}
 			),
 			createColumn(
-				"Preferred group size",
+				"Desired group size",
 				function (student) {
 					let min = student.questionnaire.desiredGroupSizeMin;
 					let max = student.questionnaire.desiredGroupSizeMax;

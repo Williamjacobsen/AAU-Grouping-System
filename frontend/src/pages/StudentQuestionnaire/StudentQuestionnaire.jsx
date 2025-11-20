@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 import { useGetSessionProjectsByParam } from "../../hooks/useGetSessionProjects";
-import ProjectPrioritySelectors from "./ProjectPrioritySelectors";
+import ProjectPrioritySelectors from "../../Components/ProjectPrioritySelector/ProjectPrioritySelectors";
 import { useGetSessionByParameter } from "../../hooks/useGetSession";
 import useIsQuestionnaireDeadlineExceeded from "../../hooks/useIsQuestionnaireDeadlineExceeded";
 import "./StudentQuestionnaire.css";
@@ -27,29 +27,24 @@ export default function StudentQuestionnaire() {
 			const formData = new FormData(event.currentTarget);
 			const updatedQuestionnaire = Object.fromEntries(formData);
 
-			await requestSaveQuestionnaireAnswers(updatedQuestionnaire);
+			await fetchWithDefaultErrorHandling(
+				`/student/saveQuestionnaireAnswers`,
+				{
+					method: "POST",
+					credentials: "include", // Ensures cookies are sent with the request
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(
+						updatedQuestionnaire
+					),
+				}
+			);
 
 			window.location.reload(); // Reload the page (to refresh changes)
 		} catch (error) {
 			alert(error);
 		}
-	}
-
-	async function requestSaveQuestionnaireAnswers(updatedQuestionnaire) {
-		const response = await fetchWithDefaultErrorHandling(
-			"/student/saveQuestionnaireAnswers",
-			{
-				method: "POST",
-				credentials: "include", // Ensures cookies are sent with the request
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify(
-					updatedQuestionnaire
-				),
-			}
-		);
-		return response;
 	}
 
 	return (

@@ -43,15 +43,14 @@ export default function GroupManagement() {
 		if (!session) return;
 		const fetchGroups = async () => {
 			try {
-				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups`);
+				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/${sessionId}/getGroups`);
 				if (!response.ok) {
 					const errorMessage = await response.text();
 					setError(errorMessage);
 					return;
 				}
 				const data = await response.json();
-				const groupArray = Object.values(data); //convert object into an array
-				setGroups(groupArray);
+				setGroups(data);
 			} catch (error) {
 				setError("Failed to fetch data");
 			}

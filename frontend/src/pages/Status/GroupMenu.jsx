@@ -1,3 +1,4 @@
+import ProjectPrioritySelectors from "Components/ProjectPrioritySelector/ProjectPrioritySelectors";
 import React from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
@@ -56,7 +57,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 		}
 	}
 
-	async function modifyGroupName(event) {
+	async function modifyGroupPreferences(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 
@@ -64,38 +65,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 			const formEntries = Object.fromEntries(formData);
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/modifyGroupName/${getUserGroup().id}`,
-				{
-					method: "POST",
-					credentials: "include",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify(
-						formEntries
-					),
-				}
-			);
-
-			window.location.reload(); // Reload the page (to refresh changes)
-		} catch (error) {
-			alert(error);
-		}
-	}
-
-	async function modifyGroupProject(event) {
-		try {
-			event.preventDefault(); // Prevent page from refreshing on submit
-
-			const formData = new FormData(event.currentTarget);
-			const formEntries = Object.fromEntries(formData);
-
-			if (formEntries.newProjectId === "null") {
-				formEntries.newProjectId = null;
-			}
-
-			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/modifyGroupProject/${getUserGroup().id}`,
+				`/groups/${session.id}/modifyGroupPreferences/${getUserGroup().id}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -199,49 +169,66 @@ export default function GroupMenu({ session, user, groups, projects, students })
 						)}
 					</div>
 
-					<form onSubmit={modifyGroupName}>
+					<form onSubmit={modifyGroupPreferences}>
+
 						<label>
 							<b>Group name:</b>
 							<input
-								name="newName"
+								name="name"
 								type="text"
 								defaultValue={getUserGroup().name}
 								disabled={!getIsUserGroupOwner()}
 								required
 							/>
-							{getIsUserGroupOwner() &&
-								<input
-									type="submit"
-									value="Apply"
-								/>
-							}
 						</label>
-					</form>
+						<br />
 
-					<form onSubmit={modifyGroupProject}>
 						<label>
-							<b>Group project:</b>
-							<select
-								name="newProjectId"
-								defaultValue={projects.find(project => project.id === getUserGroup().projectId)?.id ?? null}
+							<b>Preferred minimum group size</b> (-1 means no preference):
+							<input
+								name="desiredGroupSizeMin"
+								defaultValue={getUserGroup().desiredGroupSizeMin}
+								type="number"
+								min={-1}
+								step="1"
 								required
-							>
-								<option key="null" value="null" disabled={!getIsUserGroupOwner()}>
-									...
-								</option>
-								{projects.map(project =>
-									<option key={project.id} value={project.id} disabled={!getIsUserGroupOwner()}>
-										{project.name}
-									</option>
-								)}
-							</select>
-							{getIsUserGroupOwner() &&
-								<input
-									type="submit"
-									value="Apply"
-								/>
-							}
+							/>
 						</label>
+						<br />
+
+						<label>
+							<b>Preferred maximum group size</b> (-1 means no preference):
+							<input
+								name="desiredGroupSizeMax"
+								defaultValue={getUserGroup().desiredGroupSizeMax}
+								type="number"
+								min={-1}
+								step="1"
+								required
+							/>
+						</label>
+						<br />
+
+						<label>
+							<b>Group project priorities:</b>
+							<ProjectPrioritySelectors
+								projects={projects}
+								desiredProjectId1Name="desiredProjectId1"
+								desiredProjectId2Name="desiredProjectId2"
+								desiredProjectId3Name="desiredProjectId3"
+								desiredProjectId1={getUserGroup().desiredProjectId1}
+								desiredProjectId2={getUserGroup().desiredProjectId2}
+								desiredProjectId3={getUserGroup().desiredProjectId3}
+								isDisabled={!getIsUserGroupOwner()}
+							/>
+						</label>
+
+						{getIsUserGroupOwner() &&
+							<input
+								type="submit"
+								value="Apply"
+							/>
+						}
 					</form>
 
 					<form onSubmit={acceptJoinRequest}>

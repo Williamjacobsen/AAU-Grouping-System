@@ -25,7 +25,7 @@ export default function Status() {
 
 	// Getting the columns for the student table
 	const { originalColumns } = useColumns(students, projects, groups);
-	const { sortedColumns, sortColumns } = useColumnSorting(originalColumns);
+	const { sortedColumns, sortColumns, alsoSortByGroupName, setAlsoSortByGroupName } = useColumnSorting(originalColumns);
 	const { enabledColumns, enabledLabels, toggleLabel } = useColumnSelection(sortedColumns);
 	const { searchedColumns, searchString, setSearchString } = useColumnSearching(enabledColumns);
 
@@ -63,6 +63,8 @@ export default function Status() {
 					enabledLabels={enabledLabels}
 					toggleLabel={toggleLabel}
 					sortColumns={sortColumns}
+					alsoSortByGroupName={alsoSortByGroupName}
+					setAlsoSortByGroupName={setAlsoSortByGroupName}
 				/>
 			</div>
 			<div className="table-wrapper">

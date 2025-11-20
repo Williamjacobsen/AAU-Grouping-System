@@ -23,6 +23,24 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 		return student;
 	}
 
+	let previousStudentGroupId = null;
+	let useRowColorA = true;
+	function getAlternatingColorByGroup(rowIndex) {
+
+		const studentGroupId = getStudentByRowIndex(rowIndex).groupId;
+
+		if (previousStudentGroupId != studentGroupId) {
+			useRowColorA = !useRowColorA;
+			previousStudentGroupId = studentGroupId;
+		}
+
+		if (useRowColorA) {
+			return "#ffffffff";
+		} else {
+			return "#dcdcdcff";
+		}
+	}
+
 	return (
 		<table className="student-table">
 			<thead>
@@ -55,6 +73,7 @@ const StudentTable = (({ columns, students, sessionId, session, user }) => {
 					// This way React can handle the minimal DOM change." And else you get a warning.
 					<tr
 						key={rowIndex}
+						style={{ backgroundColor: getAlternatingColorByGroup(rowIndex) }}
 					>
 						{columns.map((column, columnIndex) => (
 							<>
