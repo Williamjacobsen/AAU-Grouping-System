@@ -1,7 +1,7 @@
 
 export default function RenderStudentList({
 	localStudentsWithNoGroup, groupsWith1Member,
-	selectedStudent, handleStudentClick, students
+	selectedStudent, handleStudentClick, students, projects
 }) {
 
 	const hasStudents = localStudentsWithNoGroup && localStudentsWithNoGroup.length > 0;
@@ -9,6 +9,10 @@ export default function RenderStudentList({
 
 	if (!hasStudents && !hasSingleGroups) {
 		return <p>No students without a group</p>;
+	}
+
+	function getProject(projectId) {
+		return projects?.find(p => p.id === projectId);
 	}
 
 	return (
@@ -26,12 +30,12 @@ export default function RenderStudentList({
 								member.questionnaire?.desiredProjectId3) && (
 									<span className="student-priorities">
 										— [
-										{member.questionnaire?.desiredProjectId1 || ""}
+										{getProject(member.desiredProjectId1)?.name || ""}
 										{member.questionnaire?.desiredProjectId2
-											? ", " + member.questionnaire.desiredProjectId2
+											? ", " + getProject(member.desiredProjectId2)?.name
 											: ""}
 										{member.questionnaire?.desiredProjectId3
-											? ", " + member.questionnaire.desiredProjectId3
+											? ", " + getProject(member.desiredProjectId3)?.name
 											: ""}
 										]
 									</span>

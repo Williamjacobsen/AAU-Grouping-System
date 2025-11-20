@@ -3,8 +3,12 @@ import React, { memo } from "react";
 const RenderGroups = memo(({
 	groups, supervisors, assignSupervisor,
 	handleGroupClick, selectedGroup,
-	handleStudentClick, selectedStudent, students
+	handleStudentClick, selectedStudent, students, projects
 }) => {
+
+	function getProject(projectId) {
+		return projects.find(project => project.id === projectId);
+	}
 
 	return groups.map((group) => {
 		return (
@@ -26,11 +30,23 @@ const RenderGroups = memo(({
 					<span className="group-detail">Size: </span> {group.studentIds.length} <br />
 					<span className="group-detail">Preferred size: </span> {group.maxStudents}
 				</h4>
-				{group.project && (
-					<p className="group-detail">
-						Project: <span className="highlight">{group.project}</span>
-					</p>
-				)}
+				{(group.desiredProjectId1 ||
+					group.desiredProjectId2 ||
+					group.desiredProjectId3) && (
+						<p className="group-detail">
+							Projects:{" "}
+							<span className="highlight">
+
+								{getProject(group.desiredProjectId1)?.name || ""}
+								{group.desiredProjectId2
+									? ", " + getProject(group.desiredProjectId2)?.name
+									: ""}
+								{group.desiredProjectId3
+									? ", " + getProject(group.desiredProjectId3)?.name
+									: ""}
+							</span>
+						</p>
+					)}
 				<ul>
 					{group.studentIds.map((studentId, index) => {
 						const member = students?.find(s => s.id === studentId);
@@ -46,12 +62,14 @@ const RenderGroups = memo(({
 									member.questionnaire?.desiredProjectId3) && (
 										<span className="student-priorities">
 											— [
-											{member.questionnaire?.desiredProjectId1 || ""}
+											{member.questionnaire?.desiredProjectId1
+												? getProject(member.questionnaire.desiredProjectId1)?.name
+												: ""}
 											{member.questionnaire?.desiredProjectId2
-												? ", " + member.questionnaire.desiredProjectId2
+												? ", " + getProject(member.questionnaire.desiredProjectId2)?.name
 												: ""}
 											{member.questionnaire?.desiredProjectId3
-												? ", " + member.questionnaire.desiredProjectId3
+												? ", " + getProject(member.questionnaire.desiredProjectId3)?.name
 												: ""}
 											]
 										</span>
@@ -65,5 +83,6 @@ const RenderGroups = memo(({
 		);
 	});
 });
+
 
 export default RenderGroups;
