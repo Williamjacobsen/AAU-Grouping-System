@@ -6,6 +6,7 @@ import "./GroupM.css";
 import NotifyButton from "Components/NotifyButton/NotifyButton";
 import CsvDownloadButton from "./components/CsvDownloadButton";
 
+import useGetSessionGroups from "hooks/useGetSessionGroups";
 import useGroupActions from "./hooks/useGroupActions";
 import useSplitGroupsIntoSections from "./hooks/useSplitGroupsIntoSections";
 import useStudentClick from "./hooks/useStudentClick";
@@ -23,6 +24,8 @@ export default function GroupManagement() {
 	const navigate = useNavigate();
 
 	const { isLoading: isLoadingUser, user } = useAuth();
+	const { isLoading: isLoadingGroups, groups: fetchedGroups } = useGetSessionGroups(sessionId);
+
 
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
@@ -33,30 +36,18 @@ export default function GroupManagement() {
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
 	const [groups, setGroups] = useState([]);
 
-	const { isLoading, session, students, supervisors, isDeadlineExceeded } = useAppState();
+	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
 	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
 	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
-		if (!session) return;
-		const fetchGroups = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/${sessionId}/getGroups`);
-				if (!response.ok) {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-					return;
-				}
-				const data = await response.json();
-				setGroups(data);
-			} catch (error) {
-				setError("Failed to fetch data");
-			}
-		};
-		fetchGroups();
-	}, [session, students]);
+    if (fetchedGroups) {
+				console.log("Fetched groups:", fetchedGroups);
+        setGroups(fetchedGroups);
+    }
+}, [fetchedGroups]);
 
 	useEffect(() => {
 		if (error) {
@@ -109,7 +100,7 @@ export default function GroupManagement() {
 		setError
 	});
 
-	if (isLoadingUser || isLoading)
+	if (isLoadingUser || isLoadingGroups || isLoadingSessionData)
 		return <div className="loading-message">Loading...</div>;
 	if (!user)
 		return navigate("/sign-in");
@@ -155,6 +146,7 @@ export default function GroupManagement() {
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
 						/>
 					</div>
 
@@ -168,6 +160,7 @@ export default function GroupManagement() {
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
 						/>
 					</div>
 
@@ -181,6 +174,7 @@ export default function GroupManagement() {
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
 						/>
 					</div>
 
@@ -191,6 +185,7 @@ export default function GroupManagement() {
 							groupsWith1Member={groupsWith1Member}
 							selectedStudent={selectedStudent}
 							handleStudentClick={handleStudentClick}
+							students={students}
 						/>
 					</div>
 

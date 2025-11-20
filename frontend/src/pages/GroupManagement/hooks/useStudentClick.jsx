@@ -37,17 +37,17 @@ export default function useStudentClick({
 					return prevGroups;
 				}
 
-				if (targetGroup.members.length >= session?.maxGroupSize) {
+				if (targetGroup.studentIds.length >= session?.maxGroupSize) {
 					setError("Sorry, adding this student would make the group too big");
 					return prevGroups;
 				}
 
 				const newGroups = prevGroups.map(group => {
 					if (group.id === from) {
-						return { ...group, members: group.members.filter(student => student.name !== selectedStudent.member.name) };
+						return { ...group, studentIds: group.studentIds.filter(id => id !== selectedStudent.member.id) };
 					}
 					if (group.id === groupId) {
-						return { ...group, members: [...group.members, selectedStudent.member] };
+						return { ...group, studentIds: [...group.studentIds, selectedStudent.member.id] };
 					}
 					return group;
 				});

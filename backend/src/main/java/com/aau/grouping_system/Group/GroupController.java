@@ -113,14 +113,6 @@ public class GroupController {
 		return ResponseEntity.ok(group);
 	}
 
-	/*
-	 * public ResponseEntity<Map<String, Group>> getAllGroups() {
-	 * return ResponseEntity.ok(db.getGroups().getAllItems());
-	 * }
-	 */
-
-	// ---TEST------TEST------TEST------TEST---
-
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(
@@ -135,8 +127,6 @@ public class GroupController {
 
 		return ResponseEntity.ok(sessionGroups);
 	}
-
-	// ---TEST------TEST------TEST------TEST---
 
 	@PostMapping("/{sessionId}/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(

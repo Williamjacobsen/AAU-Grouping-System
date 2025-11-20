@@ -29,17 +29,17 @@ export default function useGroupClick({
 				const fromGroup = prevGroups.find(group => group.id === selectedGroup.from);
 				const targetGroup = prevGroups.find(group => group.id === groupId);
 
-				if (targetGroup.members.length + fromGroup.members.length > session?.maxGroupSize) {
+				if (targetGroup.studentIds.length + fromGroup.studentIds.length > session?.maxGroupSize) {
 					setError("Sorry, merging these groups would make the group too big");
 					return prevGroups;
 				}
 
 				const newGroups = prevGroups.map(group => {
 					if (group.id === selectedGroup.from)
-						return { ...group, members: [] };
+						return { ...group, studentIds: [] };
 
 					if (group.id === groupId)
-						return { ...group, members: [...group.members, ...fromGroup.members] };
+						return { ...group, studentIds: [...group.studentIds, ...fromGroup.studentIds] };
 
 					return group;
 				});
