@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function ColumnsDropdown({ columns, enabledLabels, toggleLabel, sortColumns }) {
+export default function ColumnsDropdown({ columns, enabledLabels, toggleLabel, sortColumns, alsoSortByGroupName, setAlsoSortByGroupName }) {
 
 	const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
@@ -19,6 +19,17 @@ export default function ColumnsDropdown({ columns, enabledLabels, toggleLabel, s
 
 			{dropdownIsOpen && (
 				<div className="column-selector-dropdown">
+					<h4>
+						Columns are always sorted first by student name, then by your selected sorting method, then optionally also by group name.
+					</h4>
+					<label>
+						Also lastly sort by group name?
+						<input
+							type="checkbox"
+							checked={alsoSortByGroupName}
+							onChange={() => setAlsoSortByGroupName(!alsoSortByGroupName)}
+						/>
+					</label>
 					{columns?.map(column => (
 						<>
 							{!column.isHidden &&
