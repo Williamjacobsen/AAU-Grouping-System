@@ -62,7 +62,7 @@ export default function useColumnSorting(unsortedColumns) {
 		const columnsSortedByName = sortByLabel(unsortedColumns, "Name", isInAscendingOrder);
 		const columnsSortedBySelected = sortByLabel(columnsSortedByName, labelToSortBy, isInAscendingOrder);
 		if (alsoSortByGroupName) {
-			const columnsSortedByGroupName = sortByLabel(columnsSortedBySelected, "Group name", isInAscendingOrder);
+			const columnsSortedByGroupName = sortByLabel(columnsSortedBySelected, "Group: Name", isInAscendingOrder);
 			return columnsSortedByGroupName;
 		}
 		else {

@@ -7,7 +7,8 @@ const ProjectPrioritySelectors = memo(({
 	desiredProjectId3Name,
 	desiredProjectId1,
 	desiredProjectId2,
-	desiredProjectId3 }) => {
+	desiredProjectId3,
+	isDisabled = false }) => {
 
 	const [priorities, setPriorities] = useState([
 		desiredProjectId1,
@@ -17,21 +18,21 @@ const ProjectPrioritySelectors = memo(({
 
 	function setPriority(index, value) {
 		setPriorities((previousArray) => {
-			
-			const newArray = [...previousArray]; // The spread operator "..." copies the array.
+
+			const newArray = [...previousArray]; // The spread operator "..." shallow-copies the array.
 			newArray[index] = value;
-      
+
 			// Clear lower priorities when a higher priority changes
 			for (let i = index + 1; i < newArray.length; i++) {
 				newArray[i] = "";
 			}
-      
+
 			return newArray;
 		});
 	}
 
 	function PrioritySelector({ priorityIndex }) {
-		
+
 		return (
 			<select
 				value={priorities[priorityIndex]}
@@ -41,7 +42,7 @@ const ProjectPrioritySelectors = memo(({
 				<option value="">
 					None
 				</option>
-				
+
 				{projects.map(project => {
 					// Check if this project is already selected in a higher priority
 					let isProjectAlreadyAPriority = false;
@@ -51,15 +52,15 @@ const ProjectPrioritySelectors = memo(({
 							break;
 						}
 					}
-          
+
 					// Disabled the option if it's already selected in a higher priority
 					return (
-						<option key={project.id} value={project.id} disabled={isProjectAlreadyAPriority}>
+						<option key={project.id} value={project.id} disabled={isProjectAlreadyAPriority || isDisabled}>
 							{project.name}
 						</option>
 					);
 				})}
-				
+
 			</select>
 		);
 	}
@@ -75,7 +76,7 @@ const ProjectPrioritySelectors = memo(({
 			<br />
 			3rd priority:
 			<PrioritySelector priorityIndex={2} />
-      
+
 			{/* Hidden inputs that FormData will capture */}
 			<input
 				type="hidden"

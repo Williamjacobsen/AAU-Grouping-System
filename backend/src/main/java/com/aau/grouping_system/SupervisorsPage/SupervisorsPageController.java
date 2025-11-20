@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
@@ -33,12 +34,15 @@ public class SupervisorsPageController {
 
 	private final RequestRequirementService requestRequirementService;
 	private final SupervisorsPageService supervisorsPageService;
+	private final UserService userService;
 
 	public SupervisorsPageController(
 			RequestRequirementService requestRequirementService,
-			SupervisorsPageService supervisorsPageService) {
+			SupervisorsPageService supervisorsPageService,
+			UserService userService) {
 		this.requestRequirementService = requestRequirementService;
 		this.supervisorsPageService = supervisorsPageService;
+		this.userService = userService;
 	}
 
 	public Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
@@ -72,7 +76,7 @@ public class SupervisorsPageController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 		validateSessionAccess(servlet, sessionId);
-	
+
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
 
@@ -86,12 +90,13 @@ public class SupervisorsPageController {
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
 		Session session = validateSessionAccess(servlet, sessionId);
-	
+
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
 
-		String result = supervisorsPageService.sendNewPassword(session, supervisor);
-		return ResponseEntity.ok(result);
+		userService.applyAndEmailNewLoginCode(session, supervisor);
+
+		return ResponseEntity.ok("Successfully reset and emailed a new password");
 	}
 
 	@PostMapping("/{supervisorId}/max-groups")
@@ -101,7 +106,7 @@ public class SupervisorsPageController {
 			@Valid @RequestBody UpdateMaxGroupsRequest request) {
 
 		validateSessionAccess(servlet, sessionId);
-	
+
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
 
@@ -115,12 +120,12 @@ public class SupervisorsPageController {
 
 	public Supervisor findSupervisorInSession(Session session, String supervisorId) {
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
-		
+
 		// Check if the supervisor belongs to this session
 		if (!supervisor.getSessionId().equals(session.getId())) {
 			return null;
 		}
-		
+
 		return supervisor;
 	}
 }

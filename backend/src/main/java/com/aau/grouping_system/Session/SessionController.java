@@ -134,20 +134,6 @@ public class SessionController {
 		return ResponseEntity.ok(projects);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
-	@GetMapping("/{sessionId}/getGroups")
-	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
-
-		Session session = requestRequirementService.requireSessionExists(sessionId);
-		User user = requestRequirementService.requireUserExists(servlet);
-		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
-
-		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
-
-		return ResponseEntity.ok(groups);
-	}
-
 	@DeleteMapping("/{sessionId}")
 	public ResponseEntity<String> deleteSession(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {

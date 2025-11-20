@@ -7,11 +7,9 @@ import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
-import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 @Service
 public class GroupService {
@@ -25,18 +23,6 @@ public class GroupService {
 	public void createGroup(Session session, String name, Student foundingMember) {
 		Group newGroup = new Group(db, session.getGroups(), session, name);
 		joinGroup(newGroup, foundingMember);
-	}
-
-	public void modifyGroupName(Group group, String newName) {
-		group.setName(newName);
-	}
-
-	public void modifyGroupProject(Group group, Project newProject) {
-		group.setProjectId(newProject != null ? newProject.getId() : null);
-	}
-
-	public void modifyGroupSupervisor(Group group, Supervisor newSupervisor) {
-		group.setSupervisorId(newSupervisor != null ? newSupervisor.getId() : null);
 	}
 
 	public void joinGroup(Group group, Student student) {
@@ -116,7 +102,7 @@ public class GroupService {
 		}
 	}
 
-	public void requireUserOwnsGroup(Group group, User user) {
+	public void requireUserOwnsGroupOrIsCoordinator(Group group, User user) {
 
 		// The coordinator is always an owner.
 		if (user.getRole() == User.Role.Coordinator) {
