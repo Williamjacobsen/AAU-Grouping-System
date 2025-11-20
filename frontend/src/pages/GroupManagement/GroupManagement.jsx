@@ -25,7 +25,7 @@ export default function GroupManagement() {
 
 	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingGroups, groups: fetchedGroups } = useGetSessionGroups(sessionId);
-
+	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
@@ -36,7 +36,6 @@ export default function GroupManagement() {
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
 	const [groups, setGroups] = useState([]);
 
-	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
 	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
 	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
@@ -44,7 +43,6 @@ export default function GroupManagement() {
 
 	useEffect(() => {
     if (fetchedGroups) {
-				console.log("Fetched groups:", fetchedGroups);
         setGroups(fetchedGroups);
     }
 }, [fetchedGroups]);
@@ -73,7 +71,8 @@ export default function GroupManagement() {
 		moveStudent,
 		session,
 		groups,
-		setError
+		setError,
+		sessionId
 	});
 
 	const handleGroupClick = useGroupClick({ // function for moving group members from one group to another
@@ -86,7 +85,8 @@ export default function GroupManagement() {
 		setLastAction,
 		moveAllMembers,
 		session,
-		setError
+		setError,
+		sessionId
 	});
 
 	const handleUndo = useUndoLogic({ //undo button
@@ -96,8 +96,8 @@ export default function GroupManagement() {
 		setLastAction,
 		setCanUndo,
 		moveStudent,
-		moveAllMembers,
-		setError
+		setError,
+		sessionId
 	});
 
 	if (isLoadingUser || isLoadingGroups || isLoadingSessionData)

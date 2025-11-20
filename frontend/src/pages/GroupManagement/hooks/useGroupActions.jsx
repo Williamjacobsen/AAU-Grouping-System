@@ -14,6 +14,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				setError(errorMessage);
 				return;
 			}
+
 		} catch (error) {
 			setError("Error moving student");
 		}

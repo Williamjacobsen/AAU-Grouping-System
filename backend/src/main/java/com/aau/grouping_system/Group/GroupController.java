@@ -221,12 +221,12 @@ public class GroupController {
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
-				Student student = requestRequirementService.requireStudentExists(studentId);
-				groupService.leaveGroup(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
+				toGroup.getStudentIds().add(studentId);
+				fromGroup.getStudentIds().remove(studentId);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
+
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Failed to move members: " + e.getMessage());
