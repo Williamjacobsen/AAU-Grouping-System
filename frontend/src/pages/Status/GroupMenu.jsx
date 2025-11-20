@@ -1,6 +1,6 @@
-import ProjectPrioritySelectors from "Components/ProjectPrioritySelector/ProjectPrioritySelectors";
 import React from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
+import "./GroupMenu.css";
 
 export default function GroupMenu({ session, user, groups, projects, students }) {
 
@@ -57,7 +57,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 		}
 	}
 
-	async function modifyGroupPreferences(event) {
+	async function modifyGroupName(event) {
 		try {
 			event.preventDefault(); // Prevent page from refreshing on submit
 
@@ -65,7 +65,38 @@ export default function GroupMenu({ session, user, groups, projects, students })
 			const formEntries = Object.fromEntries(formData);
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/modifyGroupPreferences/${getUserGroup().id}`,
+				`/groups/${session.id}/modifyGroupName/${getUserGroup().id}`,
+				{
+					method: "POST",
+					credentials: "include",
+					headers: {
+						"Content-Type": "application/json",
+					},
+					body: JSON.stringify(
+						formEntries
+					),
+				}
+			);
+
+			window.location.reload(); // Reload the page (to refresh changes)
+		} catch (error) {
+			alert(error);
+		}
+	}
+
+	async function modifyGroupProject(event) {
+		try {
+			event.preventDefault(); // Prevent page from refreshing on submit
+
+			const formData = new FormData(event.currentTarget);
+			const formEntries = Object.fromEntries(formData);
+
+			if (formEntries.newProjectId === "null") {
+				formEntries.newProjectId = null;
+			}
+
+			await fetchWithDefaultErrorHandling(
+				`/groups/${session.id}/modifyGroupProject/${getUserGroup().id}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -144,94 +175,79 @@ export default function GroupMenu({ session, user, groups, projects, students })
 	}
 
 	return (
-		<div>
+		<div className="group-menu-container">
 			{getUserGroup() &&
-				<div>
-					<h3>
-						Group information:
+				<div className="group-info-section">
+					<h3 className="group-info-title">
+						Group Information
 					</h3>
-					<div>
+					<div className="group-info-description">
 						Only the owner can make changes to the group.
 						The student who has been in the group for the longest time without leaving is regarded as the owner.
 					</div>
-					<div>
-						<b>Group owner: </b>
-						{getIsUserGroupOwner() ? "You" : students.find(student => student.id === getUserGroup().studentIds[0]).name}
+					<div className="group-info-item">
+						<b>Group owner:</b>
+						<span>{getIsUserGroupOwner() ? "You" : students.find(student => student.id === getUserGroup().studentIds[0]).name}</span>
 					</div>
-					<div>
-						<b>Group size: </b>
-						{getUserGroup().studentIds.length} / {session.maxGroupSize}
+					<div className="group-info-item">
+						<b>Group size:</b>
+						<span>{getUserGroup().studentIds.length} / {session.maxGroupSize}</span>
 					</div>
-					<div>
-						<b>Group members: </b>
+					<div className="group-info-item">
+						<b>Group members:</b>
+					</div>
+					<div className="group-members-list">
 						{getUserGroup().studentIds.map((studentId, index) =>
-							<div>{index + 1}) {students.find(student => student.id === studentId).name}</div>
+							<div key={studentId} className="group-member-item">{index + 1}) {students.find(student => student.id === studentId).name}</div>
 						)}
 					</div>
 
-					<form onSubmit={modifyGroupPreferences}>
-
+					<form className="group-form" onSubmit={modifyGroupName}>
 						<label>
 							<b>Group name:</b>
 							<input
-								name="name"
+								name="newName"
 								type="text"
 								defaultValue={getUserGroup().name}
 								disabled={!getIsUserGroupOwner()}
 								required
 							/>
+							{getIsUserGroupOwner() &&
+								<input
+									type="submit"
+									value="Apply"
+								/>
+							}
 						</label>
-						<br />
-
-						<label>
-							<b>Preferred minimum group size</b> (-1 means no preference):
-							<input
-								name="desiredGroupSizeMin"
-								defaultValue={getUserGroup().desiredGroupSizeMin}
-								type="number"
-								min={-1}
-								step="1"
-								required
-							/>
-						</label>
-						<br />
-
-						<label>
-							<b>Preferred maximum group size</b> (-1 means no preference):
-							<input
-								name="desiredGroupSizeMax"
-								defaultValue={getUserGroup().desiredGroupSizeMax}
-								type="number"
-								min={-1}
-								step="1"
-								required
-							/>
-						</label>
-						<br />
-
-						<label>
-							<b>Group project priorities:</b>
-							<ProjectPrioritySelectors
-								projects={projects}
-								desiredProjectId1Name="desiredProjectId1"
-								desiredProjectId2Name="desiredProjectId2"
-								desiredProjectId3Name="desiredProjectId3"
-								desiredProjectId1={getUserGroup().desiredProjectId1}
-								desiredProjectId2={getUserGroup().desiredProjectId2}
-								desiredProjectId3={getUserGroup().desiredProjectId3}
-								isDisabled={!getIsUserGroupOwner()}
-							/>
-						</label>
-
-						{getIsUserGroupOwner() &&
-							<input
-								type="submit"
-								value="Apply"
-							/>
-						}
 					</form>
 
-					<form onSubmit={acceptJoinRequest}>
+					<form className="group-form" onSubmit={modifyGroupProject}>
+						<label>
+							<b>Group project:</b>
+							<select
+								name="newProjectId"
+								defaultValue={projects.find(project => project.id === getUserGroup().projectId)?.id ?? null}
+								required
+							>
+								<option key="null" value="null" disabled={!getIsUserGroupOwner()}>
+									...
+								</option>
+								{projects.map(project =>
+									<option key={project.id} value={project.id} disabled={!getIsUserGroupOwner()}>
+										{project.name}
+									</option>
+								)}
+							</select>
+							{getIsUserGroupOwner() &&
+								<input
+									type="submit"
+									value="Apply"
+								/>
+							}
+						</label>
+					</form>
+
+					<form className="group-form" onSubmit={acceptJoinRequest}>
 						<label>
 							<b>Pending join requests:</b>
 							<select
@@ -258,40 +274,43 @@ export default function GroupMenu({ session, user, groups, projects, students })
 						</label>
 					</form>
 
-					<input
-						type="button"
+					<button
+						className="leave-group-button"
 						onClick={() => leaveGroup()}
-						value="Leave group"
-					/>
+					>
+						Leave Group
+					</button>
 				</div>
 			}
 			{!getUserGroup() &&
-				<div>
-					<form onSubmit={createGroup}>
+				<div className="create-group-section">
+					<h3 className="group-info-title">Create New Group</h3>
+					<form className="group-form" onSubmit={createGroup}>
 						<label>
-							Name:
+							<b>Group name:</b>
 							<input
 								name="name"
 								type="text"
-								placeholder="Group name..."
+								placeholder="Enter group name..."
 								required
 							/>
 							<input
 								type="submit"
-								value="Create new group"
+								value="Create New Group"
 							/>
 						</label>
 					</form>
 				</div>
 			}
 			{getUserActiveJoinRequestGroup() &&
-				<div>
-					You have an outgoing join request to group "{getUserActiveJoinRequestGroup().name}"
-					<input
-						type="button"
+				<div className="join-request-section">
+					<span>You have an outgoing join request to group "{getUserActiveJoinRequestGroup().name}"</span>
+					<button
+						className="cancel-request-button"
 						onClick={() => cancelJoinRequest()}
-						value="Cancel outgoin join request"
-					/>
+					>
+						Cancel Join Request
+					</button>
 				</div>
 			}
 		</div>
