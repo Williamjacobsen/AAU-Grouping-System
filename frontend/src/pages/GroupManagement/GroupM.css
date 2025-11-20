@@ -105,36 +105,6 @@
   background-color: #474747;
 }
 
-.AssignSupervisor-button {
-  margin-bottom: 8px;
-  padding: 8px;
-  background-color: #f7f7f7;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.AssignSupervisor-button p {
-  margin: 0;
-  font-weight: 500;
-}
-
-.AssignSupervisor-button select {
-  margin-left: 10px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #999;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.AssignSupervisor-button select:hover {
-  border-color: #333;
-}
-
 .error-message {
 	color: #000;
 	font-weight: 500;
@@ -142,8 +112,50 @@
 	margin-bottom: 1rem;
 	background-color: #f8d7da;
 	border-left: 3px solid #e74c3c;
-	
 }
+
+.assign-button {
+  margin-bottom: 12px;
+  padding: 10px;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column; 
+  gap: 6px;
+  font-size: 14px;
+}
+
+.assign-button p {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.assign-button select {
+  border-radius: 6px;
+  border: 1px solid #cbd5e0;
+  background-color: #ffffff;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.assign-button select:hover {
+  border-color: #93c5fd;
+}
+
+.assign-row {
+  display: flex;
+  gap: 12px;              /* space between the two dropdowns */
+  margin-bottom: 12px;    /* space below the row */
+}
+
+.assign-row .assign-button {
+  flex: 1;                /* each dropdown takes 50% width */
+  margin-bottom: 0;       /* remove extra margin */
+}
+
 
 
 

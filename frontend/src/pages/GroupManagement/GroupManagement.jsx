@@ -37,7 +37,7 @@ export default function GroupManagement() {
 	const [groups, setGroups] = useState([]);
 
 
-	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
+	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(setError, sessionId, setGroups);
 	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
@@ -142,6 +142,7 @@ export default function GroupManagement() {
 							groups={completedGroups}
 							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}
@@ -158,6 +159,7 @@ export default function GroupManagement() {
 							groups={almostCompletedGroups}
 							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}
@@ -174,6 +176,7 @@ export default function GroupManagement() {
 							groups={incompleteGroups}
 							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}

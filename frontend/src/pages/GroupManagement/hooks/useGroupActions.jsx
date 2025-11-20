@@ -57,5 +57,31 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 		}
 	};
 
-	return { moveStudent, moveAllMembers, assignSupervisor };
+	const assignProject = async (groupId, projectId) => {
+		try {
+			const response = await fetch(
+				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupProject/${groupId}/${projectId}`,
+				{
+					method: "POST",
+					credentials: "include"
+				}
+			);
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+
+			setGroups(prev =>
+				prev.map(g =>
+					g.id === groupId ? { ...g, desiredProjectId1: projectId } : g
+				)
+			);
+		} catch (error) {
+			setError("Failed to assign project: " + error);
+		}
+	};
+
+	return { moveStudent, moveAllMembers, assignSupervisor, assignProject };
 }
