@@ -8,25 +8,25 @@ export default function useSplitGroupsIntoSections(groups, session) {
 
 	const completedGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.members.length >= session?.minGroupSize && group.members.length <= session?.maxGroupSize
+			group.studentIds?.length >= session?.minGroupSize && group.studentIds?.length <= session?.maxGroupSize
 		);
 	}, [groups, session]);
 
 	const almostCompletedGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.members.length >= session?.minGroupSize * almostCompleteFraction && group.members.length < session?.minGroupSize
+			group.studentIds?.length >= session?.minGroupSize * almostCompleteFraction && group.studentIds?.length < session?.minGroupSize
 		);
 	}, [groups, session]);
 
 	const incompleteGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.members.length > 1 && group.members.length < session?.minGroupSize * almostCompleteFraction
+			group.studentIds?.length > 1 && group.studentIds?.length < session?.minGroupSize * almostCompleteFraction
 		);
 	}, [groups, session]);
 
 	const groupsWith1Member = useMemo(() => {
 		return groups.filter(group =>
-			group.members.length === 1
+			group.studentIds?.length === 1
 		);
 	}, [groups]);
 

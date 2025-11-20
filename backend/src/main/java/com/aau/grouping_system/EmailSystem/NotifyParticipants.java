@@ -36,7 +36,7 @@ public class NotifyParticipants {
 		this.db = db;
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@PostMapping("/{sessionId}/notify")
 	public ResponseEntity<String> notifyParticipants(
 			HttpServletRequest servlet,

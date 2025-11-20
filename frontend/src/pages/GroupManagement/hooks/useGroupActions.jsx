@@ -1,3 +1,4 @@
+import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
 export default function useGroupActions(setError, sessionId, setGroups) {
 
@@ -13,6 +14,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				setError(errorMessage);
 				return;
 			}
+
 		} catch (error) {
 			setError("Error moving student");
 		}
@@ -38,19 +40,48 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 	const assignSupervisor = async (groupId, supervisorId) => {
 		try {
-			await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/${groupId}/assign-supervisor/${supervisorId}`, {
-				method: "POST",
-				credentials: "include",
-			});
+			await fetchWithDefaultErrorHandling(
+				`/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
+				{
+					method: "POST",
+					credentials: "include",
+				}
+			);
 			setGroups((prev) =>
 				prev.map((g) =>
 					g.id === groupId ? { ...g, supervisorId: supervisorId } : g
 				)
 			);
-		} catch {
-			setError("Failed to assign supervisor");
+		} catch (error) {
+			setError("Failed to assign supervisor: " + error);
 		}
 	};
 
-	return { moveStudent, moveAllMembers, assignSupervisor };
+	const assignProject = async (groupId, projectId) => {
+		try {
+			const response = await fetch(
+				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupProject/${groupId}/${projectId}`,
+				{
+					method: "POST",
+					credentials: "include"
+				}
+			);
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+
+			setGroups(prev =>
+				prev.map(g =>
+					g.id === groupId ? { ...g, desiredProjectId1: projectId } : g
+				)
+			);
+		} catch (error) {
+			setError("Failed to assign project: " + error);
+		}
+	};
+
+	return { moveStudent, moveAllMembers, assignSupervisor, assignProject };
 }

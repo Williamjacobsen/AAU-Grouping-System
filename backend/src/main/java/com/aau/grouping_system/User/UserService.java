@@ -80,8 +80,8 @@ public class UserService {
 		return false;
 	}
 
-	/// Apart from coordinators, users in the same session cannot have
-	/// duplicate names.
+	/// Except for coordinators, users in the same session with the same role cannot
+	/// have duplicate names.
 	@SuppressWarnings({ "unchecked", "unused" }) // Type-safety violations aren't true here.
 	public boolean isNameDuplicate(String name, User user) {
 
@@ -140,35 +140,52 @@ public class UserService {
 		return UUID.randomUUID().toString();
 	}
 
-	public void applyAndEmailLoginCodes(Session session, CopyOnWriteArrayList<User> users) {
+	public void applyAndEmailNewLoginCode(Session session, User user) {
 
+		if (user.getRole() == User.Role.Coordinator) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Users has the role of coordinator");
+		}
+
+		String loginCode = ensureLoginCodeIsActivated(user);
+		System.out.println("User id: " + user.getId() + "\nLogin code: " + loginCode);
+
+		String subject = "Grouping Formation System - Your Login Code";
+		String body = String.format("""
+				Hello %s,
+
+				Your profile password has been updated by the group formation session coordinator.
+
+				Your session name:
+				"%s"
+
+				Your profile ID:
+				%s
+
+				Your profile password:
+				%s
+
+				Please use your ID and password to sign in to the group formation session via the following link:
+				http://localhost:3000/sign-in
+
+				""", user.getName(), session.getName(), user.getId(), loginCode);
+
+		try {
+			emailService.builder()
+					.to(user.getEmail())
+					.subject(subject)
+					.text(body)
+					.send();
+		} catch (Exception exception) {
+			throw new RequestException(
+					HttpStatus.INTERNAL_SERVER_ERROR,
+					"Failed to send email to address '" + user.getEmail() + "': " + exception.getMessage());
+		}
+	}
+
+	public void applyAndEmailNewLoginCodes(Session session, CopyOnWriteArrayList<User> users) {
 		System.out.println("--- Emailing login codes ---");
 		for (User user : users) {
-
-			String loginCode = ensureLoginCodeIsActivated(user);
-			System.out.println("User id: " + user.getId() + "\nLogin code: " + loginCode);
-
-			String subject = "Grouping Formation System - Your Login Code";
-			String body = String.format("""
-					Hello %s,
-
-					Your login code for the session "%s" is:
-					%s
-
-					Use this code to log in to the group formation session.
-					""", user.getName(), session.getName(), loginCode);
-
-			try {
-				emailService.builder()
-						.to(user.getEmail())
-						.subject(subject)
-						.text(body)
-						.send();
-			} catch (Exception exception) {
-				throw new RequestException(
-						HttpStatus.INTERNAL_SERVER_ERROR,
-						"Failed to send email to address '" + user.getEmail() + "': " + exception.getMessage());
-			}
+			applyAndEmailNewLoginCode(session, user);
 		}
 	}
 

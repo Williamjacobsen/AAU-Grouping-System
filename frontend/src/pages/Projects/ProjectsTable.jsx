@@ -1,19 +1,19 @@
 import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
 import React, { useState, memo } from "react";
 
-const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
-
+const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // component to prevent re-rendering
+// state for input fields when creating new project
 	const [newProjectName, setNewProjectName] = useState("");
 	const [newProjectDescription, setNewProjectDescription] = useState("");
-
+// state to track which project is expanded, and only allow one to be expanded
 	const [expandedProjectId, setExpandedProjectId] = useState(null);
 	const toggleExpanded = (projectId) =>
 		setExpandedProjectId((prev) => (prev === projectId ? null : projectId));
 
-	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session);
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session); // hook that checks if Q deadline has been exceeded
 
 	function getDoesDeadlineBlockUser() {
-		return user.role !== "Coordinator" && isDeadlineExceeded();
+		return user.role !== "Coordinator" && isDeadlineExceeded(); // blocks non-coordinators from making changes after Q has been exceeded
 	}
 
 	function getIsStudentUserAllowedToMakeProjects() {
@@ -24,7 +24,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 		return user.role === "Coordinator" || !isDeadlineExceeded() && project.creatorUserId === user.id;
 	}
 
-	const onDelete = (project) => {
+	const onDelete = (project) => { // handles project deletion via API call
 		fetch(`${process.env.REACT_APP_API_BASE_URL}/project/delete/${project.id}/${session.id}`,
 			{
 				method: 'DELETE',
@@ -42,7 +42,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 			});
 	};
 
-	async function onAdd() {
+	async function onAdd() { // handles adding projects via API call
 		const projectData = {
 			name: newProjectName,
 			description: newProjectDescription,
@@ -62,7 +62,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 				}
 				return response.json();
 			})
-			.then(data => {
+			.then(data => { // project added to list of projects
 				setProjects(prevProjects => [...prevProjects, { id: data.id, ...projectData }]);
 				setNewProjectName("");
 				setNewProjectDescription("");
@@ -84,10 +84,10 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => {
 				</tr>
 			</thead>
 			<tbody>
-				{projects !== null && projects.map((project) => (
+				{projects !== null && projects.map((project) => ( 
 					<tr key={project.id || project._id || project.name}>
 						<td className="project-name">{project.name}</td>
-						<td className="project-description">
+						<td className="project-description"> 
 							<div
 								className={`description-content ${expandedProjectId === project.id ? "expanded" : "collapsed"
 									}`}
