@@ -5,15 +5,16 @@ import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+//represents a project within a session
 
-public class Project extends DatabaseItem {
+public class Project extends DatabaseItem { // extends DatabaseItem to gain db persistence and lifecycle mgmt
 
 	private String name;
 	private String description;
 	private String creatorUserId;
-
+// constuctor
 	public Project(Database db, DatabaseItemChildGroup parentItemChildIdList,
-			String name, String description, User creatorUser) {
+			String name, String description, User creatorUser) { // call parent constructor to register this in db and generate ID and add to session
 		super(db, parentItemChildIdList);
 		this.name = name;
 		this.description = description;
