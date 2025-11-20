@@ -140,6 +140,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={completedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
@@ -155,6 +156,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={almostCompletedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
@@ -170,6 +172,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={incompleteGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}

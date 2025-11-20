@@ -1,13 +1,24 @@
 import React, { memo } from "react";
 
 const RenderGroups = memo(({
-	groups, supervisors, assignSupervisor,
+	groups, allGroups, supervisors, assignSupervisor,
 	handleGroupClick, selectedGroup,
 	handleStudentClick, selectedStudent, students, projects
 }) => {
 
 	function getProject(projectId) {
 		return projects.find(project => project.id === projectId);
+	}
+
+	const supervisorLoad = {};
+
+	supervisors?.forEach(supervisor => {
+		supervisorLoad[supervisor.id] = allGroups.filter(g => g.supervisorId === supervisor.id).length;
+	});
+
+	function remainingSlots(supervisor) {
+		const used = supervisorLoad[supervisor.id] || 0;
+		return supervisor.maxGroups - used;
 	}
 
 	return groups.map((group) => {
@@ -17,11 +28,18 @@ const RenderGroups = memo(({
 					<p>Current Supervisor: </p>
 					<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
 						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
-						{supervisors?.map((supervisor) => (
-							<option key={supervisor.id} value={supervisor.id}>
-								{supervisor.name}
-							</option>
-						))}
+						{supervisors?.map((supervisor) => {
+							const remaining = remainingSlots(supervisor);
+							return (
+								<option
+									key={supervisor.id}
+									value={supervisor.id}
+									disabled={remaining <= 0}
+								>
+									{supervisor.name} ({remaining})
+								</option>
+							);
+						})}
 					</select>
 				</div>
 				<h4 onClick={() => handleGroupClick(group.id)}
