@@ -1,5 +1,6 @@
 import React from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
+import "./GroupMenu.css";
 
 export default function GroupMenu({ session, user, groups, projects, students }) {
 
@@ -174,32 +175,34 @@ export default function GroupMenu({ session, user, groups, projects, students })
 	}
 
 	return (
-		<div>
+		<div className="group-menu-container">
 			{getUserGroup() &&
-				<div>
-					<h3>
-						Group information:
+				<div className="group-info-section">
+					<h3 className="group-info-title">
+						Group Information
 					</h3>
-					<div>
+					<div className="group-info-description">
 						Only the owner can make changes to the group.
 						The student who has been in the group for the longest time without leaving is regarded as the owner.
 					</div>
-					<div>
-						<b>Group owner: </b>
-						{getIsUserGroupOwner() ? "You" : students.find(student => student.id === getUserGroup().studentIds[0]).name}
+					<div className="group-info-item">
+						<b>Group owner:</b>
+						<span>{getIsUserGroupOwner() ? "You" : students.find(student => student.id === getUserGroup().studentIds[0]).name}</span>
 					</div>
-					<div>
-						<b>Group size: </b>
-						{getUserGroup().studentIds.length} / {session.maxGroupSize}
+					<div className="group-info-item">
+						<b>Group size:</b>
+						<span>{getUserGroup().studentIds.length} / {session.maxGroupSize}</span>
 					</div>
-					<div>
-						<b>Group members: </b>
+					<div className="group-info-item">
+						<b>Group members:</b>
+					</div>
+					<div className="group-members-list">
 						{getUserGroup().studentIds.map((studentId, index) =>
-							<div>{index + 1}) {students.find(student => student.id === studentId).name}</div>
+							<div key={studentId} className="group-member-item">{index + 1}) {students.find(student => student.id === studentId).name}</div>
 						)}
 					</div>
 
-					<form onSubmit={modifyGroupName}>
+					<form className="group-form" onSubmit={modifyGroupName}>
 						<label>
 							<b>Group name:</b>
 							<input
@@ -218,7 +221,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 						</label>
 					</form>
 
-					<form onSubmit={modifyGroupProject}>
+					<form className="group-form" onSubmit={modifyGroupProject}>
 						<label>
 							<b>Group project:</b>
 							<select
@@ -244,7 +247,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 						</label>
 					</form>
 
-					<form onSubmit={acceptJoinRequest}>
+					<form className="group-form" onSubmit={acceptJoinRequest}>
 						<label>
 							<b>Pending join requests:</b>
 							<select
@@ -271,40 +274,43 @@ export default function GroupMenu({ session, user, groups, projects, students })
 						</label>
 					</form>
 
-					<input
-						type="button"
+					<button
+						className="leave-group-button"
 						onClick={() => leaveGroup()}
-						value="Leave group"
-					/>
+					>
+						Leave Group
+					</button>
 				</div>
 			}
 			{!getUserGroup() &&
-				<div>
-					<form onSubmit={createGroup}>
+				<div className="create-group-section">
+					<h3 className="group-info-title">Create New Group</h3>
+					<form className="group-form" onSubmit={createGroup}>
 						<label>
-							Name:
+							<b>Group name:</b>
 							<input
 								name="name"
 								type="text"
-								placeholder="Group name..."
+								placeholder="Enter group name..."
 								required
 							/>
 							<input
 								type="submit"
-								value="Create new group"
+								value="Create New Group"
 							/>
 						</label>
 					</form>
 				</div>
 			}
 			{getUserActiveJoinRequestGroup() &&
-				<div>
-					You have an outgoing join request to group "{getUserActiveJoinRequestGroup().name}"
-					<input
-						type="button"
+				<div className="join-request-section">
+					<span>You have an outgoing join request to group "{getUserActiveJoinRequestGroup().name}"</span>
+					<button
+						className="cancel-request-button"
 						onClick={() => cancelJoinRequest()}
-						value="Cancel outgoin join request"
-					/>
+					>
+						Cancel Join Request
+					</button>
 				</div>
 			}
 		</div>
