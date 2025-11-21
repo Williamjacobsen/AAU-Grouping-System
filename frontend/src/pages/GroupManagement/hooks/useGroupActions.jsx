@@ -1,6 +1,29 @@
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
+import fetchSessionGroups from "hooks/useGetSessionGroups";
 
 export default function useGroupActions(setError, sessionId, setGroups) {
+
+	const createGroupWithStudents = async (foundingStudentId, secondStudentId, groupName) => {
+		try {
+			const encodedGroupName = encodeURIComponent(groupName); // Encode groupName for URL safety
+			const response = await fetch(
+				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/createGroupWithStudent/${foundingStudentId}/${secondStudentId}/${encodedGroupName}`,
+				{
+					method: "POST",
+					credentials: "include"
+				}
+			);
+			
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				setError(errorMessage);
+				return;
+			}
+
+		} catch (error) {
+			setError("Failed to create group: " + error);
+		}
+	};
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
@@ -83,5 +106,5 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 		}
 	};
 
-	return { moveStudent, moveAllMembers, assignSupervisor, assignProject };
+	return { moveStudent, moveAllMembers, assignSupervisor, assignProject, createGroupWithStudents };
 }

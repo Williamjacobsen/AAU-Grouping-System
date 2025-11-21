@@ -248,9 +248,7 @@ public class DatabaseSerializer {
 		groupService.joinGroup(gr.get(8), st.get(25));
 		groupService.joinGroup(gr.get(8), st.get(26));
 
-		groupService.joinGroup(gr.get(9), st.get(27));
-		groupService.joinGroup(gr.get(9), st.get(28));
-		groupService.joinGroup(gr.get(9), st.get(29));
+	
 
 		// For testing purposes, console log logins so we can log in as them
 		System.out.println("\n\n\n---- STUDENT test logins ----");

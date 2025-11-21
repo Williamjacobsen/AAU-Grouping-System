@@ -224,7 +224,7 @@ public class GroupController {
 				Student student = requestRequirementService.requireStudentExists(studentId);
 
 				// Use safe leave (doesnt delete the group, if its empty)
-				groupService.safeLeaveGroup(fromGroup, student);
+				groupService.leaveGroupWithoutDeleting(fromGroup, student);
 				groupService.joinGroup(toGroup, student);
 			}
 
@@ -350,9 +350,31 @@ public class GroupController {
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
-
 		group.setDesiredProjectId1(projectId);
 
 		return ResponseEntity.ok("Group project successfully updated");
 	}
+
+	@PostMapping("/{sessionId}/createGroupWithStudent/{foundingStudentId}/{secondStudentId}/{groupName}")
+	public ResponseEntity<String> createGroupWithStudent(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String foundingStudentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String secondStudentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupName) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Student foundingMember = requestRequirementService.requireStudentExists(foundingStudentId);
+		Student secondMember = requestRequirementService.requireStudentExists(secondStudentId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		groupService.requireUserCanAssignFoundingMember(user, foundingMember);
+		groupService.requireGroupNameNotDuplicate(session, groupName);
+
+		Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
+		groupService.joinGroup(newGroup, secondMember);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body("Group created with two students. Group ID: " + newGroup.getId());
+	}
+
 }
