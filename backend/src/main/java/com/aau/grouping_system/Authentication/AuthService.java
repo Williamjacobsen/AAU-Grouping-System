@@ -27,22 +27,33 @@ public class AuthService {
 		return passwordEncoder.matches(password, user.getPasswordHash());
 	}
 
-	public User findByEmailOrId(String emailOrId, User.Role role) {
-		switch (role) {
-			case User.Role.Coordinator:
-				for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
-					if (coordinator.getEmail().equals(emailOrId)) {
-						return coordinator;
-					}
-				}
-				return null;
-			case User.Role.Supervisor:
-				return db.getSupervisors().getItem(emailOrId);
-			case User.Role.Student:
-				return db.getStudents().getItem(emailOrId);
-			default:
-				return null;
+	public Coordinator findByEmail(String email) {
+		for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
+			if (coordinator.getEmail().equals(email)) {
+				return coordinator;
+			}
 		}
+		return null;
+	}
+
+	public User findByEmailOrId(String emailOrId) {
+
+		Student studentUser = db.getStudents().getItem(emailOrId);
+		if (studentUser != null) {
+			return studentUser;
+		}
+
+		Supervisor supervisorUser = db.getSupervisors().getItem(emailOrId);
+		if (supervisorUser != null) {
+			return supervisorUser;
+		}
+
+		Coordinator coordinatorUser = findByEmail(emailOrId);
+		if (coordinatorUser != null) {
+			return coordinatorUser;
+		}
+
+		return null;
 	}
 
 	public void invalidateOldSession(HttpServletRequest request) {

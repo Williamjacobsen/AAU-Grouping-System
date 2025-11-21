@@ -7,12 +7,6 @@ export default function Profile() {
 
 	const navigate = useNavigate();
 
-	const userRoleEnum = useMemo(() => Object.freeze({
-		Coordinator: "Coordinator",
-		Supervisor: "Supervisor",
-		Student: "Student",
-	}), []);
-
 	const [newEmail, setNewEmail] = useState("");
 	const [newPassword, setNewPassword] = useState("");
 	const [newName, setNewName] = useState("");

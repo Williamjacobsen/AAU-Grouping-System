@@ -14,6 +14,7 @@ import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.User.Coordinator.Coordinator;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -46,15 +47,13 @@ public class AuthController {
 
 	private record SignInRecord(
 			@NoDangerousCharacters @NotBlank String emailOrId,
-			@NoDangerousCharacters @NotBlank @NoWhitespace String password,
-			// @NotNull is enough validation for enum types.
-			@NotNull User.Role role) {
+			@NoDangerousCharacters @NotBlank @NoWhitespace String password) {
 	}
 
 	@PostMapping("/signIn")
 	public ResponseEntity<String> signIn(HttpServletRequest servlet, @Valid @RequestBody SignInRecord record) {
 
-		User user = service.findByEmailOrId(record.emailOrId, record.role);
+		User user = service.findByEmailOrId(record.emailOrId);
 		if (user == null || !service.isPasswordCorrect(record.password, user)) {
 			throw new RequestException(HttpStatus.UNAUTHORIZED, "Invalid email/id or password");
 		}
@@ -98,14 +97,12 @@ public class AuthController {
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest record) {
 		String email = record.email();
-		User user = service.findByEmailOrId(email, User.Role.Coordinator);
+		Coordinator coordinator = service.findByEmail(email);
 
-		if (user == null) {
+		if (coordinator == null) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND)
 					.body("No coordinator found with the provided email.");
 		}
-
-		System.out.println("Hello");
 
 		// Create reset token and store temporarily
 		String token = java.util.UUID.randomUUID().toString();
@@ -118,7 +115,7 @@ public class AuthController {
 		String body = """
 				Hello %s,
 
-				A password reset was requested for your account on the AAU Grouping System.
+				A password reset was requested for your coordinator account on the AAU Grouping System.
 
 				To reset your password, please click the link below:
 				%s
@@ -127,7 +124,7 @@ public class AuthController {
 
 				Best regards,
 				AAU Grouping System
-				""".formatted(user.getName(), resetLink);
+				""".formatted(coordinator.getName(), resetLink);
 
 		// Send email safely
 		try {
@@ -174,15 +171,15 @@ public class AuthController {
 			}
 
 			// Find the coordinator
-			User user = service.findByEmailOrId(email, User.Role.Coordinator);
-			if (user == null) {
+			Coordinator coordinator = service.findByEmail(email);
+			if (coordinator == null) {
 				return ResponseEntity
 						.status(HttpStatus.NOT_FOUND)
 						.body("User not found.");
 			}
 
 			// Update password
-			userService.modifyPassword(newPassword, user);
+			userService.modifyPassword(newPassword, coordinator);
 
 			// Remove token
 			PasswordResetTokens.tokens.remove(token);

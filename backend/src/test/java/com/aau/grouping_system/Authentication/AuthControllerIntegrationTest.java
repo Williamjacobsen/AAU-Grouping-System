@@ -75,7 +75,7 @@ class AuthControllerIntegrationTest {
 				}
 				""";
 
-		when(authService.findByEmailOrId("coordinator@test.com", User.Role.Coordinator))
+		when(authService.findByEmailOrId("coordinator@test.com"))
 				.thenReturn(testCoordinator);
 		when(authService.isPasswordCorrect("password123", testCoordinator))
 				.thenReturn(true);
@@ -86,7 +86,7 @@ class AuthControllerIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string("Signed in, user: coordinator@test.com"));
 
-		verify(authService).findByEmailOrId("coordinator@test.com", User.Role.Coordinator);
+		verify(authService).findByEmailOrId("coordinator@test.com");
 		verify(authService).isPasswordCorrect("password123", testCoordinator);
 		verify(authService).invalidateOldSession(any(HttpServletRequest.class));
 		verify(authService).createNewSession(any(HttpServletRequest.class), eq(testCoordinator));
@@ -104,7 +104,7 @@ class AuthControllerIntegrationTest {
 				}
 				""".formatted(studentId);
 
-		when(authService.findByEmailOrId(studentId, User.Role.Student))
+		when(authService.findByEmailOrId(studentId))
 				.thenReturn(testStudent);
 		when(authService.isPasswordCorrect("password123", testStudent))
 				.thenReturn(true);
@@ -116,7 +116,7 @@ class AuthControllerIntegrationTest {
 				.andExpect(status().isOk())
 				.andExpect(content().string("Signed in, user: student@test.com"));
 
-		verify(authService).findByEmailOrId(studentId, User.Role.Student);
+		verify(authService).findByEmailOrId(studentId);
 		verify(authService).isPasswordCorrect("password123", testStudent);
 	}
 
@@ -131,7 +131,7 @@ class AuthControllerIntegrationTest {
 				}
 				""";
 
-		when(authService.findByEmailOrId("invalid@test.com", User.Role.Coordinator))
+		when(authService.findByEmailOrId("invalid@test.com"))
 				.thenReturn(null);
 
 		// Act & Assert
@@ -140,7 +140,7 @@ class AuthControllerIntegrationTest {
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());
 
-		verify(authService).findByEmailOrId("invalid@test.com", User.Role.Coordinator);
+		verify(authService).findByEmailOrId("invalid@test.com");
 		verify(authService, never()).isPasswordCorrect(anyString(), any(User.class));
 		verify(authService, never()).createNewSession(any(HttpServletRequest.class), any(User.class));
 	}
@@ -156,7 +156,7 @@ class AuthControllerIntegrationTest {
 				}
 				""";
 
-		when(authService.findByEmailOrId("coordinator@test.com", User.Role.Coordinator))
+		when(authService.findByEmailOrId("coordinator@test.com"))
 				.thenReturn(testCoordinator);
 		when(authService.isPasswordCorrect("wrongpassword", testCoordinator))
 				.thenReturn(false);
@@ -167,7 +167,7 @@ class AuthControllerIntegrationTest {
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());
 
-		verify(authService).findByEmailOrId("coordinator@test.com", User.Role.Coordinator);
+		verify(authService).findByEmailOrId("coordinator@test.com");
 		verify(authService).isPasswordCorrect("wrongpassword", testCoordinator);
 		verify(authService, never()).createNewSession(any(HttpServletRequest.class), any(User.class));
 	}
@@ -179,24 +179,6 @@ class AuthControllerIntegrationTest {
 				{
 				    "password": "password123",
 				    "role": "Coordinator"
-				}
-				""";
-
-		// Act & Assert
-		mockMvc.perform(post("/auth/signIn")
-				.contentType(MediaType.APPLICATION_JSON)
-				.content(requestBody))
-				.andExpect(status().isBadRequest());
-	}
-
-	@Test
-	void testSignIn_InvalidRole_ReturnsBadRequest() throws Exception {
-		// Arrange
-		String requestBody = """
-				{
-				    "emailOrId": "test@test.com",
-				    "password": "password123",
-				    "role": "InvalidRole"
 				}
 				""";
 

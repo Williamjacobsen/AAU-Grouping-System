@@ -13,7 +13,7 @@ export default function ForgotPassword() {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ email }),
-			})
+			});
 			if (response.ok) {
 				setSucces("An reset-link has been sent to your email!");
 				setError("");
@@ -23,7 +23,7 @@ export default function ForgotPassword() {
 				setSucces("");
 			}
 		} catch (e) {
-			setError(e.message)
+			setError(e.message);
 			setSucces("");
 		}
 	};
@@ -33,21 +33,31 @@ export default function ForgotPassword() {
 			const timer = setTimeout(() => setError(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [error])
+	}, [error]);
 
 	useEffect(() => {
 		if (succes) {
 			const timer = setTimeout(() => setSucces(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [succes])
+	}, [succes]);
 
 
 	return (
 		<div className="container">
 			<h2>Forgot your password?</h2>
 			<p>
-				No problem! Enter your email address and we’ll send you a password reset link.
+				If you are a <b>coordinator</b>,
+				enter your email address,
+				and we’ll send you a password reset link.
+			</p>
+			<p>
+				If you are <i>not</i> a <b>coordinator</b>,
+				you will have to find the email containing login credentials
+				that we have previously sent you.
+				If you have lost this email,
+				you may contact your coordinator
+				and ask them to reset your password.
 			</p>
 
 			<div className="header-text"> Email</div>

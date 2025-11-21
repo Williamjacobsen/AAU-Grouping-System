@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Authentication;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -113,7 +114,7 @@ class AuthServiceTest {
 		when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
 
 		// Act
-		User result = authService.findByEmailOrId(email, User.Role.Coordinator);
+		User result = authService.findByEmailOrId(email);
 
 		// Assert
 		assertEquals(testCoordinator, result);
@@ -128,7 +129,7 @@ class AuthServiceTest {
 		when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
 
 		// Act
-		User result = authService.findByEmailOrId(email, User.Role.Coordinator);
+		User result = authService.findByEmailOrId(email);
 
 		// Assert
 		assertNull(result);
@@ -141,7 +142,7 @@ class AuthServiceTest {
 		when(mockStudents.getItem(studentId)).thenReturn(testStudent);
 
 		// Act
-		User result = authService.findByEmailOrId(studentId, User.Role.Student);
+		User result = authService.findByEmailOrId(studentId);
 
 		// Assert
 		assertEquals(testStudent, result);
@@ -153,13 +154,20 @@ class AuthServiceTest {
 		// Arrange
 		String studentId = "invalidStudent";
 		when(mockStudents.getItem(studentId)).thenReturn(null);
+		when(mockSupervisors.getItem(studentId)).thenReturn(null);
+
+		// Also mock the coordinator lookup to return an empty map
+		when(mockCoordinators.getAllItems()).thenReturn(new ConcurrentHashMap<>());
 
 		// Act
-		User result = authService.findByEmailOrId(studentId, User.Role.Student);
+		User result = authService.findByEmailOrId(studentId);
 
 		// Assert
 		assertNull(result);
 		verify(mockStudents).getItem(studentId);
+		verify(mockSupervisors).getItem(studentId);
+		// You might also want to verify that coordinator lookup was attempted
+		verify(mockCoordinators).getAllItems();
 	}
 
 	@Test
@@ -169,7 +177,7 @@ class AuthServiceTest {
 		when(mockSupervisors.getItem(supervisorId)).thenReturn(testSupervisor);
 
 		// Act
-		User result = authService.findByEmailOrId(supervisorId, User.Role.Supervisor);
+		User result = authService.findByEmailOrId(supervisorId);
 
 		// Assert
 		assertEquals(testSupervisor, result);

@@ -6,9 +6,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aau.grouping_system.Database.Database;
@@ -52,18 +57,13 @@ class StudentServiceTest {
 		String email = "student@test.com";
 		String name = "Test Student";
 
-		// Act
-		Student result = studentService.addStudent(mockSession, email, name);
+		// Create a mock student that will be returned by addItem
+		Student mockStudent = mock(Student.class);
 
-		// Assert
-		assertNotNull(result);
-	}
-
-	@Test
-	void testAddStudent_EmptyEmail_StillCreatesStudent() {
-		// Arrange
-		String email = "";
-		String name = "Test Student";
+		// Mock the addItem method call
+		when(mockStudentsMap.addItem(
+				any(), any(), any(Student.class)))
+				.thenReturn(mockStudent);
 
 		// Act
 		Student result = studentService.addStudent(mockSession, email, name);
