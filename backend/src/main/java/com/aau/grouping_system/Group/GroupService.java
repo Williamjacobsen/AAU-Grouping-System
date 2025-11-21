@@ -25,6 +25,12 @@ public class GroupService {
 		joinGroup(newGroup, foundingMember);
 	}
 
+	public Group createGroupAndReturnObject(Session session, String name, Student foundingMember) {
+		Group newGroup = new Group(db, session.getGroups(), session, name);
+		joinGroup(newGroup, foundingMember);
+		return newGroup;
+	}
+
 	public void joinGroup(Group group, Student student) {
 
 		requireStudentNotAlreadyInTheGroup(group, student);
@@ -53,6 +59,14 @@ public class GroupService {
 		if (group.getStudentIds().size() <= 0) {
 			db.getGroups().cascadeRemove(db, group);
 		}
+
+		logGroupActivity("left", student, group.getId());
+	}
+
+	public void leaveGroupWithoutDeleting(Group group, Student student) {
+		// Removes student, but doesnt delete the group (for merging)
+		group.getStudentIds().remove(student.getId());
+		student.setGroupId(null);
 
 		logGroupActivity("left", student, group.getId());
 	}

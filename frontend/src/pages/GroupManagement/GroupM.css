@@ -16,14 +16,14 @@
 }
 
 .group-box {
-	width: 400px;               
-	height: auto;               
-	background-color: #fff;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	padding: 1rem;
-	box-sizing: border-box;
-	cursor: pointer;
+  width: 340px;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 0.75rem 0.5rem 0.75rem;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .group-box:hover {
@@ -58,7 +58,6 @@
 .group-project {
   font-size: 0.9rem;
   color: #666;
-  margin-top: -5px;
   margin-bottom: 10px;
 }
 
@@ -74,8 +73,13 @@
 
 .group-name {
   font-weight: 700;
-	font-size: large;
-  color: #204098; 
+  font-size: large;
+  color: #204098;
+}
+
+.group-number {
+  color: #204098;
+  font-weight: 700;
 }
 
 
@@ -105,36 +109,6 @@
   background-color: #474747;
 }
 
-.AssignSupervisor-button {
-  margin-bottom: 8px;
-  padding: 8px;
-  background-color: #f7f7f7;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 14px;
-}
-
-.AssignSupervisor-button p {
-  margin: 0;
-  font-weight: 500;
-}
-
-.AssignSupervisor-button select {
-  margin-left: 10px;
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid #999;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-.AssignSupervisor-button select:hover {
-  border-color: #333;
-}
-
 .error-message {
 	color: #000;
 	font-weight: 500;
@@ -142,8 +116,55 @@
 	margin-bottom: 1rem;
 	background-color: #f8d7da;
 	border-left: 3px solid #e74c3c;
-	
 }
+
+.assign-button {
+  margin-bottom: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  overflow: visible;
+}
+
+.assign-button p {
+  margin: 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+.assign-button select {
+  border-radius: 4px;
+  border: none;
+  background-color: #f3f4f6;
+  cursor: pointer;
+  font-size: 11px;
+  height: 26px;
+  padding: 2px 8px;
+  box-shadow: none;
+  outline: 1px solid #e5e7eb;
+  transition: outline-color 0.2s;
+}
+
+.assign-button select:hover, .assign-button select:focus {
+  outline-color: #3b82f6;
+}
+
+.assign-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 0px;
+}
+
+.assign-row .assign-button {
+  flex: 1;                
+  margin-bottom: 0;      
+}
+
 
 
 

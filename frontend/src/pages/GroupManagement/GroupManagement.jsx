@@ -1,21 +1,20 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAppState } from "ContextProviders/AppStateContext";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./GroupM.css";
 
-import NotifyButton from "Components/NotifyButton/NotifyButton";
-import CsvDownloadButton from "./components/CsvDownloadButton";
-
+import useGetSessionGroups from "hooks/useGetSessionGroups";
 import useGroupActions from "./hooks/useGroupActions";
 import useSplitGroupsIntoSections from "./hooks/useSplitGroupsIntoSections";
 import useStudentClick from "./hooks/useStudentClick";
 import useGroupClick from "./hooks/useGroupClick";
 import useUndoLogic from "./hooks/useUndoLogic";
 
+import CsvDownloadButton from "./components/CsvDownloadButton";
 import RenderGroups from "./components/RenderGroups";
 import RenderStudentList from "./components/RenderStudentList";
 
-import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function GroupManagement() {
 
@@ -23,6 +22,8 @@ export default function GroupManagement() {
 	const navigate = useNavigate();
 
 	const { isLoading: isLoadingUser, user } = useAuth();
+	const { isLoading: isLoadingGroups, groups: fetchedGroups } = useGetSessionGroups(sessionId);
+	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded, projects } = useAppState();
 
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
@@ -33,30 +34,16 @@ export default function GroupManagement() {
 	const [localStudentsWithNoGroup, setLocalStudentsWithNoGroup] = useState([]);
 	const [groups, setGroups] = useState([]);
 
-	const { isLoading, session, students, supervisors, isDeadlineExceeded } = useAppState();
 
-	const { moveStudent, moveAllMembers, assignSupervisor } = useGroupActions(setError, sessionId, setGroups);
+	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(setError, sessionId, setGroups);
 	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
-		if (!session) return;
-		const fetchGroups = async () => {
-			try {
-				const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/${sessionId}/getGroups`);
-				if (!response.ok) {
-					const errorMessage = await response.text();
-					setError(errorMessage);
-					return;
-				}
-				const data = await response.json();
-				setGroups(data);
-			} catch (error) {
-				setError("Failed to fetch data");
-			}
-		};
-		fetchGroups();
-	}, [session, students]);
+    if (fetchedGroups) {
+        setGroups(fetchedGroups);
+    }
+}, [fetchedGroups]);
 
 	useEffect(() => {
 		if (error) {
@@ -82,7 +69,8 @@ export default function GroupManagement() {
 		moveStudent,
 		session,
 		groups,
-		setError
+		setError,
+		sessionId
 	});
 
 	const handleGroupClick = useGroupClick({ // function for moving group members from one group to another
@@ -95,7 +83,8 @@ export default function GroupManagement() {
 		setLastAction,
 		moveAllMembers,
 		session,
-		setError
+		setError,
+		sessionId
 	});
 
 	const handleUndo = useUndoLogic({ //undo button
@@ -105,11 +94,11 @@ export default function GroupManagement() {
 		setLastAction,
 		setCanUndo,
 		moveStudent,
-		moveAllMembers,
-		setError
+		setError,
+		sessionId
 	});
 
-	if (isLoadingUser || isLoading)
+	if (isLoadingUser || isLoadingGroups || isLoadingSessionData)
 		return <div className="loading-message">Loading...</div>;
 	if (!user)
 		return navigate("/sign-in");
@@ -132,6 +121,9 @@ export default function GroupManagement() {
 					<p>Click on the name of group A and then click on the name of group B</p>
 					<h3>How to move a student from A to B?</h3>
 					<p>Click on the name of the student A and then click on the name of group B</p>
+					<h3>How to create a new group?</h3>
+					<p>Click on the name of a student without a group, then click on the name of another student without a group. 
+						You will then be prompted to enter a name for the new group.</p>
 					<h3>Undo button</h3>
 					<p>Once a move has been done, it can be undone by clicking on the "undo last change" button.
 						This pops up at the top of the screen after a move.</p>
@@ -149,12 +141,16 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={completedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -162,12 +158,16 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={almostCompletedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -175,12 +175,16 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={incompleteGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
+							assignProject={assignProject}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
 							handleGroupClick={handleGroupClick}
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
+							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -191,6 +195,8 @@ export default function GroupManagement() {
 							groupsWith1Member={groupsWith1Member}
 							selectedStudent={selectedStudent}
 							handleStudentClick={handleStudentClick}
+							students={students}
+							projects={projects}
 						/>
 					</div>
 

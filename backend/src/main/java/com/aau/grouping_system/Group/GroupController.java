@@ -113,14 +113,6 @@ public class GroupController {
 		return ResponseEntity.ok(group);
 	}
 
-	/*
-	 * public ResponseEntity<Map<String, Group>> getAllGroups() {
-	 * return ResponseEntity.ok(db.getGroups().getAllItems());
-	 * }
-	 */
-
-	// ---TEST------TEST------TEST------TEST---
-
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(
@@ -135,8 +127,6 @@ public class GroupController {
 
 		return ResponseEntity.ok(sessionGroups);
 	}
-
-	// ---TEST------TEST------TEST------TEST---
 
 	@PostMapping("/{sessionId}/{groupId}/leave/{studentId}")
 	public ResponseEntity<String> leaveGroup(
@@ -232,11 +222,14 @@ public class GroupController {
 			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
 				Student student = requestRequirementService.requireStudentExists(studentId);
-				groupService.leaveGroup(fromGroup, student);
+
+				// Use safe leave (doesnt delete the group, if its empty)
+				groupService.leaveGroupWithoutDeleting(fromGroup, student);
 				groupService.joinGroup(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
+
 		} catch (Exception e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST)
 					.body("Failed to move members: " + e.getMessage());
@@ -345,4 +338,43 @@ public class GroupController {
 				.status(HttpStatus.OK)
 				.body("Group supervisor succesfully modified");
 	}
+
+	@PostMapping("/{sessionId}/modifyGroupProject/{groupId}/{projectId}")
+	public ResponseEntity<String> modifyGroupProject(
+			HttpServletRequest servlet,
+			@PathVariable String sessionId,
+			@PathVariable String groupId,
+			@PathVariable String projectId) {
+
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
+
+		Group group = requestRequirementService.requireGroupExists(groupId);
+		group.setDesiredProjectId1(projectId);
+
+		return ResponseEntity.ok("Group project successfully updated");
+	}
+
+	@PostMapping("/{sessionId}/createGroupWithStudent/{foundingStudentId}/{secondStudentId}/{groupName}")
+	public ResponseEntity<String> createGroupWithStudent(HttpServletRequest servlet,
+			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable String foundingStudentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String secondStudentId,
+			@NoDangerousCharacters @NotBlank @PathVariable String groupName) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+		Session session = requestRequirementService.requireSessionExists(sessionId);
+		Student foundingMember = requestRequirementService.requireStudentExists(foundingStudentId);
+		Student secondMember = requestRequirementService.requireStudentExists(secondStudentId);
+
+		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+		groupService.requireUserCanAssignFoundingMember(user, foundingMember);
+		groupService.requireGroupNameNotDuplicate(session, groupName);
+
+		Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
+		groupService.joinGroup(newGroup, secondMember);
+
+		return ResponseEntity.status(HttpStatus.CREATED).body("Group created with two students. Group ID: " + newGroup.getId());
+	}
+
 }
