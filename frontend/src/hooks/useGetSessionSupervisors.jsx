@@ -1,40 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionSupervisors(sessionId) {
-	const response = await fetchWithDefaultErrorHandling(
-		`/sessions/${sessionId}/getSupervisors`,
-		{
-			credentials: "include",
-			method: "GET",
-		}
-	);
-	return await response.json();
+  const response = await fetchWithDefaultErrorHandling(
+    `/sessions/${sessionId}/getSupervisors`,
+    {
+      credentials: "include",
+      method: "GET",
+    }
+  );
+  return await response.json();
 }
 
-export default function useGetSessionSupervisors(sessionId) {
+export default function useGetSessionSupervisors(sessionId, pollingInterval) {
+  const [isLoading, setIsLoading] = useState(true);
+  const [supervisors, setSupervisors] = useState(null);
+  const intervalRef = useRef(null);
 
-	const [isLoading, setIsLoading] = useState(true);
-	const [supervisors, setSupervisors] = useState(null);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setSupervisors(await fetchSessionSupervisors(sessionId));
+        setIsLoading(false);
+      } catch (error) {
+        alert(error);
+      }
+    };
 
-	useEffect(() => {
-		(async () => {
-			try {
-				setSupervisors(await fetchSessionSupervisors(sessionId));
-				setIsLoading(false);
-			} catch (error) {
-				alert(error);
-			}
-		})();
-	}, [sessionId]);
+    fetchData();
 
-	return { isLoading, supervisors };
+    if (pollingInterval) {
+      intervalRef.current = setInterval(fetchData, pollingInterval);
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [sessionId]);
+
+  return { isLoading, supervisors };
 }
 
-export function useGetSessionSupervisorsByParam() {
-	const { sessionId } = useParams();
-	return useGetSessionSupervisors(sessionId);
+export function useGetSessionSupervisorsByParam(pollingInterval) {
+  const { sessionId } = useParams();
+  return useGetSessionSupervisors(sessionId, pollingInterval);
 }
-

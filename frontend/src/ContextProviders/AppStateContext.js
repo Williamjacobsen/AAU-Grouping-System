@@ -17,19 +17,21 @@ import { useAuth } from "./AuthProvider";
 
 const AppStateContext = createContext(null);
 
+const LONG_POLLING_INTERVAL = 20_000;
+
 export function AppStateProvider({ children }) {
   const { user } = useAuth();
 
   const { isLoading: loadingSession, session: sessionData } =
     useGetSessionByParameter();
   const { isLoading: loadingProjects, projects: projectData } =
-    useGetSessionProjectsByParam();
+    useGetSessionProjectsByParam(LONG_POLLING_INTERVAL);
   const { isLoading: loadingGroups, groups: groupData } =
-    useGetSessionGroupsByParam();
+    useGetSessionGroupsByParam(LONG_POLLING_INTERVAL);
   const { isLoading: loadingStudents, students: studentData } =
-    useGetSessionStudentsByParam();
+    useGetSessionStudentsByParam(LONG_POLLING_INTERVAL);
   const { isLoading: loadingSupervisors, supervisors: supervisorData } =
-    useGetSessionSupervisorsByParam();
+    useGetSessionSupervisorsByParam(LONG_POLLING_INTERVAL);
 
   const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
