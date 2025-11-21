@@ -21,12 +21,18 @@ public class GroupService {
 	}
 
 	public void createGroup(Session session, String name, Student foundingMember) {
-		Group newGroup = new Group(db, session.getGroups(), session, name);
+		Group newGroup = db.getGroups().addItem(
+				db,
+				session.getGroups(),
+				new Group(session, name));
 		joinGroup(newGroup, foundingMember);
 	}
 
 	public Group createGroupAndReturnObject(Session session, String name, Student foundingMember) {
-		Group newGroup = new Group(db, session.getGroups(), session, name);
+		Group newGroup = db.getGroups().addItem(
+				db,
+				session.getGroups(),
+				new Group(session, name));
 		joinGroup(newGroup, foundingMember);
 		return newGroup;
 	}
@@ -57,7 +63,7 @@ public class GroupService {
 
 		// Removing the last member deletes the group
 		if (group.getStudentIds().size() <= 0) {
-			db.getGroups().cascadeRemove(db, group);
+			db.getGroups().cascadeRemoveItem(db, group);
 		}
 
 		logGroupActivity("left", student, group.getId());

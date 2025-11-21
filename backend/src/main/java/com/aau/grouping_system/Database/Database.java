@@ -12,8 +12,11 @@ import com.aau.grouping_system.User.Student.Student;
 import com.aau.grouping_system.User.Supervisor.Supervisor;
 
 @Component
+/// Container for database data.
 public class Database {
 
+	/// Data must be stored as a seperate object to allow for
+	/// easy saving/serialization.
 	private DatabaseData data = new DatabaseData();
 
 	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {

@@ -31,7 +31,11 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db, coordinator.getSessions(), coordinator, sessionName);
+		Session newSession = db.getSessions().addItem(
+				db,
+				coordinator.getSessions(),
+				new Session(db, coordinator, sessionName));
+		return newSession;
 	}
 
 	public Session getSession(String sessionId) {
@@ -48,7 +52,7 @@ public class SessionService {
 			return false;
 		}
 
-		db.getSessions().cascadeRemove(db, sessionId);
+		db.getSessions().cascadeRemoveItem(db, sessionId);
 		return true;
 	}
 

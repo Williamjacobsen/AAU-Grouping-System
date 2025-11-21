@@ -19,6 +19,10 @@ public class SupervisorService {
 
 	public Supervisor addSupervisor(Session session, String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		return new Supervisor(db, session.getSupervisors(), email, passwordHash, name, session);
+		Supervisor newSupervisor = db.getSupervisors().addItem(
+				db,
+				session.getSupervisors(),
+				new Supervisor(email, passwordHash, name, session));
+		return newSupervisor;
 	}
 }
