@@ -32,7 +32,7 @@ const RenderGroups = memo(({
 				   </h4>
 				   <div className="assign-row">
 					   <div className="assign-button">
-						   <p>Current Supervisor: </p>
+						   <p>Assigned Supervisor: </p>
 						   <select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
 							   <option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
 							   {supervisors?.map((supervisor) => {
@@ -63,8 +63,7 @@ const RenderGroups = memo(({
 						   </select>
 					   </div>
 				   </div>
-				{(group.desiredProjectId1 ||
-					group.desiredProjectId2 ||
+				{(group.desiredProjectId2 ||
 					group.desiredProjectId3) && (
 						   <p>
 							Projects wishes:{" "}
