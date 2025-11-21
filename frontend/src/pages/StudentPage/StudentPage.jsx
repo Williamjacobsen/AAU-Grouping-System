@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "./StudentPage.css";
 
-import { useGetStudent } from "hooks/useGetStudent";
-import { useAuth } from "ContextProviders/AuthProvider";
-import { useAppState } from "ContextProviders/AppStateContext";
-import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
+import { useGetStudent } from "../../hooks/useGetStudent";
+import { useAuth } from "../../ContextProviders/AuthProvider";
+import { useAppState } from "../../ContextProviders/AppStateContext";
+import { fetchWithDefaultErrorHandling } from "../../utils/fetchHelpers";
 
 export default function StudentPage() {
 
@@ -129,10 +129,6 @@ export default function StudentPage() {
 		}
 	}
 
-
-
-
-
 	return (
 
 		<div className="student-page">
@@ -184,6 +180,10 @@ export default function StudentPage() {
 					{getStudentGroup()
 						? (
 							<div className="group-info">
+								<div className="info-item">
+									<label>Group name:</label>
+									<span>{getStudentGroup()?.name ?? ""}</span>
+								</div>
 								<div className="info-item">
 									<label>Group project priority 1:</label>
 									<span>{getProject(getStudentGroup().desiredProjectId1)?.name ?? ""}</span>
