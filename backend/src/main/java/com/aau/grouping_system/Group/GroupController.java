@@ -221,8 +221,11 @@ public class GroupController {
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
 			for (String studentId : new ArrayList<>(fromGroup.getStudentIds())) {
-				toGroup.getStudentIds().add(studentId);
-				fromGroup.getStudentIds().remove(studentId);
+				Student student = requestRequirementService.requireStudentExists(studentId);
+
+				// Use safe leave (doesnt delete the group, if its empty)
+				groupService.safeLeaveGroup(fromGroup, student);
+				groupService.joinGroup(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
@@ -347,8 +350,8 @@ public class GroupController {
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
-		
-		group.setDesiredProjectId1(projectId); 
+
+		group.setDesiredProjectId1(projectId);
 
 		return ResponseEntity.ok("Group project successfully updated");
 	}
