@@ -9,7 +9,7 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
 
 @Service
 public class GroupService {

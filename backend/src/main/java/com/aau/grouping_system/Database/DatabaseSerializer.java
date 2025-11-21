@@ -8,11 +8,13 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Student.StudentService;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
-import com.aau.grouping_system.User.Supervisor.SupervisorService;
-
+import com.aau.grouping_system.User.SessionMember.SessionMember;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Student.StudentService;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Supervisor.SupervisorService;
+import com.aau.grouping_system.User.UserService;
 import jakarta.annotation.PostConstruct;
 
 import java.io.*;
@@ -29,14 +31,22 @@ public class DatabaseSerializer {
 	private final StudentService studentService;
 	private final SupervisorService supervisorService;
 	private final GroupService groupService;
+	private final UserService userService;
 
-	public DatabaseSerializer(Database db, CoordinatorService coordinatorService, StudentService studentService,
-			SupervisorService supervisorService, GroupService groupService) {
+	public DatabaseSerializer(
+			Database db,
+			CoordinatorService coordinatorService,
+			StudentService studentService,
+			SupervisorService supervisorService,
+			GroupService groupService,
+			SessionMemberService sessionMemberService,
+			UserService userService) {
 		this.db = db;
 		this.coordinatorService = coordinatorService;
 		this.studentService = studentService;
 		this.supervisorService = supervisorService;
 		this.groupService = groupService;
+		this.userService = userService;
 	}
 
 	public void saveDatabase() {
@@ -78,7 +88,6 @@ public class DatabaseSerializer {
 		}
 	}
 
-	@SuppressWarnings("unused") // To suppress warnings about unused code.
 	private void fillDatabaseWithExampleData() {
 
 		ArrayList<Coordinator> co = new ArrayList<>();
@@ -106,36 +115,36 @@ public class DatabaseSerializer {
 		su.add(supervisorService.addSupervisor(se.get(1), "su5@example.com", "su5", "Supervisor name 5"));
 
 		ArrayList<Student> st = new ArrayList<>();
-		st.add(studentService.addStudent(se.get(0), "st1@example.com", "st1", "Alice"));
-		st.add(studentService.addStudent(se.get(0), "st2@example.com", "st2", "Bob"));
-		st.add(studentService.addStudent(se.get(0), "st3@example.com", "st3", "Charlie"));
-		st.add(studentService.addStudent(se.get(0), "st4@example.com", "st4", "Diana"));
-		st.add(studentService.addStudent(se.get(0), "st5@example.com", "st5", "Ethan"));
-		st.add(studentService.addStudent(se.get(0), "st6@example.com", "st6", "Fiona"));
-		st.add(studentService.addStudent(se.get(0), "st7@example.com", "st7", "George"));
-		st.add(studentService.addStudent(se.get(0), "st8@example.com", "st8", "Hannah"));
-		st.add(studentService.addStudent(se.get(0), "st9@example.com", "st9", "Ian"));
-		st.add(studentService.addStudent(se.get(0), "st10@example.com", "st10", "Julia"));
-		st.add(studentService.addStudent(se.get(0), "st11@example.com", "st11", "Kevin"));
-		st.add(studentService.addStudent(se.get(0), "st12@example.com", "st12", "Laura"));
-		st.add(studentService.addStudent(se.get(0), "st13@example.com", "st13", "Michael"));
-		st.add(studentService.addStudent(se.get(0), "st14@example.com", "st14", "Nina"));
-		st.add(studentService.addStudent(se.get(0), "st15@example.com", "st15", "Oscar"));
-		st.add(studentService.addStudent(se.get(0), "st16@example.com", "st16", "Paula"));
-		st.add(studentService.addStudent(se.get(0), "st17@example.com", "st17", "Quinn"));
-		st.add(studentService.addStudent(se.get(0), "st18@example.com", "st18", "Riley"));
-		st.add(studentService.addStudent(se.get(0), "st19@example.com", "st19", "Sophia"));
-		st.add(studentService.addStudent(se.get(0), "st20@example.com", "st20", "Tom"));
-		st.add(studentService.addStudent(se.get(0), "st21@example.com", "st21", "Uma"));
-		st.add(studentService.addStudent(se.get(0), "st22@example.com", "st22", "Victor"));
-		st.add(studentService.addStudent(se.get(0), "st23@example.com", "st23", "Wendy"));
-		st.add(studentService.addStudent(se.get(0), "st24@example.com", "st24", "Xander"));
-		st.add(studentService.addStudent(se.get(0), "st25@example.com", "st25", "Yara"));
-		st.add(studentService.addStudent(se.get(0), "st26@example.com", "st26", "Zane"));
-		st.add(studentService.addStudent(se.get(0), "st27@example.com", "st27", "Adam"));
-		st.add(studentService.addStudent(se.get(0), "st28@example.com", "st28", "Bella"));
-		st.add(studentService.addStudent(se.get(0), "st29@example.com", "st29", "Cody"));
-		st.add(studentService.addStudent(se.get(0), "st30@example.com", "st30", "Delia"));
+		st.add(studentService.addStudent(se.get(0), "st1@example.com", "Alice"));
+		st.add(studentService.addStudent(se.get(0), "st2@example.com", "Bob"));
+		st.add(studentService.addStudent(se.get(0), "st3@example.com", "Charlie"));
+		st.add(studentService.addStudent(se.get(0), "st4@example.com", "Diana"));
+		st.add(studentService.addStudent(se.get(0), "st5@example.com", "Ethan"));
+		st.add(studentService.addStudent(se.get(0), "st6@example.com", "Fiona"));
+		st.add(studentService.addStudent(se.get(0), "st7@example.com", "George"));
+		st.add(studentService.addStudent(se.get(0), "st8@example.com", "Hannah"));
+		st.add(studentService.addStudent(se.get(0), "st9@example.com", "Ian"));
+		st.add(studentService.addStudent(se.get(0), "st10@example.com", "Julia"));
+		st.add(studentService.addStudent(se.get(0), "st11@example.com", "Kevin"));
+		st.add(studentService.addStudent(se.get(0), "st12@example.com", "Laura"));
+		st.add(studentService.addStudent(se.get(0), "st13@example.com", "Michael"));
+		st.add(studentService.addStudent(se.get(0), "st14@example.com", "Nina"));
+		st.add(studentService.addStudent(se.get(0), "st15@example.com", "Oscar"));
+		st.add(studentService.addStudent(se.get(0), "st16@example.com", "Paula"));
+		st.add(studentService.addStudent(se.get(0), "st17@example.com", "Quinn"));
+		st.add(studentService.addStudent(se.get(0), "st18@example.com", "Riley"));
+		st.add(studentService.addStudent(se.get(0), "st19@example.com", "Sophia"));
+		st.add(studentService.addStudent(se.get(0), "st20@example.com", "Tom"));
+		st.add(studentService.addStudent(se.get(0), "st21@example.com", "Uma"));
+		st.add(studentService.addStudent(se.get(0), "st22@example.com", "Victor"));
+		st.add(studentService.addStudent(se.get(0), "st23@example.com", "Wendy"));
+		st.add(studentService.addStudent(se.get(0), "st24@example.com", "Xander"));
+		st.add(studentService.addStudent(se.get(0), "st25@example.com", "Yara"));
+		st.add(studentService.addStudent(se.get(0), "st26@example.com", "Zane"));
+		st.add(studentService.addStudent(se.get(0), "st27@example.com", "Adam"));
+		st.add(studentService.addStudent(se.get(0), "st28@example.com", "Bella"));
+		st.add(studentService.addStudent(se.get(0), "st29@example.com", "Cody"));
+		st.add(studentService.addStudent(se.get(0), "st30@example.com", "Delia"));
 
 		ArrayList<Project> pr = new ArrayList<>();
 		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
@@ -258,13 +267,25 @@ public class DatabaseSerializer {
 		groupService.joinGroup(gr.get(8), st.get(26));
 
 		// For testing purposes, console log logins so we can log in as them
-		System.out.println("\n\n\n---- STUDENT test logins ----");
+		System.out.println("\n\n\n---- STUDENTS - Generating passwords ----");
 		for (int i = 0; i < st.size(); i++) {
-			System.out.println("Password: st" + (i + 1) + " ID: " + st.get(i).getId());
+			Student student = st.get(i);
+			String newPassword = "st" + (i + 1);
+			userService.modifyPassword(newPassword, student);
+			System.out.println("---" +
+					"\nName: " + student.getName() +
+					"\nID: " + student.getId() +
+					"\nNew password: " + newPassword);
 		}
-		System.out.println("---- SUPERVISOR test logins ----");
+		System.out.println("---- SUPERVISORS - Generating passwords ----");
 		for (int i = 0; i < su.size(); i++) {
-			System.out.println("Password: su" + (i + 1) + " ID: " + su.get(i).getId());
+			Supervisor supervisor = su.get(i);
+			String newPassword = "su" + (i + 1);
+			userService.modifyPassword(newPassword, supervisor);
+			System.out.println("---" +
+					"\nName: " + supervisor.getName() +
+					"\nID: " + supervisor.getId() +
+					"\nNew password: " + newPassword);
 		}
 	}
 

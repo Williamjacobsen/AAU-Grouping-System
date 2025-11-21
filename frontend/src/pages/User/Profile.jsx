@@ -75,7 +75,7 @@ export default function Profile() {
 
 	const handlePasswordChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyPassword`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyPassword`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newPassword }),
@@ -196,20 +196,21 @@ export default function Profile() {
 				</button>
 			</div>
 
-			<div className="text">
-				<label className="label">
-					Change Password
-					<input
-						type="password"
-						placeholder="New password"
-						onChange={(e) => setNewPassword(e.target.value)}
-					/>
-				</label>
-				<button className="sign-in" onClick={handlePasswordChange}>
-					Update Password
-				</button>
-			</div>
-
+			{user.role === "Coordinator" &&
+				< div className="text">
+					<label className="label">
+						Change Password
+						<input
+							type="password"
+							placeholder="New password"
+							onChange={(e) => setNewPassword(e.target.value)}
+						/>
+					</label>
+					<button className="sign-in" onClick={handlePasswordChange}>
+						Update Password
+					</button>
+				</div>
+			}
 			<hr />
 
 			<button className="sign-up" onClick={handleLogout}>

@@ -8,8 +8,8 @@ import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 @Component
 /// Container for database data.

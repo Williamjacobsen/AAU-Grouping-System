@@ -2,9 +2,9 @@ package com.aau.grouping_system.Session;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.SessionMember.SessionMember;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,17 +25,17 @@ public class SessionSetupController {
 	private final Database db;
 	private final RequestRequirementService requestRequirementService;
 	private final SessionSetupService sessionSetupService;
-	private final UserService userService;
+	private final SessionMemberService sessionMemberService;
 
 	public SessionSetupController(
 			Database db,
 			RequestRequirementService requestRequirementService,
 			SessionSetupService sessionSetupService,
-			UserService userService) {
+			SessionMemberService sessionMemberService) {
 		this.db = db;
 		this.requestRequirementService = requestRequirementService;
 		this.sessionSetupService = sessionSetupService;
-		this.userService = userService;
+		this.sessionMemberService = sessionMemberService;
 	}
 
 	@PostMapping("/{sessionId}/saveSetup")
@@ -52,58 +52,62 @@ public class SessionSetupController {
 
 		return ResponseEntity.ok("Session setup saved successfully!");
 	}
-	// Record for sending login codes
-	// sendOnlyNew: if true, only send codes to users without existing codes
 
-	record SendLoginCodeRecord(
+	// Record for sending new emails
+	// sendOnlyNew: if true, only send codes to users without existing codes
+	record emailNewPasswordsRecord(
 			Boolean sendOnlyNew) {
+	}
+
+	private void emailNewPasswordsToSessionMembers(
+			HttpServletRequest servlet,
+			Session session,
+			emailNewPasswordsRecord record,
+			CopyOnWriteArrayList<SessionMember> sessionMembers) {
+
+		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
+		requestRequirementService.requireCoordinatorIsAuthorizedSession(session.getId(), coordinator);
+
+		// If sendOnlyNew=true, do NOT re-send login codes to users who already have
+		// one.
+		if (record.sendOnlyNew) {
+			sessionMembers.removeIf(sessionMember -> sessionMember.getHasBeenSentPassword());
+		}
+
+		sessionMemberService.applyAndEmailNewPasswords(session, sessionMembers);
 	}
 
 	// unchecked cast + CopyOnWriteArrayList:
 	// getItems returns a raw CopyOnWriteArrayList from the database module.
 	// We know the content is always User, so the cast is safe.
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
-	@PostMapping("/{sessionId}/sendLoginCodeTo/students")
-	public ResponseEntity<String> sendLoginCodeToStudents(
+	@PostMapping("/{sessionId}/emailNewPasswordTo/students")
+	public ResponseEntity<String> emailNewPasswordsToStudents(
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
-			@Valid @RequestBody SendLoginCodeRecord record) {
+			@Valid @RequestBody emailNewPasswordsRecord record) {
 
 		Session session = requestRequirementService.requireSessionExists(sessionId);
+		CopyOnWriteArrayList<SessionMember> students = (CopyOnWriteArrayList<SessionMember>) session.getStudents()
+				.getItems(db);
 
-		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
-		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
-		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
-		if (record.sendOnlyNew) { // If sendOnlyNew=true, do NOT re-send login codes to users who already have
-															// one.
-			students.removeIf(student -> student.getLoginCode() != null);
-		}
-
-		userService.applyAndEmailNewLoginCodes(session, students);
+		emailNewPasswordsToSessionMembers(servlet, session, record, students);
 
 		return ResponseEntity.ok("Emails have been sent to students.");
 	}
 
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
-	@PostMapping("/{sessionId}/sendLoginCodeTo/supervisors")
-	public ResponseEntity<String> sendLoginCodeToSupervisors(
+	@PostMapping("/{sessionId}/emailNewPasswordTo/supervisors")
+	public ResponseEntity<String> emailNewPasswordsToSupervisors(
 			HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
-			@Valid @RequestBody SendLoginCodeRecord record) {
+			@Valid @RequestBody emailNewPasswordsRecord record) {
 
 		Session session = requestRequirementService.requireSessionExists(sessionId);
+		CopyOnWriteArrayList<SessionMember> supervisors = (CopyOnWriteArrayList<SessionMember>) session.getSupervisors()
+				.getItems(db);
 
-		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
-		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
-
-		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
-		if (record.sendOnlyNew) {
-			supervisors.removeIf(supervisor -> supervisor.getLoginCode() != null);
-		}
-
-		userService.applyAndEmailNewLoginCodes(session, supervisors); // Generates login codes for all given users and sends
-																																	// them via email.
+		emailNewPasswordsToSessionMembers(servlet, session, record, supervisors);
 
 		return ResponseEntity.ok("Emails have been sent to supervisors.");
 	}

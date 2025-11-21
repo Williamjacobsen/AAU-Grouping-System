@@ -11,12 +11,6 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
-import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Coordinator.CoordinatorController;
-import com.aau.grouping_system.User.Coordinator.CoordinatorService;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,24 +35,6 @@ public class UserController {
 		this.db = db;
 		this.requestRequirementService = requestRequirementService;
 		this.userService = userService;
-	}
-
-	private record ModifyPasswordRecord(
-			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
-	}
-
-	@PostMapping("/modifyPassword")
-	public ResponseEntity<String> modifyPassword(
-			HttpServletRequest servlet,
-			@Valid @RequestBody ModifyPasswordRecord record) {
-
-		User user = requestRequirementService.requireUserExists(servlet);
-
-		userService.modifyPassword(record.newPassword, user);
-
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body("Password has been changed.");
 	}
 
 	private record ModifyEmailRecord(

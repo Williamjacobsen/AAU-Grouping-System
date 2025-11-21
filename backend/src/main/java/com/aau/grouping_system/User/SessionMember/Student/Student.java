@@ -1,19 +1,17 @@
-package com.aau.grouping_system.User.Student;
+package com.aau.grouping_system.User.SessionMember.Student;
 
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.SessionMember.SessionMember;
 
-public class Student extends User {
+public class Student extends SessionMember {
 
-	private String sessionId;
 	private String groupId = null;
 	private String activeJoinRequestGroupId = null;
 
 	private StudentQuestionnaire questionnaire = new StudentQuestionnaire();
 
-	public Student(String email, String passwordHash, String name, Session session) {
-		super(email, passwordHash, name);
-		this.sessionId = session.getId();
+	public Student(String email, String name, Session session) {
+		super(email, name, session);
 	}
 
 	@Override
@@ -22,7 +20,6 @@ public class Student extends User {
 	}
 
 	// @formatter:off
-	public String getSessionId() { return sessionId; }
 	public StudentQuestionnaire getQuestionnaire() { return questionnaire; }
 	public void setQuestionnaire(StudentQuestionnaire questionnaire) { this.questionnaire = questionnaire; }
 	public String getGroupId() { return groupId; }
