@@ -2,10 +2,7 @@ package com.aau.grouping_system.Group;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseItemChildGroup;
-import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Session.Session;
 
 public class Group extends DatabaseItem {
@@ -24,18 +21,10 @@ public class Group extends DatabaseItem {
 	private CopyOnWriteArrayList<String> joinRequestStudentIds = new CopyOnWriteArrayList<>();
 
 	public Group(
-			Database db,
-			DatabaseItemChildGroup parentItemChildIdList,
 			Session session,
 			String name) {
-		super(db, parentItemChildIdList);
 		this.sessionId = session.getId();
 		this.name = name;
-	}
-
-	@Override
-	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
-		return db.getGroups();
 	}
 
 	// @formatter:off

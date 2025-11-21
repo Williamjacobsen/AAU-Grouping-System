@@ -7,46 +7,30 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public abstract class DatabaseItem implements Serializable {
 
 	private String id;
-	private CopyOnWriteArrayList<DatabaseItemChildGroup> childGroups = new CopyOnWriteArrayList<>();
+	private CopyOnWriteArrayList<DatabaseItemChildGroup> childItemGroups = new CopyOnWriteArrayList<>();
 	private DatabaseItemChildGroup parentItemChildGroup = null;
 
-	/// Automatically adds this to its map and to its parent item's appropriate
-	/// child group.
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
-	public DatabaseItem(Database db, DatabaseItemChildGroup parentItemChildGroup) {
-		// Add item to its map
-		((DatabaseMap<DatabaseItem>) getDatabaseMap(db)).add((DatabaseItem) this);
-
-		// Add item to its parent item's child group
-		if (parentItemChildGroup != null) {
-			this.parentItemChildGroup = parentItemChildGroup;
-			parentItemChildGroup.addChild(this.id);
-		}
-	}
-
-	/// Each DatabaseItem subclass has their own map in the database dedicated only
-	/// to their class, so each of them must specify which map this is.
-	protected abstract DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db);
-
-	void cascadeRemoveChildren(Database db) {
-		for (DatabaseItemChildGroup childGroup : childGroups) {
-			for (String childId : childGroup.getChildIds()) {
-				db.getMap(childGroup.getMapId()).cascadeRemove(db, childId);
+	void cascadeRemoveChildItems(Database db) {
+		for (DatabaseItemChildGroup childGroup : childItemGroups) {
+			for (String childId : childGroup.getChildItemIds()) {
+				db.getMap(childGroup.getMapId()).cascadeRemoveItem(db, childId);
 			}
 		}
 	}
 
-	void disconnectFromParent(Database db) {
+	void disconnectFromParentItem(Database db) {
 		if (parentItemChildGroup != null) {
-			parentItemChildGroup.removeChild(this.id);
+			parentItemChildGroup.removeChildItem(this.id);
 		}
 	}
 
-	void addChildGroup(DatabaseItemChildGroup childGroup) {
-		childGroups.add(childGroup);
+	void addChildItemGroup(DatabaseItemChildGroup childGroup) {
+		childItemGroups.add(childGroup);
 	}
 
 	// @formatter:off
 	public String getId() { return this.id; }
 	void setId(String id) { this.id = id; }
+	DatabaseItemChildGroup getParentItemChildGroup() { return parentItemChildGroup; }
+	void setParentItemChildGroup(DatabaseItemChildGroup parentItemChildGroup) { this.parentItemChildGroup = parentItemChildGroup; }
 }

@@ -42,23 +42,45 @@ public class DatabaseTest {
 				.add(coordinatorService.addCoordinator("coordinatorEmail1", "coordinatorPassword1", "coordinatorName1"));
 
 		// Add 3 sessions
-		sessions.add(new Session(db, coordinators.get(0).getSessions(), coordinators.get(0), "sessionName0"));
-		sessions.add(new Session(db, coordinators.get(0).getSessions(), coordinators.get(0), "sessionName1"));
-		sessions.add(new Session(db, coordinators.get(1).getSessions(), coordinators.get(1), "sessionName2"));
+		sessions.add(db.getSessions().addItem(
+				db,
+				coordinators.get(0).getSessions(),
+				new Session(db, coordinators.get(0), "sessionName0")));
+		sessions.add(db.getSessions().addItem(
+				db,
+				coordinators.get(0).getSessions(),
+				new Session(db, coordinators.get(0), "sessionName1")));
+		sessions.add(db.getSessions().addItem(
+				db,
+				coordinators.get(1).getSessions(),
+				new Session(db, coordinators.get(1), "sessionName2")));
 
 		// Add 6 students
-		students.add(new Student(db, sessions.get(0).getStudents(), "studentEmail0", "studentPassword0", "studentName0",
-				sessions.get(0)));
-		students.add(new Student(db, sessions.get(0).getStudents(), "studentEmail1", "studentPassword1", "studentName1",
-				sessions.get(0)));
-		students.add(new Student(db, sessions.get(1).getStudents(), "studentEmail2", "studentPassword2", "studentName2",
-				sessions.get(1)));
-		students.add(new Student(db, sessions.get(1).getStudents(), "studentEmail3", "studentPassword3", "studentName3",
-				sessions.get(1)));
-		students.add(new Student(db, sessions.get(2).getStudents(), "studentEmail4", "studentPassword4", "studentName4",
-				sessions.get(2)));
-		students.add(new Student(db, sessions.get(2).getStudents(), "studentEmail5", "studentPassword5", "studentName5",
-				sessions.get(2)));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(0).getStudents(),
+				new Student("studentEmail0", "studentPassword0", "studentName0", sessions.get(0))));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(0)
+						.getStudents(),
+				new Student("studentEmail1", "studentPassword1", "studentName1", sessions.get(0))));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(1).getStudents(),
+				new Student("studentEmail2", "studentPassword2", "studentName2", sessions.get(1))));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(1).getStudents(),
+				new Student("studentEmail3", "studentPassword3", "studentName3", sessions.get(1))));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(2).getStudents(),
+				new Student("studentEmail4", "studentPassword4", "studentName4", sessions.get(2))));
+		students.add(db.getStudents().addItem(
+				db,
+				sessions.get(2).getStudents(),
+				new Student("studentEmail5", "studentPassword5", "studentName5", sessions.get(2))));
 	}
 
 	@Test
@@ -89,7 +111,7 @@ public class DatabaseTest {
 		assertEquals(6, db.getStudents().getAllItems().size());
 
 		// Remove the first coordinator
-		db.getCoordinators().cascadeRemove(db, coordinators.get(0));
+		db.getCoordinators().cascadeRemoveItem(db, coordinators.get(0));
 
 		// After deletion
 		assertEquals(1, db.getCoordinators().getAllItems().size());

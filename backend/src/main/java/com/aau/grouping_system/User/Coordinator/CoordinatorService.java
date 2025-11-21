@@ -18,6 +18,10 @@ public class CoordinatorService {
 
 	public Coordinator addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		return new Coordinator(db, null, email, passwordHash, name);
+		Coordinator newCoordinator = db.getCoordinators().addItem(
+				db,
+				null,
+				new Coordinator(db, email, passwordHash, name));
+		return newCoordinator;
 	}
 }

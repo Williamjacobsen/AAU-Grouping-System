@@ -88,13 +88,13 @@ public class DatabaseSerializer {
 		co.add(coordinatorService.addCoordinator("c4", "c4", "Coordinator name 4"));
 
 		ArrayList<Session> se = new ArrayList<>();
-		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 1"));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 1")));
 		se.get(0).setMinGroupSize(6);
 		se.get(0).setMinGroupSize(7);
-		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 2"));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 2")));
 		se.get(1).setMinGroupSize(3);
 		se.get(1).setMinGroupSize(5);
-		se.add(new Session(db, co.get(1).getSessions(), co.get(1), "Session name 3"));
+		se.add(db.getSessions().addItem(db, co.get(1).getSessions(), new Session(db, co.get(1), "Session name 3")));
 		se.get(2).setMinGroupSize(6);
 		se.get(2).setMinGroupSize(7);
 
@@ -138,37 +138,46 @@ public class DatabaseSerializer {
 		st.add(studentService.addStudent(se.get(0), "st30@example.com", "st30", "Delia"));
 
 		ArrayList<Project> pr = new ArrayList<>();
-		pr.add(new Project(db, se.get(0).getProjects(), "AI Chatbot",
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"AI Chatbot",
 				"AI assistant for customer support. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Web App",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Web App",
 				"Interactive web platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Smart Home",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Smart Home",
 				"IoT-based automation system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Health Tracker",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Health Tracker",
 				"Fitness and health monitoring app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				su.get(0)));
-		pr.add(
-				new Project(db, se.get(0).getProjects(), "Finance Dashboard",
-						"Financial data visualization tool. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-						su.get(1)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Game Design",
+				su.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Finance Dashboard",
+				"Financial data visualization tool. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				su.get(1))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Game Design",
 				"Multiplayer online game. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "E-commerce",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"E-commerce",
 				"Online shopping platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Social Media",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Social Media",
 				"New generation social app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Education Portal",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Education Portal",
 				"Online learning hub. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Weather Forecast",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Weather Forecast",
 				"Climate analysis system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
+				co.get(0))));
 
 		st.get(0).getQuestionnaire().setDesiredProjectId1(pr.get(3).getId());
 		st.get(0).getQuestionnaire().setDesiredProjectId2(pr.get(2).getId());
@@ -187,29 +196,29 @@ public class DatabaseSerializer {
 		st.get(4).getQuestionnaire().setDesiredProjectId3(pr.get(1).getId());
 
 		ArrayList<Group> gr = new ArrayList<>();
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 1"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 1")));
 		gr.get(0).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(0).setDesiredProjectId2(pr.get(3).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 2"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 2")));
 		gr.get(1).setDesiredProjectId1(pr.get(4).getId());
 		gr.get(1).setDesiredProjectId2(pr.get(3).getId());
 		gr.get(1).setDesiredProjectId3(pr.get(6).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 3"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 3")));
 		gr.get(2).setDesiredProjectId1(pr.get(6).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 4"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 4")));
 		gr.get(3).setDesiredProjectId1(pr.get(5).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 5"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 5")));
 		gr.get(4).setDesiredProjectId1(pr.get(1).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 6"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 6")));
 		gr.get(5).setDesiredProjectId1(pr.get(6).getId());
 		gr.get(5).setDesiredProjectId2(pr.get(1).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 7"));
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 8"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 7")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 8")));
 		gr.get(7).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(7).setDesiredProjectId2(pr.get(0).getId());
 		gr.get(7).setDesiredProjectId3(pr.get(7).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 9"));
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 10"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 9")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 10")));
 		gr.get(9).setDesiredProjectId1(pr.get(4).getId());
 
 		groupService.joinGroup(gr.get(0), st.get(0));
@@ -247,8 +256,6 @@ public class DatabaseSerializer {
 
 		groupService.joinGroup(gr.get(8), st.get(25));
 		groupService.joinGroup(gr.get(8), st.get(26));
-
-	
 
 		// For testing purposes, console log logins so we can log in as them
 		System.out.println("\n\n\n---- STUDENT test logins ----");

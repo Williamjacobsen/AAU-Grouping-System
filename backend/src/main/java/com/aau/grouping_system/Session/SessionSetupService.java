@@ -56,11 +56,14 @@ public class SessionSetupService {
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
-			db.getSupervisors().cascadeRemove(db, (Supervisor) user);
+			db.getSupervisors().cascadeRemoveItem(db, (Supervisor) user);
 		};
 
 		BiConsumer<String, String> createUserFunction = (newEmail, newPassword) -> {
-			new Supervisor(db, session.getSupervisors(), newEmail, newPassword, "Not specified", session);
+			db.getSupervisors().addItem(
+					db,
+					session.getSupervisors(),
+					new Supervisor(newEmail, newPassword, "Not specified", session));
 		};
 
 		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
@@ -74,11 +77,14 @@ public class SessionSetupService {
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
-			db.getStudents().cascadeRemove(db, (Student) user);
+			db.getStudents().cascadeRemoveItem(db, (Student) user);
 		};
 
 		BiConsumer<String, String> createUserFunction = (newEmail, newPassword) -> {
-			new Student(db, session.getStudents(), newEmail, newPassword, "Not specified", session);
+			db.getStudents().addItem(
+					db,
+					session.getStudents(),
+					new Student(newEmail, newPassword, "Not specified", session));
 		};
 
 		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);

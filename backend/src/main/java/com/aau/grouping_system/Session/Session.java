@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 
@@ -23,20 +22,13 @@ public class Session extends DatabaseItem {
 	private Boolean allowStudentProjectProposals = false;
 	private LocalDateTime questionnaireDeadline = null;
 
-	public Session(Database db, DatabaseItemChildGroup parentItemChildIdList,
-			Coordinator coordinator, String name) {
-		super(db, parentItemChildIdList);
+	public Session(Database db, Coordinator coordinator, String name) {
 		this.coordinatorId = coordinator.getId();
 		this.supervisors = new DatabaseItemChildGroup(db.getSupervisors(), this);
 		this.students = new DatabaseItemChildGroup(db.getStudents(), this);
 		this.projects = new DatabaseItemChildGroup(db.getProjects(), this);
 		this.groups = new DatabaseItemChildGroup(db.getGroups(), this);
 		this.name = name;
-	}
-
-	@Override
-	protected DatabaseMap<? extends DatabaseItem> getDatabaseMap(Database db) {
-		return db.getSessions();
 	}
 
 	// @formatter:off

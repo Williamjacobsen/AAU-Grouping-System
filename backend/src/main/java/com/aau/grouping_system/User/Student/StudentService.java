@@ -19,7 +19,11 @@ public class StudentService {
 
 	public Student addStudent(Session session, String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
-		return new Student(db, session.getStudents(), email, passwordHash, name, session);
+		Student newStudent = db.getStudents().addItem(
+				db,
+				session.getStudents(),
+				new Student(email, passwordHash, name, session));
+		return newStudent;
 	}
 
 	public void applyQuestionnaireAnswers(Student student, StudentQuestionnaire updatedQuestionnaire) {
@@ -27,6 +31,6 @@ public class StudentService {
 	}
 
 	public void removeStudent(Student student) {
-		db.getStudents().cascadeRemove(db, student);
+		db.getStudents().cascadeRemoveItem(db, student);
 	}
 }

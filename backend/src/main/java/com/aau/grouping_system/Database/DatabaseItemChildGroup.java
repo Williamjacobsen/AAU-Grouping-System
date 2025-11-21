@@ -9,27 +9,27 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class DatabaseItemChildGroup implements Serializable {
 
 	private Integer mapId;
-	private CopyOnWriteArrayList<String> childIds = new CopyOnWriteArrayList<String>();
+	private CopyOnWriteArrayList<String> childItemIds = new CopyOnWriteArrayList<String>();
 
 	/// Automatically adds this to its parent item's lists of child groups.
 	public DatabaseItemChildGroup(DatabaseMap<? extends DatabaseItem> databaseMap, DatabaseItem parentItem) {
 		this.mapId = databaseMap.getId();
-		parentItem.addChildGroup(this);
+		parentItem.addChildItemGroup(this);
 	}
 
-	void addChild(String id) {
-		childIds.add(id);
+	void addChildItem(String id) {
+		childItemIds.add(id);
 	}
 
-	void removeChild(String id) {
-		childIds.remove(id);
+	void removeChildItem(String id) {
+		childItemIds.remove(id);
 	}
 
 	public CopyOnWriteArrayList<? extends DatabaseItem> getItems(Database db) {
-		return db.getMap(mapId).getItems(childIds);
+		return db.getMap(mapId).getItems(childItemIds);
 	}
 
 	// @formatter:off
 	Integer getMapId() { return mapId; }
-	CopyOnWriteArrayList<String> getChildIds() { return childIds; }
+	CopyOnWriteArrayList<String> getChildItemIds() { return childItemIds; }
 }

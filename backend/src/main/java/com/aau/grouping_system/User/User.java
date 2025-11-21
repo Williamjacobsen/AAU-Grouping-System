@@ -1,8 +1,6 @@
 package com.aau.grouping_system.User;
 
 import com.aau.grouping_system.Database.DatabaseItem;
-import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 
 public abstract class User extends DatabaseItem {
 
@@ -26,9 +24,7 @@ public abstract class User extends DatabaseItem {
 
 	public abstract Role getRole();
 
-	public User(Database db, DatabaseItemChildGroup parentItemChildIdList,
-			String email, String passwordHash, String name) {
-		super(db, parentItemChildIdList);
+	public User(String email, String passwordHash, String name) {
 		this.email = email;
 		this.passwordHash = passwordHash;
 		this.name = name;
