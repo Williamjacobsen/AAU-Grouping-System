@@ -14,7 +14,7 @@ import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
-import com.aau.grouping_system.User.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
 
 @SpringBootTest
 public class DatabaseTest {
@@ -59,28 +59,28 @@ public class DatabaseTest {
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(0).getStudents(),
-				new Student("studentEmail0", "studentPassword0", "studentName0", sessions.get(0))));
+				new Student("studentEmail0", "studentName0", sessions.get(0))));
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(0)
 						.getStudents(),
-				new Student("studentEmail1", "studentPassword1", "studentName1", sessions.get(0))));
+				new Student("studentEmail1", "studentName1", sessions.get(0))));
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(1).getStudents(),
-				new Student("studentEmail2", "studentPassword2", "studentName2", sessions.get(1))));
+				new Student("studentEmail2", "studentName2", sessions.get(1))));
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(1).getStudents(),
-				new Student("studentEmail3", "studentPassword3", "studentName3", sessions.get(1))));
+				new Student("studentEmail3", "studentName3", sessions.get(1))));
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(2).getStudents(),
-				new Student("studentEmail4", "studentPassword4", "studentName4", sessions.get(2))));
+				new Student("studentEmail4", "studentName4", sessions.get(2))));
 		students.add(db.getStudents().addItem(
 				db,
 				sessions.get(2).getStudents(),
-				new Student("studentEmail5", "studentPassword5", "studentName5", sessions.get(2))));
+				new Student("studentEmail5", "studentName5", sessions.get(2))));
 	}
 
 	@Test

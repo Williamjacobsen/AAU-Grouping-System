@@ -19,7 +19,8 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,15 +35,15 @@ public class SupervisorsPageController {
 
 	private final RequestRequirementService requestRequirementService;
 	private final SupervisorsPageService supervisorsPageService;
-	private final UserService userService;
+	private final SessionMemberService sessionMemberService;
 
 	public SupervisorsPageController(
 			RequestRequirementService requestRequirementService,
 			SupervisorsPageService supervisorsPageService,
-			UserService userService) {
+			SessionMemberService sessionMemberService) {
 		this.requestRequirementService = requestRequirementService;
 		this.supervisorsPageService = supervisorsPageService;
-		this.userService = userService;
+		this.sessionMemberService = sessionMemberService;
 	}
 
 	public Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
@@ -94,7 +95,7 @@ public class SupervisorsPageController {
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
 
-		userService.applyAndEmailNewLoginCode(session, supervisor);
+		sessionMemberService.applyAndEmailNewPassword(session, supervisor);
 
 		return ResponseEntity.ok("Successfully reset and emailed a new password");
 	}

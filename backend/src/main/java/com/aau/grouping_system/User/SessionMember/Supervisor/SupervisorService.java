@@ -1,6 +1,5 @@
-package com.aau.grouping_system.User.Supervisor;
+package com.aau.grouping_system.User.SessionMember.Supervisor;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
@@ -10,19 +9,17 @@ import com.aau.grouping_system.Session.Session;
 public class SupervisorService {
 
 	private final Database db;
-	private final PasswordEncoder passwordEncoder;
 
-	public SupervisorService(Database db, PasswordEncoder passwordEncoder) {
+	public SupervisorService(
+			Database db) {
 		this.db = db;
-		this.passwordEncoder = passwordEncoder;
 	}
 
 	public Supervisor addSupervisor(Session session, String email, String password, String name) {
-		String passwordHash = passwordEncoder.encode(password);
 		Supervisor newSupervisor = db.getSupervisors().addItem(
 				db,
 				session.getSupervisors(),
-				new Supervisor(email, passwordHash, name, session));
+				new Supervisor(email, name, session));
 		return newSupervisor;
 	}
 }

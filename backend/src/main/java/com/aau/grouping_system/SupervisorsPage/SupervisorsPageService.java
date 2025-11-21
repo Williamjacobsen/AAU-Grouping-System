@@ -16,8 +16,8 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -85,7 +85,6 @@ public class SupervisorsPageService {
 				session.getSupervisors(),
 				new Supervisor(
 						request.email.trim(),
-						"placeholder",
 						request.email.trim().split("@")[0], // Use email as default name
 						session));
 

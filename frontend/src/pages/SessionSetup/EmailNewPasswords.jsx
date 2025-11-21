@@ -1,7 +1,7 @@
 import React, { memo, useState } from "react";
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 
-const SendLoginCodesForm = memo(({ sessionId, targetUsers, setMessage }) => {
+const EmailNewPasswordsForm = memo(({ sessionId, targetUsers, setMessage }) => {
 
 	const [sendOnlyNew, setSendOnlyNew] = useState(true);
 
@@ -9,12 +9,12 @@ const SendLoginCodesForm = memo(({ sessionId, targetUsers, setMessage }) => {
 		return <div>targetUsers is not one of the allowed values</div>;
 	}
 
-	async function sendLoginCodes() {
+	async function emailNewPasswords() {
 		try {
 			setMessage(`Sending login codes to ${targetUsers}...`);
 
 			await fetchWithDefaultErrorHandling(
-				`/sessionSetup/${sessionId}/sendLoginCodeTo/${targetUsers}`,
+				`/sessionSetup/${sessionId}/emailNewPasswordTo/${targetUsers}`,
 				{
 					credentials: "include",
 					method: "POST",
@@ -44,10 +44,10 @@ const SendLoginCodesForm = memo(({ sessionId, targetUsers, setMessage }) => {
 			<input
 				className="button-primary"
 				value={`Email login codes to ${targetUsers}`}
-				onClick={sendLoginCodes}
+				onClick={emailNewPasswords}
 			/>
 		</div>
 	);
 });
 
-export default SendLoginCodesForm;
+export default EmailNewPasswordsForm;

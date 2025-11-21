@@ -7,8 +7,7 @@ public abstract class User extends DatabaseItem {
 	private String email;
 	private String passwordHash;
 	private String name;
-	/// While the login code is not null, it is the same as the user's password.
-	private String loginCode = null;
+	private Boolean hasBeenSentPassword = false;
 
 	/// Despite getRole being an abstract method and this therefore never being
 	/// assigned or set, this field is still needed to send the role in a JSON object
@@ -38,6 +37,7 @@ public abstract class User extends DatabaseItem {
 	void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
 	public String getName() { return name; }
 	public void setName(String name) { this.name = name; }
-	public String getLoginCode() { return loginCode;}
-	void setLoginCode(String loginCode) { this.loginCode = loginCode;}
+	public Boolean getHasBeenSentPassword() { return hasBeenSentPassword; }
+	public void setHasBeenSentPassword(Boolean hasBeenSentPassword) { this.hasBeenSentPassword = hasBeenSentPassword; }
+
 }

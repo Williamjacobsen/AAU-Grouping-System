@@ -1,4 +1,4 @@
-package com.aau.grouping_system.User.Student;
+package com.aau.grouping_system.User.SessionMember.Student;
 
 public class StudentQuestionnaire {
 

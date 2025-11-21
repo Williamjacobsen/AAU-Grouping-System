@@ -22,11 +22,11 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
@@ -374,7 +374,8 @@ public class GroupController {
 		Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
 		groupService.joinGroup(newGroup, secondMember);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body("Group created with two students. Group ID: " + newGroup.getId());
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body("Group created with two students. Group ID: " + newGroup.getId());
 	}
 
 }

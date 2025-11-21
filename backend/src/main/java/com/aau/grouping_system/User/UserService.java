@@ -1,35 +1,27 @@
 package com.aau.grouping_system.User;
 
 import java.util.Collection;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.EmailSystem.EmailService;
-import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 @Service
 public class UserService {
 
 	private final Database db;
 	private final PasswordEncoder passwordEncoder;
-	private final EmailService emailService;
 
 	public UserService(
 			Database db,
-			PasswordEncoder passwordEncoder,
-			EmailService emailService) {
+			PasswordEncoder passwordEncoder) {
 		this.db = db;
 		this.passwordEncoder = passwordEncoder;
-		this.emailService = emailService;
 	}
 
 	public User getUser(User.Role role, String id) {
@@ -113,80 +105,13 @@ public class UserService {
 		user.setEmail(newEmail);
 	}
 
-	/// Note: Deactivates login code upon being invoked.
 	public void modifyPassword(String newPassword, User user) {
 		String passwordHash = passwordEncoder.encode(newPassword);
 		user.setPasswordHash(passwordHash);
-		user.setLoginCode(null); // Ensure login code is not regarded as activated
 	}
 
 	public void modifyName(String newName, User user) {
 		user.setName(newName);
-	}
-
-	public String ensureLoginCodeIsActivated(User user) {
-		String loginCode = user.getLoginCode();
-
-		if (loginCode == null) {
-			loginCode = generateLoginCode();
-			modifyPassword(loginCode, user);
-			user.setLoginCode(loginCode);
-		}
-
-		return loginCode;
-	}
-
-	private String generateLoginCode() {
-		return UUID.randomUUID().toString();
-	}
-
-	public void applyAndEmailNewLoginCode(Session session, User user) {
-
-		if (user.getRole() == User.Role.Coordinator) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Users has the role of coordinator");
-		}
-
-		String loginCode = ensureLoginCodeIsActivated(user);
-		System.out.println("User id: " + user.getId() + "\nLogin code: " + loginCode);
-
-		String subject = "Grouping Formation System - Your Login Code";
-		String body = String.format("""
-				Hello %s,
-
-				Your profile password has been updated by the group formation session coordinator.
-
-				Your session name:
-				"%s"
-
-				Your profile ID:
-				%s
-
-				Your profile password:
-				%s
-
-				Please use your ID and password to sign in to the group formation session via the following link:
-				http://localhost:3000/sign-in
-
-				""", user.getName(), session.getName(), user.getId(), loginCode);
-
-		try {
-			emailService.builder()
-					.to(user.getEmail())
-					.subject(subject)
-					.text(body)
-					.send();
-		} catch (Exception exception) {
-			throw new RequestException(
-					HttpStatus.INTERNAL_SERVER_ERROR,
-					"Failed to send email to address '" + user.getEmail() + "': " + exception.getMessage());
-		}
-	}
-
-	public void applyAndEmailNewLoginCodes(Session session, CopyOnWriteArrayList<User> users) {
-		System.out.println("--- Emailing login codes ---");
-		for (User user : users) {
-			applyAndEmailNewLoginCode(session, user);
-		}
 	}
 
 }
