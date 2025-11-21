@@ -16,14 +16,14 @@
 }
 
 .group-box {
-	width: 400px;               
-	height: auto;               
-	background-color: #fff;
-	border: 1px solid #ccc;
-	border-radius: 4px;
-	padding: 1rem;
-	box-sizing: border-box;
-	cursor: pointer;
+  width: 340px;
+  height: auto;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0 0.75rem 0.5rem 0.75rem;
+  box-sizing: border-box;
+  cursor: pointer;
 }
 
 .group-box:hover {
@@ -58,7 +58,6 @@
 .group-project {
   font-size: 0.9rem;
   color: #666;
-  margin-top: -5px;
   margin-bottom: 10px;
 }
 
@@ -74,8 +73,13 @@
 
 .group-name {
   font-weight: 700;
-	font-size: large;
-  color: #204098; 
+  font-size: large;
+  color: #204098;
+}
+
+.group-number {
+  color: #204098;
+  font-weight: 700;
 }
 
 
@@ -115,16 +119,16 @@
 }
 
 .assign-button {
-  margin-bottom: 12px;
-  padding: 10px;
-  background-color: #f9fafb;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-
+  margin-bottom: 4px;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0;
   display: flex;
-  flex-direction: column; 
-  gap: 6px;
-  font-size: 14px;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  overflow: visible;
 }
 
 .assign-button p {
@@ -134,26 +138,31 @@
 }
 
 .assign-button select {
-  border-radius: 6px;
-  border: 1px solid #cbd5e0;
-  background-color: #ffffff;
+  border-radius: 4px;
+  border: none;
+  background-color: #f3f4f6;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 11px;
+  height: 26px;
+  padding: 2px 8px;
+  box-shadow: none;
+  outline: 1px solid #e5e7eb;
+  transition: outline-color 0.2s;
 }
 
-.assign-button select:hover {
-  border-color: #93c5fd;
+.assign-button select:hover, .assign-button select:focus {
+  outline-color: #3b82f6;
 }
 
 .assign-row {
   display: flex;
-  gap: 12px;              /* space between the two dropdowns */
-  margin-bottom: 12px;    /* space below the row */
+  gap: 12px;
+  margin-bottom: 0px;
 }
 
 .assign-row .assign-button {
-  flex: 1;                /* each dropdown takes 50% width */
-  margin-bottom: 0;       /* remove extra margin */
+  flex: 1;                
+  margin-bottom: 0;      
 }
 
 

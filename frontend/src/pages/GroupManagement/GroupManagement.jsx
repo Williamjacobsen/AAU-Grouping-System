@@ -1,10 +1,8 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useAppState } from "ContextProviders/AppStateContext";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./GroupM.css";
-
-import NotifyButton from "Components/NotifyButton/NotifyButton";
-import CsvDownloadButton from "./components/CsvDownloadButton";
 
 import useGetSessionGroups from "hooks/useGetSessionGroups";
 import useGroupActions from "./hooks/useGroupActions";
@@ -13,10 +11,10 @@ import useStudentClick from "./hooks/useStudentClick";
 import useGroupClick from "./hooks/useGroupClick";
 import useUndoLogic from "./hooks/useUndoLogic";
 
+import CsvDownloadButton from "./components/CsvDownloadButton";
 import RenderGroups from "./components/RenderGroups";
 import RenderStudentList from "./components/RenderStudentList";
 
-import { useAppState } from "ContextProviders/AppStateContext";
 
 export default function GroupManagement() {
 

@@ -22,51 +22,51 @@ const RenderGroups = memo(({
 	}
 
 	return groups.map((group) => {
-		return (
-			<div className="group-box" key={group.id}>
-				<div className="assign-row">
-				<div className="assign-button">
-					<p>Current Supervisor: </p>
-					<select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
-						<option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
-						{supervisors?.map((supervisor) => {
-							const remaining = remainingSlots(supervisor);
-							return (
-								<option
-									key={supervisor.id}
-									value={supervisor.id}
-									disabled={remaining <= 0}
-								>
-									{supervisor.name} ({remaining})
-								</option>
-							);
-						})}
-					</select>
-				</div>
-				<div className="assign-button">
-					<p>Assigned project: </p>
-					<select
-						defaultValue={group.desiredProjectId1 || ""}
-						onChange={(e) => assignProject(group.id, e.target.value)}>
-						<option value="" disabled> {projects?.find(p => p.id === group.desiredProjectId1)?.name || "None"} </option>
-						{projects?.map(project => (
-							<option key={project.id} value={project.id}>
-								{project.name}
-							</option>
-						))}
-					</select>
-				</div>
-				</div>
-				<h4 onClick={() => handleGroupClick(group.id)}
-					className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
-					<span className="group-name">{group.name}</span> <br />
-					<span className="group-detail">Size: </span> {group.studentIds.length} <br />
-					<span className="group-detail">Preferred size: </span> {group.maxStudents}
-				</h4>
+		   return (
+			   <div className="group-box" key={group.id}>
+				   <h4 onClick={() => handleGroupClick(group.id)}
+					   className={selectedGroup && selectedGroup.from === group.id ? "selected" : ""}>
+					   <span className="group-name">{group.name}</span> <br />
+					   <span>Size: <span className="group-number">{group.studentIds.length}</span></span> <br />
+					   <span>Preferred size: <span className="group-number">{group.maxStudents}</span></span>
+				   </h4>
+				   <div className="assign-row">
+					   <div className="assign-button">
+						   <p>Current Supervisor: </p>
+						   <select defaultValue="" onChange={(e) => assignSupervisor(group.id, e.target.value)}>
+							   <option value="" disabled> {supervisors?.find(s => s.id === group.supervisorId)?.name || "None"} </option>
+							   {supervisors?.map((supervisor) => {
+								   const remaining = remainingSlots(supervisor);
+								   return (
+									   <option
+										   key={supervisor.id}
+										   value={supervisor.id}
+										   disabled={remaining <= 0}
+									   >
+										   {supervisor.name} ({remaining})
+									   </option>
+								   );
+							   })}
+						   </select>
+					   </div>
+					   <div className="assign-button">
+						   <p>Assigned project: </p>
+						   <select
+							   defaultValue={group.desiredProjectId1 || ""}
+							   onChange={(e) => assignProject(group.id, e.target.value)}>
+							   <option value="" disabled> {projects?.find(p => p.id === group.desiredProjectId1)?.name || "None"} </option>
+							   {projects?.map(project => (
+								   <option key={project.id} value={project.id}>
+									   {project.name}
+								   </option>
+							   ))}
+						   </select>
+					   </div>
+				   </div>
 				{(group.desiredProjectId1 ||
 					group.desiredProjectId2 ||
 					group.desiredProjectId3) && (
-						<p className="group-detail">
+						   <p>
 							Projects wishes:{" "}
 							<span className="highlight">
 								{group.desiredProjectId2 ?
