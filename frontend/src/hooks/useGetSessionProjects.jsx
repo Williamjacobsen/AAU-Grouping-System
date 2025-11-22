@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { useCallback } from "react";
 import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
@@ -14,15 +14,16 @@ async function fetchSessionProjects(sessionId) {
 	return await response.json();
 }
 
-export default function useGetSessionProjects(sessionId) {
+export default function useGetSessionProjects(sessionId, pollingInterval) {
 
 	const [isLoading, setIsLoading] = useState(true); // create two pieces of memory, true because no data fetched yet
 	const [projects, setProjects] = useState(null); // projects null because no data yet
+	const intervalRef = useRef(null);
 
 	useEffect(() => {
 		if (sessionId == null) return; // if no sessionId, do nothing
 
-		(async () => { // fetch data from the server
+		const fetchData = async () => { // fetch data from the server
 			try { // try to fetch, catch will throw error if fail
 				setProjects(await fetchSessionProjects(sessionId));
 			} catch (error) {
@@ -30,7 +31,19 @@ export default function useGetSessionProjects(sessionId) {
 			} finally {
 				setIsLoading(false); // done loading, so set useState of isLoading to false
 			}
-		})();
+		};
+
+		fetchData();
+
+		if (pollingInterval) {
+			intervalRef.current = setInterval(fetchData, pollingInterval)
+		}
+
+		return () => {
+			if (intervalRef.current) {
+				clearInterval(intervalRef.current);
+			}
+		}
 	}, [sessionId]);
 
 	return { isLoading, projects, setProjects };
@@ -80,7 +93,7 @@ export function useDeleteProject() {
 	}, []);
 }
 
-export function useGetSessionProjectsByParam() {
+export function useGetSessionProjectsByParam(pollingInterval) {
 	const { sessionId } = useParams();
-	return useGetSessionProjects(sessionId);
+	return useGetSessionProjects(sessionId, pollingInterval);
 }

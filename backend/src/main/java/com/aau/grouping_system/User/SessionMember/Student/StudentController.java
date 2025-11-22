@@ -1,4 +1,4 @@
-package com.aau.grouping_system.User.Student;
+package com.aau.grouping_system.User.SessionMember.Student;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,15 +29,15 @@ public class StudentController {
 
 	private final StudentService studentService;
 	private final RequestRequirementService requestRequirementService;
-	private final UserService userService;
+	private final SessionMemberService sessionMemberService;
 
 	public StudentController(
 			StudentService studentService,
 			RequestRequirementService requestRequirementService,
-			UserService userService) {
+			SessionMemberService sessionMemberService) {
 		this.studentService = studentService;
 		this.requestRequirementService = requestRequirementService;
-		this.userService = userService;
+		this.sessionMemberService = sessionMemberService;
 	}
 
 	@GetMapping("/{studentId}")
@@ -80,7 +79,7 @@ public class StudentController {
 
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(student.getSessionId(), userCoordinator);
 
-		userService.applyAndEmailNewLoginCode(session, student);
+		sessionMemberService.applyAndEmailNewPassword(session, student);
 
 		return ResponseEntity.ok("Successfully sent a new password to the student");
 	}

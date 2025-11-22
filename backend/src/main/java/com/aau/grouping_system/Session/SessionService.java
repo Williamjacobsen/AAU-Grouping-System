@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 
 @Service
@@ -31,7 +31,11 @@ public class SessionService {
 	}
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
-		return SessionFactory.create(db, coordinator.getSessions(), coordinator, sessionName);
+		Session newSession = db.getSessions().addItem(
+				db,
+				coordinator.getSessions(),
+				new Session(db, coordinator, sessionName));
+		return newSession;
 	}
 
 	public Session getSession(String sessionId) {
@@ -48,7 +52,7 @@ public class SessionService {
 			return false;
 		}
 
-		db.getSessions().cascadeRemove(db, sessionId);
+		db.getSessions().cascadeRemoveItem(db, sessionId);
 		return true;
 	}
 

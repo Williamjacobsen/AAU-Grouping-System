@@ -43,21 +43,23 @@ public class ProjectController {
 	}
 
 	private void requireAllowStudentProjectProposals(Session session) {
-		if (!session.getAllowStudentProjectProposals()) { //checks if students can propose projects
+		if (!session.getAllowStudentProjectProposals()) { // checks if students can propose projects
 			throw new RequestException(HttpStatus.UNAUTHORIZED,
 					"Your coordinator does not allow student project proposals in this session");
 		}
 	}
 
 	private void requireUserIsCreatorOfTheProject(User user, Project project) {
-		if (!project.getCreatorUserId().equals(user.getId())) { // verification that the user created the project that they're trying to modify
+		if (!project.getCreatorUserId().equals(user.getId())) { // verification that the user created the project that
+																														// they're trying to modify
 			throw new RequestException(HttpStatus.UNAUTHORIZED,
 					"User is neither the coordinator or the creator of the project");
 		}
 	}
 
 	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
-	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" }) // retrieves all projects from sessionid
+	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" }) // retrieves all projects from
+																																													// sessionid
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
@@ -84,13 +86,13 @@ public class ProjectController {
 		User user = requestRequirementService.requireUserExists(servlet);
 
 		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
-		if (user.getRole() != User.Role.Coordinator) { //only coordinators can delete any project
+		if (user.getRole() != User.Role.Coordinator) { // only coordinators can delete any project
 			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);
 			requireUserIsCreatorOfTheProject(user, project); // supervisor/student can only delete within deadline
 		}
 
 		// Delete the project from the database
-		db.getProjects().cascadeRemove(db, project);
+		db.getProjects().cascadeRemoveItem(db, project);
 
 		// Return success message with 200 ok
 		return ResponseEntity.ok("Project with id " + projectId + " has been deleted successfully.");
@@ -113,7 +115,10 @@ public class ProjectController {
 			requireAllowStudentProjectProposals(session);
 		}
 
-		Project newProject = new Project(db, session.getProjects(), projectName, description, user);
+		Project newProject = db.getProjects().addItem(
+				db,
+				session.getProjects(),
+				new Project(projectName, description, user));
 
 		// Create a response map
 		Map<String, Object> response = new HashMap<>();

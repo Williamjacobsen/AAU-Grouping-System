@@ -1,4 +1,4 @@
-package com.aau.grouping_system.User.Student;
+package com.aau.grouping_system.User.SessionMember.Student;
 
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 

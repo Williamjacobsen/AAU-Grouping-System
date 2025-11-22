@@ -16,8 +16,8 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
 import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -80,13 +80,13 @@ public class SupervisorsPageService {
 		// Generate password and create supervisor
 		String password = UUID.randomUUID().toString();
 
-		Supervisor newSupervisor = new Supervisor(
+		Supervisor newSupervisor = db.getSupervisors().addItem(
 				db,
 				session.getSupervisors(),
-				request.email.trim(),
-				"placeholder",
-				request.email.trim().split("@")[0], // Use email as default name
-				session);
+				new Supervisor(
+						request.email.trim(),
+						request.email.trim().split("@")[0], // Use email as default name
+						session));
 
 		userService.modifyPassword(password, newSupervisor);
 
@@ -102,7 +102,7 @@ public class SupervisorsPageService {
 	// Remove supervisor
 	public void removeSupervisor(String supervisorId) {
 		// Remove supervisor from database
-		db.getSupervisors().cascadeRemove(db, supervisorId);
+		db.getSupervisors().cascadeRemoveItem(db, supervisorId);
 	}
 
 	// Send email to supervisor

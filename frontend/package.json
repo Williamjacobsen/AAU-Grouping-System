@@ -3,7 +3,7 @@
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {
-		"@stomp/stompjs": "^7.2.0",
+		"@stomp/stompjs": "^7.2.1",
 		"@testing-library/dom": "^10.4.1",
 		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/react": "^16.3.0",
@@ -14,7 +14,6 @@
 		"react-router-dom": "^7.9.2",
 		"react-scripts": "5.0.1",
 		"sockjs-client": "^1.6.1",
-		"stompjs": "^2.3.3",
 		"web-vitals": "^2.1.4"
 	},
 	"scripts": {
@@ -43,15 +42,15 @@
 		]
 	},
 	"devDependencies": {
-		"eslint": "^8.57.1",
-		"eslint-plugin-react": "^7.37.5",
-		"eslint-plugin-react-hooks": "^6.1.1",
-    "@testing-library/dom": "^10.4.1",
+		"@testing-library/dom": "^10.4.1",
 		"@testing-library/jest-dom": "^6.8.0",
 		"@testing-library/react": "^16.3.0",
 		"@testing-library/user-event": "^13.5.0",
-    "@vitest/ui": "^3.1.2",
-    "jsdom": "^24.0.0",
-    "vitest": "^3.1.2"
+		"@vitest/ui": "^3.1.2",
+		"eslint": "^8.57.1",
+		"eslint-plugin-react": "^7.37.5",
+		"eslint-plugin-react-hooks": "^6.1.1",
+		"jsdom": "^24.0.0",
+		"vitest": "^3.1.2"
 	}
 }

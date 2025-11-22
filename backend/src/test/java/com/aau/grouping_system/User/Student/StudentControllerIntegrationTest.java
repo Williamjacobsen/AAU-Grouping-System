@@ -13,13 +13,10 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -30,10 +27,12 @@ import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.SessionService;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Student.StudentController;
+import com.aau.grouping_system.User.SessionMember.Student.StudentService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import org.springframework.http.HttpStatus;
 
@@ -41,220 +40,221 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @WebMvcTest(StudentController.class)
 @AutoConfigureWebMvc
-@ComponentScan(basePackages = {"com.aau.grouping_system.User.Student", "com.aau.grouping_system.Config", "com.aau.grouping_system.Exceptions"})
-@Import({StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class})
+@ComponentScan(basePackages = { "com.aau.grouping_system.User.Student", "com.aau.grouping_system.Config",
+		"com.aau.grouping_system.Exceptions" })
+@Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
 class StudentControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @MockitoBean
-    private StudentService studentService;
+	@MockitoBean
+	private StudentService studentService;
 
-    @MockitoBean
-    private AuthService authService;
+	@MockitoBean
+	private AuthService authService;
 
-    @MockitoBean
-    private SessionService sessionService;
+	@MockitoBean
+	private SessionService sessionService;
 
-    @MockitoBean
-    private Database database;
+	@MockitoBean
+	private Database database;
 
-    @MockitoBean
-    private RequestRequirementService requirementService;
+	@MockitoBean
+	private RequestRequirementService requirementService;
 
-    private Student testStudent;
-    private Session testSession;
+	private Student testStudent;
+	private Session testSession;
 
-    @BeforeEach
-    void setUp() {
-        testStudent = mock(Student.class);
-        testSession = mock(Session.class);
-        
-        when(testStudent.getEmail()).thenReturn("student@test.com");
-        when(testStudent.getId()).thenReturn("student-123");
-        when(testStudent.getSessionId()).thenReturn("session-123");
-        when(testSession.getId()).thenReturn("session-123");
-    }
+	@BeforeEach
+	void setUp() {
+		testStudent = mock(Student.class);
+		testSession = mock(Session.class);
 
-    @Test
-    void testCreateStudent_ValidRequest_ReturnsCreatedStudent() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "sessionId": "session-123",
-                "email": "john.doe@student.aau.dk",
-                "password": "password123",
-                "name": "John Doe"
-            }
-            """;
+		when(testStudent.getEmail()).thenReturn("student@test.com");
+		when(testStudent.getId()).thenReturn("student-123");
+		when(testStudent.getSessionId()).thenReturn("session-123");
+		when(testSession.getId()).thenReturn("session-123");
+	}
 
-        when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
-        when(studentService.addStudent(testSession, "john.doe@student.aau.dk", "password123", "John Doe"))
-            .thenReturn(testStudent);
+	@Test
+	void testCreateStudent_ValidRequest_ReturnsCreatedStudent() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "sessionId": "session-123",
+				    "email": "john.doe@student.aau.dk",
+				    "name": "John Doe"
+				}
+				""";
 
-        // Act & Assert
-        mockMvc.perform(post("/student/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isCreated())
-                .andExpect(content().string("Student created successfully with ID: student-123"));
+		when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
+		when(studentService.addStudent(testSession, "john.doe@student.aau.dk", "John Doe"))
+				.thenReturn(testStudent);
 
-        verify(requirementService).requireSessionExists("session-123");
-        verify(studentService).addStudent(testSession, "john.doe@student.aau.dk", "password123", "John Doe");
-    }
+		// Act & Assert
+		mockMvc.perform(post("/student/create")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isCreated())
+				.andExpect(content().string("Student created successfully with ID: student-123"));
 
-    @Test
-    void testCreateStudent_MissingRequiredFields_ReturnsBadRequest() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "sessionId": "session-123",
-                "email": "john.doe@student.aau.dk"
-            }
-            """;
+		verify(requirementService).requireSessionExists("session-123");
+		verify(studentService).addStudent(testSession, "john.doe@student.aau.dk", "John Doe");
+	}
 
-        // Act & Assert
-        mockMvc.perform(post("/student/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isBadRequest());
+	@Test
+	void testCreateStudent_MissingRequiredFields_ReturnsBadRequest() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "sessionId": "session-123",
+				    "email": "john.doe@student.aau.dk"
+				}
+				""";
 
-        verify(studentService, never()).addStudent(any(), anyString(), anyString(), anyString());
-    }
+		// Act & Assert
+		mockMvc.perform(post("/student/create")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isBadRequest());
 
-    @Test
-    void testCreateStudent_SessionNotFound_ReturnsNotFound() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "sessionId": "nonexistent-session",
-                "email": "john.doe@student.aau.dk",
-                "password": "password123",
-                "name": "John Doe"
-            }
-            """;
+		verify(studentService, never()).addStudent(any(), anyString(), anyString());
+	}
 
-        when(requirementService.requireSessionExists("nonexistent-session"))
-            .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
+	@Test
+	void testCreateStudent_SessionNotFound_ReturnsNotFound() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "sessionId": "nonexistent-session",
+				    "email": "john.doe@student.aau.dk",
+				    "name": "John Doe"
+				}
+				""";
 
-        // Act & Assert
-        mockMvc.perform(post("/student/create")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isNotFound());
+		when(requirementService.requireSessionExists("nonexistent-session"))
+				.thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
-        verify(requirementService).requireSessionExists("nonexistent-session");
-        verify(studentService, never()).addStudent(any(), anyString(), anyString(), anyString());
-    }
+		// Act & Assert
+		mockMvc.perform(post("/student/create")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isNotFound());
 
-    @Test
-    void testSaveQuestionnaireAnswers_ValidStudentAndSession_ReturnsSuccess() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "desiredProjectId1": "project-1",
-                "desiredProjectId2": "project-2", 
-                "desiredProjectId3": "project-3",
-                "desiredGroupSizeMin": 2,
-                "desiredGroupSizeMax": 4,
-                "desiredWorkLocation": "NoPreference",
-                "desiredWorkStyle": "NoPreference",
-                "personalSkills": "Java, Spring Boot",
-                "specialNeeds": "None",
-                "academicInterests": "Software Engineering",
-                "comments": "Looking forward to working on this project"
-            }
-            """;
+		verify(requirementService).requireSessionExists("nonexistent-session");
+		verify(studentService, never()).addStudent(any(), anyString(), anyString());
+	}
 
-        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
-            .thenReturn(testStudent);
-        when(requirementService.requireSessionExists("session-123"))
-            .thenReturn(testSession);
+	@Test
+	void testSaveQuestionnaireAnswers_ValidStudentAndSession_ReturnsSuccess() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "desiredProjectId1": "project-1",
+				    "desiredProjectId2": "project-2",
+				    "desiredProjectId3": "project-3",
+				    "desiredGroupSizeMin": 2,
+				    "desiredGroupSizeMax": 4,
+				    "desiredWorkLocation": "NoPreference",
+				    "desiredWorkStyle": "NoPreference",
+				    "personalSkills": "Java, Spring Boot",
+				    "specialNeeds": "None",
+				    "academicInterests": "Software Engineering",
+				    "comments": "Looking forward to working on this project"
+				}
+				""";
 
-        // Act & Assert
-        mockMvc.perform(post("/student/saveQuestionnaireAnswers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Saved questionnaire answers successfully."));
+		when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
+				.thenReturn(testStudent);
+		when(requirementService.requireSessionExists("session-123"))
+				.thenReturn(testSession);
 
-        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
-        verify(requirementService).requireSessionExists("session-123");
-        verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
-        verify(studentService).applyQuestionnaireAnswers(eq(testStudent), any());
-    }    @Test
-    void testSaveQuestionnaireAnswers_StudentNotFound_ReturnsNotFound() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "desiredProjectId1": "project-1",
-                "desiredProjectId2": "project-2", 
-                "desiredProjectId3": "project-3",
-                "desiredGroupSizeMin": 2,
-                "desiredGroupSizeMax": 4,
-                "desiredWorkLocation": "NoPreference",
-                "desiredWorkStyle": "NoPreference",
-                "personalSkills": "Java, Spring Boot",
-                "specialNeeds": "None",
-                "academicInterests": "Software Engineering",
-                "comments": "Looking forward to working on this project"
-            }
-            """;
+		// Act & Assert
+		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isOk())
+				.andExpect(content().string("Saved questionnaire answers successfully."));
 
-        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
-            .thenThrow(new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student"));
+		verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
+		verify(requirementService).requireSessionExists("session-123");
+		verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
+		verify(studentService).applyQuestionnaireAnswers(eq(testStudent), any());
+	}
 
-        // Act & Assert
-        mockMvc.perform(post("/student/saveQuestionnaireAnswers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isBadRequest());
+	@Test
+	void testSaveQuestionnaireAnswers_StudentNotFound_ReturnsNotFound() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "desiredProjectId1": "project-1",
+				    "desiredProjectId2": "project-2",
+				    "desiredProjectId3": "project-3",
+				    "desiredGroupSizeMin": 2,
+				    "desiredGroupSizeMax": 4,
+				    "desiredWorkLocation": "NoPreference",
+				    "desiredWorkStyle": "NoPreference",
+				    "personalSkills": "Java, Spring Boot",
+				    "specialNeeds": "None",
+				    "academicInterests": "Software Engineering",
+				    "comments": "Looking forward to working on this project"
+				}
+				""";
 
-        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
-        verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
-    }
+		when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
+				.thenThrow(new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student"));
 
-    @Test
-    void testSaveQuestionnaireAnswers_DeadlineExceeded_ReturnsUnauthorized() throws Exception {
-        // Arrange
-        String requestBody = """
-            {
-                "desiredProjectId1": "project-1",
-                "desiredProjectId2": "project-2", 
-                "desiredProjectId3": "project-3",
-                "desiredGroupSizeMin": 2,
-                "desiredGroupSizeMax": 4,
-                "desiredWorkLocation": "NoPreference",
-                "desiredWorkStyle": "NoPreference",
-                "personalSkills": "Java, Spring Boot",
-                "specialNeeds": "None",
-                "academicInterests": "Software Engineering",
-                "comments": "Looking forward to working on this project"
-            }
-            """;
+		// Act & Assert
+		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isBadRequest());
 
-        when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
-            .thenReturn(testStudent);
-        when(requirementService.requireSessionExists("session-123"))
-            .thenReturn(testSession);
-        doThrow(new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded."))
-            .when(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
+		verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
+		verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
+	}
 
-        // Act & Assert
-        mockMvc.perform(post("/student/saveQuestionnaireAnswers")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody))
-                .andExpect(status().isUnauthorized());
+	@Test
+	void testSaveQuestionnaireAnswers_DeadlineExceeded_ReturnsUnauthorized() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "desiredProjectId1": "project-1",
+				    "desiredProjectId2": "project-2",
+				    "desiredProjectId3": "project-3",
+				    "desiredGroupSizeMin": 2,
+				    "desiredGroupSizeMax": 4,
+				    "desiredWorkLocation": "NoPreference",
+				    "desiredWorkStyle": "NoPreference",
+				    "personalSkills": "Java, Spring Boot",
+				    "specialNeeds": "None",
+				    "academicInterests": "Software Engineering",
+				    "comments": "Looking forward to working on this project"
+				}
+				""";
 
-        verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
-        verify(requirementService).requireSessionExists("session-123");
-        verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
-        verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
-    }
+		when(requirementService.requireUserStudentExists(any(HttpServletRequest.class)))
+				.thenReturn(testStudent);
+		when(requirementService.requireSessionExists("session-123"))
+				.thenReturn(testSession);
+		doThrow(new RequestException(HttpStatus.UNAUTHORIZED, "Questionnaire submission deadline exceeded."))
+				.when(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
 
-    @Configuration
-    static class TestConfig {
-        // Configuration class
-    }
+		// Act & Assert
+		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody))
+				.andExpect(status().isUnauthorized());
+
+		verify(requirementService).requireUserStudentExists(any(HttpServletRequest.class));
+		verify(requirementService).requireSessionExists("session-123");
+		verify(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
+		verify(studentService, never()).applyQuestionnaireAnswers(any(), any());
+	}
+
+	@Configuration
+	static class TestConfig {
+		// Configuration class
+	}
 }

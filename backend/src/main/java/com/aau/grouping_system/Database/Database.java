@@ -8,12 +8,15 @@ import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 @Component
+/// Container for database data.
 public class Database {
 
+	/// Data must be stored as a seperate object to allow for
+	/// easy saving/serialization.
 	private DatabaseData data = new DatabaseData();
 
 	DatabaseMap<? extends DatabaseItem> getMap(Integer id) {

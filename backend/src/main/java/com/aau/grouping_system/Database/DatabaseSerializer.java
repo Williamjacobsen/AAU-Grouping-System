@@ -8,11 +8,13 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Student.StudentService;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
-import com.aau.grouping_system.User.Supervisor.SupervisorService;
-
+import com.aau.grouping_system.User.SessionMember.SessionMember;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Student.StudentService;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Supervisor.SupervisorService;
+import com.aau.grouping_system.User.UserService;
 import jakarta.annotation.PostConstruct;
 
 import java.io.*;
@@ -29,14 +31,22 @@ public class DatabaseSerializer {
 	private final StudentService studentService;
 	private final SupervisorService supervisorService;
 	private final GroupService groupService;
+	private final UserService userService;
 
-	public DatabaseSerializer(Database db, CoordinatorService coordinatorService, StudentService studentService,
-			SupervisorService supervisorService, GroupService groupService) {
+	public DatabaseSerializer(
+			Database db,
+			CoordinatorService coordinatorService,
+			StudentService studentService,
+			SupervisorService supervisorService,
+			GroupService groupService,
+			SessionMemberService sessionMemberService,
+			UserService userService) {
 		this.db = db;
 		this.coordinatorService = coordinatorService;
 		this.studentService = studentService;
 		this.supervisorService = supervisorService;
 		this.groupService = groupService;
+		this.userService = userService;
 	}
 
 	public void saveDatabase() {
@@ -78,7 +88,6 @@ public class DatabaseSerializer {
 		}
 	}
 
-	@SuppressWarnings("unused") // To suppress warnings about unused code.
 	private void fillDatabaseWithExampleData() {
 
 		ArrayList<Coordinator> co = new ArrayList<>();
@@ -88,13 +97,13 @@ public class DatabaseSerializer {
 		co.add(coordinatorService.addCoordinator("c4", "c4", "Coordinator name 4"));
 
 		ArrayList<Session> se = new ArrayList<>();
-		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 1"));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 1")));
 		se.get(0).setMinGroupSize(6);
 		se.get(0).setMinGroupSize(7);
-		se.add(new Session(db, co.get(0).getSessions(), co.get(0), "Session name 2"));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 2")));
 		se.get(1).setMinGroupSize(3);
 		se.get(1).setMinGroupSize(5);
-		se.add(new Session(db, co.get(1).getSessions(), co.get(1), "Session name 3"));
+		se.add(db.getSessions().addItem(db, co.get(1).getSessions(), new Session(db, co.get(1), "Session name 3")));
 		se.get(2).setMinGroupSize(6);
 		se.get(2).setMinGroupSize(7);
 
@@ -106,69 +115,78 @@ public class DatabaseSerializer {
 		su.add(supervisorService.addSupervisor(se.get(1), "su5@example.com", "su5", "Supervisor name 5"));
 
 		ArrayList<Student> st = new ArrayList<>();
-		st.add(studentService.addStudent(se.get(0), "st1@example.com", "st1", "Alice"));
-		st.add(studentService.addStudent(se.get(0), "st2@example.com", "st2", "Bob"));
-		st.add(studentService.addStudent(se.get(0), "st3@example.com", "st3", "Charlie"));
-		st.add(studentService.addStudent(se.get(0), "st4@example.com", "st4", "Diana"));
-		st.add(studentService.addStudent(se.get(0), "st5@example.com", "st5", "Ethan"));
-		st.add(studentService.addStudent(se.get(0), "st6@example.com", "st6", "Fiona"));
-		st.add(studentService.addStudent(se.get(0), "st7@example.com", "st7", "George"));
-		st.add(studentService.addStudent(se.get(0), "st8@example.com", "st8", "Hannah"));
-		st.add(studentService.addStudent(se.get(0), "st9@example.com", "st9", "Ian"));
-		st.add(studentService.addStudent(se.get(0), "st10@example.com", "st10", "Julia"));
-		st.add(studentService.addStudent(se.get(0), "st11@example.com", "st11", "Kevin"));
-		st.add(studentService.addStudent(se.get(0), "st12@example.com", "st12", "Laura"));
-		st.add(studentService.addStudent(se.get(0), "st13@example.com", "st13", "Michael"));
-		st.add(studentService.addStudent(se.get(0), "st14@example.com", "st14", "Nina"));
-		st.add(studentService.addStudent(se.get(0), "st15@example.com", "st15", "Oscar"));
-		st.add(studentService.addStudent(se.get(0), "st16@example.com", "st16", "Paula"));
-		st.add(studentService.addStudent(se.get(0), "st17@example.com", "st17", "Quinn"));
-		st.add(studentService.addStudent(se.get(0), "st18@example.com", "st18", "Riley"));
-		st.add(studentService.addStudent(se.get(0), "st19@example.com", "st19", "Sophia"));
-		st.add(studentService.addStudent(se.get(0), "st20@example.com", "st20", "Tom"));
-		st.add(studentService.addStudent(se.get(0), "st21@example.com", "st21", "Uma"));
-		st.add(studentService.addStudent(se.get(0), "st22@example.com", "st22", "Victor"));
-		st.add(studentService.addStudent(se.get(0), "st23@example.com", "st23", "Wendy"));
-		st.add(studentService.addStudent(se.get(0), "st24@example.com", "st24", "Xander"));
-		st.add(studentService.addStudent(se.get(0), "st25@example.com", "st25", "Yara"));
-		st.add(studentService.addStudent(se.get(0), "st26@example.com", "st26", "Zane"));
-		st.add(studentService.addStudent(se.get(0), "st27@example.com", "st27", "Adam"));
-		st.add(studentService.addStudent(se.get(0), "st28@example.com", "st28", "Bella"));
-		st.add(studentService.addStudent(se.get(0), "st29@example.com", "st29", "Cody"));
-		st.add(studentService.addStudent(se.get(0), "st30@example.com", "st30", "Delia"));
+		st.add(studentService.addStudent(se.get(0), "st1@example.com", "Alice"));
+		st.add(studentService.addStudent(se.get(0), "st2@example.com", "Bob"));
+		st.add(studentService.addStudent(se.get(0), "st3@example.com", "Charlie"));
+		st.add(studentService.addStudent(se.get(0), "st4@example.com", "Diana"));
+		st.add(studentService.addStudent(se.get(0), "st5@example.com", "Ethan"));
+		st.add(studentService.addStudent(se.get(0), "st6@example.com", "Fiona"));
+		st.add(studentService.addStudent(se.get(0), "st7@example.com", "George"));
+		st.add(studentService.addStudent(se.get(0), "st8@example.com", "Hannah"));
+		st.add(studentService.addStudent(se.get(0), "st9@example.com", "Ian"));
+		st.add(studentService.addStudent(se.get(0), "st10@example.com", "Julia"));
+		st.add(studentService.addStudent(se.get(0), "st11@example.com", "Kevin"));
+		st.add(studentService.addStudent(se.get(0), "st12@example.com", "Laura"));
+		st.add(studentService.addStudent(se.get(0), "st13@example.com", "Michael"));
+		st.add(studentService.addStudent(se.get(0), "st14@example.com", "Nina"));
+		st.add(studentService.addStudent(se.get(0), "st15@example.com", "Oscar"));
+		st.add(studentService.addStudent(se.get(0), "st16@example.com", "Paula"));
+		st.add(studentService.addStudent(se.get(0), "st17@example.com", "Quinn"));
+		st.add(studentService.addStudent(se.get(0), "st18@example.com", "Riley"));
+		st.add(studentService.addStudent(se.get(0), "st19@example.com", "Sophia"));
+		st.add(studentService.addStudent(se.get(0), "st20@example.com", "Tom"));
+		st.add(studentService.addStudent(se.get(0), "st21@example.com", "Uma"));
+		st.add(studentService.addStudent(se.get(0), "st22@example.com", "Victor"));
+		st.add(studentService.addStudent(se.get(0), "st23@example.com", "Wendy"));
+		st.add(studentService.addStudent(se.get(0), "st24@example.com", "Xander"));
+		st.add(studentService.addStudent(se.get(0), "st25@example.com", "Yara"));
+		st.add(studentService.addStudent(se.get(0), "st26@example.com", "Zane"));
+		st.add(studentService.addStudent(se.get(0), "st27@example.com", "Adam"));
+		st.add(studentService.addStudent(se.get(0), "st28@example.com", "Bella"));
+		st.add(studentService.addStudent(se.get(0), "st29@example.com", "Cody"));
+		st.add(studentService.addStudent(se.get(0), "st30@example.com", "Delia"));
 
 		ArrayList<Project> pr = new ArrayList<>();
-		pr.add(new Project(db, se.get(0).getProjects(), "AI Chatbot",
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"AI Chatbot",
 				"AI assistant for customer support. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Web App",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Web App",
 				"Interactive web platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Smart Home",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Smart Home",
 				"IoT-based automation system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Health Tracker",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Health Tracker",
 				"Fitness and health monitoring app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				su.get(0)));
-		pr.add(
-				new Project(db, se.get(0).getProjects(), "Finance Dashboard",
-						"Financial data visualization tool. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-						su.get(1)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Game Design",
+				su.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Finance Dashboard",
+				"Financial data visualization tool. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+				su.get(1))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Game Design",
 				"Multiplayer online game. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "E-commerce",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"E-commerce",
 				"Online shopping platform. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Social Media",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Social Media",
 				"New generation social app. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Education Portal",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Education Portal",
 				"Online learning hub. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
-		pr.add(new Project(db, se.get(0).getProjects(), "Weather Forecast",
+				co.get(0))));
+		pr.add(db.getProjects().addItem(db, se.get(0).getProjects(), new Project(
+				"Weather Forecast",
 				"Climate analysis system. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-				co.get(0)));
+				co.get(0))));
 
 		st.get(0).getQuestionnaire().setDesiredProjectId1(pr.get(3).getId());
 		st.get(0).getQuestionnaire().setDesiredProjectId2(pr.get(2).getId());
@@ -187,29 +205,29 @@ public class DatabaseSerializer {
 		st.get(4).getQuestionnaire().setDesiredProjectId3(pr.get(1).getId());
 
 		ArrayList<Group> gr = new ArrayList<>();
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 1"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 1")));
 		gr.get(0).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(0).setDesiredProjectId2(pr.get(3).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 2"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 2")));
 		gr.get(1).setDesiredProjectId1(pr.get(4).getId());
 		gr.get(1).setDesiredProjectId2(pr.get(3).getId());
 		gr.get(1).setDesiredProjectId3(pr.get(6).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 3"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 3")));
 		gr.get(2).setDesiredProjectId1(pr.get(6).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 4"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 4")));
 		gr.get(3).setDesiredProjectId1(pr.get(5).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 5"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 5")));
 		gr.get(4).setDesiredProjectId1(pr.get(1).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 6"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 6")));
 		gr.get(5).setDesiredProjectId1(pr.get(6).getId());
 		gr.get(5).setDesiredProjectId2(pr.get(1).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 7"));
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 8"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 7")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 8")));
 		gr.get(7).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(7).setDesiredProjectId2(pr.get(0).getId());
 		gr.get(7).setDesiredProjectId3(pr.get(7).getId());
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 9"));
-		gr.add(new Group(db, se.get(0).getGroups(), se.get(0), "Group name 10"));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 9")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 10")));
 		gr.get(9).setDesiredProjectId1(pr.get(4).getId());
 
 		groupService.joinGroup(gr.get(0), st.get(0));
@@ -248,16 +266,26 @@ public class DatabaseSerializer {
 		groupService.joinGroup(gr.get(8), st.get(25));
 		groupService.joinGroup(gr.get(8), st.get(26));
 
-	
-
 		// For testing purposes, console log logins so we can log in as them
-		System.out.println("\n\n\n---- STUDENT test logins ----");
+		System.out.println("\n\n\n---- STUDENTS - Generating passwords ----");
 		for (int i = 0; i < st.size(); i++) {
-			System.out.println("Password: st" + (i + 1) + " ID: " + st.get(i).getId());
+			Student student = st.get(i);
+			String newPassword = "st" + (i + 1);
+			userService.modifyPassword(newPassword, student);
+			System.out.println("---" +
+					"\nName: " + student.getName() +
+					"\nID: " + student.getId() +
+					"\nNew password: " + newPassword);
 		}
-		System.out.println("---- SUPERVISOR test logins ----");
+		System.out.println("---- SUPERVISORS - Generating passwords ----");
 		for (int i = 0; i < su.size(); i++) {
-			System.out.println("Password: su" + (i + 1) + " ID: " + su.get(i).getId());
+			Supervisor supervisor = su.get(i);
+			String newPassword = "su" + (i + 1);
+			userService.modifyPassword(newPassword, supervisor);
+			System.out.println("---" +
+					"\nName: " + supervisor.getName() +
+					"\nID: " + supervisor.getId() +
+					"\nNew password: " + newPassword);
 		}
 	}
 

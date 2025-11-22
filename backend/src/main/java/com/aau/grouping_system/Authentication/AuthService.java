@@ -3,8 +3,8 @@ package com.aau.grouping_system.Authentication;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -27,22 +27,33 @@ public class AuthService {
 		return passwordEncoder.matches(password, user.getPasswordHash());
 	}
 
-	public User findByEmailOrId(String emailOrId, User.Role role) {
-		switch (role) {
-			case User.Role.Coordinator:
-				for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
-					if (coordinator.getEmail().equals(emailOrId)) {
-						return coordinator;
-					}
-				}
-				return null;
-			case User.Role.Supervisor:
-				return db.getSupervisors().getItem(emailOrId);
-			case User.Role.Student:
-				return db.getStudents().getItem(emailOrId);
-			default:
-				return null;
+	public Coordinator findByEmail(String email) {
+		for (Coordinator coordinator : db.getCoordinators().getAllItems().values()) {
+			if (coordinator.getEmail().equals(email)) {
+				return coordinator;
+			}
 		}
+		return null;
+	}
+
+	public User findByEmailOrId(String emailOrId) {
+
+		Student studentUser = db.getStudents().getItem(emailOrId);
+		if (studentUser != null) {
+			return studentUser;
+		}
+
+		Supervisor supervisorUser = db.getSupervisors().getItem(emailOrId);
+		if (supervisorUser != null) {
+			return supervisorUser;
+		}
+
+		Coordinator coordinatorUser = findByEmail(emailOrId);
+		if (coordinatorUser != null) {
+			return coordinatorUser;
+		}
+
+		return null;
 	}
 
 	public void invalidateOldSession(HttpServletRequest request) {

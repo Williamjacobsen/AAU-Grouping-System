@@ -3,9 +3,7 @@ package com.aau.grouping_system.Session;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -13,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 @Service
 public class SessionSetupService {
@@ -56,11 +54,14 @@ public class SessionSetupService {
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
-			db.getSupervisors().cascadeRemove(db, (Supervisor) user);
+			db.getSupervisors().cascadeRemoveItem(db, (Supervisor) user);
 		};
 
-		BiConsumer<String, String> createUserFunction = (newEmail, newPassword) -> {
-			new Supervisor(db, session.getSupervisors(), newEmail, newPassword, "Not specified", session);
+		Consumer<String> createUserFunction = (newEmail) -> {
+			db.getSupervisors().addItem(
+					db,
+					session.getSupervisors(),
+					new Supervisor(newEmail, "Not specified", session));
 		};
 
 		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
@@ -74,11 +75,14 @@ public class SessionSetupService {
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
-			db.getStudents().cascadeRemove(db, (Student) user);
+			db.getStudents().cascadeRemoveItem(db, (Student) user);
 		};
 
-		BiConsumer<String, String> createUserFunction = (newEmail, newPassword) -> {
-			new Student(db, session.getStudents(), newEmail, newPassword, "Not specified", session);
+		Consumer<String> createUserFunction = (newEmail) -> {
+			db.getStudents().addItem(
+					db,
+					session.getStudents(),
+					new Student(newEmail, "Not specified", session));
 		};
 
 		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
@@ -89,12 +93,11 @@ public class SessionSetupService {
 			String emailList,
 			Supplier<CopyOnWriteArrayList<User>> getUsersFunction,
 			Consumer<User> removeUserFunction,
-			BiConsumer<String, String> createUserFunction) {
+			Consumer<String> createUserFunction) {
 
 		// Explanation of Supplier, Consumer, and BiConsumer:
 		// "Supplier" is a function with no input and 1 output.
 		// "Consumer" is a function with 1 input and no output.
-		// "BiConsumer" is a function with 2 input and no output.
 
 		CopyOnWriteArrayList<User> users = getUsersFunction.get();
 		CopyOnWriteArrayList<String> trimmedEmails = trimEmails(emailList);
@@ -112,8 +115,7 @@ public class SessionSetupService {
 					.anyMatch(user -> user.getEmail().equals(trimmedEmail));
 
 			if (!doesExist) {
-				String randomPasswordHash = UUID.randomUUID().toString();
-				createUserFunction.accept(trimmedEmail, randomPasswordHash);
+				createUserFunction.accept(trimmedEmail);
 			}
 		}
 	}

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 
 import "./SessionSetup.css";
 import SessionSetupForm from "./SessionSetupForm";
-import SendLoginCodesForm from "./SendLoginCodesForm";
+import EmailNewPasswordsForm from "./EmailNewPasswords";
 import ResetFormButton from "./ResetFormButton";
 import NotifyButton from "../../Components/NotifyButton/NotifyButton";
 
@@ -40,13 +40,13 @@ export default function SessionSetup() {
 			<div className="form-section">
 				<h3 className="section-title">Actions</h3>
 
-				<SendLoginCodesForm
+				<EmailNewPasswordsForm
 					sessionId={sessionId}
 					targetUsers="supervisors"
 					setMessage={setMessage}
 				/>
 
-				<SendLoginCodesForm
+				<EmailNewPasswordsForm
 					sessionId={sessionId}
 					targetUsers="students"
 					setMessage={setMessage}

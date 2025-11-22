@@ -28,12 +28,15 @@ public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;
 	private final RequestRequirementService requestRequirementService;
+	private final UserService userService;
 
 	public CoordinatorController(
 			CoordinatorService coordinatorService,
-			RequestRequirementService requestRequirementService) {
+			RequestRequirementService requestRequirementService,
+			UserService userService) {
 		this.coordinatorService = coordinatorService;
 		this.requestRequirementService = requestRequirementService;
+		this.userService = userService;
 	}
 
 	private record SignUpRecord(
@@ -52,6 +55,24 @@ public class CoordinatorController {
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body("Coordinator has been added to database.");
+	}
+
+	private record ModifyPasswordRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace String newPassword) {
+	}
+
+	@PostMapping("/modifyPassword")
+	public ResponseEntity<String> modifyPassword(
+			HttpServletRequest servlet,
+			@Valid @RequestBody ModifyPasswordRecord record) {
+
+		User user = requestRequirementService.requireUserExists(servlet);
+
+		userService.modifyPassword(record.newPassword, user);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Password has been changed.");
 	}
 
 }

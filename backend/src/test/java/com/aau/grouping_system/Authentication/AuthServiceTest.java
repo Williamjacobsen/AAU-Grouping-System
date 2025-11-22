@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Authentication;
 
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,8 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
-import com.aau.grouping_system.User.Student.Student;
-import com.aau.grouping_system.User.Supervisor.Supervisor;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,257 +32,264 @@ import jakarta.servlet.http.HttpSession;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    @Mock
-    private Database mockDatabase;
-    
-    @Mock
-    private PasswordEncoder mockPasswordEncoder;
-    
-    @Mock
-    private DatabaseMap<Coordinator> mockCoordinators;
-    
-    @Mock
-    private DatabaseMap<Student> mockStudents;
-    
-    @Mock
-    private DatabaseMap<Supervisor> mockSupervisors;
-    
-    @Mock
-    private HttpServletRequest mockRequest;
-    
-    @Mock
-    private HttpSession mockSession;
+	@Mock
+	private Database mockDatabase;
 
-    private AuthService authService;
-    private Coordinator testCoordinator;
-    private Student testStudent;
-    private Supervisor testSupervisor;
+	@Mock
+	private PasswordEncoder mockPasswordEncoder;
 
-    @BeforeEach
-    void setUp() {
-        authService = new AuthService(mockDatabase, mockPasswordEncoder);
-        
-        // Create test users
-        testCoordinator = mock(Coordinator.class);
-        testStudent = mock(Student.class);
-        testSupervisor = mock(Supervisor.class);
-        
-        lenient().when(mockDatabase.getCoordinators()).thenReturn(mockCoordinators);
-        lenient().when(mockDatabase.getStudents()).thenReturn(mockStudents);
-        lenient().when(mockDatabase.getSupervisors()).thenReturn(mockSupervisors);
-        
-        lenient().when(testCoordinator.getEmail()).thenReturn("coordinator@test.com");
-        lenient().when(testCoordinator.getPasswordHash()).thenReturn("hashedPassword");
-        lenient().when(testStudent.getPasswordHash()).thenReturn("hashedPassword");
-        lenient().when(testSupervisor.getPasswordHash()).thenReturn("hashedPassword");
-    }
+	@Mock
+	private DatabaseMap<Coordinator> mockCoordinators;
 
-    @Test
-    void testIsPasswordCorrect_ValidPassword_ReturnsTrue() {
-        // Arrange
-        String plainPassword = "testPassword";
-        when(mockPasswordEncoder.matches(plainPassword, "hashedPassword")).thenReturn(true);
+	@Mock
+	private DatabaseMap<Student> mockStudents;
 
-        // Act
-        boolean result = authService.isPasswordCorrect(plainPassword, testCoordinator);
+	@Mock
+	private DatabaseMap<Supervisor> mockSupervisors;
 
-        // Assert
-        assertTrue(result);
-        verify(mockPasswordEncoder).matches(plainPassword, "hashedPassword");
-    }
+	@Mock
+	private HttpServletRequest mockRequest;
 
-    @Test
-    void testIsPasswordCorrect_InvalidPassword_ReturnsFalse() {
-        // Arrange
-        String plainPassword = "wrongPassword";
-        when(mockPasswordEncoder.matches(plainPassword, "hashedPassword")).thenReturn(false);
+	@Mock
+	private HttpSession mockSession;
 
-        // Act
-        boolean result = authService.isPasswordCorrect(plainPassword, testCoordinator);
+	private AuthService authService;
+	private Coordinator testCoordinator;
+	private Student testStudent;
+	private Supervisor testSupervisor;
 
-        // Assert
-        assertFalse(result);
-        verify(mockPasswordEncoder).matches(plainPassword, "hashedPassword");
-    }
+	@BeforeEach
+	void setUp() {
+		authService = new AuthService(mockDatabase, mockPasswordEncoder);
 
-    @Test
-    void testFindByEmailOrId_CoordinatorWithValidEmail_ReturnsCoordinator() {
-        // Arrange
-        String email = "coordinator@test.com";
-        ConcurrentHashMap<String, Coordinator> coordinatorsMap = new ConcurrentHashMap<>();
-        coordinatorsMap.put("coord1", testCoordinator);
-        when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
+		// Create test users
+		testCoordinator = mock(Coordinator.class);
+		testStudent = mock(Student.class);
+		testSupervisor = mock(Supervisor.class);
 
-        // Act
-        User result = authService.findByEmailOrId(email, User.Role.Coordinator);
+		lenient().when(mockDatabase.getCoordinators()).thenReturn(mockCoordinators);
+		lenient().when(mockDatabase.getStudents()).thenReturn(mockStudents);
+		lenient().when(mockDatabase.getSupervisors()).thenReturn(mockSupervisors);
 
-        // Assert
-        assertEquals(testCoordinator, result);
-    }
+		lenient().when(testCoordinator.getEmail()).thenReturn("coordinator@test.com");
+		lenient().when(testCoordinator.getPasswordHash()).thenReturn("hashedPassword");
+		lenient().when(testStudent.getPasswordHash()).thenReturn("hashedPassword");
+		lenient().when(testSupervisor.getPasswordHash()).thenReturn("hashedPassword");
+	}
 
-    @Test
-    void testFindByEmailOrId_CoordinatorWithInvalidEmail_ReturnsNull() {
-        // Arrange
-        String email = "nonexistent@test.com";
-        ConcurrentHashMap<String, Coordinator> coordinatorsMap = new ConcurrentHashMap<>();
-        coordinatorsMap.put("coord1", testCoordinator);
-        when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
+	@Test
+	void testIsPasswordCorrect_ValidPassword_ReturnsTrue() {
+		// Arrange
+		String plainPassword = "testPassword";
+		when(mockPasswordEncoder.matches(plainPassword, "hashedPassword")).thenReturn(true);
 
-        // Act
-        User result = authService.findByEmailOrId(email, User.Role.Coordinator);
+		// Act
+		boolean result = authService.isPasswordCorrect(plainPassword, testCoordinator);
 
-        // Assert
-        assertNull(result);
-    }
+		// Assert
+		assertTrue(result);
+		verify(mockPasswordEncoder).matches(plainPassword, "hashedPassword");
+	}
 
-    @Test
-    void testFindByEmailOrId_StudentWithValidId_ReturnsStudent() {
-        // Arrange
-        String studentId = "student123";
-        when(mockStudents.getItem(studentId)).thenReturn(testStudent);
+	@Test
+	void testIsPasswordCorrect_InvalidPassword_ReturnsFalse() {
+		// Arrange
+		String plainPassword = "wrongPassword";
+		when(mockPasswordEncoder.matches(plainPassword, "hashedPassword")).thenReturn(false);
 
-        // Act
-        User result = authService.findByEmailOrId(studentId, User.Role.Student);
+		// Act
+		boolean result = authService.isPasswordCorrect(plainPassword, testCoordinator);
 
-        // Assert
-        assertEquals(testStudent, result);
-        verify(mockStudents).getItem(studentId);
-    }
+		// Assert
+		assertFalse(result);
+		verify(mockPasswordEncoder).matches(plainPassword, "hashedPassword");
+	}
 
-    @Test
-    void testFindByEmailOrId_StudentWithInvalidId_ReturnsNull() {
-        // Arrange
-        String studentId = "invalidStudent";
-        when(mockStudents.getItem(studentId)).thenReturn(null);
+	@Test
+	void testFindByEmailOrId_CoordinatorWithValidEmail_ReturnsCoordinator() {
+		// Arrange
+		String email = "coordinator@test.com";
+		ConcurrentHashMap<String, Coordinator> coordinatorsMap = new ConcurrentHashMap<>();
+		coordinatorsMap.put("coord1", testCoordinator);
+		when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
 
-        // Act
-        User result = authService.findByEmailOrId(studentId, User.Role.Student);
+		// Act
+		User result = authService.findByEmailOrId(email);
 
-        // Assert
-        assertNull(result);
-        verify(mockStudents).getItem(studentId);
-    }
+		// Assert
+		assertEquals(testCoordinator, result);
+	}
 
-    @Test
-    void testFindByEmailOrId_SupervisorWithValidId_ReturnsSupervisor() {
-        // Arrange
-        String supervisorId = "supervisor123";
-        when(mockSupervisors.getItem(supervisorId)).thenReturn(testSupervisor);
+	@Test
+	void testFindByEmailOrId_CoordinatorWithInvalidEmail_ReturnsNull() {
+		// Arrange
+		String email = "nonexistent@test.com";
+		ConcurrentHashMap<String, Coordinator> coordinatorsMap = new ConcurrentHashMap<>();
+		coordinatorsMap.put("coord1", testCoordinator);
+		when(mockCoordinators.getAllItems()).thenReturn(coordinatorsMap);
 
-        // Act
-        User result = authService.findByEmailOrId(supervisorId, User.Role.Supervisor);
+		// Act
+		User result = authService.findByEmailOrId(email);
 
-        // Assert
-        assertEquals(testSupervisor, result);
-        verify(mockSupervisors).getItem(supervisorId);
-    }
+		// Assert
+		assertNull(result);
+	}
 
-    @Test
-    void testInvalidateOldSession_ExistingSession_InvalidatesSession() {
-        // Arrange
-        when(mockRequest.getSession(false)).thenReturn(mockSession);
+	@Test
+	void testFindByEmailOrId_StudentWithValidId_ReturnsStudent() {
+		// Arrange
+		String studentId = "student123";
+		when(mockStudents.getItem(studentId)).thenReturn(testStudent);
 
-        // Act
-        authService.invalidateOldSession(mockRequest);
+		// Act
+		User result = authService.findByEmailOrId(studentId);
 
-        // Assert
-        verify(mockRequest).getSession(false);
-        verify(mockSession).invalidate();
-    }
+		// Assert
+		assertEquals(testStudent, result);
+		verify(mockStudents).getItem(studentId);
+	}
 
-    @Test
-    void testInvalidateOldSession_NoExistingSession_DoesNothing() {
-        // Arrange
-        when(mockRequest.getSession(false)).thenReturn(null);
+	@Test
+	void testFindByEmailOrId_StudentWithInvalidId_ReturnsNull() {
+		// Arrange
+		String studentId = "invalidStudent";
+		when(mockStudents.getItem(studentId)).thenReturn(null);
+		when(mockSupervisors.getItem(studentId)).thenReturn(null);
 
-        // Act
-        authService.invalidateOldSession(mockRequest);
+		// Also mock the coordinator lookup to return an empty map
+		when(mockCoordinators.getAllItems()).thenReturn(new ConcurrentHashMap<>());
 
-        // Assert
-        verify(mockRequest).getSession(false);
-        verifyNoInteractions(mockSession);
-    }
+		// Act
+		User result = authService.findByEmailOrId(studentId);
 
-    @Test
-    void testCreateNewSession_CreatesSessionWithUser() {
-        // Arrange
-        when(mockRequest.getSession(true)).thenReturn(mockSession);
+		// Assert
+		assertNull(result);
+		verify(mockStudents).getItem(studentId);
+		verify(mockSupervisors).getItem(studentId);
+		// You might also want to verify that coordinator lookup was attempted
+		verify(mockCoordinators).getAllItems();
+	}
 
-        // Act
-        authService.createNewSession(mockRequest, testCoordinator);
+	@Test
+	void testFindByEmailOrId_SupervisorWithValidId_ReturnsSupervisor() {
+		// Arrange
+		String supervisorId = "supervisor123";
+		when(mockSupervisors.getItem(supervisorId)).thenReturn(testSupervisor);
 
-        // Assert
-        verify(mockRequest).getSession(true);
-        verify(mockSession).setMaxInactiveInterval(86400); // 1 day
-        verify(mockSession).setAttribute("user", testCoordinator);
-    }
+		// Act
+		User result = authService.findByEmailOrId(supervisorId);
 
-    @Test
-    void testHasAuthorizedRole_UserWithAuthorizedRole_ReturnsTrue() {
-        // Arrange
-        when(testCoordinator.getRole()).thenReturn(User.Role.Coordinator);
-        User.Role[] authorizedRoles = {User.Role.Coordinator, User.Role.Supervisor};
+		// Assert
+		assertEquals(testSupervisor, result);
+		verify(mockSupervisors).getItem(supervisorId);
+	}
 
-        // Act
-        Boolean result = authService.hasAuthorizedRole(testCoordinator, authorizedRoles);
+	@Test
+	void testInvalidateOldSession_ExistingSession_InvalidatesSession() {
+		// Arrange
+		when(mockRequest.getSession(false)).thenReturn(mockSession);
 
-        // Assert
-        assertTrue(result);
-    }
+		// Act
+		authService.invalidateOldSession(mockRequest);
 
-    @Test
-    void testHasAuthorizedRole_UserWithUnauthorizedRole_ReturnsFalse() {
-        // Arrange
-        when(testStudent.getRole()).thenReturn(User.Role.Student);
-        User.Role[] authorizedRoles = {User.Role.Coordinator, User.Role.Supervisor};
+		// Assert
+		verify(mockRequest).getSession(false);
+		verify(mockSession).invalidate();
+	}
 
-        // Act
-        Boolean result = authService.hasAuthorizedRole(testStudent, authorizedRoles);
+	@Test
+	void testInvalidateOldSession_NoExistingSession_DoesNothing() {
+		// Arrange
+		when(mockRequest.getSession(false)).thenReturn(null);
 
-        // Assert
-        assertFalse(result);
-    }
+		// Act
+		authService.invalidateOldSession(mockRequest);
 
-    @Test
-    void testGetUser_ValidSession_ReturnsUser() {
-        // Arrange
-        when(mockRequest.getSession(false)).thenReturn(mockSession);
-        when(mockSession.getAttribute("user")).thenReturn(testCoordinator);
+		// Assert
+		verify(mockRequest).getSession(false);
+		verifyNoInteractions(mockSession);
+	}
 
-        // Act
-        User result = authService.getUser(mockRequest);
+	@Test
+	void testCreateNewSession_CreatesSessionWithUser() {
+		// Arrange
+		when(mockRequest.getSession(true)).thenReturn(mockSession);
 
-        // Assert
-        assertEquals(testCoordinator, result);
-        verify(mockRequest).getSession(false);
-        verify(mockSession).getAttribute("user");
-    }
+		// Act
+		authService.createNewSession(mockRequest, testCoordinator);
 
-    @Test
-    void testGetUser_NoSession_ReturnsNull() {
-        // Arrange
-        when(mockRequest.getSession(false)).thenReturn(null);
+		// Assert
+		verify(mockRequest).getSession(true);
+		verify(mockSession).setMaxInactiveInterval(86400); // 1 day
+		verify(mockSession).setAttribute("user", testCoordinator);
+	}
 
-        // Act
-        User result = authService.getUser(mockRequest);
+	@Test
+	void testHasAuthorizedRole_UserWithAuthorizedRole_ReturnsTrue() {
+		// Arrange
+		when(testCoordinator.getRole()).thenReturn(User.Role.Coordinator);
+		User.Role[] authorizedRoles = { User.Role.Coordinator, User.Role.Supervisor };
 
-        // Assert
-        assertNull(result);
-        verify(mockRequest).getSession(false);
-    }
+		// Act
+		Boolean result = authService.hasAuthorizedRole(testCoordinator, authorizedRoles);
 
-    @Test
-    void testGetUser_NoUserInSession_ReturnsNull() {
-        // Arrange
-        when(mockRequest.getSession(false)).thenReturn(mockSession);
-        when(mockSession.getAttribute("user")).thenReturn(null);
+		// Assert
+		assertTrue(result);
+	}
 
-        // Act
-        User result = authService.getUser(mockRequest);
+	@Test
+	void testHasAuthorizedRole_UserWithUnauthorizedRole_ReturnsFalse() {
+		// Arrange
+		when(testStudent.getRole()).thenReturn(User.Role.Student);
+		User.Role[] authorizedRoles = { User.Role.Coordinator, User.Role.Supervisor };
 
-        // Assert
-        assertNull(result);
-        verify(mockRequest).getSession(false);
-        verify(mockSession).getAttribute("user");
-    }
+		// Act
+		Boolean result = authService.hasAuthorizedRole(testStudent, authorizedRoles);
+
+		// Assert
+		assertFalse(result);
+	}
+
+	@Test
+	void testGetUser_ValidSession_ReturnsUser() {
+		// Arrange
+		when(mockRequest.getSession(false)).thenReturn(mockSession);
+		when(mockSession.getAttribute("user")).thenReturn(testCoordinator);
+
+		// Act
+		User result = authService.getUser(mockRequest);
+
+		// Assert
+		assertEquals(testCoordinator, result);
+		verify(mockRequest).getSession(false);
+		verify(mockSession).getAttribute("user");
+	}
+
+	@Test
+	void testGetUser_NoSession_ReturnsNull() {
+		// Arrange
+		when(mockRequest.getSession(false)).thenReturn(null);
+
+		// Act
+		User result = authService.getUser(mockRequest);
+
+		// Assert
+		assertNull(result);
+		verify(mockRequest).getSession(false);
+	}
+
+	@Test
+	void testGetUser_NoUserInSession_ReturnsNull() {
+		// Arrange
+		when(mockRequest.getSession(false)).thenReturn(mockSession);
+		when(mockSession.getAttribute("user")).thenReturn(null);
+
+		// Act
+		User result = authService.getUser(mockRequest);
+
+		// Assert
+		assertNull(result);
+		verify(mockRequest).getSession(false);
+		verify(mockSession).getAttribute("user");
+	}
 }

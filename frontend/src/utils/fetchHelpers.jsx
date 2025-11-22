@@ -1,4 +1,6 @@
 
+import React from "react";
+
 export async function fetchWithDefaultErrorHandling(pagePath, options = {}) {
 	try {
 		const response = await fetch(
