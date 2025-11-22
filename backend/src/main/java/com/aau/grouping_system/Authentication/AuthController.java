@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException.Unauthorized;
 
 import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
@@ -71,7 +70,7 @@ public class AuthController {
 
 		service.invalidateOldSession(servlet);
 		return ResponseEntity
-				.ok("Signed out"); // 200 ok
+				.ok("Signed out"); 
 	}
 
 	@GetMapping("/getUser")
@@ -88,7 +87,7 @@ public class AuthController {
 		}
 
 		return ResponseEntity
-				.ok(user); // info om user returneres som JSON obj.
+				.ok(user); // info about the user gets returned as an JSON obj.
 	}
 
 	private record ForgotPasswordRequest(
@@ -97,6 +96,7 @@ public class AuthController {
 
 	@PostMapping("/forgotPassword")
 	public ResponseEntity<String> forgotPassword(@Valid @RequestBody ForgotPasswordRequest record) {
+		
 		String email = record.email();
 		User user = service.findByEmailOrId(email, User.Role.Coordinator);
 
@@ -110,7 +110,6 @@ public class AuthController {
 		// Create reset token and store temporarily
 		String token = java.util.UUID.randomUUID().toString();
 		PasswordResetTokens.tokens.put(token, email);
-		System.out.println("Generated reset token for " + email + ": " + token); // test doesnt run for some reason...
 
 		// Build reset link and email body
 		String resetLink = "http://localhost:3000/resetPassword?token=" + token;
@@ -145,7 +144,7 @@ public class AuthController {
 		}
 	}
 
-	// Helper function
+	// Helper function for storing the reset tokens
 	public class PasswordResetTokens {
 		public static final ConcurrentHashMap<String, String> tokens = new ConcurrentHashMap<>();
 	}
