@@ -6,7 +6,7 @@ export default function ResetPassword() {
 	const [newPassword, setNewPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [error, setError] = useState("");
-	const [succes, setSucces] = useState("");
+	const [success, setSucces] = useState("");
 
 	const token = new URLSearchParams(window.location.search).get("token"); // get token from URL
 
@@ -45,11 +45,11 @@ export default function ResetPassword() {
 	}, [error])
 
 	useEffect(() => {
-		if (succes) {
+		if (success) {
 			const timer = setTimeout(() => setSucces(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [succes])
+	}, [success])
 
 	return (
 		<div className="container">
@@ -63,7 +63,7 @@ export default function ResetPassword() {
 			</div>
 
 			{error && <div className="error-box">{error}</div>}
-			{succes && <div className="succes-box">{succes}</div>}
+			{success && <div className="success-box">{success}</div>}
 
 			<div className="input">
 				<label className="label">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "./User.css";
 
@@ -10,6 +10,8 @@ export default function SignUp() {
 	const [email, setEmail] = useState("");
 	const [name, setName] = useState("");
 	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
+	const navTimer = useRef(null);
 
 	const handleSignUp = async (email, password, name, setError, navigate) => {
 		try {
@@ -25,8 +27,9 @@ export default function SignUp() {
 				setError(errorMessage);
 				return Promise.resolve();
 			}
-
-			navigate("/sign-in");
+			// loads success message and navigates to sign in after 3 seconds
+			setSuccess("Account created successfully! Redirecting to sign in...");
+			navTimer.current = setTimeout(() => navigate("/sign-in"), 3000);
 
 		} catch (e) {
 			setError(e.message);
@@ -35,20 +38,27 @@ export default function SignUp() {
 
 	useEffect(() => {
 		if (error) {
-			const timer = setTimeout(() => setError(""), 5000);
+			const timer = setTimeout(() => setError(""), 10000);
 			return () => clearTimeout(timer);
 		}
 	}, [error])
 
-	return (
+	// Cleanup navigation timer on unmount
+	useEffect(() => {
+		return () => {
+			if (navTimer.current) {
+				clearTimeout(navTimer.current);
+			}
+		};
+	}, []);
 
+	return (
 		<div className="container">
 			<div className="header-text">Sign Up</div>
-			{error && (
-				<div className="error-box">
-					{error}
-				</div>
-			)}
+
+			{error && (<div className="error-box">{error}</div>)}
+			{success && (<div className="success-box">{success}</div>)}
+
 			<div className="text">
 				<div className="input">
 					<label className="label">
