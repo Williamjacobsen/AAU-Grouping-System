@@ -26,7 +26,7 @@ export default function SignUp() {
 				return Promise.resolve();
 			}
 
-			navigate("/profile");
+			navigate("/sign-in");
 
 		} catch (e) {
 			setError(e.message);
