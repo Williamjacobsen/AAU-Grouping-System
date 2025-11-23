@@ -14,6 +14,7 @@ import useUndoLogic from "./hooks/useUndoLogic";
 import CsvDownloadButton from "./components/CsvDownloadButton";
 import RenderGroups from "./components/RenderGroups";
 import RenderStudentList from "./components/RenderStudentList";
+import NotifyButton from "Components/NotifyButton/NotifyButton";
 
 
 export default function GroupManagement() {
@@ -199,6 +200,8 @@ export default function GroupManagement() {
 							projects={projects}
 						/>
 					</div>
+
+					<NotifyButton sessionId={sessionId} />	
 
 					<p>
 						You can download the CSV file after all groups have been made,

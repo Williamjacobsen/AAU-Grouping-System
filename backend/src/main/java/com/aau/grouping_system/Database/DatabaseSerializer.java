@@ -97,22 +97,30 @@ public class DatabaseSerializer {
 		co.add(coordinatorService.addCoordinator("c4", "c4", "Coordinator name 4"));
 
 		ArrayList<Session> se = new ArrayList<>();
-		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 1")));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db,
+				co.get(0), "Session name 1")));
 		se.get(0).setMinGroupSize(6);
 		se.get(0).setMinGroupSize(7);
-		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db, co.get(0), "Session name 2")));
+		se.add(db.getSessions().addItem(db, co.get(0).getSessions(), new Session(db,
+				co.get(0), "Session name 2")));
 		se.get(1).setMinGroupSize(3);
 		se.get(1).setMinGroupSize(5);
-		se.add(db.getSessions().addItem(db, co.get(1).getSessions(), new Session(db, co.get(1), "Session name 3")));
+		se.add(db.getSessions().addItem(db, co.get(1).getSessions(), new Session(db,
+				co.get(1), "Session name 3")));
 		se.get(2).setMinGroupSize(6);
 		se.get(2).setMinGroupSize(7);
 
 		ArrayList<Supervisor> su = new ArrayList<>();
-		su.add(supervisorService.addSupervisor(se.get(0), "su1@example.com", "su1", "Supervisor name 1"));
-		su.add(supervisorService.addSupervisor(se.get(0), "su2@example.com", "su2", "Supervisor name 2"));
-		su.add(supervisorService.addSupervisor(se.get(0), "su3@example.com", "su3", "Supervisor name 3"));
-		su.add(supervisorService.addSupervisor(se.get(1), "su4@example.com", "su4", "Supervisor name 4"));
-		su.add(supervisorService.addSupervisor(se.get(1), "su5@example.com", "su5", "Supervisor name 5"));
+		su.add(supervisorService.addSupervisor(se.get(0), "su1@example.com", "su1",
+				"Supervisor name 1"));
+		su.add(supervisorService.addSupervisor(se.get(0), "su2@example.com", "su2",
+				"Supervisor name 2"));
+		su.add(supervisorService.addSupervisor(se.get(0), "su3@example.com", "su3",
+				"Supervisor name 3"));
+		su.add(supervisorService.addSupervisor(se.get(1), "su4@example.com", "su4",
+				"Supervisor name 4"));
+		su.add(supervisorService.addSupervisor(se.get(1), "su5@example.com", "su5",
+				"Supervisor name 5"));
 
 		ArrayList<Student> st = new ArrayList<>();
 		st.add(studentService.addStudent(se.get(0), "st1@example.com", "Alice"));
@@ -205,29 +213,39 @@ public class DatabaseSerializer {
 		st.get(4).getQuestionnaire().setDesiredProjectId3(pr.get(1).getId());
 
 		ArrayList<Group> gr = new ArrayList<>();
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 1")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 1")));
 		gr.get(0).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(0).setDesiredProjectId2(pr.get(3).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 2")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 2")));
 		gr.get(1).setDesiredProjectId1(pr.get(4).getId());
 		gr.get(1).setDesiredProjectId2(pr.get(3).getId());
 		gr.get(1).setDesiredProjectId3(pr.get(6).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 3")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 3")));
 		gr.get(2).setDesiredProjectId1(pr.get(6).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 4")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 4")));
 		gr.get(3).setDesiredProjectId1(pr.get(5).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 5")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 5")));
 		gr.get(4).setDesiredProjectId1(pr.get(1).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 6")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 6")));
 		gr.get(5).setDesiredProjectId1(pr.get(6).getId());
 		gr.get(5).setDesiredProjectId2(pr.get(1).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 7")));
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 8")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 7")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 8")));
 		gr.get(7).setDesiredProjectId1(pr.get(2).getId());
 		gr.get(7).setDesiredProjectId2(pr.get(0).getId());
 		gr.get(7).setDesiredProjectId3(pr.get(7).getId());
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 9")));
-		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0), "Group name 10")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 9")));
+		gr.add(db.getGroups().addItem(db, se.get(0).getGroups(), new Group(se.get(0),
+				"Group name 10")));
 		gr.get(9).setDesiredProjectId1(pr.get(4).getId());
 
 		groupService.joinGroup(gr.get(0), st.get(0));
@@ -288,6 +306,125 @@ public class DatabaseSerializer {
 					"\nNew password: " + newPassword);
 		}
 	}
+
+	/*
+	 * private void fillDatabaseWithExampleData() {
+	 * 
+	 * ArrayList<Coordinator> coordinators = new ArrayList<>();
+	 * coordinators.add(coordinatorService.addCoordinator("c1", "c1",
+	 * "Coordinator name 1"));
+	 * 
+	 * ArrayList<Session> sessions = new ArrayList<>();
+	 * sessions.add(db.getSessions().addItem(db, coordinators.get(0).getSessions(),
+	 * new Session(db, coordinators.get(0), "Session name 1")));
+	 * sessions.get(0).setMinGroupSize(3);
+	 * sessions.get(0).setMaxGroupSize(5);
+	 * 
+	 * ArrayList<Supervisor> supervisors = new ArrayList<>();
+	 * supervisors
+	 * .add(supervisorService.addSupervisor(sessions.get(0),
+	 * "villi05.v.j@gmail.com", "su1", "Supervisor name 1"));
+	 * supervisors.add(
+	 * supervisorService.addSupervisor(sessions.get(0),
+	 * "pleasedontletmeknow1@gmail.com", "su2", "Supervisor name 2"));
+	 * supervisors
+	 * .add(supervisorService.addSupervisor(sessions.get(0),
+	 * "aau.p3.email@gmail.com", "su3", "Supervisor name 3"));
+	 * 
+	 * ArrayList<Student> students = new ArrayList<>();
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "villi05.v.j@gmail.com", "Alice"));
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "pleasedontletmeknow1@gmail.com", "Bob"));
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "aau.p3.email@gmail.com", "Charlie"));
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "villi05.v.j@gmail.com", "Diana"));
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "pleasedontletmeknow1@gmail.com", "Ethan"));
+	 * students.add(studentService.addStudent(sessions.get(0),
+	 * "aau.p3.email@gmail.com", "Fiona"));
+	 * 
+	 * ArrayList<Project> projects = new ArrayList<>();
+	 * projects.add(db.getProjects().addItem(db, sessions.get(0).getProjects(), new
+	 * Project(
+	 * "AI Chatbot",
+	 * "AI assistant for customer support",
+	 * coordinators.get(0))));
+	 * projects.add(db.getProjects().addItem(db, sessions.get(0).getProjects(), new
+	 * Project(
+	 * "Web App",
+	 * "Interactive web platform",
+	 * coordinators.get(0))));
+	 * projects.add(db.getProjects().addItem(db, sessions.get(0).getProjects(), new
+	 * Project(
+	 * "Smart Home",
+	 * "IoT-based automation system",
+	 * coordinators.get(0))));
+	 * 
+	 * students.get(0).getQuestionnaire().setDesiredProjectId1(projects.get(0).getId
+	 * ());
+	 * students.get(0).getQuestionnaire().setDesiredProjectId2(projects.get(1).getId
+	 * ());
+	 * 
+	 * students.get(1).getQuestionnaire().setDesiredProjectId1(projects.get(2).getId
+	 * ());
+	 * 
+	 * students.get(2).getQuestionnaire().setDesiredProjectId1(projects.get(1).getId
+	 * ());
+	 * students.get(2).getQuestionnaire().setDesiredProjectId2(projects.get(0).getId
+	 * ());
+	 * 
+	 * ArrayList<Group> groups = new ArrayList<>();
+	 * groups.add(db.getGroups().addItem(db, sessions.get(0).getGroups(), new
+	 * Group(sessions.get(0), "Group 1")));
+	 * groups.get(0).setDesiredProjectId1(projects.get(0).getId());
+	 * groups.get(0).setDesiredProjectId2(projects.get(1).getId());
+	 * 
+	 * groups.add(db.getGroups().addItem(db, sessions.get(0).getGroups(), new
+	 * Group(sessions.get(0), "Group 2")));
+	 * groups.get(1).setDesiredProjectId1(projects.get(2).getId());
+	 * groups.get(1).setDesiredProjectId2(projects.get(0).getId());
+	 * 
+	 * groups.add(db.getGroups().addItem(db, sessions.get(0).getGroups(), new
+	 * Group(sessions.get(0), "Group 3")));
+	 * groups.get(2).setDesiredProjectId1(projects.get(1).getId());
+	 * 
+	 * groupService.joinGroup(groups.get(0), students.get(0));
+	 * groupService.joinGroup(groups.get(0), students.get(1));
+	 * 
+	 * groupService.joinGroup(groups.get(1), students.get(2));
+	 * groupService.joinGroup(groups.get(1), students.get(3));
+	 * 
+	 * groupService.joinGroup(groups.get(2), students.get(4));
+	 * groupService.joinGroup(groups.get(2), students.get(5));
+	 * 
+	 * groups.get(0).setSupervisorId(supervisors.get(0).getId());
+	 * groups.get(1).setSupervisorId(supervisors.get(1).getId());
+	 * groups.get(2).setSupervisorId(supervisors.get(2).getId());
+	 * 
+	 * System.out.println("\n\n\n---- STUDENTS - Generating passwords ----");
+	 * for (int i = 0; i < students.size(); i++) {
+	 * Student student = students.get(i);
+	 * String newPassword = "st" + (i + 1);
+	 * userService.modifyPassword(newPassword, student);
+	 * System.out.println("---" +
+	 * "\nName: " + student.getName() +
+	 * "\nEmail: " + student.getEmail() +
+	 * "\nNew password: " + newPassword);
+	 * }
+	 * System.out.println("---- SUPERVISORS - Generating passwords ----");
+	 * for (int i = 0; i < supervisors.size(); i++) {
+	 * Supervisor supervisor = supervisors.get(i);
+	 * String newPassword = "su" + (i + 1);
+	 * userService.modifyPassword(newPassword, supervisor);
+	 * System.out.println("---" +
+	 * "\nName: " + supervisor.getName() +
+	 * "\nEmail: " + supervisor.getEmail() +
+	 * "\nNew password: " + newPassword);
+	 * }
+	 * }
+	 */
 
 	@PostConstruct
 	public void init() throws FileNotFoundException, IOException, ClassNotFoundException {

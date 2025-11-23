@@ -25,7 +25,7 @@ const NotifyButton = memo(({ sessionId, setMessage }) => {
   }
 
   return (
-    <div className="checkbox-form">
+    <div>
       <div
         className="checkbox-group"
         style={{ display: "inline", gap: "1rem" }}
