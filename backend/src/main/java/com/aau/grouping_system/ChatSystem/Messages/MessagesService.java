@@ -28,7 +28,6 @@ public class MessagesService {
 		return webSocketService.privateMessages.get(conversationKey);
 	}
 
-	// TODO: move getUnreadCount
 	public int getGroupUnreadCount(String groupId, String username) {
 		return webSocketService.getUnreadCount(groupId, username, true);
 	}

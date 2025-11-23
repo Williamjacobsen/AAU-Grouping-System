@@ -95,8 +95,6 @@ public class WebSocketService {
 				"/private/reply",
 				formattedMessage);
 
-		// This is not the best approach, i should add the message for the sender client
-		// side, when ack is received.
 		ws.convertAndSendToUser(
 				message.sender(),
 				"/private/reply",
@@ -132,7 +130,6 @@ public class WebSocketService {
 	}
 
 
-	// TODO: add logging for bug fixing
 	public void markReadUpTo(String conversationKey, String username, int upToMessageId, boolean isGroup) {
 		if (username == null || username.isEmpty())
 			return;
@@ -157,8 +154,6 @@ public class WebSocketService {
 		return Math.max(0, (maxId - lastRead));
 	}
 
-	// Make sure that "student1" -> "student2" and "student2" -> "student1" has
-	// the same key (key: "student1-student2").
 	public static String getConversationKey(String user1, String user2) {
 		if (user1.compareTo(user2) < 0) {
 			return user1 + "-" + user2;
