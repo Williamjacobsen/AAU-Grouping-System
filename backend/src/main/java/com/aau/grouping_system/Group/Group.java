@@ -10,6 +10,7 @@ public class Group extends DatabaseItem {
 	private String sessionId;
 	private String name = "";
 	private String supervisorId = null;
+	private String assignedProjectId = "";
 	private String desiredProjectId1 = "";
 	private String desiredProjectId2 = "";
 	private String desiredProjectId3 = "";
@@ -28,6 +29,8 @@ public class Group extends DatabaseItem {
 	}
 
 	// @formatter:off
+	public String getAssignedProjectId() { return assignedProjectId; }
+	public void setAssignedProjectId(String assignedProjectId) { this.assignedProjectId = assignedProjectId; }
 	public String getDesiredProjectId1() { return desiredProjectId1; }
 	public void setDesiredProjectId1(String desiredProjectId1) { this.desiredProjectId1 = desiredProjectId1; }
 	public String getDesiredProjectId2() { return desiredProjectId2; }
