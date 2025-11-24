@@ -5,7 +5,6 @@ import "./SessionSetup.css";
 import SessionSetupForm from "./SessionSetupForm";
 import EmailNewPasswordsForm from "./EmailNewPasswords";
 import ResetFormButton from "./ResetFormButton";
-import NotifyButton from "../../Components/NotifyButton/NotifyButton";
 
 import { useAppState } from "ContextProviders/AppStateContext";
 
