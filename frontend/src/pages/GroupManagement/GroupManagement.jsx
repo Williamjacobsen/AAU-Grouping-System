@@ -25,7 +25,7 @@ export default function GroupManagement() {
 
 	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingGroups, groups: fetchedGroups } = useGetSessionGroups(sessionId);
-	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded } = useAppState();
+	const { isLoading: isLoadingSessionData, session, students, supervisors, isDeadlineExceeded, projects } = useAppState();
 
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
@@ -140,6 +140,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={completedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
@@ -147,6 +148,7 @@ export default function GroupManagement() {
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
 							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -154,6 +156,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={almostCompletedGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
@@ -161,6 +164,7 @@ export default function GroupManagement() {
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
 							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -168,6 +172,7 @@ export default function GroupManagement() {
 					<div className="group-row">
 						<RenderGroups
 							groups={incompleteGroups}
+							allGroups={groups}
 							assignSupervisor={assignSupervisor}
 							supervisors={supervisors}
 							selectedGroup={selectedGroup}
@@ -175,6 +180,7 @@ export default function GroupManagement() {
 							handleStudentClick={handleStudentClick}
 							selectedStudent={selectedStudent}
 							students={students}
+							projects={projects}
 						/>
 					</div>
 
@@ -186,6 +192,7 @@ export default function GroupManagement() {
 							selectedStudent={selectedStudent}
 							handleStudentClick={handleStudentClick}
 							students={students}
+							projects={projects}
 						/>
 					</div>
 
