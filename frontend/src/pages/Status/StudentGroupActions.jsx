@@ -14,8 +14,26 @@ export default function StudentGroupActions({ groupId, session, user }) {
 		return user.groupId === groupId;
 	}
 
+	function getIsUserAlreadyInAnyGroup() {
+		return user.groupId !== null;
+	}
+
+	function getIsUserHasPendingJoinRequest() {
+		return user.activeJoinRequestGroupId !== null;
+	}
+
+	function getCanUserSendJoinRequest() {
+		return !getIsUserAlreadyInAnyGroup() && !getIsUserHasPendingJoinRequest();
+	}
+
 	async function sendJoinRequest() {
 		try {
+			// Additional check to prevent sending request if user is already in a group or has pending request
+			if (!getCanUserSendJoinRequest()) {
+				alert("Cannot send join request: You are already in a group or have a pending request.");
+				return;
+			}
+
 			await fetchWithDefaultErrorHandling(
 				`/groups/${session.id}/${groupId}/request-to-join`,
 				{
@@ -35,7 +53,7 @@ export default function StudentGroupActions({ groupId, session, user }) {
 
 			{!isDeadlineExceeded() && (
 				<>
-					<button onClick={sendJoinRequest} disabled={!groupId || getIsUserAlreadyInTheGroup()}>
+					<button onClick={sendJoinRequest} disabled={!groupId || !getCanUserSendJoinRequest()}>
 						Request to join group
 					</button>
 				</>
