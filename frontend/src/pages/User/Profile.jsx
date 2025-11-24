@@ -34,7 +34,7 @@ export default function Profile() {
 
 	useEffect(() => {
 		if (isUserNameNotSpecifiedYet()) {
-			alert("You have not yet specified your name. \nPlease do so.");
+			alert("You have not yet specified your name. Please do so.");
 		}
 	}, [user]);
 
@@ -143,7 +143,7 @@ export default function Profile() {
 	return (
 		<div className="container">
 			<div className="header-text">Profile</div>
-			
+
 			{error && (<div className="error-box">{error}</div>)}
 			{success && (<div className="success-box">{success}</div>)}
 

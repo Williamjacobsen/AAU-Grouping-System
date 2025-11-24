@@ -23,7 +23,7 @@ export default function RenderStudentList({
 				<ul>
 					{localStudentsWithNoGroup.map((member) => (
 						<li key={member.id} onClick={() => handleStudentClick(member, null)}
-							className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+							className={selectedStudent && selectedStudent.member.id === member.id ? "selected" : ""
 							}> <span className="student-name"> {member.name} </span>
 							{(member.questionnaire?.desiredProjectId1 ||
 								member.questionnaire?.desiredProjectId2 ||

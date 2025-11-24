@@ -28,7 +28,7 @@ export default function SignUp() {
 				return Promise.resolve();
 			}
 			// loads success message and navigates to sign in after 3 seconds
-			setSuccess("Account created successfully! Redirecting to sign in...");
+			setSuccess("Account created successfully! You will be redirected to Sign In");
 			navTimer.current = setTimeout(() => navigate("/sign-in"), 3000);
 
 		} catch (e) {
@@ -43,7 +43,6 @@ export default function SignUp() {
 		}
 	}, [error])
 
-	// Cleanup navigation timer on unmount
 	useEffect(() => {
 		return () => {
 			if (navTimer.current) {
