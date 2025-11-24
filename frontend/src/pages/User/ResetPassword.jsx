@@ -83,6 +83,11 @@ export default function ResetPassword() {
 						placeholder="Confirm new password"
 						value={confirmPassword}
 						onChange={(e) => setConfirmPassword(e.target.value)}
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handlePasswordSubmit();
+								}
+							}}
 					/>
 				</label>
 			</div>

@@ -74,7 +74,13 @@ export default function SignUp() {
 				<div className="input">
 					<label className="label">
 						Password
-						<input type="password" onChange={(e) => setPassword(e.target.value)} placeholder="******" />
+						<input type="password" onChange={(e) => setPassword(e.target.value)} 
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleSignUp(email, password, name, setError, navigate);
+								}
+							}}
+						placeholder="******" />
 					</label>
 				</div>
 			</div>

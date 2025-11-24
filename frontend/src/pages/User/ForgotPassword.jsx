@@ -67,7 +67,13 @@ export default function ForgotPassword() {
 
 			<div className="input">
 				<label className="label">
-					<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} placeholder="john123@example.com" />
+					<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} 
+					onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleEmailSubmit(email);
+								}
+							}}
+					placeholder="john123@example.com" />
 				</label>
 			</div>
 			<div className="submit-container">

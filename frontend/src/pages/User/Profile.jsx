@@ -163,6 +163,11 @@ export default function Profile() {
 						placeholder="New name"
 						style={isUserNameNotSpecifiedYet() ? { backgroundColor: "crimson" } : null}
 						onChange={(e) => setNewName(e.target.value)}
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleNameChange();
+								}
+							}}
 					/>
 				</label>
 				<button className="sign-in" onClick={handleNameChange}>
@@ -177,6 +182,11 @@ export default function Profile() {
 						type="email"
 						placeholder="New email"
 						onChange={(e) => setNewEmail(e.target.value)}
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleEmailChange();
+								}
+							}}
 					/>
 				</label>
 				<button className="sign-in" onClick={handleEmailChange}>
@@ -192,6 +202,11 @@ export default function Profile() {
 							type="password"
 							placeholder="New password"
 							onChange={(e) => setNewPassword(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handlePasswordChange();
+								}
+							}}
 						/>
 					</label>
 					<button className="sign-in" onClick={handlePasswordChange}>
