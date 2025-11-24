@@ -102,12 +102,14 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 							</button>
 						</td>
 						<td className="project-actions">
-							<button
-								className="btn-delete"
-								onClick={() => onDelete(project)}
-								disabled={!getIsUserAllowedToChangeProject(project)}>
-								Delete
-							</button>
+							{user.role !== "Student" && (
+								<button
+									className="btn-delete"
+									onClick={() => onDelete(project)}
+									disabled={!getIsUserAllowedToChangeProject(project)}>
+									Delete
+								</button>
+							)}
 						</td>
 					</tr>
 				))}
