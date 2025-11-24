@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
+import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
@@ -22,13 +23,13 @@ import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
-public class NotifyParticipants {
+public class NotifyParticipantsController {
 
 	private final Database db;
 	private final RequestRequirementService requestRequirementService;
 	private final EmailService emailService;
 
-	public NotifyParticipants(
+	public NotifyParticipantsController(
 			RequestRequirementService requestRequirementService,
 			EmailService emailService,
 			Database db) {
@@ -127,7 +128,13 @@ public class NotifyParticipants {
 					groupName = group.getName();
 				}
 
-				return "Group: " + groupName + "\nMembers:\n  - " + members;
+				String assignedProjectName = "None";
+				Project assignedProject = db.getProjects().getItem(group.getAssignedProjectId());
+				if (assignedProject != null) {
+					assignedProjectName = assignedProject.getName();
+				}
+
+				return "Group: " + groupName + "\nAssigned project: " + assignedProjectName + "\nMembers:\n - " + members;
 			}
 		}
 		return "You have not been assigned to a group yet.";
@@ -162,7 +169,14 @@ public class NotifyParticipants {
 					groupName = group.getName();
 				}
 
-				String groupInfo = "Group: " + groupName + "\n  Members:\n    - " + members + "\n\n";
+				String assignedProjectName = "None";
+				Project assignedProject = db.getProjects().getItem(group.getAssignedProjectId());
+				if (assignedProject != null) {
+					assignedProjectName = assignedProject.getName();
+				}
+
+				String groupInfo = "Group name: " + groupName + "\nAssigned project: " + assignedProjectName + "\nMembers:\n - "
+						+ members + "\n\n";
 				supervisedGroups = supervisedGroups + groupInfo;
 			}
 		}
@@ -178,7 +192,7 @@ public class NotifyParticipants {
 		return String.format(
 				"Dear %s,\n\n" +
 						"All groups for the session \"%s\" have now been created.\n\n" +
-						"Your group assignment:\n%s\n\n" +
+						"Your assigned group:\n%s\n\n" +
 						"Best regards,\n%s",
 				userName, sessionName, groupInfo, coordinatorName);
 	}
@@ -188,7 +202,7 @@ public class NotifyParticipants {
 		return String.format(
 				"Dear %s,\n\n" +
 						"All groups for the session \"%s\" have now been created.\n\n" +
-						"Your supervised groups:\n%s\n" +
+						"Your assigned groups to supervise:\n%s\n" +
 						"Best regards,\n%s",
 				userName, sessionName, groupsInfo, coordinatorName);
 	}
