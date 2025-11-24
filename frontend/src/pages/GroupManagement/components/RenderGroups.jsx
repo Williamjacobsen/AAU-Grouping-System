@@ -109,7 +109,7 @@ const RenderGroups = memo(({
 
 						return (
 							<li key={index} onClick={() => handleStudentClick(member, group.id)}
-								className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+								className={selectedStudent && selectedStudent.member.id === member.id ? "selected" : ""
 								}> <span className="student-name"> {member.name} </span>
 								{(member.questionnaire?.desiredProjectId1 ||
 									member.questionnaire?.desiredProjectId2 ||
