@@ -207,6 +207,8 @@ export default function GroupManagement() {
 							students={students}
 							groups={groups}
 							supervisors={supervisors}
+							projects={projects}
+							session={session}
 						/>
 					</p>
 				</>
