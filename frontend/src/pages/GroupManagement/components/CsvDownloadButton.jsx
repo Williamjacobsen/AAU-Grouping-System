@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, memo } from "react";
 import { CSVLink } from "react-csv";
 
-const CsvDownloadButton = memo(({ students, groups, supervisors }) => {
+const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => {
 
 	console.log("reloading");
 
@@ -38,14 +38,16 @@ const CsvDownloadButton = memo(({ students, groups, supervisors }) => {
 					}
 
 					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
+					const groupProject = projects.find(project => project.id === group.assignedProjectId);
 
 					newData.push({
 						groupName: group.name,
 						groupNumber: groupNumber,
 						studentEmail: student.email,
 						studentName: student.name,
-						supervisorEmail: groupSupervisor.email ?? "Not specified",
-						supervisorName: groupSupervisor.name ?? "Not specified"
+						supervisorEmail: groupSupervisor?.email ?? "Not specified",
+						supervisorName: groupSupervisor?.name ?? "Not specified",
+						projectName: groupProject?.name ?? "Not specified"
 					});
 				});
 			});
@@ -87,7 +89,8 @@ const CsvDownloadButton = memo(({ students, groups, supervisors }) => {
 					{ label: "Student email", key: "studentEmail" },
 					{ label: "Student name", key: "studentName" },
 					{ label: "Supervisor email", key: "supervisorEmail" },
-					{ label: "Supervisor name", key: "supervisorName" }
+					{ label: "Supervisor name", key: "supervisorName" },
+					{ label: "Project name", key: "projectName" }
 				]}
 				data={csvData}
 				ref={csvLinkRef}

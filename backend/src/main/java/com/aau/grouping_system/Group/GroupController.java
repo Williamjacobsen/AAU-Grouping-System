@@ -332,8 +332,8 @@ public class GroupController {
 				.body("Group supervisor succesfully modified");
 	}
 
-	@PostMapping("/{sessionId}/modifyGroupProject/{groupId}/{projectId}")
-	public ResponseEntity<String> modifyGroupProject(
+	@PostMapping("/{sessionId}/modifyGroupAssignedProject/{groupId}/{projectId}")
+	public ResponseEntity<String> modifyGroupAssignedProject(
 			HttpServletRequest servlet,
 			@PathVariable String sessionId,
 			@PathVariable String groupId,
@@ -343,9 +343,9 @@ public class GroupController {
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
-		group.setDesiredProjectId1(projectId);
+		group.setAssignedProjectId(projectId);
 
-		return ResponseEntity.ok("Group project successfully updated");
+		return ResponseEntity.ok("Group assigned project successfully updated");
 	}
 
 	@PostMapping("/{sessionId}/createGroupWithStudent/{foundingStudentId}/{secondStudentId}/{groupName}")

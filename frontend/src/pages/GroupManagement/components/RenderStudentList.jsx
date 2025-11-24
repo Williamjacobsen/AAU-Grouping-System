@@ -76,7 +76,7 @@ export default function RenderStudentList({
 											)}
 										<hr></hr>
 									</li>
-								)
+								);
 							})
 						)}
 					</ul>
