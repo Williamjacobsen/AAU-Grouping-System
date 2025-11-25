@@ -85,10 +85,7 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects, sessi
 					}
 
 					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
-
-					// Get project assigned to group
-					const assignedProjectId = group.projectId || group.desiredProjectId1;
-					const groupProject = assignedProjectId ? projects?.find(project => project.id === assignedProjectId) : null;
+					const groupProject = projects.find(project => project.id === group.assignedProjectId);
 					
 					newData.push({
 						groupName: group.name,
