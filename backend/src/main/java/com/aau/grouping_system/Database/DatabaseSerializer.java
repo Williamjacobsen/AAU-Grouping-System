@@ -8,7 +8,6 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.Coordinator.CoordinatorService;
-import com.aau.grouping_system.User.SessionMember.SessionMember;
 import com.aau.grouping_system.User.SessionMember.SessionMemberService;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Student.StudentService;
