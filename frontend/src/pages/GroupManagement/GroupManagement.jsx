@@ -14,6 +14,7 @@ import useUndoLogic from "./hooks/useUndoLogic";
 import CsvDownloadButton from "./components/CsvDownloadButton";
 import RenderGroups from "./components/RenderGroups";
 import RenderStudentList from "./components/RenderStudentList";
+import NotifyButton from "Components/NotifyButton/NotifyButton";
 
 
 export default function GroupManagement() {
@@ -122,7 +123,7 @@ export default function GroupManagement() {
 					<h3>How to move a student from A to B?</h3>
 					<p>Click on the name of the student A and then click on the name of group B</p>
 					<h3>How to create a new group?</h3>
-					<p>Click on the name of a student without a group, then click on the name of another student without a group. 
+					<p>Click on the name of a student without a group, then click on the name of the same student (single student group) or another student without a group.
 						You will then be prompted to enter a name for the new group.</p>
 					<h3>Undo button</h3>
 					<p>Once a move has been done, it can be undone by clicking on the "undo last change" button.
@@ -200,6 +201,8 @@ export default function GroupManagement() {
 						/>
 					</div>
 
+							<NotifyButton sessionId={sessionId} />
+							
 					<p>
 						You can download the CSV file after all groups have been made,
 						and supervisors have been assigned to the groups <br></br>
