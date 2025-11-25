@@ -37,7 +37,7 @@ export default function GroupManagement() {
 
 
 	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(setError, sessionId, setGroups);
-	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
+	const { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
@@ -136,6 +136,27 @@ export default function GroupManagement() {
 						<div className="undo-box">
 							<button onClick={handleUndo}>Undo last change</button>
 						</div>
+					)}
+
+					{toLargeGroups.length > 0 && (
+						<>
+							<h2 className="toLarge-groups">Too Large Groups</h2>
+							<div className="group-row">
+								<RenderGroups
+									groups={toLargeGroups}
+									allGroups={groups}
+									assignSupervisor={assignSupervisor}
+									assignProject={assignProject}
+									supervisors={supervisors}
+									selectedGroup={selectedGroup}
+									handleGroupClick={handleGroupClick}
+									handleStudentClick={handleStudentClick}
+									selectedStudent={selectedStudent}
+									students={students}
+									projects={projects}
+								/>
+							</div>
+						</>
 					)}
 
 					<h2 className="completed-groups">Completed Groups</h2>
