@@ -11,7 +11,7 @@ export default function Profile() {
 	const [newPassword, setNewPassword] = useState("");
 	const [newName, setNewName] = useState("");
 	const [error, setError] = useState("");
-	const [succes, setSucces] = useState("");
+	const [success, setSuccess] = useState("");
 	const { user, isLoading: isLoadingUser, setUser } = useAuth();
 
 	function isUserNameNotSpecifiedYet() {
@@ -26,15 +26,15 @@ export default function Profile() {
 	}, [error]);
 
 	useEffect(() => {
-		if (succes) {
-			const timer = setTimeout(() => setSucces(""), 5000);
+		if (success) {
+			const timer = setTimeout(() => setSuccess(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [succes]);
+	}, [success]);
 
 	useEffect(() => {
 		if (isUserNameNotSpecifiedYet()) {
-			alert("You have not yet specified your name. \nPlease do so.");
+			alert("You have not yet specified your name. Please do so.");
 		}
 	}, [user]);
 
@@ -53,12 +53,12 @@ export default function Profile() {
 			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
-				setSucces("");
+				setSuccess("");
 				return Promise.resolve();
 			}
 
 			navigate("/profile");
-			setSucces("Email updated succesfully");
+			setSuccess("Email updated successfully");
 			setError("");
 			setUser(prev => ({ ...prev, email: newEmail }));
 
@@ -79,12 +79,12 @@ export default function Profile() {
 			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
-				setSucces("");
+				setSuccess("");
 				return Promise.resolve();
 			}
 
 			navigate("/profile");
-			setSucces("Password updated succesfully");
+			setSuccess("Password updated successfully");
 			setError("");
 			setUser(prev => ({ ...prev, password: newPassword }));
 
@@ -105,12 +105,12 @@ export default function Profile() {
 			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
-				setSucces("");
+				setSuccess("");
 				return Promise.resolve();
 			}
 
 			navigate("/profile");
-			setSucces("Name updated succesfully");
+			setSuccess("Name updated successfully");
 			setError("");
 			setUser(prev => ({ ...prev, name: newName }));
 
@@ -143,16 +143,10 @@ export default function Profile() {
 	return (
 		<div className="container">
 			<div className="header-text">Profile</div>
-			{error && (
-				<div className="error-box">
-					{error}
-				</div>
-			)}
-			{succes && (
-				<div className="succes-box">
-					{succes}
-				</div>
-			)}
+
+			{error && (<div className="error-box">{error}</div>)}
+			{success && (<div className="success-box">{success}</div>)}
+
 			<div className="text">
 				<p><b>Name:</b> {user.name}</p>
 				<p><b>Email:</b> {user.email}</p>
@@ -169,6 +163,11 @@ export default function Profile() {
 						placeholder="New name"
 						style={isUserNameNotSpecifiedYet() ? { backgroundColor: "crimson" } : null}
 						onChange={(e) => setNewName(e.target.value)}
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleNameChange();
+								}
+							}}
 					/>
 				</label>
 				<button className="sign-in" onClick={handleNameChange}>
@@ -183,6 +182,11 @@ export default function Profile() {
 						type="email"
 						placeholder="New email"
 						onChange={(e) => setNewEmail(e.target.value)}
+						onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleEmailChange();
+								}
+							}}
 					/>
 				</label>
 				<button className="sign-in" onClick={handleEmailChange}>
@@ -198,6 +202,11 @@ export default function Profile() {
 							type="password"
 							placeholder="New password"
 							onChange={(e) => setNewPassword(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handlePasswordChange();
+								}
+							}}
 						/>
 					</label>
 					<button className="sign-in" onClick={handlePasswordChange}>

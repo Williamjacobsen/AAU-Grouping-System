@@ -6,7 +6,7 @@ export default function InputField({
   username,
   chatSystem,
   setMessagesByRoom,
-	students
+  students,
 }) {
   return (
     <div
@@ -37,7 +37,7 @@ export default function InputField({
               setMessageInput,
               chatSystem,
               setMessagesByRoom,
-							students
+              students
             );
           }
         }}
@@ -63,16 +63,19 @@ export default function InputField({
         }}
       />
       <button
-        onClick={() =>
-          handleSendMessage(
-            messageInput,
-            selectedChatRoom,
-            username,
-            setMessageInput,
-            chatSystem,
-            setMessagesByRoom,
-          )
-        }
+        onClick={() => {
+          if (messageInput.trim()) {
+            handleSendMessage(
+              messageInput,
+              selectedChatRoom,
+              username,
+              setMessageInput,
+              chatSystem,
+              setMessagesByRoom,
+              students
+            );
+          }
+        }}
         style={{
           backgroundColor: "#3b82f6",
           color: "white",

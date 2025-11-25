@@ -17,14 +17,6 @@ public class DatabaseItemChildGroup implements Serializable {
 		parentItem.addChildItemGroup(this);
 	}
 
-	void addChildItem(String id) {
-		childItemIds.add(id);
-	}
-
-	void removeChildItem(String id) {
-		childItemIds.remove(id);
-	}
-
 	public CopyOnWriteArrayList<? extends DatabaseItem> getItems(Database db) {
 		return db.getMap(mapId).getItems(childItemIds);
 	}

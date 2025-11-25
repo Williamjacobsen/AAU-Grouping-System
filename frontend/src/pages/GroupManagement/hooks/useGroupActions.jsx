@@ -13,7 +13,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 					credentials: "include"
 				}
 			);
-			
+
 			if (!response.ok) {
 				const errorMessage = await response.text();
 				setError(errorMessage);
@@ -83,7 +83,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 	const assignProject = async (groupId, projectId) => {
 		try {
 			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupProject/${groupId}/${projectId}`,
+				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupAssignedProject/${groupId}/${projectId}`,
 				{
 					method: "POST",
 					credentials: "include"
@@ -98,7 +98,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			setGroups(prev =>
 				prev.map(g =>
-					g.id === groupId ? { ...g, desiredProjectId1: projectId } : g
+					g.id === groupId ? { ...g, assignedProjectId: projectId } : g
 				)
 			);
 		} catch (error) {

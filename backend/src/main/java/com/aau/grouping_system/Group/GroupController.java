@@ -1,9 +1,6 @@
 package com.aau.grouping_system.Group;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -20,8 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Project.Project;
-import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
@@ -45,14 +40,12 @@ public class GroupController {
 	private final Database db;
 	private final GroupService groupService;
 	private final RequestRequirementService requestRequirementService;
-	private final SupervisorsPageController supervisorsPageController;
 
-	public GroupController(Database db, GroupService groupService, RequestRequirementService requestRequirementService,
-			SupervisorsPageController supervisorsPageController) {
+	public GroupController(Database db, GroupService groupService,
+			RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.groupService = groupService;
 		this.requestRequirementService = requestRequirementService;
-		this.supervisorsPageController = supervisorsPageController;
 	}
 
 	@PostMapping("/{sessionId}/{groupId}/accept-request/{studentId}")
@@ -177,8 +170,8 @@ public class GroupController {
 			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
-			Session session = requestRequirementService.requireSessionExists(sessionId);
-
+			requestRequirementService.requireSessionExists(sessionId);
+			// If the student that are being moved is in a group
 			if (fromGroup != null) {
 
 				// Remove student from old group and add student to new group
@@ -187,7 +180,7 @@ public class GroupController {
 
 				return ResponseEntity.ok("Student moved successfully.");
 			}
-
+			// else the student only joins the new group
 			groupService.joinGroup(toGroup, student);
 
 			return ResponseEntity.ok("Student moved successfully.");
@@ -326,10 +319,10 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
-		Session session = requestRequirementService.requireSessionExists(sessionId);
 		Group group = requestRequirementService.requireGroupExists(groupId);
 		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
 
+		requestRequirementService.requireSessionExists(sessionId);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		group.setSupervisorId(supervisor != null ? supervisor.getId() : null);
@@ -339,8 +332,8 @@ public class GroupController {
 				.body("Group supervisor succesfully modified");
 	}
 
-	@PostMapping("/{sessionId}/modifyGroupProject/{groupId}/{projectId}")
-	public ResponseEntity<String> modifyGroupProject(
+	@PostMapping("/{sessionId}/modifyGroupAssignedProject/{groupId}/{projectId}")
+	public ResponseEntity<String> modifyGroupAssignedProject(
 			HttpServletRequest servlet,
 			@PathVariable String sessionId,
 			@PathVariable String groupId,
@@ -350,9 +343,9 @@ public class GroupController {
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
 		Group group = requestRequirementService.requireGroupExists(groupId);
-		group.setDesiredProjectId1(projectId);
+		group.setAssignedProjectId(projectId);
 
-		return ResponseEntity.ok("Group project successfully updated");
+		return ResponseEntity.ok("Group assigned project successfully updated");
 	}
 
 	@PostMapping("/{sessionId}/createGroupWithStudent/{foundingStudentId}/{secondStudentId}/{groupName}")

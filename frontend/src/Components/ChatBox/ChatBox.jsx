@@ -38,7 +38,7 @@ export default function ChatBox() {
     chatSystem.current = new ChatSystem("http://localhost:8080/ws", user.name);
 
     chatSystem.current.connect(() => {
-      handleSubscriptions(chatRooms, chatSystem, setMessagesByRoom, user.name);
+      handleSubscriptions(chatRooms, chatSystem, setMessagesByRoom, user.name, students);
     });
 
     return () => {

@@ -79,7 +79,9 @@ export function AppStateProvider({ children }) {
       "General",
       ...projects.map((p) => p.name),
       ...groups.map((g) => g.name),
-      ...students.map((s) => s.name),
+      ...students
+				.filter((s) => s.id !== user.id)
+				.map((s) => s.name),
     ].filter(Boolean);
   }, [projects, groups, students]);
 

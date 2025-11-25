@@ -5,7 +5,7 @@ export default function ForgotPassword() {
 
 	const [email, setEmail] = useState("");
 	const [error, setError] = useState("");
-	const [succes, setSucces] = useState("");
+	const [success, setSuccess] = useState("");
 
 	const handleEmailSubmit = async () => {
 		try {
@@ -15,16 +15,16 @@ export default function ForgotPassword() {
 				body: JSON.stringify({ email }),
 			});
 			if (response.ok) {
-				setSucces("An reset-link has been sent to your email!");
+				setSuccess("An reset-link has been sent to your email!");
 				setError("");
 			}
 			else {
 				setError("The email is not valid");
-				setSucces("");
+				setSuccess("");
 			}
 		} catch (e) {
 			setError(e.message);
-			setSucces("");
+			setSuccess("");
 		}
 	};
 
@@ -36,11 +36,11 @@ export default function ForgotPassword() {
 	}, [error]);
 
 	useEffect(() => {
-		if (succes) {
-			const timer = setTimeout(() => setSucces(""), 5000);
+		if (success) {
+			const timer = setTimeout(() => setSuccess(""), 5000);
 			return () => clearTimeout(timer);
 		}
-	}, [succes]);
+	}, [success]);
 
 
 	return (
@@ -61,19 +61,19 @@ export default function ForgotPassword() {
 			</p>
 
 			<div className="header-text"> Email</div>
-			{error && (
-				<div className="error-box">
-					{error}
-				</div>
-			)}
-			{succes && (
-				<div className="succes-box">
-					{succes}
-				</div>
-			)}
+
+			{error && (<div className="error-box">{error}</div>)}
+			{success && (<div className="success-box">{success}</div>)}
+
 			<div className="input">
 				<label className="label">
-					<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} placeholder="john123@example.com" />
+					<input type="emailOrId" onChange={(e) => setEmail(e.target.value)} 
+					onKeyDown={(e) => {
+								if (e.key === "Enter") {
+									handleEmailSubmit(email);
+								}
+							}}
+					placeholder="john123@example.com" />
 				</label>
 			</div>
 			<div className="submit-container">

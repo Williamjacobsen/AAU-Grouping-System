@@ -23,7 +23,7 @@ export default function RenderStudentList({
 				<ul>
 					{localStudentsWithNoGroup.map((member) => (
 						<li key={member.id} onClick={() => handleStudentClick(member, null)}
-							className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+							className={selectedStudent && selectedStudent.member.id === member.id ? "selected" : ""
 							}> <span className="student-name"> {member.name} </span>
 							{(member.questionnaire?.desiredProjectId1 ||
 								member.questionnaire?.desiredProjectId2 ||
@@ -57,7 +57,7 @@ export default function RenderStudentList({
 								if (!member) return null;
 								return (
 									<li key={member.id} onClick={() => handleStudentClick(member, group.id)}
-										className={selectedStudent && selectedStudent.member.name === member.name ? "selected" : ""
+										className={selectedStudent && selectedStudent.member.id === member.id ? "selected" : ""
 										}> <span className="student-name"> {member.name} ({group.name})</span>
 										{(member.questionnaire?.desiredProjectId1 ||
 											member.questionnaire?.desiredProjectId2 ||
@@ -76,7 +76,7 @@ export default function RenderStudentList({
 											)}
 										<hr></hr>
 									</li>
-								)
+								);
 							})
 						)}
 					</ul>

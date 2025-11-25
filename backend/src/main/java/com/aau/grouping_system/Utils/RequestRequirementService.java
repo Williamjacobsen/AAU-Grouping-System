@@ -128,7 +128,7 @@ public class RequestRequirementService {
 
 	public void requireEmailNotDuplicate(String newEmail, User user) {
 		if (userService.isEmailDuplicate(newEmail, user)) {
-			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another " + user.getRole());
+			throw new RequestException(HttpStatus.CONFLICT, "Inputted email is already used by another user");
 		}
 	}
 

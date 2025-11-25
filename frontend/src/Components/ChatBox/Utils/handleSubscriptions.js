@@ -1,13 +1,21 @@
 import getConversationKey from "./getConversationKey";
+import isDirectRoom from "./isDirectRoom";
 
 function handleSubscriptions(
   chatRooms,
   chatSystem,
   setMessagesByRoom,
-  username
+  username,
+  students 
 ) {
   chatRooms.forEach((roomName) => {
-    // TODO: chatRoom includes students, which it shouldn't.
+    const isDirect = isDirectRoom(roomName, students);
+
+    if (isDirect) {
+      console.log(`Skipping group subscription for direct room: ${roomName}`);
+      return;
+    }
+
     chatSystem.current.subscribe(`/group/${roomName}/messages`, (message) => {
       console.log(`Received message in group ${roomName}:`, message);
 
