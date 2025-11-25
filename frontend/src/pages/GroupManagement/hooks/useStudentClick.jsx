@@ -27,13 +27,18 @@ export default function useStudentClick({
 			}
 			try {
 				await createGroupWithStudents(selectedStudent.member.id, member.id, groupName);
+
 				setLocalStudentsWithNoGroup(prev =>
 					prev.filter(s => s.id !== selectedStudent.member.id && s.id !== member.id)
 				);
 				const updated = await fetchSessionGroups(sessionId);
 				setGroups(updated);
+
 			} catch (error) {
 				setError("Failed to create group: " + error.message);
+
+				setSelectedStudent(null);
+				return;
 			}
 			setSelectedStudent(null);
 			return;

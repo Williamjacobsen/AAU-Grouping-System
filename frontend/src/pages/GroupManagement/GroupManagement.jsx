@@ -114,7 +114,10 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			{!isDeadlineExceeded() ? (
-				<p className="info-text">Waiting for questionnaire deadline to pass...</p> //shows this if deadline isnt exceeded
+				<>
+				<p className="info-text">Waiting for questionnaire deadline to pass...</p> {/* shows this if deadline isnt exceeded */}
+				{session?.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
+				</>
 			) : (
 				<>
 					<h1>Group Management</h1>
