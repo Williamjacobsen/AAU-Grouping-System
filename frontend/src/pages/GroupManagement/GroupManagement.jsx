@@ -41,10 +41,10 @@ export default function GroupManagement() {
 		= useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
-		if (fetchedGroups) {
-			setGroups(fetchedGroups);
-		}
-	}, [fetchedGroups]);
+    if (fetchedGroups) {
+        setGroups(fetchedGroups);
+    }
+}, [fetchedGroups]);
 
 	useEffect(() => {
 		if (error) {
@@ -222,8 +222,8 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-					<NotifyButton sessionId={sessionId} />
-
+							<NotifyButton sessionId={sessionId} />
+							
 					<p>
 						You can download the CSV file after all groups have been made,
 						and supervisors have been assigned to the groups <br></br>
@@ -232,6 +232,7 @@ export default function GroupManagement() {
 							groups={groups}
 							supervisors={supervisors}
 							projects={projects}
+							session={session}
 						/>
 					</p>
 				</>

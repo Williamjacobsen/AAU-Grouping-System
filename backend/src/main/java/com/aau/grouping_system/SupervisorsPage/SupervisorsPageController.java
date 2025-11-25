@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.SessionMemberService;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
@@ -46,11 +45,17 @@ public class SupervisorsPageController {
 		this.sessionMemberService = sessionMemberService;
 	}
 
-	public Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
+	private Session validateSessionAccess(HttpServletRequest servlet, String sessionId) {
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 		return session;
+	}
+
+	private Supervisor validateSupervisorAccess(String sessionId, String supervisorId) {
+		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
+		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
+		return supervisor;
 	}
 
 	@GetMapping
@@ -77,9 +82,7 @@ public class SupervisorsPageController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 		validateSessionAccess(servlet, sessionId);
-
-		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
-		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
+		validateSupervisorAccess(sessionId, supervisorId);
 
 		supervisorsPageService.removeSupervisor(supervisorId);
 		return ResponseEntity.ok("Supervisor removed successfully");
@@ -91,9 +94,7 @@ public class SupervisorsPageController {
 			@NoDangerousCharacters @NotBlank @PathVariable String supervisorId) {
 
 		Session session = validateSessionAccess(servlet, sessionId);
-
-		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
-		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
+		Supervisor supervisor = validateSupervisorAccess(sessionId, supervisorId);
 
 		sessionMemberService.applyAndEmailNewPassword(session, supervisor);
 
@@ -107,9 +108,7 @@ public class SupervisorsPageController {
 			@Valid @RequestBody UpdateMaxGroupsRequest request) {
 
 		validateSessionAccess(servlet, sessionId);
-
-		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
-		requestRequirementService.requireSupervisorIsAuthorizedSession(sessionId, supervisor);
+		Supervisor supervisor = validateSupervisorAccess(sessionId, supervisorId);
 
 		supervisor.setMaxGroups(request.maxGroups);
 		return ResponseEntity.ok("Supervisor max groups updated successfully");
@@ -117,16 +116,5 @@ public class SupervisorsPageController {
 
 	public record UpdateMaxGroupsRequest(
 			@jakarta.validation.constraints.Min(1) @jakarta.validation.constraints.Max(100) Integer maxGroups) {
-	}
-
-	public Supervisor findSupervisorInSession(Session session, String supervisorId) {
-		Supervisor supervisor = requestRequirementService.requireSupervisorExists(supervisorId);
-
-		// Check if the supervisor belongs to this session
-		if (!supervisor.getSessionId().equals(session.getId())) {
-			return null;
-		}
-
-		return supervisor;
 	}
 }

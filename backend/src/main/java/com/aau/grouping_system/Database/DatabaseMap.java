@@ -36,7 +36,7 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 		// Add item to its parent item's child group
 		if (parentItemChildGroup != null) {
 			item.setParentItemChildGroup(parentItemChildGroup);
-			parentItemChildGroup.addChildItem(item.getId());
+			parentItemChildGroup.getChildItemIds().add(item.getId());
 		}
 
 		return item;

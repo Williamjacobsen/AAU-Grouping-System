@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, memo } from "react";
 import { CSVLink } from "react-csv";
 
-const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => {
+const CsvDownloadButton = memo(({ students, groups, supervisors, projects, session }) => {
 
 	console.log("reloading");
 
@@ -18,14 +18,61 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => 
 
 	async function startDownload() {
 		try {
+			if (!groups || groups.length === 0) {
+				alert("Error: No groups found to download.");
+				return;
+			}
 
-			if (!areAllStudentsAssignedAGroup(groups)) {
-				alert("Warning: Not all students have been assigned a group!");
+			if (!students || students.length === 0) {
+				alert("Error: No students found to download.");
+				return;
+			}
+
+			// Only completed groups
+			const completedGroups = groups.filter(group => 
+				group.studentIds && 
+				group.studentIds.length >= (session?.minGroupSize || 1) && 
+				group.studentIds.length <= (session?.maxGroupSize || 100)
+			);
+
+			if (completedGroups.length === 0) {
+				alert("Error: Please ensure groups are complete.");
+				return;
+			}
+			
+			// Check if groups have supervisor
+			const completedGroupsWithoutSupervisors = completedGroups.filter(group => 
+				!group.supervisorId || 
+				(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
+			);
+			
+			if (completedGroupsWithoutSupervisors.length > 0) {
+				alert("Error: Groups must have supervisors assigned.");
+				return;
 			}
 
 			const newData = [];
 			let number = 0;
-			groups.forEach((group) => {
+			
+			// Sort groups by supervisor
+			const sortedGroups = [...groups].sort((a, b) => {
+				const supervisorA = supervisors?.find(s => s.id === a.supervisorId);
+				const supervisorB = supervisors?.find(s => s.id === b.supervisorId);
+				
+				const supervisorNameA = supervisorA?.name || "";
+				const supervisorNameB = supervisorB?.name || "";
+				
+				console.log(`Sorting: ${a.name} (supervisor: ${supervisorNameA}) vs ${b.name} (supervisor: ${supervisorNameB})`);
+				
+				if (supervisorNameA !== supervisorNameB) {
+					return supervisorNameA.localeCompare(supervisorNameB);
+				}
+				
+				return a.name.localeCompare(b.name);
+			});
+		
+			// Generate CSV data
+			sortedGroups.forEach((group) => {
 
 				const groupNumber = ++number;
 
@@ -39,15 +86,16 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => 
 
 					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
 					const groupProject = projects.find(project => project.id === group.assignedProjectId);
-
+					
 					newData.push({
 						groupName: group.name,
 						groupNumber: groupNumber,
+						groupSize: group.studentIds.length,
 						studentEmail: student.email,
 						studentName: student.name,
 						supervisorEmail: groupSupervisor?.email ?? "Not specified",
 						supervisorName: groupSupervisor?.name ?? "Not specified",
-						projectName: groupProject?.name ?? "Not specified"
+						projectName: groupProject?.name ?? "No project assigned"
 					});
 				});
 			});
@@ -64,16 +112,6 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => 
 		}
 	}
 
-	function areAllStudentsAssignedAGroup(groups) {
-
-		let studentsAssignedAGroupAmount = 0;
-		groups.forEach(group => {
-			studentsAssignedAGroupAmount += group.studentIds.length;
-		});
-
-		return studentsAssignedAGroupAmount === students.length;
-	}
-
 	return (
 		<>
 			<button className="csv-download-button" onClick={startDownload}>
@@ -82,10 +120,11 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects }) => 
 
 			{/* The CSVLink is not visible to the user. When clicked, it starts a download of a CSV file. */}
 			<CSVLink
-				filename={`Groups.csv`}
+				filename={`Groups ${session?.name || 'Session'}.csv`}
 				headers={[
 					{ label: "Group name", key: "groupName" },
 					{ label: "Group number", key: "groupNumber" },
+					{ label: "Group size", key: "groupSize" },
 					{ label: "Student email", key: "studentEmail" },
 					{ label: "Student name", key: "studentName" },
 					{ label: "Supervisor email", key: "supervisorEmail" },

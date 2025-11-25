@@ -3,7 +3,7 @@ package com.aau.grouping_system.User.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
+
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -38,9 +38,9 @@ import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@WebMvcTest(StudentController.class)
+@WebMvcTest({StudentController.class, com.aau.grouping_system.Session.SessionSetupController.class})
 @AutoConfigureWebMvc
-@ComponentScan(basePackages = { "com.aau.grouping_system.User.Student", "com.aau.grouping_system.Config",
+@ComponentScan(basePackages = { "com.aau.grouping_system.User.SessionMember.Student", "com.aau.grouping_system.Session", "com.aau.grouping_system.Config",
 		"com.aau.grouping_system.Exceptions" })
 @Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
 class StudentControllerIntegrationTest {
@@ -63,6 +63,12 @@ class StudentControllerIntegrationTest {
 	@MockitoBean
 	private RequestRequirementService requirementService;
 
+	@MockitoBean
+	private com.aau.grouping_system.User.SessionMember.SessionMemberService sessionMemberService;
+
+	@MockitoBean
+	private com.aau.grouping_system.Session.SessionSetupService sessionSetupService;
+
 	private Student testStudent;
 	private Session testSession;
 
@@ -78,58 +84,69 @@ class StudentControllerIntegrationTest {
 	}
 
 	@Test
-	void testCreateStudent_ValidRequest_ReturnsCreatedStudent() throws Exception {
+	void testCreateStudentsViaSessionSetup_ValidRequest_ReturnsSuccess() throws Exception {
 		// Arrange
 		String requestBody = """
 				{
-				    "sessionId": "session-123",
-				    "email": "john.doe@student.aau.dk",
-				    "name": "John Doe"
+				    "name": "Test Session",
+				    "minGroupSize": 5,
+				    "maxGroupSize": 7,
+				    "allowStudentProjectProposals": true,
+				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
+				    "supervisorEmails": "supervisor1@test.com",
+				    "studentEmails": "john.doe@student.aau.dk"
 				}
 				""";
 
 		when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
-		when(studentService.addStudent(testSession, "john.doe@student.aau.dk", "John Doe"))
-				.thenReturn(testStudent);
+		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
-		mockMvc.perform(post("/student/create")
+		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
-				.andExpect(status().isCreated())
-				.andExpect(content().string("Student created successfully with ID: student-123"));
+				.andExpect(status().isOk())
+				.andExpect(content().string("Session setup saved successfully!"));
 
 		verify(requirementService).requireSessionExists("session-123");
-		verify(studentService).addStudent(testSession, "john.doe@student.aau.dk", "John Doe");
 	}
 
 	@Test
-	void testCreateStudent_MissingRequiredFields_ReturnsBadRequest() throws Exception {
+	void testSessionSetup_MissingRequiredFields_ReturnsBadRequest() throws Exception {
 		// Arrange
 		String requestBody = """
 				{
-				    "sessionId": "session-123",
-				    "email": "john.doe@student.aau.dk"
+				    "minGroupSize": 5,
+				    "maxGroupSize": 7,
+				    "allowStudentProjectProposals": true,
+				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
+				    "supervisorEmails": "supervisor1@test.com",
+				    "studentEmails": "john.doe@student.aau.dk"
 				}
 				""";
 
+		when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
+		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
+
 		// Act & Assert
-		mockMvc.perform(post("/student/create")
+		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
-
-		verify(studentService, never()).addStudent(any(), anyString(), anyString());
 	}
 
 	@Test
-	void testCreateStudent_SessionNotFound_ReturnsNotFound() throws Exception {
+	void testSessionSetup_SessionNotFound_ReturnsNotFound() throws Exception {
 		// Arrange
 		String requestBody = """
 				{
-				    "sessionId": "nonexistent-session",
-				    "email": "john.doe@student.aau.dk",
-				    "name": "John Doe"
+				    "name": "Test Session",
+				    "minGroupSize": 5,
+				    "maxGroupSize": 7,
+				    "allowStudentProjectProposals": true,
+				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
+				    "supervisorEmails": "supervisor1@test.com",
+				    "studentEmails": "john.doe@student.aau.dk"
 				}
 				""";
 
@@ -137,13 +154,12 @@ class StudentControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
 		// Act & Assert
-		mockMvc.perform(post("/student/create")
+		mockMvc.perform(post("/sessionSetup/nonexistent-session/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isNotFound());
 
 		verify(requirementService).requireSessionExists("nonexistent-session");
-		verify(studentService, never()).addStudent(any(), anyString(), anyString());
 	}
 
 	@Test
@@ -154,8 +170,8 @@ class StudentControllerIntegrationTest {
 				    "desiredProjectId1": "project-1",
 				    "desiredProjectId2": "project-2",
 				    "desiredProjectId3": "project-3",
-				    "desiredGroupSizeMin": 2,
-				    "desiredGroupSizeMax": 4,
+				    "desiredGroupSizeMin": 5,
+				    "desiredGroupSizeMax": 7,
 				    "desiredWorkLocation": "NoPreference",
 				    "desiredWorkStyle": "NoPreference",
 				    "personalSkills": "Java, Spring Boot",
@@ -191,8 +207,8 @@ class StudentControllerIntegrationTest {
 				    "desiredProjectId1": "project-1",
 				    "desiredProjectId2": "project-2",
 				    "desiredProjectId3": "project-3",
-				    "desiredGroupSizeMin": 2,
-				    "desiredGroupSizeMax": 4,
+				    "desiredGroupSizeMin": 5,
+				    "desiredGroupSizeMax": 7,
 				    "desiredWorkLocation": "NoPreference",
 				    "desiredWorkStyle": "NoPreference",
 				    "personalSkills": "Java, Spring Boot",
@@ -223,8 +239,8 @@ class StudentControllerIntegrationTest {
 				    "desiredProjectId1": "project-1",
 				    "desiredProjectId2": "project-2",
 				    "desiredProjectId3": "project-3",
-				    "desiredGroupSizeMin": 2,
-				    "desiredGroupSizeMax": 4,
+				    "desiredGroupSizeMin": 5,
+				    "desiredGroupSizeMax": 7,
 				    "desiredWorkLocation": "NoPreference",
 				    "desiredWorkStyle": "NoPreference",
 				    "personalSkills": "Java, Spring Boot",
