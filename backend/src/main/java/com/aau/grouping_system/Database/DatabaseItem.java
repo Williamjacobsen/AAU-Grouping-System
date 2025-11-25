@@ -20,7 +20,7 @@ public abstract class DatabaseItem implements Serializable {
 
 	void disconnectFromParentItem(Database db) {
 		if (parentItemChildGroup != null) {
-			parentItemChildGroup.removeChildItem(this.id);
+			parentItemChildGroup.getChildItemIds().remove(this.id);
 		}
 	}
 
