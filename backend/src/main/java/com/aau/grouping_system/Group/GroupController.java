@@ -379,7 +379,7 @@ public class GroupController {
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Group created with two students. Group ID: " + newGroup.getId());
 		} catch (Exception e) {
-			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to create group with two students: " + e.getMessage());
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to create group: " + e.getMessage());
 		}
 	}
 
