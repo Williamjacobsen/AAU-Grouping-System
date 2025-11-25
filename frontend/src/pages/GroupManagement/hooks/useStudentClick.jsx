@@ -4,10 +4,10 @@ import useGroupActions from "./useGroupActions";
 export default function useStudentClick({
 	selectedStudent, setSelectedStudent, setPreviousGroups,
 	setCanUndo, setLastAction, setGroups, setLocalStudentsWithNoGroup,
-	moveStudent, session, groups, setError, sessionId
+	moveStudent, groups, sessionId
 }) {
 
-	const { createGroupWithStudents } = useGroupActions(setError, sessionId, setGroups);
+	const { createGroupWithStudents } = useGroupActions( sessionId, setGroups);
 
 	const handleStudentClick = async (member, groupId) => {
 		if (!selectedStudent) {
@@ -31,12 +31,13 @@ export default function useStudentClick({
 				setLocalStudentsWithNoGroup(prev =>
 					prev.filter(s => s.id !== selectedStudent.member.id && s.id !== member.id)
 				);
+
 				const updated = await fetchSessionGroups(sessionId);
 				setGroups(updated);
 
 			} catch (error) {
-				setError("Failed to create group: " + error.message);
-
+				alert("Failed to create group: " + error.message);
+		
 				setSelectedStudent(null);
 				return;
 			}
@@ -72,7 +73,7 @@ export default function useStudentClick({
 			}
 
 		} catch (error) {
-			setError("Failed to move student: " + error.message);
+			alert("Failed to move student: " + error.message);
 		}
 		setSelectedStudent(null);
 	};

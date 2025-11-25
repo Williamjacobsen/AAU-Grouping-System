@@ -371,7 +371,10 @@ public class GroupController {
 			groupService.requireGroupNameNotDuplicate(session, groupName);
 
 			Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
-			groupService.joinGroup(newGroup, secondMember);
+			
+			if (!foundingStudentId.equals(secondStudentId)) {
+				groupService.joinGroup(newGroup, secondMember);
+			}
 
 			return ResponseEntity.status(HttpStatus.CREATED)
 					.body("Group created with two students. Group ID: " + newGroup.getId());
