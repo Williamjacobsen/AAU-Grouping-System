@@ -116,7 +116,6 @@ public class ProjectController {
 		}
 
 		Project newProject = db.getProjects().addItem(
-				db,
 				session.getProjects(),
 				new Project(projectName, description, user));
 

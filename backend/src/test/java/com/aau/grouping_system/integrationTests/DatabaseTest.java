@@ -43,42 +43,33 @@ public class DatabaseTest {
 
 		// Add 3 sessions
 		sessions.add(db.getSessions().addItem(
-				db,
 				coordinators.get(0).getSessions(),
 				new Session(db, coordinators.get(0), "sessionName0")));
 		sessions.add(db.getSessions().addItem(
-				db,
 				coordinators.get(0).getSessions(),
 				new Session(db, coordinators.get(0), "sessionName1")));
 		sessions.add(db.getSessions().addItem(
-				db,
 				coordinators.get(1).getSessions(),
 				new Session(db, coordinators.get(1), "sessionName2")));
 
 		// Add 6 students
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(0).getStudents(),
 				new Student("studentEmail0", "studentName0", sessions.get(0))));
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(0)
 						.getStudents(),
 				new Student("studentEmail1", "studentName1", sessions.get(0))));
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(1).getStudents(),
 				new Student("studentEmail2", "studentName2", sessions.get(1))));
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(1).getStudents(),
 				new Student("studentEmail3", "studentName3", sessions.get(1))));
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(2).getStudents(),
 				new Student("studentEmail4", "studentName4", sessions.get(2))));
 		students.add(db.getStudents().addItem(
-				db,
 				sessions.get(2).getStudents(),
 				new Student("studentEmail5", "studentName5", sessions.get(2))));
 	}
