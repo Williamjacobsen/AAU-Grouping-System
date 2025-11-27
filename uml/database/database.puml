@@ -11,7 +11,7 @@ class Database {
 	- DatabaseData : data
 }
 
-class DatabaseData {
+class DatabaseData implements Serializable {
 	- coordinators : DatabaseMap<Coordinator>
 	- sessions : DatabaseMap<Session>
 	- supervisors : DatabaseMap<Supervisor>
@@ -20,35 +20,36 @@ class DatabaseData {
 	- groups : DatabaseMap<Group>
 }
 
-class DatabaseMap<T extends DatabaseItem> {
+class DatabaseMap<T extends DatabaseItem> implements Serializable {
 	- id : Integer
 	- map : ConcurrentHashMap<String, T>
-	+ addItem(Database db, T item)
-	+ cascadeRemoveItem(Database db, String id)
+	+ addItem(T item)
+	+ cascadeRemoveItem(String id)
 	+ getItem(String id)
 	+ getItems(CopyOnWriteArrayList<String> ids)
 	+ getAllItems()
 }
 
-class DatabaseItem {
+abstract class DatabaseItem implements Serializable {
 	- id : String
-	- childItemGroups : CopyOnWriteArrayList<DatabaseItemChildGroup>
 	- parentItemChildGroup : DatabaseItemChildGroup
-	~ cascadeRemoveChildItems(Database db)
-	~ disconnectFromParentItem(Database db)
+	- childItemGroups : CopyOnWriteArrayList<DatabaseItemChildGroup>
 	~ addChildItemGroup(DatabaseItemChildGroup childGroup)
+	~ cascadeRemoveChildItems()
+	~ disconnectFromParentItem()
 }
 
-class DatabaseChildGroup {
-	- databaseMapId : Integer
+class DatabaseItemChildGroup implements Serializable {
+	- itemTypeDatabaseMapId : Integer
 	- childItemIds : CopyOnWriteArrayList<String>
-	+ getItems(Database db)
+	+ getItems()
+	+ DatabaseItemChildGroup() constructor that adds this child group \nto its parent item's list of child groups
 }
 
 Database *-- DatabaseData
 DatabaseData *-- DatabaseMap
 DatabaseMap *-- DatabaseItem
-DatabaseItem *-- DatabaseChildGroup
+DatabaseItem *-- DatabaseItemChildGroup
 
 
 @enduml
