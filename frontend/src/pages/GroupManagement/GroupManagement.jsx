@@ -28,7 +28,6 @@ export default function GroupManagement() {
 
 	const [selectedStudent, setSelectedStudent] = useState(null);
 	const [selectedGroup, setSelectedGroup] = useState(null);
-	const [error, setError] = useState(null);
 	const [previousGroups, setPreviousGroups] = useState([]);
 	const [canUndo, setCanUndo] = useState(false);
 	const [lastAction, setLastAction] = useState(null);
@@ -36,8 +35,8 @@ export default function GroupManagement() {
 	const [groups, setGroups] = useState([]);
 
 
-	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(setError, sessionId, setGroups);
-	const { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
+	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(sessionId, setGroups);
+	const { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
 		= useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
@@ -46,12 +45,6 @@ export default function GroupManagement() {
 		}
 	}, [fetchedGroups]);
 
-	useEffect(() => {
-		if (error) {
-			const timer = setTimeout(() => setError(""), 10000);
-			return () => clearTimeout(timer);
-		}
-	}, [error]);
 
 	useEffect(() => {
 		if (students != null) {
@@ -68,9 +61,7 @@ export default function GroupManagement() {
 		setGroups,
 		setLocalStudentsWithNoGroup,
 		moveStudent,
-		session,
 		groups,
-		setError,
 		sessionId
 	});
 
@@ -83,8 +74,6 @@ export default function GroupManagement() {
 		setCanUndo,
 		setLastAction,
 		moveAllMembers,
-		session,
-		setError,
 		sessionId
 	});
 
@@ -95,7 +84,6 @@ export default function GroupManagement() {
 		setLastAction,
 		setCanUndo,
 		moveStudent,
-		setError,
 		sessionId
 	});
 
@@ -114,7 +102,10 @@ export default function GroupManagement() {
 	return (
 		<div className="group-container">
 			{!isDeadlineExceeded() ? (
-				<p className="info-text">Waiting for questionnaire deadline to pass...</p> //shows this if deadline isnt exceeded
+				<>
+					<p className="info-text">Waiting for questionnaire deadline to pass...</p> {/* shows this if deadline isnt exceeded */}
+					{session?.questionnaireDeadline?.replace("T", " ") ?? "No deadline set"}
+				</>
 			) : (
 				<>
 					<h1>Group Management</h1>
@@ -130,15 +121,34 @@ export default function GroupManagement() {
 						This pops up at the top of the screen after a move.</p>
 					<p>NOTE: When moving students without a group, this cant be undone</p>
 
-					{error && <div className="error-box">{error}</div>}
-
 					{canUndo && (
 						<div className="undo-box">
 							<button onClick={handleUndo}>Undo last change</button>
 						</div>
 					)}
 
-					<h2 className="completed-groups">Completed Groups</h2>
+					{toLargeGroups.length > 0 && (
+						<>
+							<h2 className="toLarge-groups">Too Large Groups ({toLargeGroups.length} / {incompleteGroups.length + almostCompletedGroups.length + completedGroups.length + toLargeGroups.length})</h2>
+							<div className="group-row">
+								<RenderGroups
+									groups={toLargeGroups}
+									allGroups={groups}
+									assignSupervisor={assignSupervisor}
+									assignProject={assignProject}
+									supervisors={supervisors}
+									selectedGroup={selectedGroup}
+									handleGroupClick={handleGroupClick}
+									handleStudentClick={handleStudentClick}
+									selectedStudent={selectedStudent}
+									students={students}
+									projects={projects}
+								/>
+							</div>
+						</>
+					)}
+
+					<h2 className="completed-groups">Completed Groups ({completedGroups.length} / {incompleteGroups.length + almostCompletedGroups.length + completedGroups.length + toLargeGroups.length})</h2>
 					<div className="group-row">
 						<RenderGroups
 							groups={completedGroups}
@@ -155,7 +165,7 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-					<h2 className="almost-completed-groups">Almost Completed Groups</h2>
+					<h2 className="almost-completed-groups">Almost Completed Groups ({almostCompletedGroups.length} / {incompleteGroups.length + almostCompletedGroups.length + completedGroups.length + toLargeGroups.length})</h2>
 					<div className="group-row">
 						<RenderGroups
 							groups={almostCompletedGroups}
@@ -172,22 +182,26 @@ export default function GroupManagement() {
 						/>
 					</div>
 
-					<h2 className="incomplete-groups">Incomplete Groups</h2>
-					<div className="group-row">
-						<RenderGroups
-							groups={incompleteGroups}
-							allGroups={groups}
-							assignSupervisor={assignSupervisor}
-							assignProject={assignProject}
-							supervisors={supervisors}
-							selectedGroup={selectedGroup}
-							handleGroupClick={handleGroupClick}
-							handleStudentClick={handleStudentClick}
-							selectedStudent={selectedStudent}
-							students={students}
-							projects={projects}
-						/>
-					</div>
+					{incompleteGroups.length > 0 && (
+						<>
+							<h2 className="incomplete-groups">Incomplete Groups ({incompleteGroups.length} / {incompleteGroups.length + almostCompletedGroups.length + completedGroups.length + toLargeGroups.length})</h2>
+							<div className="group-row">
+								<RenderGroups
+									groups={incompleteGroups}
+									allGroups={groups}
+									assignSupervisor={assignSupervisor}
+									assignProject={assignProject}
+									supervisors={supervisors}
+									selectedGroup={selectedGroup}
+									handleGroupClick={handleGroupClick}
+									handleStudentClick={handleStudentClick}
+									selectedStudent={selectedStudent}
+									students={students}
+									projects={projects}
+								/>
+							</div>
+						</>
+					)}
 
 					<h2 className="students-no-group">Students Without a Group</h2>
 					<div className="group-row">
@@ -211,6 +225,7 @@ export default function GroupManagement() {
 							groups={groups}
 							supervisors={supervisors}
 							projects={projects}
+							session={session}
 						/>
 					</p>
 				</>

@@ -11,13 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
-import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.Session.Session;
-import com.aau.grouping_system.User.UserService;
+import com.aau.grouping_system.User.SessionMember.SessionMemberService;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
+import com.aau.grouping_system.User.UserService;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,27 +26,24 @@ import jakarta.validation.constraints.NotBlank;
 public class SupervisorsPageService {
 
 	private final Database db;
-	private final EmailService emailService;
+	private final SessionMemberService sessionMemberService;
 	private final UserService userService;
 
 	public SupervisorsPageService(
 			Database db,
-			EmailService emailService,
+			SessionMemberService sessionMemberService,
 			UserService userService) {
 		this.db = db;
-		this.emailService = emailService;
+		this.sessionMemberService = sessionMemberService;
 		this.userService = userService;
 	}
 
-	// Get all supervisors for session
-	@SuppressWarnings("unchecked")
-	public CopyOnWriteArrayList<Supervisor> getSessionSupervisors(Session session) {
-		return (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
-	}
+
 
 	// Get supervisor data
+	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getFormattedSupervisors(Session session) {
-		CopyOnWriteArrayList<Supervisor> supervisors = getSessionSupervisors(session);
+		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
 
 		return supervisors.stream()
 				.map(supervisor -> {
@@ -65,8 +62,9 @@ public class SupervisorsPageService {
 	}
 
 	// Add new supervisor to session
+	@SuppressWarnings("unchecked")
 	public String addSupervisor(Session session, AddSupervisorRequest request) {
-		CopyOnWriteArrayList<Supervisor> existingSupervisors = getSessionSupervisors(session);
+		CopyOnWriteArrayList<Supervisor> existingSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
 
 		// Check if supervisor with email is already in session
 		boolean supervisorExists = existingSupervisors.stream()
@@ -91,7 +89,7 @@ public class SupervisorsPageService {
 
 		// Send password via email
 		try {
-			sendCredentialsEmail(request.email.trim(), session.getName(), newSupervisor.getId(), password, false);
+			sessionMemberService.applyAndEmailNewPassword(session, newSupervisor);
 			return "Supervisor added successfully and password sent via email";
 		} catch (Exception e) {
 			return "Supervisor added successfully, but email failed to send: " + e.getMessage();
@@ -102,33 +100,5 @@ public class SupervisorsPageService {
 	public void removeSupervisor(String supervisorId) {
 		// Remove supervisor from database
 		db.getSupervisors().cascadeRemoveItem(db, supervisorId);
-	}
-
-	// Send email to supervisor
-	private void sendCredentialsEmail(String email, String sessionName, String supervisorId, String password,
-			boolean isNewPassword) throws Exception {
-		String subject = isNewPassword ? "AAU Grouping System - New Password" : "AAU Grouping System - Supervisor Access";
-		String actionText = isNewPassword ? "Your password for the AAU Grouping System has been reset for"
-				: "You have been added as a supervisor for the";
-
-		String body = """
-				Hello,
-
-				%s session: %s
-
-				Your login credentials are:
-				ID: %s
-				Password: %s
-
-				Please use your ID and password to access the AAU Grouping System.
-
-				Best regards,
-				AAU Grouping System""".formatted(actionText, sessionName, supervisorId, password);
-
-		emailService.builder()
-				.to(email)
-				.subject(subject)
-				.text(body)
-				.send();
 	}
 }

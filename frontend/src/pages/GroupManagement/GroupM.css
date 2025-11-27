@@ -30,6 +30,12 @@
 	border-color: #3498db;
 }
 
+.toLarge-groups {
+	background-color: #2734ae;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
 .completed-groups {
 	background-color: #27ae60;
 	font-weight: 500;

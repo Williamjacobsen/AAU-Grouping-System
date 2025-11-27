@@ -1,7 +1,7 @@
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
 import fetchSessionGroups from "hooks/useGetSessionGroups";
 
-export default function useGroupActions(setError, sessionId, setGroups) {
+export default function useGroupActions(sessionId, setGroups) {
 
 	const createGroupWithStudents = async (foundingStudentId, secondStudentId, groupName) => {
 		try {
@@ -16,12 +16,13 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Failed to create group: " + error);
+			alert("Failed to create group: " + error);
+			throw error;
 		}
 	};
 
@@ -34,12 +35,12 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Error moving student");
+			alert("Error moving student");
 		}
 	};
 
@@ -52,12 +53,12 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Error moving group members");
+			alert("Error moving group members");
 		}
 	};
 
@@ -76,7 +77,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				)
 			);
 		} catch (error) {
-			setError("Failed to assign supervisor: " + error);
+			alert("Failed to assign supervisor: " + error);
 		}
 	};
 
@@ -92,7 +93,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
@@ -102,7 +103,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				)
 			);
 		} catch (error) {
-			setError("Failed to assign project: " + error);
+			alert("Failed to assign project: " + error);
 		}
 	};
 

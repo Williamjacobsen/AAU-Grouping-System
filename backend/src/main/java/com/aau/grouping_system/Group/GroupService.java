@@ -71,6 +71,7 @@ public class GroupService {
 		// Removes student, but doesnt delete the group (for merging)
 		group.getStudentIds().remove(student.getId());
 		student.setGroupId(null);
+		group.setSupervisorId(null);
 
 		logGroupActivity("left", student, group.getId());
 	}

@@ -6,6 +6,12 @@ export default function useSplitGroupsIntoSections(groups, session) {
 	// Fraction of min group size required to call a group "almost completed" instead of "incomplete"
 	const almostCompleteFraction = 0.5;
 
+	const toLargeGroups = useMemo(() => {
+		return groups.filter(group =>
+			group.studentIds?.length >= session?.minGroupSize && group.studentIds?.length >= session?.maxGroupSize
+		);
+	}, [groups, session]);
+
 	const completedGroups = useMemo(() => {
 		return groups.filter(group =>
 			group.studentIds?.length >= session?.minGroupSize && group.studentIds?.length <= session?.maxGroupSize
@@ -30,5 +36,5 @@ export default function useSplitGroupsIntoSections(groups, session) {
 		);
 	}, [groups]);
 
-	return { completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member };
+	return { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member };
 }

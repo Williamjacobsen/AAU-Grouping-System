@@ -177,7 +177,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 					</div>
 					<div className="group-members-list">
 						{getUserGroup().studentIds.map((studentId, index) =>
-							<div>{index + 1}) {students.find(student => student.id === studentId).name}</div>
+							<div>{index + 1} {students.find(student => student.id === studentId).name}</div>
 						)}
 					</div>
 
