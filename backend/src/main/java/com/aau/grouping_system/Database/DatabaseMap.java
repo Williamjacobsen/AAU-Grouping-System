@@ -26,7 +26,7 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 		cascadeRemoveItem(db, item.getId());
 	}
 
-	public T addItem(Database db, DatabaseItemChildGroup parentItemChildGroup, T item) {
+	public T addItem(DatabaseItemChildGroup parentItemChildGroup, T item) {
 
 		// Add item to this map
 		String id = getNewItemId();

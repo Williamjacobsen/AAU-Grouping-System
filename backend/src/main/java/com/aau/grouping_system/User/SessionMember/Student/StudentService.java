@@ -17,7 +17,6 @@ public class StudentService {
 
 	public Student addStudent(Session session, String email, String name) {
 		Student newStudent = db.getStudents().addItem(
-				db,
 				session.getStudents(),
 				new Student(email, name, session));
 		return newStudent;

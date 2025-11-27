@@ -17,7 +17,6 @@ public class SupervisorService {
 
 	public Supervisor addSupervisor(Session session, String email, String password, String name) {
 		Supervisor newSupervisor = db.getSupervisors().addItem(
-				db,
 				session.getSupervisors(),
 				new Supervisor(email, name, session));
 		return newSupervisor;

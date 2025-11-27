@@ -59,7 +59,6 @@ public class SessionSetupService {
 
 		Consumer<String> createUserFunction = (newEmail) -> {
 			db.getSupervisors().addItem(
-					db,
 					session.getSupervisors(),
 					new Supervisor(newEmail, "Not specified", session));
 		};
@@ -80,7 +79,6 @@ public class SessionSetupService {
 
 		Consumer<String> createUserFunction = (newEmail) -> {
 			db.getStudents().addItem(
-					db,
 					session.getStudents(),
 					new Student(newEmail, "Not specified", session));
 		};

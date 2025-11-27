@@ -81,7 +81,6 @@ public class SupervisorsPageService {
 		String password = UUID.randomUUID().toString();
 
 		Supervisor newSupervisor = db.getSupervisors().addItem(
-				db,
 				session.getSupervisors(),
 				new Supervisor(
 						request.email.trim(),

@@ -1,0 +1,54 @@
+@startuml example
+
+' Requirements: 
+' - The "PlantUML" VS Code extension.
+' - Download the latest version of Graphviz (https://graphviz.org/download/)
+
+' Tutorial: https://www.youtube.com/watch?v=EM-cvRubP4g&t=654s
+' To render the UML, right click inside this document and press "Preview Current Diagram (ALT+D)"
+
+class Database {
+	- DatabaseData : data
+}
+
+class DatabaseData {
+	- coordinators : DatabaseMap<Coordinator>
+	- sessions : DatabaseMap<Session>
+	- supervisors : DatabaseMap<Supervisor>
+	- students : DatabaseMap<Student>
+	- projects : DatabaseMap<Project>
+	- groups : DatabaseMap<Group>
+}
+
+class DatabaseMap<T extends DatabaseItem> {
+	- id : Integer
+	- map : ConcurrentHashMap<String, T>
+	+ addItem(Database db, T item)
+	+ cascadeRemoveItem(Database db, String id)
+	+ getItem(String id)
+	+ getItems(CopyOnWriteArrayList<String> ids)
+	+ getAllItems()
+}
+
+class DatabaseItem {
+	- id : String
+	- childItemGroups : CopyOnWriteArrayList<DatabaseItemChildGroup>
+	- parentItemChildGroup : DatabaseItemChildGroup
+	~ cascadeRemoveChildItems(Database db)
+	~ disconnectFromParentItem(Database db)
+	~ addChildItemGroup(DatabaseItemChildGroup childGroup)
+}
+
+class DatabaseChildGroup {
+	- databaseMapId : Integer
+	- childItemIds : CopyOnWriteArrayList<String>
+	+ getItems(Database db)
+}
+
+Database *-- DatabaseData
+DatabaseData *-- DatabaseMap
+DatabaseMap *-- DatabaseItem
+DatabaseItem *-- DatabaseChildGroup
+
+
+@enduml

@@ -22,7 +22,6 @@ public class GroupService {
 
 	public void createGroup(Session session, String name, Student foundingMember) {
 		Group newGroup = db.getGroups().addItem(
-				db,
 				session.getGroups(),
 				new Group(session, name));
 		joinGroup(newGroup, foundingMember);
@@ -30,7 +29,6 @@ public class GroupService {
 
 	public Group createGroupAndReturnObject(Session session, String name, Student foundingMember) {
 		Group newGroup = db.getGroups().addItem(
-				db,
 				session.getGroups(),
 				new Group(session, name));
 		joinGroup(newGroup, foundingMember);

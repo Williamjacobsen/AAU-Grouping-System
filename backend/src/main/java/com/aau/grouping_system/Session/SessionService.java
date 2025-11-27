@@ -25,7 +25,6 @@ public class SessionService {
 
 	public Session createSession(String sessionName, Coordinator coordinator) {
 		Session newSession = db.getSessions().addItem(
-				db,
 				coordinator.getSessions(),
 				new Session(db, coordinator, sessionName));
 		return newSession;
