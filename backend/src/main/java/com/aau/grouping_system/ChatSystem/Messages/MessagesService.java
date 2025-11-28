@@ -1,55 +1,74 @@
 package com.aau.grouping_system.ChatSystem.Messages;
 
 import java.util.Deque;
-import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import org.springframework.stereotype.Service;
 
+import com.aau.grouping_system.ChatSystem.ChatRoom;
 import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService;
-import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService.MessageDatabaseFormat;
+import com.aau.grouping_system.Database.Database;
 
 @Service
 public class MessagesService {
-	private final WebSocketService webSocketService;
 
-	public MessagesService(WebSocketService webSocketService) {
-		this.webSocketService = webSocketService;
+	private final Database db;
+
+	public MessagesService(Database db) {
+		this.db = db;
+	}
+
+	private ChatRoom getChatRoom(String conversationKey) {
+		String chatRoomId = db.getChatRoomKeyIndex().get(conversationKey);
+
+		if (chatRoomId == null) {
+			return null;
+		}
+
+		return db.getChatRooms().getItem(chatRoomId);
 	}
 
 	public Deque<WebSocketService.MessageDatabaseFormat> getAllGroupMessage(String groupId) {
-		return webSocketService.groupMessages.get(groupId);
+		ChatRoom room = getChatRoom(groupId);
+
+		return (room != null) ? room.getMessages() : new ConcurrentLinkedDeque<>();
 	}
 
 	public Deque<WebSocketService.MessageDatabaseFormat> getAllPrivateMessages(
 			String user1,
 			String user2) {
+
 		String conversationKey = WebSocketService.getConversationKey(user1, user2);
-		return webSocketService.privateMessages.get(conversationKey);
+		ChatRoom room = getChatRoom(conversationKey);
+
+		return (room != null) ? room.getMessages() : new ConcurrentLinkedDeque<>();
 	}
 
-	public int getGroupUnreadCount(String groupId, String username) {
-		return webSocketService.getUnreadCount(groupId, username, true);
-	}
+	public int getUnreadCount(String conversationKey, String username) {
+		ChatRoom chatRoom = getChatRoom(conversationKey);
 
-	public int getPrivateUnreadCount(String conversationKey, String username) {
-		return webSocketService.getUnreadCount(conversationKey, username, false);
+		if (chatRoom == null || chatRoom.getMessages().isEmpty())
+			return 0;
+
+		int maxId = chatRoom.getMessages().peekLast().id();
+		int lastRead = chatRoom.getLastReadMap().getOrDefault(username, -1);
+
+		return Math.max(0, (maxId - lastRead));
 	}
 
 	public ConcurrentHashMap<String, Integer> getAllUnreadMessages(String username) {
 		ConcurrentHashMap<String, Integer> result = new ConcurrentHashMap<>();
 
-		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.groupMessages.entrySet()) {
-			String key = groupEntry.getKey();
+		for (ChatRoom room : db.getChatRooms().getAllItems().values()) {
+			String key = room.getConversationKey();
 
-			result.put(key, getGroupUnreadCount(key, username));
-		}
-
-		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
-			String key = groupEntry.getKey();
-
-			if (key.contains(username)) {
-				result.put(key, getPrivateUnreadCount(key, username));
+			if (room.isGroup()) {
+				result.put(key, getUnreadCount(key, username));
+			} else {
+				if (key.contains(username)) {
+					result.put(key, getUnreadCount(key, username));
+				}
 			}
 		}
 
@@ -59,17 +78,19 @@ public class MessagesService {
 	public ConcurrentHashMap<String, Long> getChatRoomLastActivityTimestamps(String username) {
 		ConcurrentHashMap<String, Long> result = new ConcurrentHashMap<>();
 
-		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.groupMessages.entrySet()) {
-			String key = groupEntry.getKey();
+		for (ChatRoom room : db.getChatRooms().getAllItems().values()) {
+			if (room.getMessages().isEmpty())
+				continue;
 
-			result.put(key, webSocketService.groupMessages.get(key).peekLast().timestamp());
-		}
+			String key = room.getConversationKey();
+			long timestamp = room.getMessages().peekLast().timestamp();
 
-		for (Entry<String, Deque<MessageDatabaseFormat>> groupEntry : webSocketService.privateMessages.entrySet()) {
-			String key = groupEntry.getKey();
-
-			if (key.contains(username)) {
-				result.put(key, webSocketService.privateMessages.get(key).peekLast().timestamp());
+			if (room.isGroup()) {
+				result.put(key, timestamp);
+			} else {
+				if (key.contains(username)) {
+					result.put(key, timestamp);
+				}
 			}
 		}
 
