@@ -57,7 +57,6 @@ public class ProjectController {
 		}
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" }) // retrieves all projects from
 																																													// sessionid
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
@@ -69,7 +68,7 @@ public class ProjectController {
 		}
 
 		// Get that session’s projects and type cast to CopyOnWriteArrayList
-		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+		CopyOnWriteArrayList<Project> projects = db.getProjects().getItems(session.getProjects().getIds());
 
 		// Return them with 200 ok
 		return ResponseEntity.ok(projects);

@@ -40,10 +40,9 @@ abstract class DatabaseItem implements Serializable {
 }
 
 class DatabaseItemChildGroup implements Serializable {
-	- itemTypeDatabaseMapId : Integer
-	- childItemIds : CopyOnWriteArrayList<String>
-	+ getItems()
-	+ DatabaseItemChildGroup() constructor that adds this child group \nto its parent item's list of child groups
+	- databaseMapId : Integer
+	- itemIds : CopyOnWriteArrayList<String>
+	+ DatabaseItemChildGroup() constructor which adds this child group \nto its parent item's list of child groups
 }
 
 Database *-- DatabaseData

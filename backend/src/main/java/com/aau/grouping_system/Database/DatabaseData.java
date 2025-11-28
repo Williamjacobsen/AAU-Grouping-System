@@ -12,7 +12,10 @@ import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
 /// A container for saveable data.
-@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
+// We use @SuppressWarnings("unchecked") because the type-safety violation
+// warnings aren't true here because of Java's invariance of generics (see:
+// https://medium.com/@barbieri.santiago/understanding-invariance-in-java-generics-048cb891569e).
+@SuppressWarnings("unchecked")
 public class DatabaseData implements Serializable {
 
 	private final ConcurrentHashMap<Integer, DatabaseMap<? extends DatabaseItem>> maps = new ConcurrentHashMap<>();

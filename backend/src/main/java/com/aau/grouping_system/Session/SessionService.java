@@ -34,9 +34,8 @@ public class SessionService {
 		return db.getSessions().getItem(sessionId);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Session> getSessionsByCoordinator(Coordinator coordinator) {
-		return (CopyOnWriteArrayList<Session>) coordinator.getSessions().getItems(db);
+		return db.getSessions().getItems(coordinator.getSessions().getIds());
 	}
 
 	public boolean deleteSession(String sessionId, Coordinator coordinator) {
@@ -48,20 +47,18 @@ public class SessionService {
 		return true;
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Student> getStudentsBySessionId(String sessionId) {
 		Session s = getSession(sessionId);
 		if (s == null)
 			return new CopyOnWriteArrayList<>();
-		return (CopyOnWriteArrayList<Student>) s.getStudents().getItems(db);
+		return db.getStudents().getItems(s.getStudents().getIds());
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public CopyOnWriteArrayList<Supervisor> getSupervisorsBySessionId(String sessionId) {
 		Session s = getSession(sessionId);
 		if (s == null)
 			return new CopyOnWriteArrayList<>();
-		return (CopyOnWriteArrayList<Supervisor>) s.getSupervisors().getItems(db);
+		return db.getSupervisors().getItems(s.getSupervisors().getIds());
 	}
 
 	public boolean isQuestionnaireDeadlineExceeded(Session session) {
