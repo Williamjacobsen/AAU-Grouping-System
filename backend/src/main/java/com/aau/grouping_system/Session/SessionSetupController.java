@@ -5,6 +5,8 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.SessionMember;
 import com.aau.grouping_system.User.SessionMember.SessionMemberService;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -63,7 +65,7 @@ public class SessionSetupController {
 			HttpServletRequest servlet,
 			Session session,
 			emailNewPasswordsRecord record,
-			CopyOnWriteArrayList<SessionMember> sessionMembers) {
+			CopyOnWriteArrayList<? extends SessionMember> sessionMembers) {
 
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(session.getId(), coordinator);
@@ -80,7 +82,6 @@ public class SessionSetupController {
 	// unchecked cast + CopyOnWriteArrayList:
 	// getItems returns a raw CopyOnWriteArrayList from the database module.
 	// We know the content is always User, so the cast is safe.
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@PostMapping("/{sessionId}/emailNewPasswordTo/students")
 	public ResponseEntity<String> emailNewPasswordsToStudents(
 			HttpServletRequest servlet,
@@ -88,15 +89,13 @@ public class SessionSetupController {
 			@Valid @RequestBody emailNewPasswordsRecord record) {
 
 		Session session = requestRequirementService.requireSessionExists(sessionId);
-		CopyOnWriteArrayList<SessionMember> students = (CopyOnWriteArrayList<SessionMember>) session.getStudents()
-				.getItems(db);
+		CopyOnWriteArrayList<Student> students = db.getStudents().getItems(session.getStudents().getIds());
 
 		emailNewPasswordsToSessionMembers(servlet, session, record, students);
 
 		return ResponseEntity.ok("Emails have been sent to students.");
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@PostMapping("/{sessionId}/emailNewPasswordTo/supervisors")
 	public ResponseEntity<String> emailNewPasswordsToSupervisors(
 			HttpServletRequest servlet,
@@ -104,8 +103,7 @@ public class SessionSetupController {
 			@Valid @RequestBody emailNewPasswordsRecord record) {
 
 		Session session = requestRequirementService.requireSessionExists(sessionId);
-		CopyOnWriteArrayList<SessionMember> supervisors = (CopyOnWriteArrayList<SessionMember>) session.getSupervisors()
-				.getItems(db);
+		CopyOnWriteArrayList<Supervisor> supervisors = db.getSupervisors().getItems(session.getSupervisors().getIds());
 
 		emailNewPasswordsToSessionMembers(servlet, session, record, supervisors);
 

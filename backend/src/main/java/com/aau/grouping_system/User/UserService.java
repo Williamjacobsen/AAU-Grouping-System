@@ -39,7 +39,7 @@ public class UserService {
 
 	/// "User" is allowed to be null (in case we're dealing with a coordinator sign
 	/// up attempt).
-	@SuppressWarnings({ "unchecked", "unused" }) // Type-safety violations aren't true here.
+	@SuppressWarnings("unused")
 	public boolean isEmailDuplicate(String email, User user) {
 
 		Collection<? extends User> existingUsers;
@@ -54,11 +54,13 @@ public class UserService {
 				break;
 			case Supervisor supervisor:
 				Session supervisorSession = db.getSessions().getItem(supervisor.getSessionId());
-				existingUsers = (Collection<User>) supervisorSession.getSupervisors().getItems(db);
+				existingUsers = (Collection<? extends User>) db.getSupervisors()
+						.getItems(supervisorSession.getSupervisors().getIds());
 				break;
 			case Student student:
 				Session studentSession = db.getSessions().getItem(student.getSessionId());
-				existingUsers = (Collection<User>) studentSession.getStudents().getItems(db);
+				existingUsers = (Collection<? extends User>) db.getStudents()
+						.getItems(studentSession.getStudents().getIds());
 				break;
 			default:
 				throw new IllegalArgumentException("Passed in a User.Role that is not a valid value.");
@@ -74,7 +76,7 @@ public class UserService {
 
 	/// Except for coordinators, users in the same session with the same role cannot
 	/// have duplicate names.
-	@SuppressWarnings({ "unchecked", "unused" }) // Type-safety violations aren't true here.
+	@SuppressWarnings("unused")
 	public boolean isNameDuplicate(String name, User user) {
 
 		Collection<? extends User> existingUsers;
@@ -83,11 +85,13 @@ public class UserService {
 				return false;
 			case Supervisor supervisor:
 				Session supervisorSession = db.getSessions().getItem(supervisor.getSessionId());
-				existingUsers = (Collection<User>) supervisorSession.getSupervisors().getItems(db);
+				existingUsers = (Collection<? extends User>) db.getSupervisors()
+						.getItems(supervisorSession.getSupervisors().getIds());
 				break;
 			case Student student:
 				Session studentSession = db.getSessions().getItem(student.getSessionId());
-				existingUsers = (Collection<User>) studentSession.getStudents().getItems(db);
+				existingUsers = (Collection<? extends User>) db.getStudents()
+						.getItems(studentSession.getStudents().getIds());
 				break;
 			default:
 				throw new IllegalArgumentException("Passed in a User.Role that is not a valid value.");

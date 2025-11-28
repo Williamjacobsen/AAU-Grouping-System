@@ -16,6 +16,8 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +40,6 @@ public class NotifyParticipantsController {
 		this.db = db;
 	}
 
-	@SuppressWarnings("unchecked")
 	@PostMapping("/{sessionId}/notify")
 	public ResponseEntity<String> notifyParticipants(
 			HttpServletRequest servlet,
@@ -48,9 +49,9 @@ public class NotifyParticipantsController {
 		Coordinator coordinator = requestRequirementService.requireUserCoordinatorExists(servlet);
 		requestRequirementService.requireCoordinatorIsAuthorizedSession(sessionId, coordinator);
 
-		CopyOnWriteArrayList<User> students = (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
-		CopyOnWriteArrayList<User> supervisors = (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
-		CopyOnWriteArrayList<Group> groups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+		CopyOnWriteArrayList<Student> students = db.getStudents().getItems(session.getStudents().getIds());
+		CopyOnWriteArrayList<Supervisor> supervisors = db.getSupervisors().getItems(session.getSupervisors().getIds());
+		CopyOnWriteArrayList<Group> groups = db.getGroups().getItems(session.getGroups().getIds());
 
 		String subject = String.format("Groups ready for session: %s", session.getName());
 

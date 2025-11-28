@@ -108,10 +108,9 @@ public class GroupService {
 		student.setActiveJoinRequestGroupId(null);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public void requireGroupNameNotDuplicate(Session session, String name) {
 
-		CopyOnWriteArrayList<Group> sessionGroups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+		CopyOnWriteArrayList<Group> sessionGroups = db.getGroups().getItems(session.getGroups().getIds());
 
 		boolean alreadyExists = sessionGroups.stream()
 				.anyMatch(group -> group.getName().equals(name));

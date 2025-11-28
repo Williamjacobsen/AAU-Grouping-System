@@ -1,5 +1,4 @@
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
-import fetchSessionGroups from "hooks/useGetSessionGroups";
 
 export default function useGroupActions(sessionId, setGroups) {
 

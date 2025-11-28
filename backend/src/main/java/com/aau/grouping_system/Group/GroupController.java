@@ -106,7 +106,6 @@ public class GroupController {
 		return ResponseEntity.ok(group);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(
 			HttpServletRequest servlet,
@@ -116,7 +115,7 @@ public class GroupController {
 		User user = requestRequirementService.requireUserExists(servlet);
 		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
-		CopyOnWriteArrayList<Group> sessionGroups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+		CopyOnWriteArrayList<Group> sessionGroups = db.getGroups().getItems(session.getGroups().getIds());
 
 		return ResponseEntity.ok(sessionGroups);
 	}
@@ -371,7 +370,7 @@ public class GroupController {
 			groupService.requireGroupNameNotDuplicate(session, groupName);
 
 			Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
-			
+
 			if (!foundingStudentId.equals(secondStudentId)) {
 				groupService.joinGroup(newGroup, secondMember);
 			}

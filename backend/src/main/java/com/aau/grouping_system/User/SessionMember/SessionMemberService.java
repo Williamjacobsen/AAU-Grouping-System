@@ -75,7 +75,7 @@ public class SessionMemberService {
 		}
 	}
 
-	public void applyAndEmailNewPasswords(Session session, CopyOnWriteArrayList<SessionMember> sessionMembers) {
+	public void applyAndEmailNewPasswords(Session session, CopyOnWriteArrayList<? extends SessionMember> sessionMembers) {
 		System.out.println("--- Emailing login codes ---");
 		for (SessionMember sessionMember : sessionMembers) {
 			applyAndEmailNewPassword(session, sessionMember);
