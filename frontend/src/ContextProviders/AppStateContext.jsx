@@ -17,7 +17,7 @@ import { useAuth } from "./AuthProvider";
 
 const AppStateContext = createContext(null);
 
-const LONG_POLLING_INTERVAL = 20_000;
+const SHORT_POLLING_INTERVAL = 20_000;
 
 export function AppStateProvider({ children }) {
   const { user } = useAuth();
@@ -25,13 +25,13 @@ export function AppStateProvider({ children }) {
   const { isLoading: loadingSession, session: sessionData } =
     useGetSessionByParameter();
   const { isLoading: loadingProjects, projects: projectData } =
-    useGetSessionProjectsByParam(LONG_POLLING_INTERVAL);
+    useGetSessionProjectsByParam(SHORT_POLLING_INTERVAL);
   const { isLoading: loadingGroups, groups: groupData } =
-    useGetSessionGroupsByParam(LONG_POLLING_INTERVAL);
+    useGetSessionGroupsByParam(SHORT_POLLING_INTERVAL);
   const { isLoading: loadingStudents, students: studentData } =
-    useGetSessionStudentsByParam(LONG_POLLING_INTERVAL);
+    useGetSessionStudentsByParam(SHORT_POLLING_INTERVAL);
   const { isLoading: loadingSupervisors, supervisors: supervisorData } =
-    useGetSessionSupervisorsByParam(LONG_POLLING_INTERVAL);
+    useGetSessionSupervisorsByParam(SHORT_POLLING_INTERVAL);
 
   const [session, setSession] = useState(null);
   const [projects, setProjects] = useState([]);
