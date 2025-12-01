@@ -6,7 +6,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
-import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService.Message;
+import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService.IncommingMessage;;
 
 @Controller
 public class WebSocketController {
@@ -18,13 +18,13 @@ public class WebSocketController {
 	}
 
 	@MessageMapping("/group/{groupId}/send")
-	public void sendGroupMessage(@DestinationVariable String groupId, Message message, Principal principal) {
+	public void sendGroupMessage(@DestinationVariable String groupId, IncommingMessage message, Principal principal) {
 		System.out.println(String.format("Received Websocket: /group/%s/send", groupId));
 		webSocketService.sendGroupMessage(groupId, message, principal);
 	}
 
 	@MessageMapping("/private/send")
-	public void sendPrivateMessage(Message message, Principal principal) {
+	public void sendPrivateMessage(IncommingMessage message, Principal principal) {
 		System.out.println("Received Websocket: /private/send");
 		webSocketService.sendPrivateMessage(message, principal);
 	}

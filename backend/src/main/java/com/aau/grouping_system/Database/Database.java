@@ -1,9 +1,10 @@
 package com.aau.grouping_system.Database;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.springframework.stereotype.Component;
 
-//import com.aau.grouping_system.ChatSystem.GroupMessage;
-//import com.aau.grouping_system.ChatSystem.PrivateMessage;
+import com.aau.grouping_system.ChatSystem.ChatRoom;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
@@ -45,6 +46,14 @@ public class Database {
 
 	public DatabaseMap<Group> getGroups() {
 		return data.getGroups();
+	}
+
+	public DatabaseMap<ChatRoom> getChatRooms() {
+		return data.getChatRooms();
+	}
+
+	public ConcurrentHashMap<String, String> getChatRoomKeyIndex() {
+		return data.getChatRoomKeyIndex();
 	}
 
 	// @formatter:off

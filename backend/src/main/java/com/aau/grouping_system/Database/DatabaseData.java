@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.aau.grouping_system.ChatSystem.ChatRoom;
 import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.Session.Session;
@@ -27,6 +28,8 @@ public class DatabaseData implements Serializable {
 	DatabaseMap<Student> students = (DatabaseMap<Student>) addMap();
 	DatabaseMap<Project> projects = (DatabaseMap<Project>) addMap();
 	DatabaseMap<Group> groups = (DatabaseMap<Group>) addMap();
+	DatabaseMap<ChatRoom> chatRooms = (DatabaseMap<ChatRoom>) addMap();
+	private final ConcurrentHashMap<String, String> chatRoomKeyIndex = new ConcurrentHashMap<>();
 
 	public DatabaseMap<? extends DatabaseItem> addMap() {
 		Integer newId = idGenerator.incrementAndGet();
@@ -43,4 +46,6 @@ public class DatabaseData implements Serializable {
 	DatabaseMap<Student> getStudents() { return students; }
 	DatabaseMap<Project> getProjects() { return projects; }
 	DatabaseMap<Group> getGroups() { return groups; }
+	public DatabaseMap<ChatRoom> getChatRooms() { return chatRooms; }
+	public ConcurrentHashMap<String, String> getChatRoomKeyIndex() { return chatRoomKeyIndex; }
 }
