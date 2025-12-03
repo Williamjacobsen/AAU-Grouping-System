@@ -19,8 +19,8 @@ export default function Project() {
 			<div className="loading-message">Fetching projects from database...</div>
 		);
 	}
-// render main page with title and table and pass down to projectsTable component
-	return ( 
+	// render main page with title and table and pass down to projectsTable component
+	return (
 		<div className="projects-container">
 			<h1 className="projects-title">List of Projects</h1>
 			<ProjectsTable
