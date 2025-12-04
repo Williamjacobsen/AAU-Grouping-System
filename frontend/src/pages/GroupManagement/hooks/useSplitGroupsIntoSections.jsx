@@ -8,7 +8,7 @@ export default function useSplitGroupsIntoSections(groups, session) {
 
 	const toLargeGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.studentIds?.length >= session?.minGroupSize && group.studentIds?.length >= session?.maxGroupSize
+			group.studentIds?.length > session?.minGroupSize && group.studentIds?.length > session?.maxGroupSize
 		);
 	}, [groups, session]);
 

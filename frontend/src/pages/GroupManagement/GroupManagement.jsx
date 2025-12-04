@@ -111,8 +111,8 @@ export default function GroupManagement() {
 					<h1>Group Management</h1>
 					<h3>How to move all group members from A to B?</h3>
 					<p>Click on the name of group A and then click on the name of group B</p>
-					<h3>How to move a student from A to B?</h3>
-					<p>Click on the name of the student A and then click on the name of group B</p>
+					<h3>How to move a student from group A to group B?</h3>
+					<p>Click on the name of the student in group A and then click on the list of studentnames in group B</p>
 					<h3>How to create a new group?</h3>
 					<p>Click on the name of a student without a group, then click on the name of the same student (single student group) or another student without a group.
 						You will then be prompted to enter a name for the new group.</p>
