@@ -23,7 +23,7 @@ class DatabaseData implements Serializable {
 class DatabaseMap<T extends DatabaseItem> implements Serializable {
 	- id : Integer
 	- map : ConcurrentHashMap<String, T>
-	+ addItem(T item)
+	+ addItem(T item, DatabaseItemChildGroup parentItemChildGroup)
 	+ cascadeRemoveItem(String id)
 	+ getItem(String id)
 	+ getItems(CopyOnWriteArrayList<String> ids)
@@ -41,8 +41,7 @@ abstract class DatabaseItem implements Serializable {
 
 class DatabaseItemChildGroup implements Serializable {
 	- databaseMapId : Integer
-	- itemIds : CopyOnWriteArrayList<String>
-	+ DatabaseItemChildGroup() constructor which adds this child group \nto its parent item's list of child groups
+	- childItemIds : CopyOnWriteArrayList<String>
 }
 
 Database *-- DatabaseData

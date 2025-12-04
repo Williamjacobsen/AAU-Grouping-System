@@ -2,10 +2,10 @@ import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadline
 import React, { useState, memo } from "react";
 
 const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // component to prevent re-rendering
-// state for input fields when creating new project
+	// state for input fields when creating new project
 	const [newProjectName, setNewProjectName] = useState("");
 	const [newProjectDescription, setNewProjectDescription] = useState("");
-// state to track which project is expanded, and only allow one to be expanded
+	// state to track which project is expanded, and only allow one to be expanded
 	const [expandedProjectId, setExpandedProjectId] = useState(null);
 	const toggleExpanded = (projectId) =>
 		setExpandedProjectId((prev) => (prev === projectId ? null : projectId));
@@ -84,10 +84,10 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 				</tr>
 			</thead>
 			<tbody>
-				{projects !== null && projects.map((project) => ( 
+				{projects !== null && projects.map((project) => (
 					<tr key={project.id || project._id || project.name}>
 						<td className="project-name">{project.name}</td>
-						<td className="project-description"> 
+						<td className="project-description">
 							<div
 								className={`description-content ${expandedProjectId === project.id ? "expanded" : "collapsed"
 									}`}
