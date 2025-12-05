@@ -28,25 +28,14 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects, sessi
 				return;
 			}
 
-			// Only completed groups
-			const completedGroups = groups.filter(group => 
-				group.studentIds && 
-				group.studentIds.length >= (session?.minGroupSize || 1) && 
-				group.studentIds.length <= (session?.maxGroupSize || 100)
-			);
-
-			if (completedGroups.length === 0) {
-				alert("Error: Please ensure groups are complete.");
-				return;
-			}
 			
 			// Check if groups have supervisor
-			const completedGroupsWithoutSupervisors = completedGroups.filter(group => 
+			const groupsWithoutSupervisors = groups.filter(group => 
 				!group.supervisorId || 
 				(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
 			);
 			
-			if (completedGroupsWithoutSupervisors.length > 0) {
+			if (groupsWithoutSupervisors.length > 0) {
 				alert("Error: Groups must have supervisors assigned.");
 				return;
 			}
