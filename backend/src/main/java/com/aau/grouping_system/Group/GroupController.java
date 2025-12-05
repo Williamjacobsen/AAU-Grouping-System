@@ -23,7 +23,6 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -192,12 +191,6 @@ public class GroupController {
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			Session session = requestRequirementService.requireSessionExists(sessionId);
-			int maxGroupSize = session.getMaxGroupSize();
-
-			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > maxGroupSize) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
-			}
 
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
@@ -206,7 +199,7 @@ public class GroupController {
 
 				// Use safe leave (doesnt delete the group, if its empty)
 				groupService.leaveGroupWithoutDeleting(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
+				groupService.joinGroupWithoutSizeCheck(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
