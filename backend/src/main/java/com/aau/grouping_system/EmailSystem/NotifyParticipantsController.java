@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.Database.Database;
@@ -25,6 +26,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @RestController
 @Validated
+@RequestMapping("/api")
 public class NotifyParticipantsController {
 
 	private final Database db;

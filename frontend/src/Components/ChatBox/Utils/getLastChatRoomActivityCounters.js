@@ -1,5 +1,5 @@
 export default async function getUnreadMessagesCounters(username, setChatRoomLastActivity) {
-	await fetch(`http://localhost:8080/user/${username}/messages/all/most-recent-timestamps`)
+	await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/${username}/messages/all/most-recent-timestamps`)
 		.then((response) => response.json())
 		.then((json) => {
 			console.log(json)

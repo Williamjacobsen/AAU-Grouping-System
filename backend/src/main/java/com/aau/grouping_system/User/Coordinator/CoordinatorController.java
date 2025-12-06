@@ -23,7 +23,7 @@ import jakarta.validation.constraints.*;
 
 @RestController // singleton bean
 @Validated // enables method-level validation
-@RequestMapping("/coordinator")
+@RequestMapping("/api/coordinator")
 public class CoordinatorController {
 
 	private final CoordinatorService coordinatorService;

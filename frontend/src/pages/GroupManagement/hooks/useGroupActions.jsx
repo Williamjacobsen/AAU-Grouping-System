@@ -6,7 +6,7 @@ export default function useGroupActions(sessionId, setGroups) {
 		try {
 			const encodedGroupName = encodeURIComponent(groupName); // Encode groupName for URL safety
 			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/createGroupWithStudent/${foundingStudentId}/${secondStudentId}/${encodedGroupName}`,
+				`${process.env.REACT_APP_API_BASE_URL}/api/groups/${sessionId}/createGroupWithStudent/${foundingStudentId}/${secondStudentId}/${encodedGroupName}`,
 				{
 					method: "POST",
 					credentials: "include"
@@ -27,7 +27,7 @@ export default function useGroupActions(sessionId, setGroups) {
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
@@ -45,7 +45,7 @@ export default function useGroupActions(sessionId, setGroups) {
 
 	const moveAllMembers = async (fromGroupId, toGroupId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/groups/${fromGroupId}/move-members/${toGroupId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
@@ -64,7 +64,7 @@ export default function useGroupActions(sessionId, setGroups) {
 	const assignSupervisor = async (groupId, supervisorId) => {
 		try {
 			await fetchWithDefaultErrorHandling(
-				`/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
+				`/api/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -83,7 +83,7 @@ export default function useGroupActions(sessionId, setGroups) {
 	const assignProject = async (groupId, projectId) => {
 		try {
 			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupAssignedProject/${groupId}/${projectId}`,
+				`${process.env.REACT_APP_API_BASE_URL}/api/groups/${sessionId}/modifyGroupAssignedProject/${groupId}/${projectId}`,
 				{
 					method: "POST",
 					credentials: "include"

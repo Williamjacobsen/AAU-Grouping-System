@@ -85,7 +85,7 @@ export default function StudentPage() {
 			setIsConfirmationPopUpOperationLoading(true);
 
 			await fetchWithDefaultErrorHandling(
-				`/student/${studentId}`,
+				`/api/student/${studentId}`,
 				{
 					method: "DELETE",
 					credentials: "include",
@@ -113,7 +113,7 @@ export default function StudentPage() {
 			setIsConfirmationPopUpOperationLoading(true);
 
 			await fetchWithDefaultErrorHandling(
-				`/student/${studentId}/reset-password`,
+				`/api/student/${studentId}/reset-password`,
 				{
 					method: "POST",
 					credentials: "include",

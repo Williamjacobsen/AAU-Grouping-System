@@ -25,7 +25,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 	}
 
 	const onDelete = (project) => { // handles project deletion via API call
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/project/delete/${project.id}/${session.id}`,
+		fetch(`${process.env.REACT_APP_API_BASE_URL}/api/project/delete/${project.id}/${session.id}`,
 			{
 				method: 'DELETE',
 				credentials: "include"
@@ -48,7 +48,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 			description: newProjectDescription,
 		};
 
-		await fetch(`${process.env.REACT_APP_API_BASE_URL}/project/create/${session.id}/${newProjectName}/${newProjectDescription}`, {
+		await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/project/create/${session.id}/${newProjectName}/${newProjectDescription}`, {
 			method: 'POST',
 			credentials: "include",
 			headers: {
