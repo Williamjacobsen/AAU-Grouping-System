@@ -24,17 +24,19 @@ const NotifyButton = memo(({ sessionId }) => {
 				return;
 			}
 
-			console.log("groups", groups);
-			console.log("students", students);
+			// Check if groups have students
+			const groupsWithStudents = groups.filter(group =>
+				group.students && group.students.length > 0
+			);
 
 			// Check if groups have supervisor
-			const groupsWithoutSupervisors = groups.filter(group =>
+			const groupsWithoutSupervisors = groupsWithStudents.filter(group =>
 				!group.supervisorId ||
 				(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
 			);
 
 			// Check if groups have project
-			const groupsWithoutProjects = groups.filter(group =>
+			const groupsWithoutProjects = groupsWithStudents.filter(group =>
 				!group.assignedProjectId ||
 				(typeof group.assignedProjectId === 'string' && group.assignedProjectId.trim() === '')
 			);

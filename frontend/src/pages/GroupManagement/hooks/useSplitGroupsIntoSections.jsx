@@ -9,24 +9,28 @@ export default function useSplitGroupsIntoSections(groups, session) {
 	const toLargeGroups = useMemo(() => {
 		return groups.filter(group =>
 			group.studentIds?.length > session?.minGroupSize && group.studentIds?.length > session?.maxGroupSize
+			&& group.studentIds?.length !== 0
 		);
 	}, [groups, session]);
 
 	const completedGroups = useMemo(() => {
 		return groups.filter(group =>
 			group.studentIds?.length >= session?.minGroupSize && group.studentIds?.length <= session?.maxGroupSize
+			&& group.studentIds?.length !== 0
 		);
 	}, [groups, session]);
 
 	const almostCompletedGroups = useMemo(() => {
 		return groups.filter(group =>
 			group.studentIds?.length >= session?.minGroupSize * almostCompleteFraction && group.studentIds?.length < session?.minGroupSize
+			&& group.studentIds?.length !== 0
 		);
 	}, [groups, session]);
 
 	const incompleteGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.studentIds?.length > 1 && group.studentIds?.length < session?.minGroupSize * almostCompleteFraction
+			group.studentIds?.length > 1 && group.studentIds?.length < session?.minGroupSize * almostCompleteFraction 
+			&& group.studentIds?.length !== 0
 		);
 	}, [groups, session]);
 
