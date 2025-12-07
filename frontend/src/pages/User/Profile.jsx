@@ -147,6 +147,10 @@ export default function Profile() {
 			{error && (<div className="error-box">{error}</div>)}
 			{success && (<div className="success-box">{success}</div>)}
 
+			<button className="sign-out" onClick={handleLogout}>
+				Log Out
+			</button>
+
 			<div className="text">
 				<p><b>Name:</b> {user.name}</p>
 				<p><b>Email:</b> {user.email}</p>
@@ -213,12 +217,7 @@ export default function Profile() {
 						Update Password
 					</button>
 				</div>
-			}
-			<hr />
-
-			<button className="sign-up" onClick={handleLogout}>
-				Log Out
-			</button>
+			}	
 		</div>
 	);
 }
