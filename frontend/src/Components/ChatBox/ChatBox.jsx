@@ -35,7 +35,7 @@ export default function ChatBox() {
   useSyncMessagesData(messagesByRoom, setLastActivityByRoom);
 
   useEffect(() => {
-    chatSystem.current = new ChatSystem("http://localhost:8080/ws", user.name);
+    chatSystem.current = new ChatSystem(`${process.env.REACT_APP_API_BASE_URL}/ws`, user.name);
 
     chatSystem.current.connect(() => {
       handleSubscriptions(chatRooms, chatSystem, setMessagesByRoom, user.name, students);

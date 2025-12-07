@@ -33,7 +33,7 @@ import jakarta.validation.constraints.NotNull;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/groups")
+@RequestMapping("/api/groups")
 public class GroupController {
 
 	private final Database db;

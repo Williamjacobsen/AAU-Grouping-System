@@ -12,7 +12,7 @@ export function useGetStudent(studentId) {
 		(async () => {
 			try {
 				const response = await fetchWithDefaultErrorHandling(
-					`/student/${studentId}`,
+					`/api/student/${studentId}`,
 					{
 						credentials: "include",
 						method: "GET"

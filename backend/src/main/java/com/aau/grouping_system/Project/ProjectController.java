@@ -27,7 +27,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @RestController // handles CRUD ops
 @Validated // enables method-level validation
-@RequestMapping("/project") // mapping, all URLs that has /project are routed to this controller
+@RequestMapping("/api/project") // mapping, all URLs that has /project are routed to this controller
 public class ProjectController {
 
 	private final Database db; // storage in db (final never changes once set)

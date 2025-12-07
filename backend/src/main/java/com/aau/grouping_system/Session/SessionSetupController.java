@@ -21,7 +21,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/sessionSetup")
+@RequestMapping("/api/sessionSetup")
 public class SessionSetupController {
 
 	private final Database db;

@@ -32,7 +32,7 @@ import jakarta.validation.constraints.*;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/sessions")
+@RequestMapping("/api/sessions")
 public class SessionController {
 
 	private final Database db;

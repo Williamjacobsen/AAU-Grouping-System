@@ -5,7 +5,7 @@ import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionSupervisors(sessionId) {
   const response = await fetchWithDefaultErrorHandling(
-    `/sessions/${sessionId}/getSupervisors`,
+    `/api/sessions/${sessionId}/getSupervisors`,
     {
       credentials: "include",
       method: "GET",

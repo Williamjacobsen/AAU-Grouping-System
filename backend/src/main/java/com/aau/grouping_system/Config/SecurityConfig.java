@@ -1,6 +1,5 @@
 package com.aau.grouping_system.Config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,11 +12,8 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Configuration
 public class SecurityConfig {
 
-	@Autowired
-	private CorsConfigurationSource corsConfigurationSource;
-
 	@Bean
-	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain filterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
 		http
 				.cors(cors -> cors.configurationSource(corsConfigurationSource))
 				.csrf(csrf -> csrf.disable()) // disables CSRF globally
