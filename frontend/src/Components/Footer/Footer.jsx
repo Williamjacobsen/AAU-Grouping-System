@@ -6,7 +6,6 @@ import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
 import "./Footer.css";
 
 export default function Footer() {
-  // Basic hooks used by the component
   const { user } = useAuth();
   const location = useLocation();
   const { isLoading: isLoadingSession, session } = useGetSessionByUserOrParameter(user);
