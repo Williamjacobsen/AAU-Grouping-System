@@ -9,8 +9,6 @@ export default function Footer() {
   // Basic hooks used by the component
   const { user } = useAuth();
   const location = useLocation();
-
-  // Always call hooks in the same order
   const { isLoading: isLoadingSession, session } = useGetSessionByUserOrParameter(user);
 
   // Get a session id if possible. Prefer the resolved session, otherwise use the id attached to user.
