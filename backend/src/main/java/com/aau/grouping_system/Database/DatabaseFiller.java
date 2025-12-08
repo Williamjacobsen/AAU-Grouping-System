@@ -70,15 +70,15 @@ public class DatabaseFiller {
 		// Create supervisors
 		ArrayList<Supervisor> su = new ArrayList<>();
 		su.add(supervisorService.addSupervisor(se.get(0), "su1@example.com", "su1",
-				"Supervisor name 1"));
+				"Alex Alexson"));
 		su.add(supervisorService.addSupervisor(se.get(0), "su2@example.com", "su2",
-				"Supervisor name 2"));
+				"Barry Barryson"));
 		su.add(supervisorService.addSupervisor(se.get(0), "su3@example.com", "su3",
-				"Supervisor name 3"));
+				"Christian Christianson"));
 		su.add(supervisorService.addSupervisor(se.get(1), "su4@example.com", "su4",
-				"Supervisor name 4"));
+				"Derrick Derrickson"));
 		su.add(supervisorService.addSupervisor(se.get(1), "su5@example.com", "su5",
-				"Supervisor name 5"));
+				"Edward Edwardson"));
 
 		// Create students
 		ArrayList<Student> st = new ArrayList<>();
