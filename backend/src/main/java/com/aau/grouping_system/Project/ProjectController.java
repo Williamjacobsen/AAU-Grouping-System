@@ -50,8 +50,7 @@ public class ProjectController {
 
 	private void requireStudentHasNotAlreadyCreatedProject(User user, Session session) {
 		// Get projects in session
-		@SuppressWarnings("unchecked")
-		CopyOnWriteArrayList<Project> sessionProjects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+		CopyOnWriteArrayList<Project> sessionProjects = db.getProjects().getItems(session.getProjects().getIds());
 		
 		// Handle null case safely
 		if (sessionProjects == null) {
