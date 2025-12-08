@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./User.css";
@@ -14,10 +14,6 @@ export default function Profile() {
 	const [success, setSuccess] = useState("");
 	const { user, isLoading: isLoadingUser, setUser } = useAuth();
 
-	function isUserNameNotSpecifiedYet() {
-		return user?.name === "Not specified";
-	}
-
 	useEffect(() => {
 		if (error) {
 			const timer = setTimeout(() => setError(""), 5000);
@@ -32,18 +28,12 @@ export default function Profile() {
 		}
 	}, [success]);
 
-	useEffect(() => {
-		if (isUserNameNotSpecifiedYet()) {
-			alert("You have not yet specified your name. Please do so.");
-		}
-	}, [user]);
-
 	if (isLoadingUser) return <>Checking authentication...</>;
 	if (!user) return navigate("/sign-in");
 
 	const handleEmailChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/modifyEmail`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/coordinator/modifyEmail`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newEmail }),
@@ -95,7 +85,7 @@ export default function Profile() {
 
 	const handleNameChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/modifyName`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/coordinator/modifyName`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newName }),
@@ -158,66 +148,73 @@ export default function Profile() {
 			</div>
 
 			<hr />
-
-			<div className="text">
-				<label className="label" style={isUserNameNotSpecifiedYet() ? { color: "crimson" } : null}>
-					Change Name
-					<input
-						type="text"
-						placeholder="New name"
-						style={isUserNameNotSpecifiedYet() ? { backgroundColor: "crimson" } : null}
-						onChange={(e) => setNewName(e.target.value)}
-						onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handleNameChange();
-								}
-							}}
-					/>
-				</label>
-				<button className="sign-in" onClick={handleNameChange}>
-					Update Name
-				</button>
-			</div>
-
-			<div className="text">
-				<label className="label">
-					Change Email
-					<input
-						type="email"
-						placeholder="New email"
-						onChange={(e) => setNewEmail(e.target.value)}
-						onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handleEmailChange();
-								}
-							}}
-					/>
-				</label>
-				<button className="sign-in" onClick={handleEmailChange}>
-					Update Email
-				</button>
-			</div>
-
+			{user.role !== "Coordinator" &&
+				<>
+					Since you are not a coordinator, you are not yourself allowed to change your name, email, and password.
+					If you want to change any of these, ask your coordinator to change them for you.
+				</>
+			}
 			{user.role === "Coordinator" &&
-				< div className="text">
-					<label className="label">
-						Change Password
-						<input
-							type="password"
-							placeholder="New password"
-							onChange={(e) => setNewPassword(e.target.value)}
-							onKeyDown={(e) => {
-								if (e.key === "Enter") {
-									handlePasswordChange();
-								}
-							}}
-						/>
-					</label>
-					<button className="sign-in" onClick={handlePasswordChange}>
-						Update Password
-					</button>
-				</div>
-			}	
+				<>
+					<div className="text">
+						<label className="label">
+							Change Name
+							<input
+								type="text"
+								placeholder="New name"
+								onChange={(e) => setNewName(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleNameChange();
+									}
+								}}
+							/>
+						</label>
+						<button className="sign-in" onClick={handleNameChange}>
+							Update Name
+						</button>
+					</div>
+
+					<div className="text">
+						<label className="label">
+							Change Email
+							<input
+								type="email"
+								placeholder="New email"
+								onChange={(e) => setNewEmail(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handleEmailChange();
+									}
+								}}
+							/>
+						</label>
+						<button className="sign-in" onClick={handleEmailChange}>
+							Update Email
+						</button>
+					</div>
+
+					< div className="text">
+						<label className="label">
+							Change Password
+							<input
+								type="password"
+								placeholder="New password"
+								onChange={(e) => setNewPassword(e.target.value)}
+								onKeyDown={(e) => {
+									if (e.key === "Enter") {
+										handlePasswordChange();
+									}
+								}}
+							/>
+						</label>
+						<button className="sign-in" onClick={handlePasswordChange}>
+							Update Password
+						</button>
+					</div>
+				</>
+			}
+			<hr />
 		</div>
 	);
 }

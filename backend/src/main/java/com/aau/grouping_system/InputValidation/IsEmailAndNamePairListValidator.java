@@ -5,7 +5,7 @@ package com.aau.grouping_system.InputValidation;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-class IsListOfEmailsValidator implements ConstraintValidator<IsListOfEmails, String> {
+class IsEmailAndNamePairListValidator implements ConstraintValidator<IsEmailAndNamePairList, String> {
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
@@ -14,22 +14,31 @@ class IsListOfEmailsValidator implements ConstraintValidator<IsListOfEmails, Str
 			return true;
 		}
 
-		// If the string is empty, it's considered valid (no emails)
+		// If the string is empty, it is considered valid
 		if (value.trim().isEmpty()) {
 			return true;
 		}
 
-		// Split by newline and validate each email
-		String[] emails = value.split("\\n");
+		// Example of an input string:
+		// "an@email.com Alex Alexson \n another@email.com Barry Barryson"
 
-		for (String email : emails) {
-			String trimmedEmail = email.trim();
+		String[] entries = value.split("\\n");
+		for (String entry : entries) {
+			String trimmedEntry = entry.trim();
 
 			// Skip empty lines
-			if (trimmedEmail.isEmpty()) {
+			if (trimmedEntry.isEmpty()) {
 				continue;
 			}
 
+			// No dangerous characters?
+			if (!NoDangerousCharactersValidator.doesNotContainDangerousCharacter(trimmedEntry)) {
+				return false;
+			}
+
+			// Find and validate email
+			int firstSpaceIndex = trimmedEntry.indexOf(' '); // The email is separated from the name via a space
+			String trimmedEmail = trimmedEntry.substring(0, firstSpaceIndex).trim();
 			if (!isValidEmail(trimmedEmail)) {
 				return false;
 			}

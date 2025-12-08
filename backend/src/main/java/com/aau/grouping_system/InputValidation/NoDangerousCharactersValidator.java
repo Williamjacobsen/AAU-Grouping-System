@@ -9,6 +9,10 @@ class NoDangerousCharactersValidator implements ConstraintValidator<NoDangerousC
 
 	@Override
 	public boolean isValid(String value, ConstraintValidatorContext context) {
+		return doesNotContainDangerousCharacter(value);
+	}
+
+	public static boolean doesNotContainDangerousCharacter(String value) {
 		// Allow null values (use @NotNull if null should be invalid)
 		if (value == null) {
 			return true;

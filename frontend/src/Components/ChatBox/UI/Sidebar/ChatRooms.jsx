@@ -10,6 +10,7 @@ export default function chatRooms({
   unreadMessagesByRoom,
   setUnreadMessagesByRoom,
   username,
+  setUnreadMessagesCount,
 }) {
   const handleRoomClick = (chatRoom) => {
     setSelectedChatRoom(chatRoom);
@@ -19,6 +20,7 @@ export default function chatRooms({
         ? getConversationKey(username, chatRoom)
         : chatRoom;
 
+    setUnreadMessagesCount((prev) => prev - unreadMessagesByRoom[storageKey]);
     setUnreadMessagesByRoom((prev) => ({ ...prev, [storageKey]: 0 }));
   };
 

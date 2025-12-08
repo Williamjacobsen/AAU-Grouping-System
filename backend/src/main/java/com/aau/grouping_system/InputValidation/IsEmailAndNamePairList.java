@@ -8,12 +8,12 @@ import java.lang.annotation.Target;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
-@Constraint(validatedBy = IsListOfEmailsValidator.class)
+@Constraint(validatedBy = IsEmailAndNamePairListValidator.class)
 @Target({ ElementType.FIELD, ElementType.PARAMETER })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface IsListOfEmails {
+public @interface IsEmailAndNamePairList {
 
-	String message() default "must be a list of emails separated by the newline character '\\n'";
+	String message() default "must be a list of email and name pairs in the format 'example@email.com John Johnson' separated by the newline character '\\n'";
 
 	Class<?>[] groups() default {};
 
