@@ -20,8 +20,13 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 		return user.role !== "Student" || session.allowStudentProjectProposals;
 	}
 
+	function getHasStudentAlreadyCreatedProject() {
+		if (user.role !== "Student") return false;
+		return projects.some(project => project.creatorUserId === user.id);
+	}
+
 	function getIsUserAllowedToChangeProject(project) {
-		return user.role === "Coordinator" || !isDeadlineExceeded() && project.creatorUserId === user.id;
+		return user.role === "Coordinator" || (!isDeadlineExceeded() && project.creatorUserId === user.id);
 	}
 
 	const onDelete = (project) => { // handles project deletion via API call
@@ -43,6 +48,12 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 	};
 
 	async function onAdd() { // handles adding projects via API call
+		// Check if student already has a project
+		if (user.role === "Student" && getHasStudentAlreadyCreatedProject()) {
+			alert("You have already created a project proposal. Students are only allowed to create one project proposal per session.");
+			return;
+		}
+
 		const projectData = {
 			name: newProjectName,
 			description: newProjectDescription,

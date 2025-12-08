@@ -217,6 +217,5 @@ class AuthControllerIntegrationTest {
 
 	@Configuration
 	static class TestConfig {
-		// Configuration class
 	}
 }
