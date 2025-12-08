@@ -97,8 +97,8 @@ class SessionSetupControllerIntegrationTest {
             6,
             true,
             "2024-12-31T23:59:59.00Z",
-            "supervisor1@example.com,supervisor2@example.com",
-            "student1@example.com,student2@example.com"
+            "supervisor1@example.com Supervisor One\nsupervisor2@example.com Supervisor Two",
+            "student1@example.com Student One\nstudent2@example.com Student Two"
         );
 
         String requestJson = objectMapper.writeValueAsString(setupRecord);
@@ -130,8 +130,8 @@ class SessionSetupControllerIntegrationTest {
             6,
             true,
             "2024-12-31T23:59:59.00Z",
-            "supervisor@example.com",
-            "student@example.com"
+            "supervisor@example.com Supervisor Name",
+            "student@example.com Student Name"
         );
 
         String requestJson = objectMapper.writeValueAsString(setupRecord);
@@ -156,8 +156,8 @@ class SessionSetupControllerIntegrationTest {
             6,
             true,
             "2024-12-31T23:59:59.00Z",
-            "supervisor@example.com",
-            "student@example.com"
+            "supervisor@example.com Supervisor Name",
+            "student@example.com Student Name"
         );
 
         String requestJson = objectMapper.writeValueAsString(setupRecord);
@@ -206,8 +206,8 @@ class SessionSetupControllerIntegrationTest {
             6,
             true,
             "2024-12-31T23:59:59.00Z",
-            "supervisor@example.com",
-            "student@example.com"
+            "supervisor@example.com Supervisor Name",
+            "student@example.com Student Name"
         );
 
         String requestJson = objectMapper.writeValueAsString(setupRecord);

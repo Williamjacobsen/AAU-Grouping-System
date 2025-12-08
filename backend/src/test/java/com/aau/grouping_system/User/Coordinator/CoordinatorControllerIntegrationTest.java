@@ -18,7 +18,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Config.SecurityConfig;
-import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -53,7 +52,7 @@ class CoordinatorControllerIntegrationTest {
     @MockitoBean
     private UserService userService;
 
-    private User mockCoordinator;
+    private Coordinator mockCoordinator;
 
     @BeforeEach
     void setUp() {
@@ -187,7 +186,7 @@ class CoordinatorControllerIntegrationTest {
         String newPassword = "newValidPassword123";
         String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRecord(newPassword));
 
-        Mockito.when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
+        Mockito.when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
                 .thenReturn(mockCoordinator);
         Mockito.doNothing().when(userService).modifyPassword(newPassword, mockCoordinator);
 
@@ -198,7 +197,7 @@ class CoordinatorControllerIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("Password has been changed."));
 
-        Mockito.verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
+        Mockito.verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
         Mockito.verify(userService).modifyPassword(newPassword, mockCoordinator);
     }
 

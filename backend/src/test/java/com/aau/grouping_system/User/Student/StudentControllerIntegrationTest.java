@@ -91,8 +91,8 @@ class StudentControllerIntegrationTest {
 				    "maxGroupSize": 7,
 				    "allowStudentProjectProposals": true,
 				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
-				    "supervisorEmails": "supervisor1@test.com",
-				    "studentEmails": "john.doe@student.aau.dk"
+				    "supervisorEmailAndNamePairs": "supervisor1@test.com Supervisor One",
+				    "studentEmailAndNamePairs": "john.doe@student.aau.dk John Doe"
 				}
 				""";
 
@@ -143,8 +143,8 @@ class StudentControllerIntegrationTest {
 				    "maxGroupSize": 7,
 				    "allowStudentProjectProposals": true,
 				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
-				    "supervisorEmails": "supervisor1@test.com",
-				    "studentEmails": "john.doe@student.aau.dk"
+				    "supervisorEmailAndNamePairs": "supervisor1@test.com Supervisor One",
+				    "studentEmailAndNamePairs": "john.doe@student.aau.dk John Doe"
 				}
 				""";
 
