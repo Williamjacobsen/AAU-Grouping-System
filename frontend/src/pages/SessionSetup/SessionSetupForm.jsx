@@ -24,7 +24,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 				sessionSetupRecord.allowStudentProjectProposals == "on" ? true : false;
 
 			await fetchWithDefaultErrorHandling(
-				`/sessionSetup/${sessionId}/saveSetup`,
+				`/api/sessionSetup/${sessionId}/saveSetup`,
 				{
 					credentials: "include",
 					method: "POST",
@@ -45,18 +45,18 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 		return new Date(datetimeLocalString).toISOString();
 	}
 
-	function getSupervisorEmails() {
+	function getSupervisorEmailAndNamePairs() {
 		let text = "";
 		supervisors.forEach((supervisor) => {
-			text += supervisor.email + "\n";
+			text += supervisor.email + " " + supervisor.name + "\n";
 		});
 		return text;
 	}
 
-	function getStudentEmails() {
+	function getStudentEmailAndNamePairs() {
 		let text = "";
 		students.forEach((student) => {
-			text += student.email + "\n";
+			text += student.email + " " + student.name + "\n";
 		});
 		return text;
 	}
@@ -144,22 +144,24 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 				<div className="form-group">
 					<label className="form-label">
-						Emails of supervisors
+						<b>Supervisors </b>
+						(in the format "email@example.com name of the person" with each entry separated by a newline)
 						<textarea
 							className="form-textarea"
-							name="supervisorEmails"
-							defaultValue={getSupervisorEmails()}
+							name="supervisorEmailAndNamePairs"
+							defaultValue={getSupervisorEmailAndNamePairs()}
 						/>
 					</label>
 				</div>
 
 				<div className="form-group">
 					<label className="form-label">
-						Emails of students
+						<b>Students </b>
+						(in the format "email@example.com name of the person" with each entry separated by a newline)
 						<textarea
 							className="form-textarea"
-							name="studentEmails"
-							defaultValue={getStudentEmails()}
+							name="studentEmailAndNamePairs"
+							defaultValue={getStudentEmailAndNamePairs()}
 						/>
 					</label>
 				</div>

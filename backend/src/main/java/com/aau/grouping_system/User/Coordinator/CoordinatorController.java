@@ -9,7 +9,6 @@ import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
 import com.aau.grouping_system.User.User;
-import com.aau.grouping_system.User.UserController;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 
@@ -66,9 +65,47 @@ public class CoordinatorController {
 			HttpServletRequest servlet,
 			@Valid @RequestBody ModifyPasswordRecord record) {
 
-		User user = requestRequirementService.requireUserExists(servlet);
+		Coordinator coordinatorUser = requestRequirementService.requireUserCoordinatorExists(servlet);
 
-		userService.modifyPassword(record.newPassword, user);
+		userService.modifyPassword(record.newPassword, coordinatorUser);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Password has been changed.");
+	}
+
+	private record ModifyEmailRecord(
+			@NoDangerousCharacters @NotBlank @NoWhitespace @Email String newEmail) {
+	}
+
+	@PostMapping("/modifyEmail")
+	public ResponseEntity<String> modifyEmail(
+			HttpServletRequest servlet,
+			@Valid @RequestBody ModifyEmailRecord record) {
+
+		Coordinator coordinatorUser = requestRequirementService.requireUserCoordinatorExists(servlet);
+
+		requestRequirementService.requireEmailNotDuplicate(record.newEmail, coordinatorUser);
+
+		userService.modifyEmail(record.newEmail, coordinatorUser);
+
+		return ResponseEntity
+				.status(HttpStatus.OK)
+				.body("Email has been changed.");
+	}
+
+	private record ModifyNameRecord(
+			@NoDangerousCharacters @NotBlank String newName) {
+	}
+
+	@PostMapping("/modifyName")
+	public ResponseEntity<String> modifyName(
+			HttpServletRequest servlet,
+			@Valid @RequestBody ModifyNameRecord record) {
+
+		Coordinator coordinatorUser = requestRequirementService.requireUserCoordinatorExists(servlet);
+
+		userService.modifyName(record.newName, coordinatorUser);
 
 		return ResponseEntity
 				.status(HttpStatus.OK)

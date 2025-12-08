@@ -38,7 +38,6 @@ public class GroupService {
 	public void joinGroup(Group group, Student student) {
 
 		requireStudentNotAlreadyInTheGroup(group, student);
-		requireGroupNotFull(group);
 
 		// Leave previous group
 		String previousGroupId = student.getGroupId();

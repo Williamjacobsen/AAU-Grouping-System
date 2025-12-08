@@ -71,134 +71,141 @@
 	color: #000;
 }
 
+.project-creator {
+	color: #000;
+}
+
 .project-description {
 	color: #000;
 	font-size: 1.05rem;
 	line-height: 1.6;
 	display: flex;
-  flex-direction: column;
+	flex-direction: column;
 	overflow: visible;
 	max-width: 400px;
 	word-break: break-word;
 	overflow-wrap: break-word;
 }
+
 .description-content {
-    overflow: hidden;
-    transition: max-height 0.28s ease-in-out;
-    white-space: pre-wrap; /* preserve line breaks */
-    word-wrap: break-word;
-		word-wrap: break-word;
-		overflow-wrap: break-word;
+	overflow: hidden;
+	transition: max-height 0.28s ease-in-out;
+	white-space: pre-wrap;
+	/* preserve line breaks */
+	word-wrap: break-word;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 .description-content.collapsed {
-    /* show roughly 2 lines, with ellipsis on WebKit when possible */
-    max-height: calc(1.6rem * 2);
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-		line-clamp: 2;
-    -webkit-box-orient: vertical;
-    text-overflow: ellipsis;
-    overflow: hidden;
+	/* show roughly 2 lines, with ellipsis on WebKit when possible */
+	max-height: calc(1.6rem * 2);
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	line-clamp: 2;
+	-webkit-box-orient: vertical;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .description-content.expanded {
-    max-height: none; /* large enough for long descriptions */
-		overflow: visible;
-	}
+	max-height: none;
+	/* large enough for long descriptions */
+	overflow: visible;
+}
 
 /* Expand/collapse button */
 .btn-expand {
-    align-self: flex-start;
-    margin-top: 0.95rem;
-    background-color: #3498db;
-    color: #fff;
-    border: none;
-    padding: 0.4rem 0.8rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background-color 0.15s ease;
+	align-self: flex-start;
+	margin-top: 0.95rem;
+	background-color: #3498db;
+	color: #fff;
+	border: none;
+	padding: 0.4rem 0.8rem;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.85rem;
+	transition: background-color 0.15s ease;
 }
 
 .btn-expand:hover {
-    background-color: #2b86c9;
+	background-color: #2b86c9;
 }
 
 /* highlight expanded row slightly */
 .expanded-row {
-    background-color: #f6fbff;
+	background-color: #f6fbff;
 }
 
 /* Actions styling */
 .project-actions {
-    white-space: nowrap;
+	white-space: nowrap;
 }
 
 .btn-delete {
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
+	background-color: #e74c3c;
+	color: white;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: background-color 0.2s ease;
 }
 
 .btn-delete:hover {
-    background-color: #c0392b;
+	background-color: #c0392b;
 }
 
 .btn-add {
-    background-color: #27ae60;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.2s ease;
+	background-color: #27ae60;
+	color: white;
+	border: none;
+	padding: 0.5rem 1rem;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 0.9rem;
+	transition: background-color 0.2s ease;
 }
 
 .btn-add:hover {
-    background-color: #229954;
+	background-color: #229954;
 }
 
 @media (max-width: 768px) {
 	.projects-container {
 		padding: 1rem;
 	}
-	
+
 	.projects-title {
 		font-size: 2rem;
 	}
-	
+
 	.projects-table {
 		font-size: 1rem;
 	}
-	
+
 	.projects-table th,
 	.projects-table td {
 		padding: 0.5rem;
 	}
-	
+
 	.projects-table thead {
 		display: none;
 	}
-	
+
 	.projects-table tbody,
 	.projects-table tr,
 	.projects-table td {
 		display: block;
 	}
-	
+
 	.projects-table tr {
 		margin-bottom: 1rem;
 		border-left: 4px solid #3498db;
 		padding-left: 1rem;
 	}
-	
+
 	.projects-table td:before {
 		content: attr(data-label) ": ";
 		font-weight: 600;
@@ -206,5 +213,5 @@
 		width: 100px;
 	}
 
-	
+
 }

@@ -32,9 +32,9 @@ export default function SessionSetup() {
 
 			<ResetFormButton />
 
-			<div>
+			<i>
 				Do remember to go to the "Projects" menu and add project proposals.
-			</div>
+			</i>
 
 			<div className="form-section">
 				<h3 className="section-title">Actions</h3>

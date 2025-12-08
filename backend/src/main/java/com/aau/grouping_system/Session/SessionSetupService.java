@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.User.User;
+import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 
@@ -18,9 +20,13 @@ import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 public class SessionSetupService {
 
 	private final Database db;
+	private final UserService userService;
 
-	public SessionSetupService(Database db) {
+	public SessionSetupService(
+			Database db,
+			UserService userService) {
 		this.db = db;
+		this.userService = userService;
 	}
 
 	public void updateSessionSetup(Session session, SessionSetupRecord record) {
@@ -33,8 +39,8 @@ public class SessionSetupService {
 		LocalDateTime questionnaireDeadline = convertToLocalDateTime(record.questionnaireDeadlineISODateString());
 		session.setQuestionnaireDeadline(questionnaireDeadline);
 
-		ApplySupervisorEmails(session, record.supervisorEmails());
-		ApplyStudentEmails(session, record.studentEmails());
+		ApplySupervisorEmailAndNamePairs(session, record.supervisorEmailAndNamePairs());
+		ApplyStudentEmailAndNamePairs(session, record.studentEmailAndNamePairs());
 	}
 
 	private LocalDateTime convertToLocalDateTime(String isoDateString) {
@@ -46,7 +52,7 @@ public class SessionSetupService {
 		}
 	}
 
-	private void ApplySupervisorEmails(Session session, String emailList) {
+	private void ApplySupervisorEmailAndNamePairs(Session session, String emailAndNamePairs) {
 
 		Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction = () -> {
 			return db.getSupervisors().getItems(session.getSupervisors().getIds());
@@ -56,16 +62,16 @@ public class SessionSetupService {
 			db.getSupervisors().cascadeRemoveItem(db, (Supervisor) user);
 		};
 
-		Consumer<String> createUserFunction = (newEmail) -> {
+		Consumer<EmailAndNamePair> createUserFunction = (emailAndNamePair) -> {
 			db.getSupervisors().addItem(
 					session.getSupervisors(),
-					new Supervisor(newEmail, "Not specified", session));
+					new Supervisor(emailAndNamePair.email, emailAndNamePair.name, session));
 		};
 
-		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
+		ApplyEmailAndNamePairs(session, emailAndNamePairs, getUsersFunction, removeUserFunction, createUserFunction);
 	}
 
-	private void ApplyStudentEmails(Session session, String emailList) {
+	private void ApplyStudentEmailAndNamePairs(Session session, String emailAndNamePairs) {
 
 		Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction = () -> {
 			return db.getStudents().getItems(session.getStudents().getIds());
@@ -75,53 +81,79 @@ public class SessionSetupService {
 			db.getStudents().cascadeRemoveItem(db, (Student) user);
 		};
 
-		Consumer<String> createUserFunction = (newEmail) -> {
+		Consumer<EmailAndNamePair> createUserFunction = (emailAndNamePair) -> {
 			db.getStudents().addItem(
 					session.getStudents(),
-					new Student(newEmail, "Not specified", session));
+					new Student(emailAndNamePair.email, emailAndNamePair.name, session));
 		};
 
-		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
+		ApplyEmailAndNamePairs(session, emailAndNamePairs, getUsersFunction, removeUserFunction, createUserFunction);
 	}
 
-	private void ApplyEmails(
+	private class EmailAndNamePair {
+		String email;
+		String name;
+	}
+
+	private void ApplyEmailAndNamePairs(
 			Session session,
-			String emailList,
+			String emailAndNamePairs,
 			Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction,
 			Consumer<User> removeUserFunction,
-			Consumer<String> createUserFunction) {
+			Consumer<EmailAndNamePair> createUserFunction) {
 
 		// Explanation of Supplier, Consumer, and BiConsumer:
 		// "Supplier" is a function with no input and 1 output.
 		// "Consumer" is a function with 1 input and no output.
 
 		CopyOnWriteArrayList<? extends User> users = getUsersFunction.get();
-		CopyOnWriteArrayList<String> trimmedEmails = trimEmails(emailList);
+		CopyOnWriteArrayList<EmailAndNamePair> pairs = separateEmailAndNamePairs(emailAndNamePairs);
 
-		// Remove old entries not on the list
+		// Delete users who are not on the list
 		for (User user : users) {
-			if (!trimmedEmails.contains(user.getEmail())) {
+			if (pairs.stream().noneMatch(pair -> pair.email.equals(user.getEmail()))) {
 				removeUserFunction.accept(user);
 			}
 		}
 
-		// Add new entries from list
-		for (String trimmedEmail : trimmedEmails) {
-			Boolean doesExist = users.stream()
-					.anyMatch(user -> user.getEmail().equals(trimmedEmail));
+		// Add new users who are on the list, or update the name of an existing one
+		for (EmailAndNamePair pair : pairs) {
+			User existingUser = null;
+			for (User user : users) {
+				if (user.getEmail().equals(pair.email)) {
+					existingUser = user;
+					break;
+				}
+			}
 
-			if (!doesExist) {
-				createUserFunction.accept(trimmedEmail);
+			if (existingUser == null) {
+				createUserFunction.accept(pair);
+			} else if (!existingUser.getName().equals(pair.name)) {
+				userService.modifyName(pair.name, existingUser);
 			}
 		}
 	}
 
-	private CopyOnWriteArrayList<String> trimEmails(String emailsString) {
-		String[] emails = emailsString.split("\\n");
-		CopyOnWriteArrayList<String> trimmedEmails = new CopyOnWriteArrayList<>();
-		for (String email : emails) {
-			trimmedEmails.add(email.trim());
+	private CopyOnWriteArrayList<EmailAndNamePair> separateEmailAndNamePairs(String emailAndNamePairs) {
+
+		// Example of an input string:
+		// "an@email.com Alex Alexson \n another@email.com Barry Barryson"
+
+		String[] entries = emailAndNamePairs.split("\\n");
+		CopyOnWriteArrayList<String> trimmedEntries = new CopyOnWriteArrayList<>();
+		for (String entry : entries) {
+			trimmedEntries.add(entry.trim());
 		}
-		return trimmedEmails;
+
+		CopyOnWriteArrayList<EmailAndNamePair> pairs = new CopyOnWriteArrayList<>();
+		for (String trimmedEntry : trimmedEntries) {
+			EmailAndNamePair pair = new EmailAndNamePair();
+			int firstSpaceIndex = trimmedEntry.indexOf(' '); // The email is separated from the name via a space
+			pair.email = trimmedEntry.substring(0, firstSpaceIndex).trim();
+			pair.name = trimmedEntry.substring(firstSpaceIndex + 1).trim();
+			pairs.add(pair);
+		}
+
+		return pairs;
 	}
 }
