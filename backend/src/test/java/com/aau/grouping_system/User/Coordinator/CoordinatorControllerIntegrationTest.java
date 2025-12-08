@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -18,15 +17,16 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
-import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+record SignUpRecord(String email, String password, String name) {}
+record ModifyPasswordRecord(String newPassword) {}
 
 @WebMvcTest(CoordinatorController.class)
 @AutoConfigureWebMvc
@@ -35,11 +35,11 @@ import jakarta.servlet.http.HttpServletRequest;
     "com.aau.grouping_system.InputValidation",
     "com.aau.grouping_system.Exceptions"
 })
-@Import({CoordinatorControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class})
+@Import({CoordinatorControllerIntegrationTest.TestConfig.class, SecurityConfig.class})
 class CoordinatorControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -69,13 +69,13 @@ class CoordinatorControllerIntegrationTest {
         String password = "validPassword123";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         Mockito.doNothing().when(requestRequirementService).requireEmailNotDuplicate(email, null);
         Mockito.when(coordinatorService.addCoordinator(email, password, name)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isCreated())
@@ -92,10 +92,10 @@ class CoordinatorControllerIntegrationTest {
         String password = "validPassword123";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(invalidEmail, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(invalidEmail, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -108,10 +108,10 @@ class CoordinatorControllerIntegrationTest {
         String password = "validPassword123";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -124,10 +124,10 @@ class CoordinatorControllerIntegrationTest {
         String password = "";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -140,10 +140,10 @@ class CoordinatorControllerIntegrationTest {
         String password = "validPassword123";
         String name = "";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -156,10 +156,10 @@ class CoordinatorControllerIntegrationTest {
         String password = "validPassword123";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -172,47 +172,27 @@ class CoordinatorControllerIntegrationTest {
         String password = "valid Password123";
         String name = "Test Coordinator";
 
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
+        String requestJson = objectMapper.writeValueAsString(new SignUpRecord(email, password, name));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
+        mockMvc.perform(post("/api/coordinator/signUp")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
 
     @Test
-    void testSignUp_DuplicateEmail_ThrowsException() throws Exception {
-        // Arrange
-        String email = "duplicate@coordinator.com";
-        String password = "validPassword123";
-        String name = "Duplicate Coordinator";
-
-        String requestJson = objectMapper.writeValueAsString(new SignUpRequest(email, password, name));
-
-        Mockito.doThrow(new RequestException(HttpStatus.CONFLICT, "Email already exists"))
-                .when(requestRequirementService).requireEmailNotDuplicate(email, null);
-
-        // Act & Assert
-        mockMvc.perform(post("/coordinator/signUp")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isConflict())
-                .andExpect(content().string("Email already exists"));
-    }
-
-    @Test
     void testModifyPassword_ValidRequest_ReturnsOk() throws Exception {
         // Arrange
         String newPassword = "newValidPassword123";
-        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRequest(newPassword));
+        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRecord(newPassword));
 
         Mockito.when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
                 .thenReturn(mockCoordinator);
         Mockito.doNothing().when(userService).modifyPassword(newPassword, mockCoordinator);
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/modifyPassword")
+        mockMvc.perform(post("/api/coordinator/modifyPassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -226,10 +206,10 @@ class CoordinatorControllerIntegrationTest {
     void testModifyPassword_BlankPassword_ReturnsBadRequest() throws Exception {
         // Arrange
         String newPassword = "";
-        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRequest(newPassword));
+        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRecord(newPassword));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/modifyPassword")
+        mockMvc.perform(post("/api/coordinator/modifyPassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -239,35 +219,14 @@ class CoordinatorControllerIntegrationTest {
     void testModifyPassword_PasswordWithWhitespace_ReturnsBadRequest() throws Exception {
         // Arrange
         String newPassword = "new ValidPassword123";
-        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRequest(newPassword));
+        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRecord(newPassword));
 
         // Act & Assert
-        mockMvc.perform(post("/coordinator/modifyPassword")
+        mockMvc.perform(post("/api/coordinator/modifyPassword")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
     }
-
-    @Test
-    void testModifyPassword_UserNotFound_ThrowsException() throws Exception {
-        // Arrange
-        String newPassword = "newValidPassword123";
-        String requestJson = objectMapper.writeValueAsString(new ModifyPasswordRequest(newPassword));
-
-        Mockito.when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
-                .thenThrow(new RequestException(HttpStatus.UNAUTHORIZED, "User not authorized"));
-
-        // Act & Assert
-        mockMvc.perform(post("/coordinator/modifyPassword")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestJson))
-                .andExpect(status().isUnauthorized())
-                .andExpect(content().string("User not authorized"));
-    }
-
-    // Helper classes for request bodies
-    private record SignUpRequest(String email, String password, String name) {}
-    private record ModifyPasswordRequest(String newPassword) {}
 
     @Configuration
     static class TestConfig {

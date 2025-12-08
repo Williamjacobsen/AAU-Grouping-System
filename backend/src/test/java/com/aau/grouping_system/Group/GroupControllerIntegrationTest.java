@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
@@ -43,11 +42,11 @@ import jakarta.servlet.http.HttpServletRequest;
 @WebMvcTest(GroupController.class)
 @AutoConfigureWebMvc
 @ComponentScan(basePackages = { "com.aau.grouping_system.Group", "com.aau.grouping_system.Exceptions" })
-@Import({ GroupControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ GroupControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class GroupControllerIntegrationTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
     @MockitoBean
     private Database database;
@@ -126,7 +125,7 @@ class GroupControllerIntegrationTest {
         doNothing().when(groupService).acceptJoinRequest(mockGroup, mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/{groupId}/accept-request/{studentId}", 
+        mockMvc.perform(post("/api/groups/{sessionId}/{groupId}/accept-request/{studentId}", 
                 sessionId, groupId, studentId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
@@ -157,7 +156,7 @@ class GroupControllerIntegrationTest {
         doNothing().when(groupService).requestToJoin(mockGroup, mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/{groupId}/request-to-join", 
+        mockMvc.perform(post("/api/groups/{sessionId}/{groupId}/request-to-join", 
                 sessionId, groupId)
                 .sessionAttr("user", mockStudent))
                 .andExpect(status().isOk())
@@ -182,7 +181,7 @@ class GroupControllerIntegrationTest {
                 .thenReturn(mockGroup);
 
         // Act & Assert
-        mockMvc.perform(get("/groups/{groupId}", groupId)
+        mockMvc.perform(get("/api/groups/{groupId}", groupId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("group-123"))
@@ -203,10 +202,17 @@ class GroupControllerIntegrationTest {
                 .thenReturn(mockSession);
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
                 .thenReturn(mockUser);
-        doReturn(groups).when(mockGroupsGroup).getItems(database);
+        CopyOnWriteArrayList<String> groupIds = new CopyOnWriteArrayList<>();
+        groups.forEach(group -> groupIds.add(group.getId()));
+        
+        DatabaseMap<Group> mockGroupMap = mock(DatabaseMap.class);
+        when(mockSession.getGroups()).thenReturn(mockGroupsGroup);
+        doReturn(groupIds).when(mockGroupsGroup).getIds();
+        when(database.getGroups()).thenReturn(mockGroupMap);
+        doReturn(groups).when(mockGroupMap).getItems(groupIds);
 
         // Act & Assert
-        mockMvc.perform(get("/groups/{sessionId}/getGroups", sessionId)
+        mockMvc.perform(get("/api/groups/{sessionId}/getGroups", sessionId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -238,7 +244,7 @@ class GroupControllerIntegrationTest {
         doNothing().when(groupService).leaveGroup(mockGroup, mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/{groupId}/leave/{studentId}", 
+        mockMvc.perform(post("/api/groups/{sessionId}/{groupId}/leave/{studentId}", 
                 sessionId, groupId, studentId)
                 .sessionAttr("user", mockStudent))
                 .andExpect(status().isOk())
@@ -273,11 +279,10 @@ class GroupControllerIntegrationTest {
                 .thenReturn(toGroup);
         when(requestRequirementService.requireSessionExists(sessionId))
                 .thenReturn(mockSession);
-        doNothing().when(groupService).leaveGroup(fromGroup, mockStudent);
         doNothing().when(groupService).joinGroup(toGroup, mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{fromGroupId}/move-student/{toGroupId}/{studentId}/{sessionId}", 
+        mockMvc.perform(post("/api/groups/{fromGroupId}/move-student/{toGroupId}/{studentId}/{sessionId}", 
                 fromGroupId, toGroupId, studentId, sessionId)
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isOk())
@@ -288,7 +293,6 @@ class GroupControllerIntegrationTest {
         verify(requestRequirementService).requireStudentExists(studentId);
         verify(requestRequirementService).requireGroupExists(toGroupId);
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(groupService).leaveGroup(fromGroup, mockStudent);
         verify(groupService).joinGroup(toGroup, mockStudent);
     }
 
@@ -312,7 +316,7 @@ class GroupControllerIntegrationTest {
         doNothing().when(groupService).createGroup(mockSession, "New Test Group", mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/createGroup", sessionId)
+        mockMvc.perform(post("/api/groups/{sessionId}/createGroup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .sessionAttr("user", mockUser))
@@ -353,7 +357,7 @@ class GroupControllerIntegrationTest {
                 .thenReturn(mockGroup);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/modifyGroupPreferences/{groupId}", 
+        mockMvc.perform(post("/api/groups/{sessionId}/modifyGroupPreferences/{groupId}", 
                 sessionId, groupId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
@@ -386,7 +390,7 @@ class GroupControllerIntegrationTest {
                 .thenReturn(mockSession);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/modifyGroupSupervisor/{groupId}/{supervisorId}", 
+        mockMvc.perform(post("/api/groups/{sessionId}/modifyGroupSupervisor/{groupId}/{supervisorId}", 
                 sessionId, groupId, supervisorId)
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isOk())
@@ -407,7 +411,7 @@ class GroupControllerIntegrationTest {
         doNothing().when(groupService).cancelJoinRequest(mockStudent);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/cancelJoinRequest")
+        mockMvc.perform(post("/api/groups/cancelJoinRequest")
                 .sessionAttr("user", mockStudent))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Group join request succesfully canceled"));
@@ -431,7 +435,7 @@ class GroupControllerIntegrationTest {
                 .thenReturn(mockUser);
 
         // Act & Assert
-        mockMvc.perform(post("/groups/{sessionId}/createGroup", sessionId)
+        mockMvc.perform(post("/api/groups/{sessionId}/createGroup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .sessionAttr("user", mockUser))

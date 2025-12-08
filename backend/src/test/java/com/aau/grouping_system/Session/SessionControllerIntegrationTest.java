@@ -26,7 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Authentication.AuthService;
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
@@ -37,6 +36,7 @@ import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Utils.RequestRequirementService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -47,11 +47,14 @@ import jakarta.servlet.http.HttpServletRequest;
     "com.aau.grouping_system.Exceptions", 
     "com.aau.grouping_system.User.SessionMember" 
 })
-@Import({ SessionControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ SessionControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class SessionControllerIntegrationTest {
 
+	@Autowired
+	private MockMvc mockMvc;
+
     @Autowired
-    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private Database database;
@@ -170,7 +173,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(serializableSession);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions")
+        mockMvc.perform(post("/api/sessions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .sessionAttr("user", mockCoordinator))
@@ -195,7 +198,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(mockCoordinator);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions")
+        mockMvc.perform(post("/api/sessions")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody)
                 .sessionAttr("user", mockCoordinator))
@@ -214,7 +217,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(sessions);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions")
+        mockMvc.perform(get("/api/sessions")
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -236,7 +239,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(mockUser);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}", sessionId)
+        mockMvc.perform(get("/api/sessions/{sessionId}", sessionId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value("session-123"))
@@ -258,10 +261,17 @@ class SessionControllerIntegrationTest {
                 .thenReturn(mockSession);
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
                 .thenReturn(mockUser);
-        doReturn(supervisors).when(mockSupervisorGroup).getItems(database);
+        CopyOnWriteArrayList<String> supervisorIds = new CopyOnWriteArrayList<>();
+        supervisors.forEach(supervisor -> supervisorIds.add(supervisor.getId()));
+        
+        DatabaseMap<Supervisor> mockSupervisorMap = mock(DatabaseMap.class);
+        when(mockSession.getSupervisors()).thenReturn(mockSupervisorGroup);
+        doReturn(supervisorIds).when(mockSupervisorGroup).getIds();
+        when(database.getSupervisors()).thenReturn(mockSupervisorMap);
+        doReturn(supervisors).when(mockSupervisorMap).getItems(supervisorIds);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/getSupervisors", sessionId)
+        mockMvc.perform(get("/api/sessions/{sessionId}/getSupervisors", sessionId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -284,10 +294,17 @@ class SessionControllerIntegrationTest {
                 .thenReturn(mockSession);
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
                 .thenReturn(mockUser);
-        doReturn(students).when(mockStudentGroup).getItems(database);
+        CopyOnWriteArrayList<String> studentIds = new CopyOnWriteArrayList<>();
+        students.forEach(student -> studentIds.add(student.getId()));
+        
+        DatabaseMap<Student> mockStudentMap = mock(DatabaseMap.class);
+        when(mockSession.getStudents()).thenReturn(mockStudentGroup);
+        doReturn(studentIds).when(mockStudentGroup).getIds();
+        when(database.getStudents()).thenReturn(mockStudentMap);
+        doReturn(students).when(mockStudentMap).getItems(studentIds);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/getStudents", sessionId)
+        mockMvc.perform(get("/api/sessions/{sessionId}/getStudents", sessionId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
@@ -307,10 +324,17 @@ class SessionControllerIntegrationTest {
         projects.add(mockProject);
 
         when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
-        doReturn(projects).when(mockProjectGroup).getItems(database);
+        CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
+        projects.forEach(project -> projectIds.add(project.getId()));
+        
+        DatabaseMap<Project> mockProjectMap = mock(DatabaseMap.class);
+        when(mockSession.getProjects()).thenReturn(mockProjectGroup);
+        doReturn(projectIds).when(mockProjectGroup).getIds();
+        when(database.getProjects()).thenReturn(mockProjectMap);
+        doReturn(projects).when(mockProjectMap).getItems(projectIds);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/getProjects", sessionId))
+        mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1))
@@ -327,7 +351,7 @@ class SessionControllerIntegrationTest {
         when(mockSessionMap.getItem(sessionId)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/getProjects", sessionId))
+        mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
                 .andExpect(status().isNotFound());
 
         verify(mockSessionMap).getItem(sessionId);
@@ -344,7 +368,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(true);
 
         // Act & Assert
-        mockMvc.perform(delete("/sessions/{sessionId}", sessionId)
+        mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Session deleted successfully"));
@@ -364,7 +388,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(false);
 
         // Act & Assert
-        mockMvc.perform(delete("/sessions/{sessionId}", sessionId)
+        mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isForbidden());
 
@@ -383,7 +407,7 @@ class SessionControllerIntegrationTest {
                 .thenReturn(emptySessions);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions")
+        mockMvc.perform(get("/api/sessions")
                 .sessionAttr("user", mockCoordinator))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())

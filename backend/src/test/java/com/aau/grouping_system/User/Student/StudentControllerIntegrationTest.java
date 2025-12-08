@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Authentication.AuthService;
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
@@ -41,7 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @AutoConfigureWebMvc
 @ComponentScan(basePackages = { "com.aau.grouping_system.User.SessionMember.Student", "com.aau.grouping_system.Session", "com.aau.grouping_system.Config",
 		"com.aau.grouping_system.Exceptions" })
-@Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class StudentControllerIntegrationTest {
 
 	@Autowired

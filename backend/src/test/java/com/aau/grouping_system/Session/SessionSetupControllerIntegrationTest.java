@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -21,15 +22,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Authentication.AuthService;
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
+import com.aau.grouping_system.Database.DatabaseMap;
 import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.SessionMember;
 import com.aau.grouping_system.User.SessionMember.SessionMemberService;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
+import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -43,12 +46,14 @@ import jakarta.servlet.http.HttpServletRequest;
     "com.aau.grouping_system.InputValidation",
     "com.aau.grouping_system.Exceptions"
 })
-@Import({ SessionSetupControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
-@SuppressWarnings("unchecked")
+@Import({ SessionSetupControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class SessionSetupControllerIntegrationTest {
 
+	@Autowired
+	private MockMvc mockMvc;
+
     @Autowired
-    private MockMvc mockMvc;
+    private ObjectMapper objectMapper;
 
     @MockitoBean
     private RequestRequirementService requestRequirementService;
@@ -73,8 +78,6 @@ class SessionSetupControllerIntegrationTest {
 
     @MockitoBean
     private EmailService emailService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Configuration
     static class TestConfig {
@@ -104,7 +107,7 @@ class SessionSetupControllerIntegrationTest {
         Mockito.when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class))).thenReturn(mockCoordinator);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/saveSetup", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/saveSetup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -137,7 +140,7 @@ class SessionSetupControllerIntegrationTest {
                 .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/saveSetup", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/saveSetup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound())
@@ -160,7 +163,7 @@ class SessionSetupControllerIntegrationTest {
         String requestJson = objectMapper.writeValueAsString(setupRecord);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/saveSetup", "session<script>alert('xss')</script>")
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/saveSetup", "session<script>alert('xss')</script>")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound());
@@ -184,7 +187,7 @@ class SessionSetupControllerIntegrationTest {
                 """;
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/saveSetup", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/saveSetup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(invalidRequestJson))
                 .andExpect(status().isBadRequest());
@@ -215,7 +218,7 @@ class SessionSetupControllerIntegrationTest {
                 .when(requestRequirementService).requireCoordinatorIsAuthorizedSession(sessionId, mockCoordinator);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/saveSetup", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/saveSetup", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isForbidden())
@@ -241,10 +244,16 @@ class SessionSetupControllerIntegrationTest {
         Mockito.when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class))).thenReturn(mockCoordinator);
         Mockito.when(mockSession.getId()).thenReturn(sessionId);
         Mockito.when(mockSession.getStudents()).thenReturn(mockStudents);
-        Mockito.when(mockStudents.getItems(database)).thenReturn((CopyOnWriteArrayList) mockStudentList);
+        CopyOnWriteArrayList<String> studentIds = new CopyOnWriteArrayList<>();
+        mockStudentList.forEach(student -> studentIds.add(student.getId()));
+        
+        DatabaseMap<Student> mockStudentMap = mock(DatabaseMap.class);
+        Mockito.when(mockStudents.getIds()).thenReturn(studentIds);
+        Mockito.when(database.getStudents()).thenReturn(mockStudentMap);
+        Mockito.when(mockStudentMap.getItems(studentIds)).thenReturn((CopyOnWriteArrayList) mockStudentList);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/emailNewPasswordTo/students", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/emailNewPasswordTo/students", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -270,7 +279,7 @@ class SessionSetupControllerIntegrationTest {
                 .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/emailNewPasswordTo/students", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/emailNewPasswordTo/students", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound())
@@ -296,10 +305,17 @@ class SessionSetupControllerIntegrationTest {
         Mockito.when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class))).thenReturn(mockCoordinator);
         Mockito.when(mockSession.getId()).thenReturn(sessionId);
         Mockito.when(mockSession.getSupervisors()).thenReturn(mockSupervisors);
-        Mockito.when(mockSupervisors.getItems(database)).thenReturn((CopyOnWriteArrayList) mockSupervisorList);
+        
+        CopyOnWriteArrayList<String> supervisorIds = new CopyOnWriteArrayList<>();
+        mockSupervisorList.forEach(supervisor -> supervisorIds.add(supervisor.getId()));
+        
+        DatabaseMap<Supervisor> mockSupervisorMap = mock(DatabaseMap.class);
+        Mockito.when(mockSupervisors.getIds()).thenReturn(supervisorIds);
+        Mockito.when(database.getSupervisors()).thenReturn(mockSupervisorMap);
+        Mockito.when(mockSupervisorMap.getItems(supervisorIds)).thenReturn((CopyOnWriteArrayList) mockSupervisorList);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -331,12 +347,19 @@ class SessionSetupControllerIntegrationTest {
         Mockito.when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class))).thenReturn(mockCoordinator);
         Mockito.when(mockSession.getId()).thenReturn(sessionId);
         Mockito.when(mockSession.getSupervisors()).thenReturn(mockSupervisors);
-        Mockito.when(mockSupervisors.getItems(database)).thenReturn((CopyOnWriteArrayList) mockSupervisorList);
+        
+        CopyOnWriteArrayList<String> supervisorIds2 = new CopyOnWriteArrayList<>();
+        mockSupervisorList.forEach(supervisor -> supervisorIds2.add(supervisor.getId()));
+        
+        DatabaseMap<Supervisor> mockSupervisorMap2 = mock(DatabaseMap.class);
+        Mockito.when(mockSupervisors.getIds()).thenReturn(supervisorIds2);
+        Mockito.when(database.getSupervisors()).thenReturn(mockSupervisorMap2);
+        Mockito.when(mockSupervisorMap2.getItems(supervisorIds2)).thenReturn((CopyOnWriteArrayList) mockSupervisorList);
         Mockito.doThrow(new RequestException(HttpStatus.FORBIDDEN, "Coordinator not authorized for this session"))
                 .when(requestRequirementService).requireCoordinatorIsAuthorizedSession(sessionId, mockCoordinator);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", sessionId)
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", sessionId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isForbidden())
@@ -351,7 +374,7 @@ class SessionSetupControllerIntegrationTest {
         String requestJson = objectMapper.writeValueAsString(emailRecord);
 
         // Act & Assert
-        mockMvc.perform(post("/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", "session<script>alert('xss')</script>")
+        mockMvc.perform(post("/api/sessionSetup/{sessionId}/emailNewPasswordTo/supervisors", "session<script>alert('xss')</script>")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isNotFound());

@@ -23,7 +23,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
@@ -37,7 +36,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @WebMvcTest(UserController.class)
 @AutoConfigureWebMvc
 @ComponentScan(basePackages = { "com.aau.grouping_system.User", "com.aau.grouping_system.Exceptions" })
-@Import({ UserControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ UserControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class UserControllerIntegrationTest {
 
 	@Autowired
@@ -94,7 +93,7 @@ class UserControllerIntegrationTest {
 				.thenReturn(testStudent);
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -120,7 +119,7 @@ class UserControllerIntegrationTest {
 				.when(requestRequirementService).requireEmailNotDuplicate("existing@student.aau.dk", testStudent);
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isConflict());
@@ -140,7 +139,7 @@ class UserControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -159,7 +158,7 @@ class UserControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -178,7 +177,7 @@ class UserControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -200,7 +199,7 @@ class UserControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.NOT_FOUND, "User not found"));
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyEmail")
+		mockMvc.perform(post("/api/user/modifyEmail")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isNotFound());
@@ -224,7 +223,7 @@ class UserControllerIntegrationTest {
 				.thenReturn(false);
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyName")
+		mockMvc.perform(post("/api/user/modifyName")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -250,7 +249,7 @@ class UserControllerIntegrationTest {
 				.thenReturn(true);
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyName")
+		mockMvc.perform(post("/api/user/modifyName")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isConflict());
@@ -270,7 +269,7 @@ class UserControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyName")
+		mockMvc.perform(post("/api/user/modifyName")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -289,7 +288,7 @@ class UserControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyName")
+		mockMvc.perform(post("/api/user/modifyName")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -313,7 +312,7 @@ class UserControllerIntegrationTest {
 				.thenReturn(false);
 
 		// Act & Assert
-		mockMvc.perform(post("/user/modifyName")
+		mockMvc.perform(post("/api/user/modifyName")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())

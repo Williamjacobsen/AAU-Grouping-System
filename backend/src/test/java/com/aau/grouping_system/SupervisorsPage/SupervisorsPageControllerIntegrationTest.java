@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
@@ -44,7 +43,7 @@ import jakarta.servlet.http.HttpServletRequest;
     "com.aau.grouping_system.InputValidation",
     "com.aau.grouping_system.Exceptions"
 })
-@Import({ SupervisorsPageControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ SupervisorsPageControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class SupervisorsPageControllerIntegrationTest {
 
     @Autowired
@@ -93,7 +92,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .thenReturn(supervisorList);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/supervisors", SESSION_ID)
+        mockMvc.perform(get("/api/sessions/{sessionId}/supervisors", SESSION_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(2))
@@ -118,7 +117,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .requireCoordinatorIsAuthorizedSession(SESSION_ID, coordinator);
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/supervisors", SESSION_ID)
+        mockMvc.perform(get("/api/sessions/{sessionId}/supervisors", SESSION_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
                 .andExpect(content().string("Coordinator not authorized"));
@@ -135,7 +134,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/supervisors", SESSION_ID)
+        mockMvc.perform(get("/api/sessions/{sessionId}/supervisors", SESSION_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Session not found"));
@@ -145,7 +144,7 @@ class SupervisorsPageControllerIntegrationTest {
     void testGetSupervisors_InvalidSessionId_ReturnsNotFound() throws Exception {
         
         // Act & Assert
-        mockMvc.perform(get("/sessions/{sessionId}/supervisors", "session<script>alert('xss')</script>")
+        mockMvc.perform(get("/api/sessions/{sessionId}/supervisors", "session<script>alert('xss')</script>")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -171,7 +170,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .thenReturn(expectedResult);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors", SESSION_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors", SESSION_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isCreated())
@@ -187,7 +186,7 @@ class SupervisorsPageControllerIntegrationTest {
         String requestJson = objectMapper.writeValueAsString(invalidRequest);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors", SESSION_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors", SESSION_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -213,7 +212,7 @@ class SupervisorsPageControllerIntegrationTest {
         Mockito.doNothing().when(supervisorsPageService).removeSupervisor(SUPERVISOR_ID);
 
         // Act & Assert
-        mockMvc.perform(delete("/sessions/{sessionId}/supervisors/{supervisorId}", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(delete("/api/sessions/{sessionId}/supervisors/{supervisorId}", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Supervisor removed successfully"));
@@ -235,7 +234,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Supervisor not found"));
 
         // Act & Assert
-        mockMvc.perform(delete("/sessions/{sessionId}/supervisors/{supervisorId}", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(delete("/api/sessions/{sessionId}/supervisors/{supervisorId}", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andExpect(content().string("Supervisor not found"));
@@ -262,7 +261,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .applyAndEmailNewPassword(session, supervisor);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors/{supervisorId}/send-new-password", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors/{supervisorId}/send-new-password", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Successfully reset and emailed a new password"));
@@ -291,7 +290,7 @@ class SupervisorsPageControllerIntegrationTest {
                 .requireSupervisorIsAuthorizedSession(SESSION_ID, supervisor);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isOk())
@@ -307,7 +306,7 @@ class SupervisorsPageControllerIntegrationTest {
         String requestJson = objectMapper.writeValueAsString(invalidRequest);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());
@@ -322,7 +321,7 @@ class SupervisorsPageControllerIntegrationTest {
         String requestJson = objectMapper.writeValueAsString(invalidRequest);
 
         // Act & Assert
-        mockMvc.perform(post("/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
+        mockMvc.perform(post("/api/sessions/{sessionId}/supervisors/{supervisorId}/max-groups", SESSION_ID, SUPERVISOR_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestJson))
                 .andExpect(status().isBadRequest());

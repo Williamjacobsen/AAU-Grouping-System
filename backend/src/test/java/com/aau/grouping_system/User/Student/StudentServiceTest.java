@@ -57,7 +57,7 @@ class StudentServiceTest {
 		// Create a mock student
 		Student mockStudent = mock(Student.class);
 
-		// Mock the addItem method call
+		// Mock addItem method call
 		when(mockStudentsMap.addItem(
 				any(), any(Student.class)))
 				.thenReturn(mockStudent);
@@ -113,7 +113,7 @@ class StudentServiceTest {
 
 		// Assert
 		verify(student).setQuestionnaire(questionnaire);
-		
+
 		assertEquals(-1, questionnaire.getDesiredGroupSizeMin());
 		assertEquals(-1, questionnaire.getDesiredGroupSizeMax());
 		assertEquals(StudentQuestionnaire.WorkLocation.NoPreference, questionnaire.getDesiredWorkLocation());
