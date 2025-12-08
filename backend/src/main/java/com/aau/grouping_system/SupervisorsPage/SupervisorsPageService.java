@@ -38,12 +38,9 @@ public class SupervisorsPageService {
 		this.userService = userService;
 	}
 
-
-
 	// Get supervisor data
-	@SuppressWarnings("unchecked")
 	public List<Map<String, Object>> getFormattedSupervisors(Session session) {
-		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> supervisors = db.getSupervisors().getItems(session.getSupervisors().getIds());
 
 		return supervisors.stream()
 				.map(supervisor -> {
@@ -62,9 +59,9 @@ public class SupervisorsPageService {
 	}
 
 	// Add new supervisor to session
-	@SuppressWarnings("unchecked")
 	public String addSupervisor(Session session, AddSupervisorRequest request) {
-		CopyOnWriteArrayList<Supervisor> existingSupervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors().getItems(db);
+		CopyOnWriteArrayList<Supervisor> existingSupervisors = db.getSupervisors()
+				.getItems(session.getSupervisors().getIds());
 
 		// Check if supervisor with email is already in session
 		boolean supervisorExists = existingSupervisors.stream()
@@ -79,7 +76,6 @@ public class SupervisorsPageService {
 		String password = UUID.randomUUID().toString();
 
 		Supervisor newSupervisor = db.getSupervisors().addItem(
-				db,
 				session.getSupervisors(),
 				new Supervisor(
 						request.email.trim(),

@@ -1,0 +1,53 @@
+@startuml example
+
+' Requirements: 
+' - The "PlantUML" VS Code extension.
+' - Download the latest version of Graphviz (https://graphviz.org/download/)
+
+' Tutorial: https://www.youtube.com/watch?v=EM-cvRubP4g&t=654s
+' To render the UML, right click inside this document and press "Preview Current Diagram (ALT+D)"
+
+class Database {
+	- DatabaseData : data
+}
+
+class DatabaseData implements Serializable {
+	- coordinators : DatabaseMap<Coordinator>
+	- sessions : DatabaseMap<Session>
+	- supervisors : DatabaseMap<Supervisor>
+	- students : DatabaseMap<Student>
+	- projects : DatabaseMap<Project>
+	- groups : DatabaseMap<Group>
+}
+
+class DatabaseMap<T extends DatabaseItem> implements Serializable {
+	- id : Integer
+	- map : ConcurrentHashMap<String, T>
+	+ addItem(T item, DatabaseItemChildGroup parentItemChildGroup)
+	+ cascadeRemoveItem(String id)
+	+ getItem(String id)
+	+ getItems(CopyOnWriteArrayList<String> ids)
+	+ getAllItems()
+}
+
+abstract class DatabaseItem implements Serializable {
+	- id : String
+	- parentItemChildGroup : DatabaseItemChildGroup
+	- childItemGroups : CopyOnWriteArrayList<DatabaseItemChildGroup>
+	~ addChildItemGroup(DatabaseItemChildGroup childGroup)
+	~ cascadeRemoveChildItems()
+	~ disconnectFromParentItem()
+}
+
+class DatabaseItemChildGroup implements Serializable {
+	- databaseMapId : Integer
+	- childItemIds : CopyOnWriteArrayList<String>
+}
+
+Database *-- DatabaseData
+DatabaseData *-- DatabaseMap
+DatabaseMap *-- DatabaseItem
+DatabaseItem *-- DatabaseItemChildGroup
+
+
+@enduml

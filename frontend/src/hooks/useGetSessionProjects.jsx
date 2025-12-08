@@ -5,7 +5,7 @@ import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 async function fetchSessionProjects(sessionId) {
 	const response = await fetchWithDefaultErrorHandling(
-		`/project/getSessionProjects/${sessionId}`,
+		`/api/project/getSessionProjects/${sessionId}`,
 		{
 			credentials: "include",
 			method: "GET"
@@ -53,7 +53,7 @@ export function useCreateProject() {
 	return useCallback(async (sessionId, { name, description }) => {
 		const body = { sessionId, name, description };
 		const response = await fetchWithDefaultErrorHandling(
-			`/project`,
+			`/api/project`,
 			{
 				credentials: "include",
 				method: "POST",
@@ -68,7 +68,7 @@ export function useCreateProject() {
 export function useUpdateProject() {
 	return useCallback(async (id, { name, description }) => {
 		const response = await fetchWithDefaultErrorHandling(
-			`/project/${id}`,
+			`/api/project/${id}`,
 			{
 				credentials: "include",
 				method: "PUT",
@@ -83,7 +83,7 @@ export function useUpdateProject() {
 export function useDeleteProject() {
 	return useCallback(async (id) => {
 		const response = await fetchWithDefaultErrorHandling(
-			`/project/${id}`,
+			`/api/project/${id}`,
 			{
 				credentials: "include",
 				method: "DELETE"

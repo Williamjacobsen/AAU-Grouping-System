@@ -110,7 +110,7 @@ class AuthControllerIntegrationTest {
 				.thenReturn(true);
 
 		// Act & Assert
-		mockMvc.perform(post("/auth/signIn")
+		mockMvc.perform(post("/api/auth/signIn")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -135,7 +135,7 @@ class AuthControllerIntegrationTest {
 				.thenReturn(null);
 
 		// Act & Assert
-		mockMvc.perform(post("/auth/signIn")
+		mockMvc.perform(post("/api/auth/signIn")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());
@@ -162,7 +162,7 @@ class AuthControllerIntegrationTest {
 				.thenReturn(false);
 
 		// Act & Assert
-		mockMvc.perform(post("/auth/signIn")
+		mockMvc.perform(post("/api/auth/signIn")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());
@@ -183,7 +183,7 @@ class AuthControllerIntegrationTest {
 				""";
 
 		// Act & Assert
-		mockMvc.perform(post("/auth/signIn")
+		mockMvc.perform(post("/api/auth/signIn")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -192,7 +192,7 @@ class AuthControllerIntegrationTest {
 	@Test
 	void testSignOut_ValidSession_ReturnsSuccess() throws Exception {
 		// Act & Assert
-		mockMvc.perform(post("/auth/signOut"))
+		mockMvc.perform(post("/api/auth/signOut"))
 				.andExpect(status().isOk())
 				.andExpect(content().string("Signed out"));
 
@@ -202,7 +202,7 @@ class AuthControllerIntegrationTest {
 	@Test
 	void testGetUser_ValidSession_ReturnsUser() throws Exception {
 		// Act & Assert
-		mockMvc.perform(get("/auth/getUser")
+		mockMvc.perform(get("/api/auth/getUser")
 				.sessionAttr("user", testCoordinator))
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.email").value("coordinator@test.com"));
@@ -211,7 +211,7 @@ class AuthControllerIntegrationTest {
 	@Test
 	void testGetUser_NoSession_ReturnsUnauthorized() throws Exception {
 		// Act & Assert
-		mockMvc.perform(get("/auth/getUser"))
+		mockMvc.perform(get("/api/auth/getUser"))
 				.andExpect(status().isUnauthorized());
 	}
 

@@ -44,7 +44,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 			createGroupRecord.studentId = user.id;
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/createGroup`,
+				`/api/groups/${session.id}/createGroup`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -71,7 +71,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 			const formEntries = Object.fromEntries(formData);
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/modifyGroupPreferences/${getUserGroup().id}`,
+				`/api/groups/${session.id}/modifyGroupPreferences/${getUserGroup().id}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -98,7 +98,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 			const studentId = formData.get("studentId");
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/${getUserGroup().id}/accept-request/${studentId}`,
+				`/api/groups/${session.id}/${getUserGroup().id}/accept-request/${studentId}`,
 				{
 					method: 'POST',
 					credentials: 'include',
@@ -116,7 +116,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 	async function cancelJoinRequest() {
 		try {
 			await fetchWithDefaultErrorHandling(
-				`/groups/cancelJoinRequest`,
+				`/api/groups/cancelJoinRequest`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -132,7 +132,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 	async function leaveGroup() {
 		try {
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/${getUserGroup().id}/leave/${user.id}`,
+				`/api/groups/${session.id}/${getUserGroup().id}/leave/${user.id}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -177,7 +177,7 @@ export default function GroupMenu({ session, user, groups, projects, students })
 					</div>
 					<div className="group-members-list">
 						{getUserGroup().studentIds.map((studentId, index) =>
-							<div>{index + 1}) {students.find(student => student.id === studentId).name}</div>
+							<div>{index + 1} {students.find(student => student.id === studentId).name}</div>
 						)}
 					</div>
 

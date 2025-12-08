@@ -3,13 +3,13 @@ import { fetchSessionGroups } from "hooks/useGetSessionGroups";
 export default function useUndoLogic({
 	previousGroups, setGroups,
 	lastAction, setLastAction, setCanUndo,
-	moveStudent, setError, sessionId
+	moveStudent, sessionId
 }) {
 
 	const handleUndo = async () => {
 		try {
-			setError("");
 			setGroups(previousGroups);
+
 			if (lastAction) {
 				if (lastAction.type === "student") {
 					await moveStudent(lastAction.to, lastAction.from, lastAction.student.id);
@@ -30,7 +30,7 @@ export default function useUndoLogic({
 				setGroups(updated);
 			}
 		} catch (err) {
-			setError("Failed to undo: " + err.message);
+			alert("Failed to undo: " + err.message);
 		}
 
 		setCanUndo(false);

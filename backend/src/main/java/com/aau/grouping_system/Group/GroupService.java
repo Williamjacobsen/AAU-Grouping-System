@@ -22,7 +22,6 @@ public class GroupService {
 
 	public void createGroup(Session session, String name, Student foundingMember) {
 		Group newGroup = db.getGroups().addItem(
-				db,
 				session.getGroups(),
 				new Group(session, name));
 		joinGroup(newGroup, foundingMember);
@@ -30,7 +29,6 @@ public class GroupService {
 
 	public Group createGroupAndReturnObject(Session session, String name, Student foundingMember) {
 		Group newGroup = db.getGroups().addItem(
-				db,
 				session.getGroups(),
 				new Group(session, name));
 		joinGroup(newGroup, foundingMember);
@@ -41,6 +39,24 @@ public class GroupService {
 
 		requireStudentNotAlreadyInTheGroup(group, student);
 		requireGroupNotFull(group);
+
+		// Leave previous group
+		String previousGroupId = student.getGroupId();
+		if (previousGroupId != null) {
+			Group previousGroup = db.getGroups().getItem(previousGroupId);
+			leaveGroup(previousGroup, student);
+		}
+
+		group.getStudentIds().add(student.getId());
+		student.setGroupId(group.getId());
+		cancelJoinRequest(student);
+
+		logGroupActivity("joined", student, group.getId());
+	}
+
+		public void joinGroupWithoutSizeCheck(Group group, Student student) {
+
+		requireStudentNotAlreadyInTheGroup(group, student);
 
 		// Leave previous group
 		String previousGroupId = student.getGroupId();
@@ -73,6 +89,7 @@ public class GroupService {
 		// Removes student, but doesnt delete the group (for merging)
 		group.getStudentIds().remove(student.getId());
 		student.setGroupId(null);
+		group.setSupervisorId(null);
 
 		logGroupActivity("left", student, group.getId());
 	}
@@ -109,10 +126,9 @@ public class GroupService {
 		student.setActiveJoinRequestGroupId(null);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	public void requireGroupNameNotDuplicate(Session session, String name) {
 
-		CopyOnWriteArrayList<Group> sessionGroups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+		CopyOnWriteArrayList<Group> sessionGroups = db.getGroups().getItems(session.getGroups().getIds());
 
 		boolean alreadyExists = sessionGroups.stream()
 				.anyMatch(group -> group.getName().equals(name));

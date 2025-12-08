@@ -44,7 +44,7 @@ export default function SupervisorsPage() {
 		setError("");
 		
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/supervisors`, {
 				method: "GET",
 				credentials: "include",
 			});
@@ -76,7 +76,7 @@ export default function SupervisorsPage() {
 		setMessage({ text: "", type: "" });
 		
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/supervisors`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -110,7 +110,7 @@ export default function SupervisorsPage() {
 		setMessage({ text: "", type: "" });
 		
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/supervisors/${supervisorToRemove.id}`, {
 				method: "DELETE",
 				credentials: "include",
 			});
@@ -136,7 +136,7 @@ export default function SupervisorsPage() {
 		setMessage({ text: "", type: "" });
 		
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/supervisors/${supervisor.id}/send-new-password`, {
 				method: "POST",
 				credentials: "include",
 			});
@@ -174,7 +174,7 @@ export default function SupervisorsPage() {
 		}
 
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}/supervisors/${supervisorId}/max-groups`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}/supervisors/${supervisorId}/max-groups`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",

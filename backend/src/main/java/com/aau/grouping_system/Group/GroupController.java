@@ -23,7 +23,6 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -34,7 +33,7 @@ import jakarta.validation.constraints.NotNull;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/groups")
+@RequestMapping("/api/groups")
 public class GroupController {
 
 	private final Database db;
@@ -106,7 +105,6 @@ public class GroupController {
 		return ResponseEntity.ok(group);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getGroups")
 	public ResponseEntity<CopyOnWriteArrayList<Group>> getGroups(
 			HttpServletRequest servlet,
@@ -116,7 +114,7 @@ public class GroupController {
 		User user = requestRequirementService.requireUserExists(servlet);
 		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
-		CopyOnWriteArrayList<Group> sessionGroups = (CopyOnWriteArrayList<Group>) session.getGroups().getItems(db);
+		CopyOnWriteArrayList<Group> sessionGroups = db.getGroups().getItems(session.getGroups().getIds());
 
 		return ResponseEntity.ok(sessionGroups);
 	}
@@ -167,20 +165,9 @@ public class GroupController {
 
 		try {
 			Student student = requestRequirementService.requireStudentExists(studentId);
-			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			requestRequirementService.requireSessionExists(sessionId);
-			// If the student that are being moved is in a group
-			if (fromGroup != null) {
-
-				// Remove student from old group and add student to new group
-				groupService.leaveGroup(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
-
-				return ResponseEntity.ok("Student moved successfully.");
-			}
-			// else the student only joins the new group
 			groupService.joinGroup(toGroup, student);
 
 			return ResponseEntity.ok("Student moved successfully.");
@@ -204,12 +191,6 @@ public class GroupController {
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			Session session = requestRequirementService.requireSessionExists(sessionId);
-			int maxGroupSize = session.getMaxGroupSize();
-
-			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > maxGroupSize) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
-			}
 
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
@@ -218,7 +199,7 @@ public class GroupController {
 
 				// Use safe leave (doesnt delete the group, if its empty)
 				groupService.leaveGroupWithoutDeleting(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
+				groupService.joinGroupWithoutSizeCheck(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");
@@ -251,19 +232,24 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
 			@Valid @RequestBody CreateGroupRecord record) {
 
-		User user = requestRequirementService.requireUserExists(servlet);
-		Session session = requestRequirementService.requireSessionExists(sessionId);
-		Student foundingMember = requestRequirementService.requireStudentExists(record.studentId);
+		try {
+			User user = requestRequirementService.requireUserExists(servlet);
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			Student foundingMember = requestRequirementService.requireStudentExists(record.studentId);
 
-		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
-		groupService.requireUserCanAssignFoundingMember(user, foundingMember);
-		groupService.requireGroupNameNotDuplicate(session, record.name);
+			requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+			groupService.requireUserCanAssignFoundingMember(user, foundingMember);
+			groupService.requireGroupNameNotDuplicate(session, record.name);
 
-		groupService.createGroup(session, record.name, foundingMember);
+			groupService.createGroup(session, record.name, foundingMember);
 
-		return ResponseEntity
-				.status(HttpStatus.CREATED)
-				.body("Group succesfully created");
+			return ResponseEntity
+					.status(HttpStatus.CREATED)
+					.body("Group succesfully created");
+
+		} catch (Exception e) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to create group: " + e.getMessage());
+		}
 	}
 
 	private record ModifyGroupPreferencesRecord(
@@ -355,20 +341,27 @@ public class GroupController {
 			@NoDangerousCharacters @NotBlank @PathVariable String secondStudentId,
 			@NoDangerousCharacters @NotBlank @PathVariable String groupName) {
 
-		User user = requestRequirementService.requireUserExists(servlet);
-		Session session = requestRequirementService.requireSessionExists(sessionId);
-		Student foundingMember = requestRequirementService.requireStudentExists(foundingStudentId);
-		Student secondMember = requestRequirementService.requireStudentExists(secondStudentId);
+		try {
+			User user = requestRequirementService.requireUserExists(servlet);
+			Session session = requestRequirementService.requireSessionExists(sessionId);
+			Student foundingMember = requestRequirementService.requireStudentExists(foundingStudentId);
+			Student secondMember = requestRequirementService.requireStudentExists(secondStudentId);
 
-		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
-		groupService.requireUserCanAssignFoundingMember(user, foundingMember);
-		groupService.requireGroupNameNotDuplicate(session, groupName);
+			requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
+			groupService.requireUserCanAssignFoundingMember(user, foundingMember);
+			groupService.requireGroupNameNotDuplicate(session, groupName);
 
-		Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
-		groupService.joinGroup(newGroup, secondMember);
+			Group newGroup = groupService.createGroupAndReturnObject(session, groupName, foundingMember);
 
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body("Group created with two students. Group ID: " + newGroup.getId());
+			if (!foundingStudentId.equals(secondStudentId)) {
+				groupService.joinGroup(newGroup, secondMember);
+			}
+
+			return ResponseEntity.status(HttpStatus.CREATED)
+					.body("Group created with two students. Group ID: " + newGroup.getId());
+		} catch (Exception e) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Failed to create group: " + e.getMessage());
+		}
 	}
 
 }

@@ -5,7 +5,7 @@ import { fetchWithDefaultErrorHandling } from "../utils/fetchHelpers";
 
 export async function fetchSession(sessionId) {
 	const response = await fetchWithDefaultErrorHandling(
-		`/sessions/${sessionId}`,
+		`/api/sessions/${sessionId}`,
 		{
 			credentials: "include",
 			method: "GET"

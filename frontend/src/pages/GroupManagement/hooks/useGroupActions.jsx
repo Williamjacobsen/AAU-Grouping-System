@@ -1,13 +1,12 @@
 import { fetchWithDefaultErrorHandling } from "utils/fetchHelpers";
-import fetchSessionGroups from "hooks/useGetSessionGroups";
 
-export default function useGroupActions(setError, sessionId, setGroups) {
+export default function useGroupActions(sessionId, setGroups) {
 
 	const createGroupWithStudents = async (foundingStudentId, secondStudentId, groupName) => {
 		try {
 			const encodedGroupName = encodeURIComponent(groupName); // Encode groupName for URL safety
 			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/createGroupWithStudent/${foundingStudentId}/${secondStudentId}/${encodedGroupName}`,
+				`${process.env.REACT_APP_API_BASE_URL}/api/groups/${sessionId}/createGroupWithStudent/${foundingStudentId}/${secondStudentId}/${encodedGroupName}`,
 				{
 					method: "POST",
 					credentials: "include"
@@ -16,55 +15,56 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Failed to create group: " + error);
+			alert("Failed to create group: " + error);
+			throw error;
 		}
 	};
 
 	const moveStudent = async (fromGroupId, toGroupId, studentId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/groups/${fromGroupId}/move-student/${toGroupId}/${studentId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Error moving student");
+			alert("Error moving student");
 		}
 	};
 
 	const moveAllMembers = async (fromGroupId, toGroupId) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/groups/${fromGroupId}/move-members/${toGroupId}/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/groups/${fromGroupId}/move-members/${toGroupId}/${sessionId}`, {
 				method: "POST",
 				credentials: "include"
 			});
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
 		} catch (error) {
-			setError("Error moving group members");
+			alert("Error moving group members");
 		}
 	};
 
 	const assignSupervisor = async (groupId, supervisorId) => {
 		try {
 			await fetchWithDefaultErrorHandling(
-				`/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
+				`/api/groups/${sessionId}/modifyGroupSupervisor/${groupId}/${supervisorId}`,
 				{
 					method: "POST",
 					credentials: "include",
@@ -76,14 +76,14 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				)
 			);
 		} catch (error) {
-			setError("Failed to assign supervisor: " + error);
+			alert("Failed to assign supervisor: " + error);
 		}
 	};
 
 	const assignProject = async (groupId, projectId) => {
 		try {
 			const response = await fetch(
-				`${process.env.REACT_APP_API_BASE_URL}/groups/${sessionId}/modifyGroupAssignedProject/${groupId}/${projectId}`,
+				`${process.env.REACT_APP_API_BASE_URL}/api/groups/${sessionId}/modifyGroupAssignedProject/${groupId}/${projectId}`,
 				{
 					method: "POST",
 					credentials: "include"
@@ -92,7 +92,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				setError(errorMessage);
+				alert(errorMessage);
 				return;
 			}
 
@@ -102,7 +102,7 @@ export default function useGroupActions(setError, sessionId, setGroups) {
 				)
 			);
 		} catch (error) {
-			setError("Failed to assign project: " + error);
+			alert("Failed to assign project: " + error);
 		}
 	};
 

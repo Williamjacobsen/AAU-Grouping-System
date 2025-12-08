@@ -12,15 +12,15 @@ public abstract class DatabaseItem implements Serializable {
 
 	void cascadeRemoveChildItems(Database db) {
 		for (DatabaseItemChildGroup childGroup : childItemGroups) {
-			for (String childId : childGroup.getChildItemIds()) {
-				db.getMap(childGroup.getMapId()).cascadeRemoveItem(db, childId);
+			for (String childId : childGroup.getIds()) {
+				db.getMap(childGroup.getDatabaseMapId()).cascadeRemoveItem(db, childId);
 			}
 		}
 	}
 
 	void disconnectFromParentItem(Database db) {
 		if (parentItemChildGroup != null) {
-			parentItemChildGroup.getChildItemIds().remove(this.id);
+			parentItemChildGroup.getIds().remove(this.id);
 		}
 	}
 

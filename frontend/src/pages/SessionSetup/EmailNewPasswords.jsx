@@ -14,7 +14,7 @@ const EmailNewPasswordsForm = memo(({ sessionId, targetUsers, setMessage }) => {
 			setMessage(`Sending login codes to ${targetUsers}...`);
 
 			await fetchWithDefaultErrorHandling(
-				`/sessionSetup/${sessionId}/emailNewPasswordTo/${targetUsers}`,
+				`/api/sessionSetup/${sessionId}/emailNewPasswordTo/${targetUsers}`,
 				{
 					credentials: "include",
 					method: "POST",

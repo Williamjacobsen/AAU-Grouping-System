@@ -3,92 +3,75 @@ package com.aau.grouping_system.ChatSystem.WebSocket;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
+import com.aau.grouping_system.ChatSystem.ChatRoom;
+import com.aau.grouping_system.Database.Database;
 
 @Service
 public class WebSocketService {
 
 	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
-	public record Message(String content, String sender, String target, String clientMessageId) {
+	public record IncommingMessage(String content, String sender, String target, String clientMessageId) {
 	}
 
 	public record MessageDatabaseFormat(Integer id, String content, String sender, String target, String time,
 			long timestamp) {
 	};
 
-	public final ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> groupMessages = new ConcurrentHashMap<>();
-	public final ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> privateMessages = new ConcurrentHashMap<>();
-
-	/*
-	 * Looks like this:
-	 * {
-	 * "group 1": [
-	 * {id: 0, target: null, sender: "student 2", content: "bla bla bla", time:
-	 * "2025-10-19 20:20", timestamp: 1739961600000},
-	 * {id: 1, target: null, sender: "student 1", content: "bla bla", time:
-	 * "2025-10-19 20:25", timestamp: 1739961900000},
-	 * ],
-	 * "group 2": [
-	 * {id: 0, target: null, sender: "student 1", content: "bla bla", time:
-	 * "2025-10-19 20:20", timestamp: 1739961600000},
-	 * {id: 1, target: null, sender: "student 3", content: "bla bla bla", time:
-	 * "2025-10-19 20:25", timestamp: 1739961900000},
-	 * {id: 2, target: null, sender: "student 2", content: "bla", time:
-	 * "2025-10-19 20:30", timestamp: 1739962200000},
-	 * ],
-	 * }
-	 * 
-	 * In Group, to delete, just do groupMessages.remove(groupName)
-	 */
-
 	private final SimpMessagingTemplate ws;
+	private final Database db;
 
-	private final ConcurrentHashMap<String, AtomicInteger> groupNextId = new ConcurrentHashMap<>();
-	private final ConcurrentHashMap<String, AtomicInteger> privateNextId = new ConcurrentHashMap<>();
-
-	private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> groupLastRead = new ConcurrentHashMap<>();
-	private final ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> privateLastRead = new ConcurrentHashMap<>();
-
-	/**
-	 * Last read id (student 1 in group 1, has read the message of id 10 etc)
-	 * 
-	 * {
-	 * "group1": {
-	 * "student1": 10,
-	 * "student2": 7
-	 * },
-	 * "group2": {
-	 * "student3": 15
-	 * }
-	 * }
-	 */
-
-	public WebSocketService(SimpMessagingTemplate ws) {
+	public WebSocketService(SimpMessagingTemplate ws, Database db) {
 		this.ws = ws;
+		this.db = db;
 	}
 
-	public void sendGroupMessage(String groupId, Message message, Principal principal) {
-		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message, groupMessages, groupNextId, groupLastRead);
+	private ChatRoom getChatRoom(String conversationKey) {
+		String chatRoomId = db.getChatRoomKeyIndex().get(conversationKey);
+
+		if (chatRoomId == null) {
+			return null;
+		}
+
+		return db.getChatRooms().getItem(chatRoomId);
+	}
+
+	public ChatRoom getOrCreateChatRoom(String conversationKey, boolean isGroup) {
+		ChatRoom chatRoom = getChatRoom(conversationKey);
+
+		if (chatRoom == null) {
+			ChatRoom newRoom = new ChatRoom(conversationKey, isGroup);
+
+			ChatRoom indexedRoom = db.getChatRooms().addItem(null, newRoom);
+
+			db.getChatRoomKeyIndex().put(conversationKey, indexedRoom.getId());
+
+			return indexedRoom;
+		}
+
+		return chatRoom;
+	}
+
+	@SuppressWarnings("null")
+	public void sendGroupMessage(String groupId, IncommingMessage message, Principal principal) {
+		MessageDatabaseFormat formattedMessage = addToDatabase(groupId, message, true);
 
 		ws.convertAndSend("/group/" + groupId + "/messages", formattedMessage);
 
 		sendAckToUser(principal, groupId, null, message.clientMessageId());
 	}
 
-	public void sendPrivateMessage(Message message, Principal principal) {
+	@SuppressWarnings("null")
+	public void sendPrivateMessage(IncommingMessage message, Principal principal) {
 		String key = getConversationKey(message.sender(), message.target());
 
-		MessageDatabaseFormat formattedMessage = addToDatabase(key, message, privateMessages, privateNextId,
-				privateLastRead);
+		MessageDatabaseFormat formattedMessage = addToDatabase(key, message, false);
 
 		ws.convertAndSendToUser(
 				message.target(),
@@ -103,15 +86,15 @@ public class WebSocketService {
 		sendAckToUser(principal, null, message.target(), message.clientMessageId());
 	}
 
+	@SuppressWarnings("null")
 	private MessageDatabaseFormat addToDatabase(
 			String key,
-			Message message,
-			ConcurrentHashMap<String, Deque<MessageDatabaseFormat>> database,
-			ConcurrentHashMap<String, AtomicInteger> idCounters,
-			ConcurrentHashMap<String, ConcurrentHashMap<String, Integer>> lastReadMap) {
+			IncommingMessage message,
+			boolean isGroup) {
 
-		Deque<MessageDatabaseFormat> deque = database.computeIfAbsent(key, _ -> new ConcurrentLinkedDeque<>());
-		int id = idCounters.computeIfAbsent(key, _ -> new AtomicInteger(0)).getAndIncrement();
+		ChatRoom chatRoom = getOrCreateChatRoom(key, isGroup);
+
+		int id = chatRoom.getAndIncrementNextId();
 
 		MessageDatabaseFormat formattedMessage = new MessageDatabaseFormat(
 				id,
@@ -121,34 +104,34 @@ public class WebSocketService {
 				LocalDateTime.now().format(FORMATTER),
 				System.currentTimeMillis());
 
-		deque.add(formattedMessage);
+		chatRoom.getMessages().add(formattedMessage);
 
-		lastReadMap.computeIfAbsent(key, _ -> new ConcurrentHashMap<>())
-				.merge(message.sender(), id, Math::max);
+		chatRoom.getLastReadMap().merge(message.sender(), id, Math::max);
 
 		return formattedMessage;
 	}
 
-
+	@SuppressWarnings("null")
 	public void markReadUpTo(String conversationKey, String username, int upToMessageId, boolean isGroup) {
 		if (username == null || username.isEmpty())
 			return;
 
-		var map = isGroup ? groupLastRead : privateLastRead;
-		var lastReadForConversation = map.computeIfAbsent(conversationKey, _ -> new ConcurrentHashMap<>());
+		ChatRoom chatRoom = getChatRoom(conversationKey);
+		if (chatRoom == null)
+			return;
 
+		var lastReadForConversation = chatRoom.getLastReadMap();
 		lastReadForConversation.merge(username, upToMessageId, Math::max);
 	}
 
 	public int getUnreadCount(String conversationKey, String username, boolean isGroup) {
-		var database = isGroup ? groupMessages : privateMessages;
-		var deque = database.get(conversationKey);
-		if (deque == null || deque.isEmpty())
+		ChatRoom chatRoom = getChatRoom(conversationKey);
+
+		if (chatRoom == null || chatRoom.getMessages().isEmpty())
 			return 0;
 
-		int maxId = deque.peekLast().id();
-		var lastReadMap = (isGroup ? groupLastRead : privateLastRead)
-				.getOrDefault(conversationKey, new ConcurrentHashMap<>());
+		int maxId = chatRoom.getMessages().peekLast().id();
+		var lastReadMap = chatRoom.getLastReadMap();
 		int lastRead = lastReadMap.getOrDefault(username, -1);
 
 		return Math.max(0, (maxId - lastRead));
@@ -162,10 +145,12 @@ public class WebSocketService {
 		}
 	}
 
+	@SuppressWarnings("null")
 	private void sendAckToUser(Principal principal,
 			String groupId,
 			String target,
 			String messageId) {
+
 		if (principal == null)
 			return;
 

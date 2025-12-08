@@ -46,11 +46,10 @@ public class SessionSetupService {
 		}
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	private void ApplySupervisorEmails(Session session, String emailList) {
 
-		Supplier<CopyOnWriteArrayList<User>> getUsersFunction = () -> {
-			return (CopyOnWriteArrayList<User>) session.getSupervisors().getItems(db);
+		Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction = () -> {
+			return db.getSupervisors().getItems(session.getSupervisors().getIds());
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
@@ -59,7 +58,6 @@ public class SessionSetupService {
 
 		Consumer<String> createUserFunction = (newEmail) -> {
 			db.getSupervisors().addItem(
-					db,
 					session.getSupervisors(),
 					new Supervisor(newEmail, "Not specified", session));
 		};
@@ -67,11 +65,10 @@ public class SessionSetupService {
 		ApplyEmails(session, emailList, getUsersFunction, removeUserFunction, createUserFunction);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	private void ApplyStudentEmails(Session session, String emailList) {
 
-		Supplier<CopyOnWriteArrayList<User>> getUsersFunction = () -> {
-			return (CopyOnWriteArrayList<User>) session.getStudents().getItems(db);
+		Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction = () -> {
+			return db.getStudents().getItems(session.getStudents().getIds());
 		};
 
 		Consumer<User> removeUserFunction = (user) -> {
@@ -80,7 +77,6 @@ public class SessionSetupService {
 
 		Consumer<String> createUserFunction = (newEmail) -> {
 			db.getStudents().addItem(
-					db,
 					session.getStudents(),
 					new Student(newEmail, "Not specified", session));
 		};
@@ -91,7 +87,7 @@ public class SessionSetupService {
 	private void ApplyEmails(
 			Session session,
 			String emailList,
-			Supplier<CopyOnWriteArrayList<User>> getUsersFunction,
+			Supplier<CopyOnWriteArrayList<? extends User>> getUsersFunction,
 			Consumer<User> removeUserFunction,
 			Consumer<String> createUserFunction) {
 
@@ -99,7 +95,7 @@ public class SessionSetupService {
 		// "Supplier" is a function with no input and 1 output.
 		// "Consumer" is a function with 1 input and no output.
 
-		CopyOnWriteArrayList<User> users = getUsersFunction.get();
+		CopyOnWriteArrayList<? extends User> users = getUsersFunction.get();
 		CopyOnWriteArrayList<String> trimmedEmails = trimEmails(emailList);
 
 		// Remove old entries not on the list

@@ -59,7 +59,7 @@ class StudentServiceTest {
 
 		// Mock the addItem method call
 		when(mockStudentsMap.addItem(
-				any(), any(), any(Student.class)))
+				any(), any(Student.class)))
 				.thenReturn(mockStudent);
 
 		// Act

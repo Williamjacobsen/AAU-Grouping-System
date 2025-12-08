@@ -14,7 +14,7 @@ function useFetchMessages(
         const isDirect = isDirectRoom(selectedChatRoom, students);
 
         if (isDirect) {
-          const url = `http://localhost:8080/private/${username}/${selectedChatRoom}/messages/get/all`;
+          const url = `${process.env.REACT_APP_API_BASE_URL}/api/private/${username}/${selectedChatRoom}/messages/get/all`;
 
           const response = await fetch(url);
           const data = await response.json();
@@ -29,7 +29,7 @@ function useFetchMessages(
             [conversationKey]: Array.isArray(data) ? data : [],
           }));
         } else {
-          const url = `http://localhost:8080/group/${selectedChatRoom}/messages/get/all`;
+          const url = `${process.env.REACT_APP_API_BASE_URL}/api/group/${selectedChatRoom}/messages/get/all`;
 
           const response = await fetch(url);
           const data = await response.json();

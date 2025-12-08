@@ -109,6 +109,23 @@ select:focus {
 	color: white;
 }
 
+.sign-out {
+	background-color: #e74c3c;
+	color: white;
+	font-size: 1rem;
+	font-weight: 500;
+	padding: 0.75rem 1.5rem;
+	border: 1px solid #e74c3c;
+	cursor: pointer;
+	font-family: inherit;
+	float: right;
+}
+
+.sign-out:hover {
+	background-color: white;
+	color: #e74c3c;
+}
+
 .forgot-password {
 	font-size: 1rem;
 	color: #000;

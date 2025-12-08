@@ -32,7 +32,7 @@ import jakarta.validation.constraints.*;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/sessions")
+@RequestMapping("/api/sessions")
 public class SessionController {
 
 	private final Database db;
@@ -86,7 +86,6 @@ public class SessionController {
 		return ResponseEntity.ok(session);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getSupervisors")
 	public ResponseEntity<CopyOnWriteArrayList<Supervisor>> getSupervisors(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -95,13 +94,11 @@ public class SessionController {
 		User user = requestRequirementService.requireUserExists(servlet);
 		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
-		CopyOnWriteArrayList<Supervisor> supervisors = (CopyOnWriteArrayList<Supervisor>) session.getSupervisors()
-				.getItems(db);
+		CopyOnWriteArrayList<Supervisor> supervisors = db.getSupervisors().getItems(session.getSupervisors().getIds());
 
 		return ResponseEntity.ok(supervisors);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getStudents")
 	public ResponseEntity<CopyOnWriteArrayList<Student>> getStudents(HttpServletRequest servlet,
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -110,12 +107,11 @@ public class SessionController {
 		User user = requestRequirementService.requireUserExists(servlet);
 		requestRequirementService.requireUserIsAuthorizedSession(sessionId, user);
 
-		CopyOnWriteArrayList<Student> students = (CopyOnWriteArrayList<Student>) session.getStudents().getItems(db);
+		CopyOnWriteArrayList<Student> students = db.getStudents().getItems(session.getStudents().getIds());
 
 		return ResponseEntity.ok(students);
 	}
 
-	@SuppressWarnings("unchecked") // Type-safety violations aren't true here.
 	@GetMapping("/{sessionId}/getProjects")
 	public ResponseEntity<CopyOnWriteArrayList<Project>> getProjects(
 			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
@@ -128,7 +124,7 @@ public class SessionController {
 		}
 
 		// Get that session’s projects and type cast
-		CopyOnWriteArrayList<Project> projects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+		CopyOnWriteArrayList<Project> projects = db.getProjects().getItems(session.getProjects().getIds());
 
 		// Return them with 200 ok
 		return ResponseEntity.ok(projects);

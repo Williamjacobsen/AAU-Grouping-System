@@ -1,5 +1,5 @@
 export default async function getUnreadMessagesCounters(username, setUnreadMessagesByRoom, setUnreadMessagesCount) {
-	await fetch(`http://localhost:8080/user/${username}/messages/unread/get/all`)
+	await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/${username}/messages/unread/get/all`)
 		.then((response) => response.json())
 		.then((json) => {
 			console.log(json)

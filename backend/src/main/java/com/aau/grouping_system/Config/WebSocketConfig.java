@@ -15,6 +15,7 @@ import org.springframework.scheduling.TaskScheduler;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.server.HandshakeInterceptor;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -30,6 +31,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	// otherwise the server would not be able to send a heartbeat a 10 seconds.
 	private TaskScheduler messageBrokerTaskScheduler;
 
+	@Autowired
+	private HandshakeInterceptor authInterceptor;
+
 	@Autowired // needed for spring boot to auto inject.
 	// @Lazy, just means that it will be initalized when needed, instead of at
 	// startup, it is also required for some reason.
@@ -41,6 +45,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(@SuppressWarnings("null") StompEndpointRegistry registry) {
 		registry.addEndpoint("/ws")
 				.setAllowedOriginPatterns("*")
+				.addInterceptors(authInterceptor)
 				.withSockJS();
 	}
 
@@ -53,7 +58,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 		registry.enableSimpleBroker("/group", "/private", "/queue")
 				.setHeartbeatValue(new long[] { 10_000, 20_000 })
 				.setTaskScheduler(this.messageBrokerTaskScheduler);
-		//registry.setApplicationDestinationPrefixes("/chat");
+		// registry.setApplicationDestinationPrefixes("/chat");
 		registry.setUserDestinationPrefix("/user");
 
 		// TODO: Should the other channels also have a heartbeat

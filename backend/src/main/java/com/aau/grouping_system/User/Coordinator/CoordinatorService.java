@@ -19,7 +19,6 @@ public class CoordinatorService {
 	public Coordinator addCoordinator(String email, String password, String name) {
 		String passwordHash = passwordEncoder.encode(password);
 		Coordinator newCoordinator = db.getCoordinators().addItem(
-				db,
 				null,
 				new Coordinator(db, email, passwordHash, name));
 		return newCoordinator;

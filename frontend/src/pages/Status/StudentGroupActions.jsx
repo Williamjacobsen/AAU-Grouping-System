@@ -35,7 +35,7 @@ export default function StudentGroupActions({ groupId, session, user }) {
 			}
 
 			await fetchWithDefaultErrorHandling(
-				`/groups/${session.id}/${groupId}/request-to-join`,
+				`/api/groups/${session.id}/${groupId}/request-to-join`,
 				{
 					method: 'POST',
 					credentials: 'include',

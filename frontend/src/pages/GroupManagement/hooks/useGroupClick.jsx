@@ -3,8 +3,7 @@ import { fetchSessionGroups } from "hooks/useGetSessionGroups";
 export default function useGroupClick({
 	selectedGroup, setSelectedGroup,
 	setPreviousGroups, setCanUndo, setLastAction,
-	setGroups, moveAllMembers, session, groups, setError,
-	sessionId
+	setGroups, moveAllMembers, groups, sessionId
 }) {
 
 	const handleGroupClick = async (groupId) => {
@@ -33,7 +32,7 @@ export default function useGroupClick({
 			setGroups(updated);
 			
 		} catch (error) {
-			setError("Failed to merge groups: " + error.message);
+			alert("Failed to merge groups: " + error.message);
 		}
 		setSelectedGroup(null);
 	};

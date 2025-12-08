@@ -101,7 +101,7 @@ class StudentControllerIntegrationTest {
 		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -128,7 +128,7 @@ class StudentControllerIntegrationTest {
 		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -153,7 +153,7 @@ class StudentControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/nonexistent-session/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/nonexistent-session/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isNotFound());
@@ -186,7 +186,7 @@ class StudentControllerIntegrationTest {
 				.thenReturn(testSession);
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -221,7 +221,7 @@ class StudentControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student"));
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -257,7 +257,7 @@ class StudentControllerIntegrationTest {
 				.when(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());

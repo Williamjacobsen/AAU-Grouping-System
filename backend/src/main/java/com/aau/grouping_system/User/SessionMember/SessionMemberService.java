@@ -75,10 +75,32 @@ public class SessionMemberService {
 		}
 	}
 
-	public void applyAndEmailNewPasswords(Session session, CopyOnWriteArrayList<SessionMember> sessionMembers) {
+	public void applyAndEmailNewPasswords(Session session, CopyOnWriteArrayList<? extends SessionMember> sessionMembers) {
+
+		// For development purposes, we store any exception messages instead of just
+		// immediately quitting out of the applyAndEmailNewPassword() loop. Without our
+		// email client set up, applyAndEmailNewPassword() will always fail to send an
+		// email. So, if we quit immediately, we would only be able to send a new
+		// password to the first SessionMember on our list of SessionsMembers, but for
+		// testing purposes we want to cycle through everyone and give them a new
+		// password, despite failing to send an email.
+
 		System.out.println("--- Emailing login codes ---");
+		CopyOnWriteArrayList<String> exceptionMessages = new CopyOnWriteArrayList<>();
 		for (SessionMember sessionMember : sessionMembers) {
-			applyAndEmailNewPassword(session, sessionMember);
+			try {
+				applyAndEmailNewPassword(session, sessionMember);
+			} catch (Exception exception) {
+				exceptionMessages.add(exception.getMessage());
+			}
+		}
+
+		if (exceptionMessages.size() != 0) {
+			String concatenatedExceptionMessages = "";
+			for (String message : exceptionMessages) {
+				concatenatedExceptionMessages += message + ".\n";
+			}
+			throw new RequestException(HttpStatus.INTERNAL_SERVER_ERROR, concatenatedExceptionMessages);
 		}
 	}
 }

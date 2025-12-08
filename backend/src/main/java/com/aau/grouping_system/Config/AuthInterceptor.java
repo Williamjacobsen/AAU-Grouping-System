@@ -4,12 +4,11 @@ import java.util.Map;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-
-// TODO: Figure out why this is not running
-
+@Component 
 public class AuthInterceptor implements HandshakeInterceptor {
 
 	@SuppressWarnings("null")
