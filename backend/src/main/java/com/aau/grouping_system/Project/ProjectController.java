@@ -1,6 +1,5 @@
 package com.aau.grouping_system.Project;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -46,6 +45,25 @@ public class ProjectController {
 		if (!session.getAllowStudentProjectProposals()) { // checks if students can propose projects
 			throw new RequestException(HttpStatus.UNAUTHORIZED,
 					"Your coordinator does not allow student project proposals in this session");
+		}
+	}
+
+	private void requireStudentHasNotAlreadyCreatedProject(User user, Session session) {
+		// Get projects in session
+		@SuppressWarnings("unchecked")
+		CopyOnWriteArrayList<Project> sessionProjects = (CopyOnWriteArrayList<Project>) session.getProjects().getItems(db);
+		
+		// Handle null case safely
+		if (sessionProjects == null) {
+			return; // No existing projects, so student can create one
+		}
+		
+		// Check if student has already created a project
+		for (Project project : sessionProjects) {
+			if (project != null && project.getCreatorUserId().equals(user.getId())) {
+				throw new RequestException(HttpStatus.UNAUTHORIZED,
+						"Students are only allowed to create one project proposal per session. You have already created: " + project.getName());
+			}
 		}
 	}
 
@@ -113,6 +131,7 @@ public class ProjectController {
 		}
 		if (user.getRole() == User.Role.Student) {
 			requireAllowStudentProjectProposals(session);
+			requireStudentHasNotAlreadyCreatedProject(user, session);
 		}
 
 		Project newProject = db.getProjects().addItem(

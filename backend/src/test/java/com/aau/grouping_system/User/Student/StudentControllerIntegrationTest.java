@@ -3,7 +3,6 @@ package com.aau.grouping_system.User.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +34,6 @@ import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Student.StudentController;
 import com.aau.grouping_system.User.SessionMember.Student.StudentService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -271,6 +270,5 @@ class StudentControllerIntegrationTest {
 
 	@Configuration
 	static class TestConfig {
-		// Configuration class
 	}
 }
