@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
@@ -37,7 +36,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @WebMvcTest(AuthController.class)
 @AutoConfigureWebMvc
 @ComponentScan(basePackages = { "com.aau.grouping_system.Authentication", "com.aau.grouping_system.Exceptions" })
-@Import({ AuthControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ AuthControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class AuthControllerIntegrationTest {
 
 	@Autowired
@@ -80,7 +79,7 @@ class AuthControllerIntegrationTest {
 		when(authService.isPasswordCorrect("password123", testCoordinator))
 				.thenReturn(true);
 
-		mockMvc.perform(post("/auth/signIn")
+		mockMvc.perform(post("/api/auth/signIn")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())

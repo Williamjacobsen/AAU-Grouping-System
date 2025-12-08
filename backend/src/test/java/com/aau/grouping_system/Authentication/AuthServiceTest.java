@@ -155,7 +155,7 @@ class AuthServiceTest {
 		when(mockStudents.getItem(studentId)).thenReturn(null);
 		when(mockSupervisors.getItem(studentId)).thenReturn(null);
 
-		// Mock the coordinator lookup to return an empty map
+		// Mock coordinator lookup to return an empty map
 		when(mockCoordinators.getAllItems()).thenReturn(new ConcurrentHashMap<>());
 
 		// Act

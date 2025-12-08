@@ -61,7 +61,7 @@ describe('SignIn Component', () => {
 		fireEvent.click(submitButton);
 
 		await waitFor(() => {
-			expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/auth/signIn`, {
+			expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/api/auth/signIn`, {
 				method: 'POST',
 				credentials: 'include',
 				headers: {
@@ -104,7 +104,7 @@ describe('SignIn Component', () => {
 		const submitButton = screen.getByRole('button', { name: /sign in/i });
 		fireEvent.click(submitButton);
 
-		expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/auth/signIn`, {
+		expect(global.fetch).toHaveBeenCalledWith(`${process.env.REACT_APP_API_BASE_URL}/api/auth/signIn`, {
 			method: 'POST',
 			credentials: 'include',
 			headers: {

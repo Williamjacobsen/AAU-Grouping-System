@@ -13,9 +13,12 @@ import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureWebMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -25,8 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.aau.grouping_system.Config.CorsConfig;
-import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItemChildGroup;
 import com.aau.grouping_system.Database.DatabaseMap;
@@ -38,8 +39,12 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @WebMvcTest(ProjectController.class)
 @AutoConfigureWebMvc
-@ComponentScan(basePackages = { "com.aau.grouping_system.Project", "com.aau.grouping_system.Exceptions" })
-@Import({ ProjectControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@ComponentScan(basePackages = { 
+    "com.aau.grouping_system.Project", 
+    "com.aau.grouping_system.Exceptions",
+    "com.aau.grouping_system.Utils"
+})
+@Import({ ProjectControllerIntegrationTest.TestConfig.class })
 class ProjectControllerIntegrationTest {
 
     @Autowired
@@ -92,19 +97,24 @@ class ProjectControllerIntegrationTest {
         String sessionId = "session123";
         CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
         projects.add(mockProject);
+        
+        CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
+        projectIds.add("project123");
 
         when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) projects);
+        when(mockProjectGroup.getIds()).thenReturn(projectIds);
+        when(mockProjectMap.getItems(projectIds)).thenReturn(projects);
 
         // Act & Assert
-        mockMvc.perform(get("/project/sessions/{sessionId}/getProjects", sessionId)
+        mockMvc.perform(get("/api/project/sessions/{sessionId}/getProjects", sessionId)
                 .sessionAttr("user", mockUser))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
 
         verify(mockSessionMap).getItem(sessionId);
-        verify(mockProjectGroup).getItems(database);
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(projectIds);
     }
 
     @Test
@@ -114,11 +124,11 @@ class ProjectControllerIntegrationTest {
         when(mockSessionMap.getItem(sessionId)).thenReturn(null);
 
         // Act & Assert
-        mockMvc.perform(get("/project/sessions/{sessionId}/getProjects", sessionId))
+        mockMvc.perform(get("/api/project/sessions/{sessionId}/getProjects", sessionId))
                 .andExpect(status().isBadRequest());
 
         verify(mockSessionMap).getItem(sessionId);
-        verify(mockProjectGroup, never()).getItems(any());
+        verify(mockProjectGroup, never()).getIds();
     }
 
     @Test
@@ -128,16 +138,18 @@ class ProjectControllerIntegrationTest {
         String projectName = "TestProject";
         String description = "TestDescription";
         
-        // Create empty project list
+        // Create empty project list and ID list
         CopyOnWriteArrayList<Project> emptyProjects = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<String> emptyIds = new CopyOnWriteArrayList<>();
         
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
         when(requestRequirementService.requireSessionExists(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) emptyProjects);
-        when(mockProjectMap.addItem(eq(database), eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
+        when(mockProjectGroup.getIds()).thenReturn(emptyIds);
+        when(mockProjectMap.getItems(emptyIds)).thenReturn(emptyProjects);
+        when(mockProjectMap.addItem(eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
 
         // Act & Assert
-        mockMvc.perform(post("/project/create/{sessionId}/{projectName}/{description}", 
+        mockMvc.perform(post("/api/project/create/{sessionId}/{projectName}/{description}", 
                 sessionId, projectName, description))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Project '" + projectName + "' has been created successfully."))
@@ -145,8 +157,9 @@ class ProjectControllerIntegrationTest {
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getItems(database);
-        verify(mockProjectMap).addItem(eq(database), eq(mockProjectGroup), any(Project.class));
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(emptyIds);
+        verify(mockProjectMap).addItem(eq(mockProjectGroup), any(Project.class));
     }
 
     @Test 
@@ -160,7 +173,7 @@ class ProjectControllerIntegrationTest {
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
 
         // Act & Assert
-        mockMvc.perform(delete("/project/delete/{projectId}/{sessionId}", projectId, sessionId))
+        mockMvc.perform(delete("/api/project/delete/{projectId}/{sessionId}", projectId, sessionId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Project with id " + projectId + " has been deleted successfully."));
 
@@ -177,17 +190,21 @@ class ProjectControllerIntegrationTest {
         String sessionId = "session123";
         CopyOnWriteArrayList<Project> emptyProjects = new CopyOnWriteArrayList<>();
 
+        CopyOnWriteArrayList<String> emptyIds = new CopyOnWriteArrayList<>();
+
         when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) emptyProjects);
+        when(mockProjectGroup.getIds()).thenReturn(emptyIds);
+        when(mockProjectMap.getItems(emptyIds)).thenReturn(emptyProjects);
 
         // Act & Assert
-        mockMvc.perform(get("/project/sessions/{sessionId}/getProjects", sessionId))
+        mockMvc.perform(get("/api/project/sessions/{sessionId}/getProjects", sessionId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(0));
 
         verify(mockSessionMap).getItem(sessionId);
-        verify(mockProjectGroup).getItems(database);
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(emptyIds);
     }
 
     @Test
@@ -197,17 +214,22 @@ class ProjectControllerIntegrationTest {
         CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
         projects.add(mockProject);
 
+        CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
+        projectIds.add(mockProject.getId());
+
         when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) projects);
+        when(mockProjectGroup.getIds()).thenReturn(projectIds);
+        when(mockProjectMap.getItems(projectIds)).thenReturn(projects);
 
         // Act & Assert
-        mockMvc.perform(get("/project/getSessionProjects/{sessionId}", sessionId))
+        mockMvc.perform(get("/api/project/getSessionProjects/{sessionId}", sessionId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(1));
 
         verify(mockSessionMap).getItem(sessionId);
-        verify(mockProjectGroup).getItems(database);
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(projectIds);
     }
 
     @Test
@@ -222,13 +244,13 @@ class ProjectControllerIntegrationTest {
         when(requestRequirementService.requireSessionExists(sessionId)).thenReturn(mockSession);
 
         // Act & Assert
-        mockMvc.perform(post("/project/create/{sessionId}/{projectName}/{description}", 
+        mockMvc.perform(post("/api/project/create/{sessionId}/{projectName}/{description}", 
                 sessionId, projectName, description))
                 .andExpect(status().isUnauthorized());
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectMap, never()).addItem(any(), any(), any());
+        verify(mockProjectMap, never()).addItem(any(), any());
     }
 
     @Test
@@ -241,10 +263,10 @@ class ProjectControllerIntegrationTest {
         when(mockUser.getRole()).thenReturn(User.Role.Coordinator);
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
         when(requestRequirementService.requireSessionExists(sessionId)).thenReturn(mockSession);
-        when(mockProjectMap.addItem(eq(database), eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
+        when(mockProjectMap.addItem(eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
 
         // Act & Assert
-        mockMvc.perform(post("/project/create/{sessionId}/{projectName}/{description}", 
+        mockMvc.perform(post("/api/project/create/{sessionId}/{projectName}/{description}", 
                 sessionId, projectName, description))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Project '" + projectName + "' has been created successfully."))
@@ -253,7 +275,7 @@ class ProjectControllerIntegrationTest {
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
         verify(requestRequirementService, never()).requireQuestionnaireDeadlineNotExceeded(any());
-        verify(mockProjectMap).addItem(eq(database), eq(mockProjectGroup), any(Project.class));
+        verify(mockProjectMap).addItem(eq(mockProjectGroup), any(Project.class));
     }
 
     @Test
@@ -268,7 +290,7 @@ class ProjectControllerIntegrationTest {
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
 
         // Act & Assert
-        mockMvc.perform(delete("/project/delete/{projectId}/{sessionId}", projectId, sessionId))
+        mockMvc.perform(delete("/api/project/delete/{projectId}/{sessionId}", projectId, sessionId))
                 .andExpect(status().isUnauthorized());
 
         verify(requestRequirementService).requireProjectExists(projectId);
@@ -291,7 +313,7 @@ class ProjectControllerIntegrationTest {
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
 
         // Act & Assert
-        mockMvc.perform(delete("/project/delete/{projectId}/{sessionId}", projectId, sessionId))
+        mockMvc.perform(delete("/api/project/delete/{projectId}/{sessionId}", projectId, sessionId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Project with id " + projectId + " has been deleted successfully."));
 
@@ -319,19 +341,24 @@ class ProjectControllerIntegrationTest {
         CopyOnWriteArrayList<Project> existingProjects = new CopyOnWriteArrayList<>();
         existingProjects.add(existingProject);
         
+        CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
+        projectIds.add(existingProject.getId());
+        
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
         when(requestRequirementService.requireSessionExists(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) existingProjects);
+        when(mockProjectGroup.getIds()).thenReturn(projectIds);
+        when(mockProjectMap.getItems(projectIds)).thenReturn(existingProjects);
 
         // Act & Assert
-        mockMvc.perform(post("/project/create/{sessionId}/{projectName}/{description}", 
+        mockMvc.perform(post("/api/project/create/{sessionId}/{projectName}/{description}", 
                 sessionId, projectName, description))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isBadRequest());
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getItems(database);
-        verify(mockProjectMap, never()).addItem(any(), any(), any());
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(projectIds);
+        verify(mockProjectMap, never()).addItem(any(), any());
     }
 
     @Test
@@ -343,14 +370,16 @@ class ProjectControllerIntegrationTest {
         
         // Create empty project list
         CopyOnWriteArrayList<Project> emptyProjects = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<String> emptyIds = new CopyOnWriteArrayList<>();
         
         when(requestRequirementService.requireUserExists(any(HttpServletRequest.class))).thenReturn(mockUser);
         when(requestRequirementService.requireSessionExists(sessionId)).thenReturn(mockSession);
-        when(mockProjectGroup.getItems(database)).thenReturn((CopyOnWriteArrayList) emptyProjects);
-        when(mockProjectMap.addItem(eq(database), eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
+        when(mockProjectGroup.getIds()).thenReturn(emptyIds);
+        when(mockProjectMap.getItems(emptyIds)).thenReturn(emptyProjects);
+        when(mockProjectMap.addItem(eq(mockProjectGroup), any(Project.class))).thenReturn(mockProject);
 
         // Act & Assert 
-        mockMvc.perform(post("/project/create/{sessionId}/{projectName}/{description}", 
+        mockMvc.perform(post("/api/project/create/{sessionId}/{projectName}/{description}", 
                 sessionId, projectName, description))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Project '" + projectName + "' has been created successfully."))
@@ -358,11 +387,21 @@ class ProjectControllerIntegrationTest {
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getItems(database);
-        verify(mockProjectMap).addItem(eq(database), eq(mockProjectGroup), any(Project.class));
+        verify(mockProjectGroup).getIds();
+        verify(mockProjectMap).getItems(emptyIds);
+        verify(mockProjectMap).addItem(eq(mockProjectGroup), any(Project.class));
     }
 
     @Configuration
     static class TestConfig {
+        
+        @Bean
+        public SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+            http
+                .cors(cors -> cors.disable())
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
+            return http.build();
+        }
     }
 }

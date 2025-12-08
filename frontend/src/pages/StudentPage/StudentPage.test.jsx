@@ -221,7 +221,7 @@ describe('StudentPage Component', () => {
 
 		await waitFor(() => {
 			expect(fetchWithDefaultErrorHandling).toHaveBeenCalledWith(
-				`/student/${mockStudent.id}`,
+				`/api/student/${mockStudent.id}`,
 				{
 					method: 'DELETE',
 					credentials: 'include',

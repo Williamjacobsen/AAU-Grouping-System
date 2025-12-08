@@ -60,7 +60,7 @@ public class ProjectController {
 		// Check if student has already created a project
 		for (Project project : sessionProjects) {
 			if (project != null && project.getCreatorUserId().equals(user.getId())) {
-				throw new RequestException(HttpStatus.UNAUTHORIZED,
+				throw new RequestException(HttpStatus.BAD_REQUEST,
 						"Students are only allowed to create one project proposal per session. You have already created: " + project.getName());
 			}
 		}
@@ -76,7 +76,7 @@ public class ProjectController {
 
 	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" }) // retrieves all projects from
 																																													// sessionid
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable String sessionId) {
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable("sessionId") String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error
@@ -94,8 +94,8 @@ public class ProjectController {
 	@DeleteMapping("/delete/{projectId}/{sessionId}")
 	public ResponseEntity<String> deleteProject(
 			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String projectId,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId) {
+			@NoDangerousCharacters @NotBlank @PathVariable("projectId") String projectId,
+			@NoDangerousCharacters @NotBlank @PathVariable("sessionId") String sessionId) {
 
 		Project project = requestRequirementService.requireProjectExists(projectId);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
@@ -117,9 +117,9 @@ public class ProjectController {
 	@PostMapping("/create/{sessionId}/{projectName}/{description}")
 	public ResponseEntity<Map<String, Object>> createProject(
 			HttpServletRequest servlet,
-			@NoDangerousCharacters @NotBlank @PathVariable String sessionId,
-			@NoDangerousCharacters @NotBlank @PathVariable String projectName,
-			@NoDangerousCharacters @NotBlank @PathVariable String description) {
+			@NoDangerousCharacters @NotBlank @PathVariable("sessionId") String sessionId,
+			@NoDangerousCharacters @NotBlank @PathVariable("projectName") String projectName,
+			@NoDangerousCharacters @NotBlank @PathVariable("description") String description) {
 
 		User user = requestRequirementService.requireUserExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
