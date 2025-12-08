@@ -24,7 +24,7 @@ import jakarta.validation.constraints.*;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/student")
+@RequestMapping("/api/student")
 public class StudentController {
 
 	private final StudentService studentService;

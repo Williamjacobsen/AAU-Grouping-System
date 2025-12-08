@@ -3,7 +3,6 @@ package com.aau.grouping_system.User.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -34,7 +34,6 @@ import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Student.StudentController;
 import com.aau.grouping_system.User.SessionMember.Student.StudentService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -102,7 +101,7 @@ class StudentControllerIntegrationTest {
 		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -129,7 +128,7 @@ class StudentControllerIntegrationTest {
 		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/session-123/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -154,7 +153,7 @@ class StudentControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.NOT_FOUND, "Session not found"));
 
 		// Act & Assert
-		mockMvc.perform(post("/sessionSetup/nonexistent-session/saveSetup")
+		mockMvc.perform(post("/api/sessionSetup/nonexistent-session/saveSetup")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isNotFound());
@@ -187,7 +186,7 @@ class StudentControllerIntegrationTest {
 				.thenReturn(testSession);
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
@@ -222,7 +221,7 @@ class StudentControllerIntegrationTest {
 				.thenThrow(new RequestException(HttpStatus.BAD_REQUEST, "User not authorized as a valid student"));
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isBadRequest());
@@ -258,7 +257,7 @@ class StudentControllerIntegrationTest {
 				.when(requirementService).requireQuestionnaireDeadlineNotExceeded(testSession);
 
 		// Act & Assert
-		mockMvc.perform(post("/student/saveQuestionnaireAnswers")
+		mockMvc.perform(post("/api/student/saveQuestionnaireAnswers")
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isUnauthorized());
@@ -271,6 +270,5 @@ class StudentControllerIntegrationTest {
 
 	@Configuration
 	static class TestConfig {
-		// Configuration class
 	}
 }

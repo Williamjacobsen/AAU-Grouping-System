@@ -5,6 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService;
@@ -13,6 +14,7 @@ import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import jakarta.validation.constraints.NotBlank;
 
 @RestController
+@RequestMapping("/api")
 public class MessagesController {
 	private final MessagesService messagesService;
 

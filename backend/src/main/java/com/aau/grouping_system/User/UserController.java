@@ -21,7 +21,7 @@ import jakarta.validation.constraints.*;
 
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
 
 	private final Database db;

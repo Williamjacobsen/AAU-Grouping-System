@@ -26,7 +26,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @RestController // handles CRUD ops
 @Validated // enables method-level validation
-@RequestMapping("/project") // mapping, all URLs that has /project are routed to this controller
+@RequestMapping("/api/project") // mapping, all URLs that has /project are routed to this controller
 public class ProjectController {
 
 	private final Database db; // storage in db (final never changes once set)
@@ -45,6 +45,24 @@ public class ProjectController {
 		if (!session.getAllowStudentProjectProposals()) { // checks if students can propose projects
 			throw new RequestException(HttpStatus.UNAUTHORIZED,
 					"Your coordinator does not allow student project proposals in this session");
+		}
+	}
+
+	private void requireStudentHasNotAlreadyCreatedProject(User user, Session session) {
+		// Get projects in session
+		CopyOnWriteArrayList<Project> sessionProjects = db.getProjects().getItems(session.getProjects().getIds());
+		
+		// Handle null case safely
+		if (sessionProjects == null) {
+			return; // No existing projects, so student can create one
+		}
+		
+		// Check if student has already created a project
+		for (Project project : sessionProjects) {
+			if (project != null && project.getCreatorUserId().equals(user.getId())) {
+				throw new RequestException(HttpStatus.UNAUTHORIZED,
+						"Students are only allowed to create one project proposal per session. You have already created: " + project.getName());
+			}
 		}
 	}
 
@@ -111,6 +129,7 @@ public class ProjectController {
 		}
 		if (user.getRole() == User.Role.Student) {
 			requireAllowStudentProjectProposals(session);
+			requireStudentHasNotAlreadyCreatedProject(user, session);
 		}
 
 		Project newProject = db.getProjects().addItem(

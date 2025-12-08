@@ -53,6 +53,24 @@ public class GroupService {
 		logGroupActivity("joined", student, group.getId());
 	}
 
+		public void joinGroupWithoutSizeCheck(Group group, Student student) {
+
+		requireStudentNotAlreadyInTheGroup(group, student);
+
+		// Leave previous group
+		String previousGroupId = student.getGroupId();
+		if (previousGroupId != null) {
+			Group previousGroup = db.getGroups().getItem(previousGroupId);
+			leaveGroup(previousGroup, student);
+		}
+
+		group.getStudentIds().add(student.getId());
+		student.setGroupId(group.getId());
+		cancelJoinRequest(student);
+
+		logGroupActivity("joined", student, group.getId());
+	}
+
 	public void leaveGroup(Group group, Student student) {
 
 		group.getStudentIds().remove(student.getId());

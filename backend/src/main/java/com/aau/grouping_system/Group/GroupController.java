@@ -23,7 +23,6 @@ import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import com.aau.grouping_system.SupervisorsPage.SupervisorsPageController;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -34,7 +33,7 @@ import jakarta.validation.constraints.NotNull;
 @CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RestController
 @Validated // enables method-level validation
-@RequestMapping("/groups")
+@RequestMapping("/api/groups")
 public class GroupController {
 
 	private final Database db;
@@ -166,20 +165,9 @@ public class GroupController {
 
 		try {
 			Student student = requestRequirementService.requireStudentExists(studentId);
-			Group fromGroup = db.getGroups().getItem(fromGroupId);
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			requestRequirementService.requireSessionExists(sessionId);
-			// If the student that are being moved is in a group
-			if (fromGroup != null) {
-
-				// Remove student from old group and add student to new group
-				groupService.leaveGroup(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
-
-				return ResponseEntity.ok("Student moved successfully.");
-			}
-			// else the student only joins the new group
 			groupService.joinGroup(toGroup, student);
 
 			return ResponseEntity.ok("Student moved successfully.");
@@ -211,7 +199,7 @@ public class GroupController {
 
 				// Use safe leave (doesnt delete the group, if its empty)
 				groupService.leaveGroupWithoutDeleting(fromGroup, student);
-				groupService.joinGroup(toGroup, student);
+				groupService.joinGroupWithoutSizeCheck(toGroup, student);
 			}
 
 			return ResponseEntity.ok("Members moved successfully");

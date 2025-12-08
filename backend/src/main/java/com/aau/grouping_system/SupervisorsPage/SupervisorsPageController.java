@@ -26,10 +26,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
-@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
+//@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true") // Will: Why?
 @RestController
 @Validated
-@RequestMapping("/sessions/{sessionId}/supervisors")
+@RequestMapping("/api/sessions/{sessionId}/supervisors")
 public class SupervisorsPageController {
 
 	private final RequestRequirementService requestRequirementService;

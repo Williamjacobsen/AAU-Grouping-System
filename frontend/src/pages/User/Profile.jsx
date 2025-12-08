@@ -43,7 +43,7 @@ export default function Profile() {
 
 	const handleEmailChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyEmail`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/modifyEmail`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newEmail }),
@@ -69,7 +69,7 @@ export default function Profile() {
 
 	const handlePasswordChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/coordinator/modifyPassword`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/coordinator/modifyPassword`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newPassword }),
@@ -95,7 +95,7 @@ export default function Profile() {
 
 	const handleNameChange = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/user/modifyName`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/user/modifyName`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ newName }),
@@ -121,7 +121,7 @@ export default function Profile() {
 
 	const handleLogout = async () => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/signOut`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/signOut`, {
 				method: "POST",
 				credentials: "include"
 			});
@@ -146,6 +146,10 @@ export default function Profile() {
 
 			{error && (<div className="error-box">{error}</div>)}
 			{success && (<div className="success-box">{success}</div>)}
+
+			<button className="sign-out" onClick={handleLogout}>
+				Log Out
+			</button>
 
 			<div className="text">
 				<p><b>Name:</b> {user.name}</p>
@@ -213,12 +217,7 @@ export default function Profile() {
 						Update Password
 					</button>
 				</div>
-			}
-			<hr />
-
-			<button className="sign-up" onClick={handleLogout}>
-				Log Out
-			</button>
+			}	
 		</div>
 	);
 }

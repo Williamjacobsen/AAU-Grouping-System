@@ -28,49 +28,45 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects, sessi
 				return;
 			}
 
-			// Only completed groups
-			const completedGroups = groups.filter(group => 
-				group.studentIds && 
-				group.studentIds.length >= (session?.minGroupSize || 1) && 
-				group.studentIds.length <= (session?.maxGroupSize || 100)
-			);
 
-			if (completedGroups.length === 0) {
-				alert("Error: Please ensure groups are complete.");
-				return;
-			}
-			
 			// Check if groups have supervisor
-			const completedGroupsWithoutSupervisors = completedGroups.filter(group => 
-				!group.supervisorId || 
+			const groupsWithoutSupervisors = groups.filter(group =>
+				!group.supervisorId ||
 				(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
 			);
-			
-			if (completedGroupsWithoutSupervisors.length > 0) {
-				alert("Error: Groups must have supervisors assigned.");
+
+			// Check if groups have project
+
+			const groupsWithoutProjects = groups.filter(group =>
+				!group.assignedProjectId ||
+				(typeof group.assignedProjectId === 'string' && group.assignedProjectId.trim() === '')
+			);
+
+			if (groupsWithoutProjects.length > 0 || groupsWithoutSupervisors.length > 0) {
+				alert("Error: Groups must have supervisors and projects assigned.");
 				return;
 			}
 
 			const newData = [];
 			let number = 0;
-			
+
 			// Sort groups by supervisor
 			const sortedGroups = [...groups].sort((a, b) => {
 				const supervisorA = supervisors?.find(s => s.id === a.supervisorId);
 				const supervisorB = supervisors?.find(s => s.id === b.supervisorId);
-				
+
 				const supervisorNameA = supervisorA?.name || "";
 				const supervisorNameB = supervisorB?.name || "";
-				
+
 				console.log(`Sorting: ${a.name} (supervisor: ${supervisorNameA}) vs ${b.name} (supervisor: ${supervisorNameB})`);
-				
+
 				if (supervisorNameA !== supervisorNameB) {
 					return supervisorNameA.localeCompare(supervisorNameB);
 				}
-				
+
 				return a.name.localeCompare(b.name);
 			});
-		
+
 			// Generate CSV data
 			sortedGroups.forEach((group) => {
 
@@ -86,7 +82,7 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects, sessi
 
 					const groupSupervisor = supervisors.find(supervisor => supervisor.id === group.supervisorId);
 					const groupProject = projects.find(project => project.id === group.assignedProjectId);
-					
+
 					newData.push({
 						groupName: group.name,
 						groupNumber: groupNumber,

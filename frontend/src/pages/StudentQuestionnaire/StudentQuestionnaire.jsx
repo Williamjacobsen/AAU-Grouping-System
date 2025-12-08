@@ -28,7 +28,7 @@ export default function StudentQuestionnaire() {
 			const updatedQuestionnaire = Object.fromEntries(formData);
 
 			await fetchWithDefaultErrorHandling(
-				`/student/saveQuestionnaireAnswers`,
+				`/api/student/saveQuestionnaireAnswers`,
 				{
 					method: "POST",
 					credentials: "include", // Ensures cookies are sent with the request

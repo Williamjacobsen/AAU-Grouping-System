@@ -12,7 +12,7 @@ export default function SignIn() {
 
 	const handleSignIn = async (password, emailOrId, setError, navigate) => {
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/auth/signIn`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/auth/signIn`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ emailOrId, password }),

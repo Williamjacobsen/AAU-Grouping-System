@@ -9,7 +9,7 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions`, {
 				method: "GET",
 				credentials: "include", 
 			});
@@ -34,7 +34,7 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions`, {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
@@ -63,7 +63,7 @@ export default function useSessionManager() {
 		setLoading(true);
 		setError("");
 		try {
-			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/sessions/${sessionId}`, {
+			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions/${sessionId}`, {
 				method: "DELETE",
 				credentials: "include",
 			});

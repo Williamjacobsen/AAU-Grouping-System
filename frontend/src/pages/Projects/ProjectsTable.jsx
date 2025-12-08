@@ -26,6 +26,11 @@ const ProjectsTable = memo(({ projects, supervisors, students, setProjects, sess
 		return user.role === "Coordinator" || !isDeadlineExceeded() && project.creatorUserId === user.id;
 	}
 
+	function getHasStudentAlreadyCreatedProject() {
+		if (user.role !== "Student") return false;
+		return projects.some(project => project.creatorUserId === user.id);
+	}
+
 	function getCreatorNameAsText(project) {
 		switch (project.creatorUserRole) {
 			case "Coordinator":
@@ -40,7 +45,7 @@ const ProjectsTable = memo(({ projects, supervisors, students, setProjects, sess
 	}
 
 	const onDelete = (project) => { // handles project deletion via API call
-		fetch(`${process.env.REACT_APP_API_BASE_URL}/project/delete/${project.id}/${session.id}`,
+		fetch(`${process.env.REACT_APP_API_BASE_URL}/api/project/delete/${project.id}/${session.id}`,
 			{
 				method: 'DELETE',
 				credentials: "include"
@@ -58,12 +63,18 @@ const ProjectsTable = memo(({ projects, supervisors, students, setProjects, sess
 	};
 
 	async function onAdd() { // handles adding projects via API call
+		// Check if student already has a project
+		if (user.role === "Student" && getHasStudentAlreadyCreatedProject()) {
+			alert("You have already created a project proposal. Students are only allowed to create one project proposal per session.");
+			return;
+		}
+
 		const projectData = {
 			name: newProjectName,
 			description: newProjectDescription,
 		};
 
-		await fetch(`${process.env.REACT_APP_API_BASE_URL}/project/create/${session.id}/${newProjectName}/${newProjectDescription}`, {
+		await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/project/create/${session.id}/${newProjectName}/${newProjectDescription}`, {
 			method: 'POST',
 			credentials: "include",
 			headers: {
