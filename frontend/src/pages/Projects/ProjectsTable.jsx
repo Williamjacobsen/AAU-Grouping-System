@@ -1,27 +1,42 @@
 import useIsQuestionnaireDeadlineExceeded from "hooks/useIsQuestionnaireDeadlineExceeded";
 import React, { useState, memo } from "react";
 
-const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // component to prevent re-rendering
+const ProjectsTable = memo(({ projects, supervisors, students, setProjects, session, user }) => { // "memo" component to prevent re-rendering
+
 	// state for input fields when creating new project
 	const [newProjectName, setNewProjectName] = useState("");
 	const [newProjectDescription, setNewProjectDescription] = useState("");
+
 	// state to track which project is expanded, and only allow one to be expanded
 	const [expandedProjectId, setExpandedProjectId] = useState(null);
 	const toggleExpanded = (projectId) =>
 		setExpandedProjectId((prev) => (prev === projectId ? null : projectId));
 
-	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session); // hook that checks if Q deadline has been exceeded
+	const { isDeadlineExceeded } = useIsQuestionnaireDeadlineExceeded(session); // hook that checks if questionnaire deadline has been exceeded
 
 	function getDoesDeadlineBlockUser() {
-		return user.role !== "Coordinator" && isDeadlineExceeded(); // blocks non-coordinators from making changes after Q has been exceeded
+		return user.role !== "Coordinator" && isDeadlineExceeded(); // blocks non-coordinators from making changes after questionnaire has been exceeded
 	}
 
 	function getIsStudentUserAllowedToMakeProjects() {
-		return user.role !== "Student" || session.allowStudentProjectProposals;
+		return user.role !== "Student" || session?.allowStudentProjectProposals;
 	}
 
-	function getIsUserAllowedToChangeProject(project) {
+	function getIsUserAllowedToDeleteProject(project) {
 		return user.role === "Coordinator" || !isDeadlineExceeded() && project.creatorUserId === user.id;
+	}
+
+	function getCreatorNameAsText(project) {
+		switch (project.creatorUserRole) {
+			case "Coordinator":
+				return "";
+			case "Supervisor":
+				return (supervisors.find(supervisor => supervisor.id === project.creatorUserId)?.name ?? "SUPERVISOR DOES NOT EXIST ANYMORE");
+			case "Student":
+				return (students.find(student => student.id === project.creatorUserId)?.name ?? "STUDENT DOES NOT EXIST ANYMORE");
+			default:
+				return "ERROR: Creator role is invalid";
+		}
 	}
 
 	const onDelete = (project) => { // handles project deletion via API call
@@ -71,7 +86,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 				console.error('Error adding project:', error);
 			});
 
-		window.location.reload(); // Refresh changes (else "getIsUserAllowedToChangeProject()"" doesn't work properly, for some odd reason)
+		window.location.reload(); // Refresh changes (else "getIsUserAllowedToDeleteProject()"" doesn't work properly, for some odd reason)
 	};
 
 	return (
@@ -79,6 +94,7 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 			<thead>
 				<tr>
 					<th>Name</th>
+					<th>Creator</th>
 					<th>Description</th>
 					<th>Actions</th>
 				</tr>
@@ -87,6 +103,11 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 				{projects !== null && projects.map((project) => (
 					<tr key={project.id || project._id || project.name}>
 						<td className="project-name">{project.name}</td>
+						<td className="project-creator">
+							<b>{project.creatorUserRole}</b>
+							<br />
+							{getCreatorNameAsText(project)}
+						</td>
 						<td className="project-description">
 							<div
 								className={`description-content ${expandedProjectId === project.id ? "expanded" : "collapsed"
@@ -102,11 +123,11 @@ const ProjectsTable = memo(({ projects, setProjects, session, user }) => { // co
 							</button>
 						</td>
 						<td className="project-actions">
-							{user.role !== "Student" && (
+							{getIsUserAllowedToDeleteProject(project) && (
 								<button
 									className="btn-delete"
 									onClick={() => onDelete(project)}
-									disabled={!getIsUserAllowedToChangeProject(project)}>
+								>
 									Delete
 								</button>
 							)}

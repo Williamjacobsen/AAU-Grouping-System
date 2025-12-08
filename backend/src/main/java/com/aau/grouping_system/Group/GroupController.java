@@ -203,12 +203,6 @@ public class GroupController {
 			Group toGroup = requestRequirementService.requireGroupExists(toGroupId);
 
 			Session session = requestRequirementService.requireSessionExists(sessionId);
-			int maxGroupSize = session.getMaxGroupSize();
-
-			// Check group size limit
-			if (toGroup.getStudentIds().size() + fromGroup.getStudentIds().size() > maxGroupSize) {
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Target group is full");
-			}
 
 			// a copy of the student list, to avoid errors when modifying the original list
 			// inside the loop
