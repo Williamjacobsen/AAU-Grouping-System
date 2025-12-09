@@ -4,6 +4,7 @@ import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
 import { useAuth } from "../../ContextProviders/AuthProvider";
 
 import "./Header.css";
+import Footer from "../Footer/Footer";
 
 export default function Header() {
 
@@ -77,6 +78,7 @@ export default function Header() {
 				}
 			</div>
 			<Outlet />
+			<Footer />
 		</>
 	);
 }
