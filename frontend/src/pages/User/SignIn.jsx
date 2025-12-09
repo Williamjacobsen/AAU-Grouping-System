@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../ContextProviders/AuthProvider";
 import "./User.css";
 
 export default function SignIn() {
@@ -9,6 +10,7 @@ export default function SignIn() {
 	const [password, setPassword] = useState("");
 	const [emailOrId, setEmailOrId] = useState("");
 	const [error, setError] = useState("");
+	const { setUser } = useAuth();
 
 	const handleSignIn = async (password, emailOrId, setError, navigate) => {
 		try {
@@ -25,7 +27,17 @@ export default function SignIn() {
 				return Promise.resolve();
 			}
 
-			navigate("/profile");
+			const user = await response.json();
+			setUser(user);
+			console.log(user)
+
+			if (user && user.role === "Coordinator") {
+				navigate("/sessions");
+			} else  if (user && user.role === "Supervisor") {
+				navigate(`/session/${user.sessionId}/projects`);
+			} else if (user && user.role === "Student") {
+				navigate(`/session/${user.sessionId}/studentQuestionnaire`);
+			}
 			window.location.reload();
 		} catch (e) {
 			setError(e.message);

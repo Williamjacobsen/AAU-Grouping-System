@@ -48,7 +48,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/signIn")
-	public ResponseEntity<String> signIn(HttpServletRequest servlet, @Valid @RequestBody SignInRecord record) {
+	public ResponseEntity<User> signIn(HttpServletRequest servlet, @Valid @RequestBody SignInRecord record) {
 
 		User user = service.findByEmailOrId(record.emailOrId);
 		if (user == null || !service.isPasswordCorrect(record.password, user)) {
@@ -58,8 +58,7 @@ public class AuthController {
 		service.invalidateOldSession(servlet);
 		service.createNewSession(servlet, user);
 
-		return ResponseEntity
-				.ok("Signed in, user: " + user.getEmail());
+		return ResponseEntity.ok(user);
 	}
 
 	@PostMapping("/signOut")
