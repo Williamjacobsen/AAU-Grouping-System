@@ -151,6 +151,7 @@ export default function ChatBox() {
               groups={groups}
               students={students}
 							username={user.name}
+							setUnreadMessagesCount={setUnreadMessagesCount}
             />
             <ChatArea
               selectedChatRoom={selectedChatRoom}

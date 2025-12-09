@@ -1,6 +1,5 @@
 package com.aau.grouping_system.Authentication;
 
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -156,7 +155,7 @@ class AuthServiceTest {
 		when(mockStudents.getItem(studentId)).thenReturn(null);
 		when(mockSupervisors.getItem(studentId)).thenReturn(null);
 
-		// Also mock the coordinator lookup to return an empty map
+		// Mock coordinator lookup to return an empty map
 		when(mockCoordinators.getAllItems()).thenReturn(new ConcurrentHashMap<>());
 
 		// Act
@@ -166,7 +165,6 @@ class AuthServiceTest {
 		assertNull(result);
 		verify(mockStudents).getItem(studentId);
 		verify(mockSupervisors).getItem(studentId);
-		// You might also want to verify that coordinator lookup was attempted
 		verify(mockCoordinators).getAllItems();
 	}
 

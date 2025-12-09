@@ -5,15 +5,12 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import org.mockito.Mock;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.aau.grouping_system.Database.Database;
@@ -57,10 +54,10 @@ class StudentServiceTest {
 		String email = "student@test.com";
 		String name = "Test Student";
 
-		// Create a mock student that will be returned by addItem
+		// Create a mock student
 		Student mockStudent = mock(Student.class);
 
-		// Mock the addItem method call
+		// Mock addItem method call
 		when(mockStudentsMap.addItem(
 				any(), any(Student.class)))
 				.thenReturn(mockStudent);
@@ -110,14 +107,13 @@ class StudentServiceTest {
 		// Arrange
 		Student student = mock(Student.class);
 		StudentQuestionnaire questionnaire = new StudentQuestionnaire();
-		// Leave questionnaire with default values
 
 		// Act
 		studentService.applyQuestionnaireAnswers(student, questionnaire);
 
 		// Assert
 		verify(student).setQuestionnaire(questionnaire);
-		// Verify default values are maintained
+
 		assertEquals(-1, questionnaire.getDesiredGroupSizeMin());
 		assertEquals(-1, questionnaire.getDesiredGroupSizeMax());
 		assertEquals(StudentQuestionnaire.WorkLocation.NoPreference, questionnaire.getDesiredWorkLocation());

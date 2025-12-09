@@ -1,6 +1,6 @@
 package com.aau.grouping_system.Session;
 
-import com.aau.grouping_system.InputValidation.IsListOfEmails;
+import com.aau.grouping_system.InputValidation.IsEmailAndNamePairList;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.ValidISODate;
 
@@ -14,6 +14,6 @@ public record SessionSetupRecord(
 		@NotNull @Min(0) @Max(100000) Integer maxGroupSize,
 		Boolean allowStudentProjectProposals,
 		@NoDangerousCharacters @NotNull @ValidISODate String questionnaireDeadlineISODateString,
-		@NoDangerousCharacters @NotNull @IsListOfEmails String supervisorEmails,
-		@NoDangerousCharacters @NotNull @IsListOfEmails String studentEmails) {
+		@NoDangerousCharacters @NotNull @IsEmailAndNamePairList String supervisorEmailAndNamePairs,
+		@NoDangerousCharacters @NotNull @IsEmailAndNamePairList String studentEmailAndNamePairs) {
 }

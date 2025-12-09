@@ -51,6 +51,15 @@
 			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
 		},
 		{
+			"label": "clean-backend",
+			"type": "shell",
+			"command": "./gradlew clean",
+			"options": {
+				"cwd": "${workspaceFolder}/backend"
+			},
+			"problemMatcher": [], // Disables the problem matcher, preventing an annoying pop up
+		},
+		{
 			"label": "start-fullstack",
 			"dependsOn": [
 				"start-backend-auto-updating",

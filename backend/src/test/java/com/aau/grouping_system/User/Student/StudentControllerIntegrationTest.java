@@ -3,7 +3,6 @@ package com.aau.grouping_system.User.Student;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.mockito.ArgumentMatchers.any;
-
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -16,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,7 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.aau.grouping_system.Authentication.AuthService;
-import com.aau.grouping_system.Config.CorsConfig;
 import com.aau.grouping_system.Config.SecurityConfig;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
@@ -34,7 +33,6 @@ import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Student.StudentController;
 import com.aau.grouping_system.User.SessionMember.Student.StudentService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
-import org.springframework.http.HttpStatus;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -42,7 +40,7 @@ import jakarta.servlet.http.HttpServletRequest;
 @AutoConfigureWebMvc
 @ComponentScan(basePackages = { "com.aau.grouping_system.User.SessionMember.Student", "com.aau.grouping_system.Session", "com.aau.grouping_system.Config",
 		"com.aau.grouping_system.Exceptions" })
-@Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class, CorsConfig.class })
+@Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class StudentControllerIntegrationTest {
 
 	@Autowired
@@ -93,8 +91,8 @@ class StudentControllerIntegrationTest {
 				    "maxGroupSize": 7,
 				    "allowStudentProjectProposals": true,
 				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
-				    "supervisorEmails": "supervisor1@test.com",
-				    "studentEmails": "john.doe@student.aau.dk"
+				    "supervisorEmailAndNamePairs": "supervisor1@test.com Supervisor One",
+				    "studentEmailAndNamePairs": "john.doe@student.aau.dk John Doe"
 				}
 				""";
 
@@ -145,8 +143,8 @@ class StudentControllerIntegrationTest {
 				    "maxGroupSize": 7,
 				    "allowStudentProjectProposals": true,
 				    "questionnaireDeadlineISODateString": "2025-12-31T23:59:59Z",
-				    "supervisorEmails": "supervisor1@test.com",
-				    "studentEmails": "john.doe@student.aau.dk"
+				    "supervisorEmailAndNamePairs": "supervisor1@test.com Supervisor One",
+				    "studentEmailAndNamePairs": "john.doe@student.aau.dk John Doe"
 				}
 				""";
 
@@ -271,6 +269,5 @@ class StudentControllerIntegrationTest {
 
 	@Configuration
 	static class TestConfig {
-		// Configuration class
 	}
 }
