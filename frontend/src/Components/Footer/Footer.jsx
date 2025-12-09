@@ -28,33 +28,38 @@ export default function Footer() {
 
   // Each step has: id, label, to (link target) and a match string used to see current step.
   const studentSteps = [
-    { id: 1, label: "1. Sign in", to: "/sign-in", match: "/sign-in" },
-    { id: 2, label: "2. Profile", to: "/profile", match: "/profile" },
-    { id: 3, label: "3. Questionnaire", to: sessionLink("studentQuestionnaire"), match: "studentQuestionnaire" },
-    { id: 4, label: "4. Status", to: sessionLink("status"), match: "/status" },
+    { id: 1, label: "1. Specify your preferences", to: sessionLink("studentQuestionnaire"), match: "studentQuestionnaire" },
+    { id: 2, label: "2. Find or create a group (also, use the chat box in the right corner)", to: sessionLink("status"), match: "/status" },
+	];
+	
+	const supervisorSteps = [
+    { id: 1, label: "1. Add project proposals", to: sessionLink("projects"), match: "projects" },
   ];
 
   const coordinatorSteps = [
-    { id: 1, label: "1. Sign in", to: "/sign-in", match: "/sign-in" },
-    { id: 2, label: "2. Session Management", to: "/sessions", match: "/sessions" },
-    { id: 3, label: "3. Create Session", to: "/sessions", match: "/sessions" },
-    { id: 4, label: "4. Setup Page", to: sessionLink("setup"), match: "/setup" },
-    { id: 5, label: "5. Supervisors Page", to: sessionLink("supervisorsPage"), match: "supervisorsPage" },
-    { id: 6, label: "6. Status page", to: sessionLink("status"), match: "/status" },
-    { id: 7, label: "7. Group management page", to: sessionLink("groupManagement"), match: "groupManagement" },
+    { id: 1, label: "1. Open or create a session", to: "/sessions", match: "/sessions" },
+    { id: 2, label: "2. Set up the session", to: sessionLink("setup"), match: "/setup" },
+		{ id: 3, label: "3. Configure supervisors", to: sessionLink("supervisorsPage"), match: "supervisorsPage" },
+		{ id: 4, label: "4. Add project proposals (supervisors can also do this)", to: sessionLink("projects"), match: "projects" },
+    { id: 5, label: "5. Finalize groups (after deadline is exceeded)", to: sessionLink("groupManagement"), match: "groupManagement" },
   ];
 
   // Pick steps according to role
   let steps;
   if (user.role === "Coordinator") {
     steps = coordinatorSteps;
-  } else {
+  } else if (user.role === "Student") {
     steps = studentSteps;
+  } else if (user.role === "Supervisor") {
+    steps = supervisorSteps;
+	} else {
+		return null;
   }
 
   return (
-    <div className="app-footer">
-      <ul className="footer-steps">
+		<div className="app-footer">
+			<ul className="footer-steps">
+				<b>Follow the steps:</b>
         {steps.map(function (step) {
           // active when current pathname contains the match string
           const active = location.pathname && location.pathname.includes(step.match);
