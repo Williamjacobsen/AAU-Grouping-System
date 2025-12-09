@@ -17,7 +17,7 @@ export default function useStudentClick({
 
 		const from = selectedStudent.from;
 
-		// If both selected students are not in a group
+		// If both selected students are not in a group.
 		if (from == null && groupId == null) {
 			// Prompt for group name
 			const groupName = window.prompt("Enter a name for the new group:");
