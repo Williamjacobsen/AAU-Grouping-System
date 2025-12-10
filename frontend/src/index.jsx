@@ -1,11 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Outlet,
-} from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
@@ -26,6 +21,7 @@ import SessionSetup from "./pages/SessionSetup/SessionSetup";
 import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage";
 import StudentPage from "./pages/StudentPage/StudentPage";
 import ChatBox from "./Components/ChatBox/ChatBox";
+import MyGroup from "./pages/MyGroup/MyGroup";
 import { AppStateProvider } from "./ContextProviders/AppStateContext";
 import { AuthProvider } from "./ContextProviders/AuthProvider";
 
@@ -60,7 +56,8 @@ export default function App() {
                   }
                 >
                   <Route path="setup" element={<SessionSetup />} />
-                  <Route path="status" element={<Status />} />
+                  <Route path="students" element={<Status />} />
+                  <Route path="my-group" element={<MyGroup />} />
                   <Route path="projects" element={<Projects />} />
                   <Route path="groupManagement" element={<GroupManagement />} />
                   <Route
