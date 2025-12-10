@@ -14,14 +14,12 @@
 	z-index: 1010;
 	display: flex;
 	justify-content: left;
-}
-
-.navigation-menu {
 	background-color: #3498db;
 }
 
-.step-by-step-guide {
+.help {
 	background-color: #3e3e3eff;
+	min-height: 40px;
 }
 
 .items {
