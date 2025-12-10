@@ -28,7 +28,7 @@ export default function StepByStepGuide({ user, session, location, isLoadingSess
 
 	const coordinatorSteps = [
 		{ id: 1, label: "Create and edit a session", to: "/sessions", match: "sessions" },
-		{ id: 2, label: "Set up the session", to: sessionLink("setup"), match: "setup" },
+		{ id: 2, label: "Set up the session and send login codes", to: sessionLink("setup"), match: "setup" },
 		{ id: 3, label: "Configure max groups per supervisor", to: sessionLink("supervisorsPage"), match: "supervisorsPage" },
 		{ id: 4, label: "Add project proposals", to: sessionLink("projects"), match: "projects" },
 		{ id: 5, label: "Finalize groups", to: sessionLink("groupManagement"), match: "groupManagement" },

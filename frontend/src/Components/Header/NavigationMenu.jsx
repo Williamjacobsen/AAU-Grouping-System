@@ -84,18 +84,18 @@ export default function NavigationMenu({ user, session, location }) {
 								<>
 									<li>
 										<Link
-											to={`/session/${session.id}/setup`}
-											className={getIsActivePage(`/session/${session.id}/setup`)}
-										>
-											Session Setup
-										</Link>
-									</li>
-									<li>
-										<Link
 											to={`/session/${session.id}/supervisorsPage`}
 											className={getIsActivePage(`/session/${session.id}/supervisorsPage`)}
 										>
 											Supervisors
+										</Link>
+									</li>
+									<li>
+										<Link
+											to={`/session/${session.id}/setup`}
+											className={getIsActivePage(`/session/${session.id}/setup`)}
+										>
+											Session Setup
 										</Link>
 									</li>
 									<li>

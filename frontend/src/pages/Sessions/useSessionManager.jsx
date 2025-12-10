@@ -11,7 +11,7 @@ export default function useSessionManager() {
 		try {
 			const response = await fetch(`${process.env.REACT_APP_API_BASE_URL}/api/sessions`, {
 				method: "GET",
-				credentials: "include", 
+				credentials: "include",
 			});
 
 			if (!response.ok) {
@@ -22,7 +22,7 @@ export default function useSessionManager() {
 			setSessions(await response.json());
 
 		} catch (error) {
-			alert(error)
+			alert(error);
 		} finally {
 			setLoading(false);
 		}
@@ -49,6 +49,7 @@ export default function useSessionManager() {
 			}
 
 			await fetchSessions();
+			alert("Successfully created session!");
 			return true;
 
 		} catch (error) {
@@ -74,6 +75,7 @@ export default function useSessionManager() {
 			}
 
 			await fetchSessions();
+			alert("Successfully deleted session!");
 			return true;
 
 		} catch (error) {

@@ -8,9 +8,11 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.aau.grouping_system.Database.Database;
+import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
@@ -109,9 +111,27 @@ public class SessionSetupService {
 		CopyOnWriteArrayList<? extends User> users = getUsersFunction.get();
 		CopyOnWriteArrayList<EmailAndNamePair> pairs = separateEmailAndNamePairs(emailAndNamePairs);
 
+		// Cancel operation, if there are duplicate emails or names
+		boolean hasDuplicateEmails = pairs.stream()
+				.map(p -> p.email)
+				.distinct()
+				.count() != pairs.size();
+		boolean hasDuplicateNames = pairs.stream()
+				.map(p -> p.name)
+				.distinct()
+				.count() != pairs.size();
+		if (hasDuplicateEmails) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Operation canceled, because there are duplicate emails");
+		}
+		if (hasDuplicateNames) {
+			throw new RequestException(HttpStatus.BAD_REQUEST, "Operation canceled, because there are duplicate names");
+		}
+
 		// Delete users who are not on the list
 		for (User user : users) {
-			if (pairs.stream().noneMatch(pair -> pair.email.equals(user.getEmail()))) {
+			boolean pairsDoNotContainUser = pairs.stream().noneMatch(pair -> pair.email.equals(user.getEmail()));
+
+			if (pairs.size() == 0 || pairsDoNotContainUser) {
 				removeUserFunction.accept(user);
 			}
 		}
@@ -139,7 +159,7 @@ public class SessionSetupService {
 		// Example of an input string:
 		// "an@email.com Alex Alexson \n another@email.com Barry Barryson"
 
-		String[] entries = emailAndNamePairs.split("\\n");
+		String[] entries = emailAndNamePairs.trim().split("\\n");
 		CopyOnWriteArrayList<String> trimmedEntries = new CopyOnWriteArrayList<>();
 		for (String entry : entries) {
 			trimmedEntries.add(entry.trim());
@@ -148,7 +168,13 @@ public class SessionSetupService {
 		CopyOnWriteArrayList<EmailAndNamePair> pairs = new CopyOnWriteArrayList<>();
 		for (String trimmedEntry : trimmedEntries) {
 			EmailAndNamePair pair = new EmailAndNamePair();
+
 			int firstSpaceIndex = trimmedEntry.indexOf(' '); // The email is separated from the name via a space
+			// String.indexOf(' ') return -1 if the whitespace isn't found
+			if (firstSpaceIndex == -1) {
+				continue;
+			}
+
 			pair.email = trimmedEntry.substring(0, firstSpaceIndex).trim();
 			pair.name = trimmedEntry.substring(firstSpaceIndex + 1).trim();
 			pairs.add(pair);

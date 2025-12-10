@@ -22,7 +22,7 @@ class IsEmailAndNamePairListValidator implements ConstraintValidator<IsEmailAndN
 		// Example of an input string:
 		// "an@email.com Alex Alexson \n another@email.com Barry Barryson"
 
-		String[] entries = value.split("\\n");
+		String[] entries = value.trim().split("\\n");
 		for (String entry : entries) {
 			String trimmedEntry = entry.trim();
 
@@ -38,6 +38,10 @@ class IsEmailAndNamePairListValidator implements ConstraintValidator<IsEmailAndN
 
 			// Find and validate email
 			int firstSpaceIndex = trimmedEntry.indexOf(' '); // The email is separated from the name via a space
+			// String.indexOf(' ') return -1 if the whitespace isn't found
+			if (firstSpaceIndex == -1) {
+				return false;
+			}
 			String trimmedEmail = trimmedEntry.substring(0, firstSpaceIndex).trim();
 			if (!isValidEmail(trimmedEmail)) {
 				return false;

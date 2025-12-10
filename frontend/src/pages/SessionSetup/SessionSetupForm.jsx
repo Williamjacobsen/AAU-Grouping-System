@@ -21,7 +21,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 
 			// Convert <input type="checkbox"> value to a boolean value, since the checked value is "on".
 			sessionSetupRecord.allowStudentProjectProposals =
-				sessionSetupRecord.allowStudentProjectProposals == "on" ? true : false;
+				sessionSetupRecord.allowStudentProjectProposals === "on" ? true : false;
 
 			await fetchWithDefaultErrorHandling(
 				`/api/sessionSetup/${sessionId}/saveSetup`,
@@ -33,6 +33,7 @@ const SessionSetupForm = memo(({ sessionId, session, supervisors, students, setM
 				}
 			);
 
+			alert("Setup saved successfully!");
 			setMessage("Setup saved successfully!");
 
 			window.location.reload(); // Reload the page to refresh changes (backend updates session object)

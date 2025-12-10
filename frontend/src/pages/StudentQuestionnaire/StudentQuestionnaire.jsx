@@ -41,6 +41,7 @@ export default function StudentQuestionnaire() {
 				}
 			);
 
+			alert("Successfully saved answers!");
 			window.location.reload(); // Reload the page (to refresh changes)
 		} catch (error) {
 			alert(error);
