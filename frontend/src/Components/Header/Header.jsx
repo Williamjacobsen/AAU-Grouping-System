@@ -1,15 +1,18 @@
 import React from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
+
 import { useGetSessionByUserOrParameter } from "../../hooks/useGetSession";
 import { useAuth } from "../../ContextProviders/AuthProvider";
-
 import "./Header.css";
-import Footer from "../Footer/Footer";
+import StepByStepGuide from "./StepByStepGuide";
+import NavigationMenu from "./NavigationMenu";
 
 export default function Header() {
 
 	const { isLoading: isLoadingUser, user } = useAuth();
 	const { isLoading: isLoadingSession, session } = useGetSessionByUserOrParameter(user);
+
+	const location = useLocation();
 
 	if (isLoadingUser) {
 		return <>Loading user...</>;
@@ -20,70 +23,20 @@ export default function Header() {
 
 	return (
 		<>
-			<div className="sticky">
-				<div className="header">
-					<ul>
-						<li>
-							<Link to="/">About</Link>
-						</li>
-						{!user &&
-							<li>
-								<Link to="/sign-in">Sign in or up</Link>
-							</li>
-						}
-						{user &&
-							<li>
-								<Link to="/profile">Profile</Link>
-							</li>
-						}
-						{user?.role === "Coordinator" &&
-							<li>
-								<Link to="/sessions">Sessions</Link>
-							</li>
-						}
-					</ul>
-				</div>
-				{session &&
-					<div className="header">
-						<ul>
-							<li>
-								<b>Session</b>: {session?.name}
-							</li>
-							{user?.role !== "Supervisor" &&
-								<li>
-									<Link to={`/session/${session.id}/students`}>Students</Link>
-								</li>
-							}
-							{user?.role === "Student" &&
-								<li>
-									<Link to={`/session/${session.id}/my-group`}>My Group</Link>
-								</li>
-							}
-							<li>
-								<Link to={`/session/${session.id}/projects`}>Projects</Link>
-							</li>
-							{user?.role === "Coordinator" &&
-								<li>
-									<Link to={`/session/${session.id}/setup`}>Setup</Link>
-									<Link to={`/session/${session.id}/supervisorsPage`}>Supervisors</Link>
-								</li>
-							}
-							{user?.role === "Coordinator" &&
-								<li>
-									<Link to={`/session/${session.id}/groupManagement`}>Group Management</Link>
-								</li>
-							}
-							{user?.role === "Student" &&
-								<li>
-									<Link to={`/session/${session.id}/studentQuestionnaire`}>Questionnaire</Link>
-								</li>
-							}
-						</ul>
-					</div>
-				}
-			</div>
+			<header className="sticky-header">
+				<NavigationMenu
+					user={user}
+					session={session}
+					location={location}
+				/>
+				<StepByStepGuide
+					user={user}
+					session={session}
+					location={location}
+					isLoadingSession={isLoadingSession}
+				/>
+			</header>
 			<Outlet />
-			<Footer />
 		</>
 	);
 }
