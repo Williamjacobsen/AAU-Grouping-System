@@ -88,8 +88,8 @@
 	border: 1px solid #ccc;
 	font-size: 1rem;
 	font-family: inherit;
-	color: #000;
-	background-color: white;
+	color: white;
+	background-color: #3498db;
 	box-sizing: border-box;
 	min-width: 8.75rem;
 	margin: 0;
@@ -99,7 +99,7 @@
 }
 
 .column-selector-button:hover {
-	background-color: #f8f9fa;
+	background-color: #208ed8;
 }
 
 .column-selector-button:focus {

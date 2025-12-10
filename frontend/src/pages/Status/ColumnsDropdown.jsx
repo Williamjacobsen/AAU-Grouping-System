@@ -14,7 +14,7 @@ export default function ColumnsDropdown({ columns, enabledLabels, toggleLabel, s
 				onClick={() => setDropdownIsOpen(!dropdownIsOpen)}
 				className="column-selector-button"
 			>
-				Select columns ▼
+				Filter columns ▼
 			</button>
 
 			{dropdownIsOpen && (

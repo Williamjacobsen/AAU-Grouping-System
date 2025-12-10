@@ -126,7 +126,7 @@ select:focus {
 	color: #e74c3c;
 }
 
-.forgot-password {
+.forgot-password a{
 	font-size: 1rem;
 	color: #000;
 	margin-top: 1rem;
@@ -134,7 +134,7 @@ select:focus {
 	text-decoration: underline;
 }
 
-.forgot-password:hover {
+.forgot-password a:hover {
 	color: #3498db;
 }
 

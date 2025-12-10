@@ -89,8 +89,10 @@ export default function SignIn() {
 					Sign Up
 				</button>
 				<br />
-				<div className="forgot-password" onClick={() => navigate("/forgotpassword")}>
-					Forgot your password?
+				<div className="forgot-password">
+					<a onClick={() => navigate("/forgotpassword")}>
+						Forgot password?
+					</a> 
 				</div>
 			</div>
 		</div>
