@@ -50,7 +50,7 @@ export default function StudentQuestionnaire() {
 
 	return (
 		<div className="student-questionnaire-container">
-			<h1 className="questionnaire-title">Student Questionnaire</h1>
+			<h1 className="questionnaire-title">My Wishes</h1>
 
 			<div className="deadline-info">
 				<strong>Submission deadline:</strong> {session.questionnaireDeadline

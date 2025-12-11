@@ -60,10 +60,7 @@ export default function App() {
 									<Route path="students" element={<Students />} />
 									<Route path="my-group" element={<MyGroup />} />
 									<Route path="groupManagement" element={<GroupManagement />} />
-									<Route
-										path="studentQuestionnaire"
-										element={<StudentQuestionnaire />}
-									/>
+									<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
 									<Route path="supervisorsPage" element={<SupervisorsPage />} />
 									<Route path="student/:studentId" element={<StudentPage />} />
 								</Route>
