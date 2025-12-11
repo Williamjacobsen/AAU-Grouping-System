@@ -1,12 +1,15 @@
 .about-container {
-	max-width: 800px;
-	margin: 0 auto;
+	max-width: 1200px;
+	margin: 2rem auto;
 	padding: 2rem;
 	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
 		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
 		sans-serif;
 	line-height: 1.5;
 	color: #000;
+	background-color: #fff;
+	border-radius: 8px;
+	box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 }
 
 .about-title {
@@ -21,17 +24,19 @@
 
 .about-description {
 	font-size: 1rem;
-	margin-bottom: 2rem;
+	margin: 0 auto 2rem;
 	text-align: center;
 	color: #000;
-	padding: 1.5rem;
+	padding: 1rem 1.5rem;
+	max-width: 600px;
+	border-radius: 8px;
 }
 
 .section-heading {
-	font-size: 2rem;
+	font-size: 1.75rem;
 	color: #000;
 	margin-top: 1.5rem;
-	margin-bottom: 0.75rem;
+	margin-bottom: 0.5rem;
 	font-weight: 500;
 	display: flex;
 	align-items: center;
@@ -46,8 +51,33 @@
 	border-radius: 2px;
 }
 
-.user-section {
+.tutorial-intro {
+	font-size: 0.95rem;
+	color: #444;
 	margin-bottom: 1rem;
+}
+
+.features-list {
+	margin-bottom: 1.5rem;
+	padding: 0;
+	list-style-position: inside;
+	background-color: #f6f8fb;
+	border-radius: 8px;
+}
+
+.features-list li {
+	padding: 0.75rem 1rem;
+	border-bottom: 1px solid #e2e6ed;
+}
+
+.features-list li:last-child {
+	border-bottom: none;
+}
+
+.user-section {
+	margin-bottom: 1.5rem;
+	padding-top: 0.5rem;
+	border-top: 1px solid #e2e6ed;
 }
 
 .user-section h3 {
@@ -58,26 +88,21 @@
 }
 
 .steps-list {
-	padding: 1.5rem;
-	margin-bottom: 1.5rem;
+	padding: 0.75rem 1.25rem;
+	margin-bottom: 0.75rem;
+	background-color: #f6f8fb;
+	border-radius: 8px;
 }
 
 .steps-list li {
-	margin-bottom: 0.75rem;
-	padding: 0.5rem 0;
-}
-
-.features-list {
-	margin-bottom: 1rem;
-}
-
-.features-list li {
-	padding: 1.5rem;
+	margin-bottom: 0.5rem;
+	padding: 0.25rem 0;
 }
 
 .contact-section {
-	padding: 1rem;
+	padding: 1rem 0;
 	margin-top: 0.5rem;
+	border-top: 1px solid #e2e6ed;
 }
 
 .contact-list {
@@ -87,7 +112,7 @@
 }
 
 .contact-list li {
-	margin-bottom: 1rem;
+	margin-bottom: 0.75rem;
 	display: flex;
 	align-items: center;
 }
@@ -102,30 +127,49 @@
 	color: #000;
 }
 
-@media (max-width: 768px) {
-	.about-container {
-		padding: 1rem;
-	}
-	
-	.about-title {
-		font-size: 2rem;
-	}
-	
-	.section-heading {
-		font-size: 1.5rem;
-	}
-	
-	.features-list {
-		grid-template-columns: 1fr;
-	}
-	
-	.contact-list li {
-		flex-direction: column;
-		align-items: flex-start;
-		text-align: left;
-	}
-	
-	.contact-list li::before {
-		margin-bottom: 0.5rem;
-	}
+.tutorial-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	column-gap: 2rem;
+	margin-bottom: 2rem;
+	margin-top: 1rem;
+}
+
+.tutorial-grid .user-section {
+	margin-bottom: 1.5rem;
+}
+
+.tutorial-row {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 2rem;
+	margin: 1.5rem 0 2.5rem;
+}
+
+.user-card {
+    background: #f6f8fb;
+    border-radius: 8px;
+    padding: 1rem 1.25rem 0.9rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e3e6ec;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.user-card h3 {
+	margin-bottom: 0.75rem;
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: #000;
+}
+
+.user-card ol {
+	margin: 0;
+	padding-left: 1.2rem;
+}
+
+.user-card li {
+	margin-bottom: 0.4rem;
+	line-height: 1.4;
 }

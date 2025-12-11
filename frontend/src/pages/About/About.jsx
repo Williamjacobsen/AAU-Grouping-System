@@ -5,60 +5,47 @@ export default function About() {
 	return (
 		<div className="about-container">
 			<h1 className="about-title">Streamlining Group Formation</h1>
-			<p className="about-description">This website aims to make group formation easier to manage for both semester coordinators and students.</p>
-			<ol className="features-list">
-				<li>
-					Feature 1...
-				</li>
-				<li>
-					Feature 2...
-				</li>
-			</ol>
+
+			<p className="about-description">
+				This platform simplifies the group formation process for students, coordinators, and supervisors.
+			</p>
+
 			<h2 className="section-heading">Usage Tutorial:</h2>
-			<div className="user-section">
-				<h3>For semester coordinators:</h3>
-				<ol className="steps-list">
-					<li>
-						Step 1...
-					</li>
-					<li>
-						Step 2...
-					</li>
-				</ol>
-			</div>
-			<div className="user-section">
-				<h3>For supervisors:</h3>
-				<ol className="steps-list">
-					<li>
-						Step 1...
-					</li>
-					<li>
-						Step 2...
-					</li>
-				</ol>
-			</div>
-			<div className="user-section">
-				<h3>For students:</h3>
-				<ol className="steps-list">
-					<li>
-						Step 1...
-					</li>
-					<li>
-						Step 2...
-					</li>
-				</ol>
-			</div>
-			<div className="contact-section">
-				<h2 className="section-heading">Contact Info:</h2>
-				Contact support using one of the following means:
-				<ul className="contact-list">
-					<li>
-						<span className="contact-label">Support phone number:</span> <span className="contact-value">12 34 56 78</span>
-					</li>
-					<li>
-						<span className="contact-label">Support email:</span> <span className="contact-value">example@email.com</span>
-					</li>
-				</ul>
+
+			<p className="tutorial-intro">
+				Below is a quick overview of how each role uses the system.
+				<br />
+				For navigation tips, see the options in the header.
+			</p>
+
+			<div className="tutorial-row">
+				<div className="user-card">
+					<h3>Students</h3>
+					<ol>
+						<li>Fill out your wish form.</li>
+						<li>Explore available projects.</li>
+						<li>View students and send join requests.</li>
+						<li>Manage or create your group.</li>
+					</ol>
+				</div>
+
+				<div className="user-card">
+					<h3>Coordinators</h3>
+					<ol>
+						<li>Set up the session.</li>
+						<li>Send login codes.</li>
+						<li>Configure supervisors and projects.</li>
+						<li>Finalize the groups.</li>
+					</ol>
+				</div>
+
+				<div className="user-card">
+					<h3>Supervisors</h3>
+					<ol>
+						<li>Add project proposals.</li>
+						<li>Manage group supervision load.</li>
+					</ol>
+				</div>
 			</div>
 		</div>
 	);
