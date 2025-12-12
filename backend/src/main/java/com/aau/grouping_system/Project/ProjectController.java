@@ -66,6 +66,22 @@ public class ProjectController {
 		}
 	}
 
+	private void requireProjectNameIsUnique(String projectName, Session session) {
+		CopyOnWriteArrayList<Project> sessionProjects = db.getProjects().getItems(session.getProjects().getIds());
+		
+		if (sessionProjects == null) {
+			return;
+		}
+		
+		// Check if project name already exists
+		for (Project project : sessionProjects) {
+			if (project != null && project.getName().equalsIgnoreCase(projectName.trim())) {
+				throw new RequestException(HttpStatus.BAD_REQUEST,
+						"Project with the name '" + projectName + "' already exists in this session");
+			}
+		}
+	}
+
 	private void requireUserIsCreatorOfTheProject(User user, Project project) {
 		if (!project.getCreatorUserId().equals(user.getId())) { // verification that the user created the project that
 																														// they're trying to modify
@@ -123,6 +139,9 @@ public class ProjectController {
 
 		User user = requestRequirementService.requireUserExists(servlet);
 		Session session = requestRequirementService.requireSessionExists(sessionId);
+
+		// Validate that project name is unique within the session
+		requireProjectNameIsUnique(projectName, session);
 
 		if (user.getRole() != User.Role.Coordinator) {
 			requestRequirementService.requireQuestionnaireDeadlineNotExceeded(session);

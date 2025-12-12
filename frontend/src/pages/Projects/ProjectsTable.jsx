@@ -69,6 +69,15 @@ const ProjectsTable = memo(({ projects, supervisors, students, setProjects, sess
 			return;
 		}
 
+		// Check for same project name
+		const existingProject = projects.find(project => 
+			project.name.toLowerCase().trim() === newProjectName.toLowerCase().trim()
+		);
+		if (existingProject) {
+			alert(`Project with the name "${newProjectName}" already exists in this session`);
+			return;
+		}
+
 		const projectData = {
 			name: newProjectName,
 			description: newProjectDescription,
@@ -95,6 +104,11 @@ const ProjectsTable = memo(({ projects, supervisors, students, setProjects, sess
 			})
 			.catch(error => {
 				console.error('Error adding project:', error);
+				if (error.message.includes('already exists')) {
+					alert(error.message);
+				} else {
+					alert('Failed to create project. Please try again.');
+				}
 			});
 
 		window.location.reload(); // Refresh changes (else "getIsUserAllowedToDeleteProject()"" doesn't work properly, for some odd reason)

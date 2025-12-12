@@ -83,7 +83,7 @@ class AuthControllerIntegrationTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
-				.andExpect(content().string("Signed in, user: coordinator@test.com"));
+				.andExpect(jsonPath("$.email").value("coordinator@test.com"));
 
 		verify(authService).findByEmailOrId("coordinator@test.com");
 		verify(authService).isPasswordCorrect("password123", testCoordinator);
@@ -113,7 +113,7 @@ class AuthControllerIntegrationTest {
 				.contentType(MediaType.APPLICATION_JSON)
 				.content(requestBody))
 				.andExpect(status().isOk())
-				.andExpect(content().string("Signed in, user: student@test.com"));
+				.andExpect(jsonPath("$.email").value("student@test.com"));
 
 		verify(authService).findByEmailOrId(studentId);
 		verify(authService).isPasswordCorrect("password123", testStudent);

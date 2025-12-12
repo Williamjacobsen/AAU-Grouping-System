@@ -4,10 +4,13 @@ import { render, screen, fireEvent, waitFor, cleanup } from '@testing-library/re
 import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 import SignIn from './SignIn';
+import { AuthProvider } from '../../ContextProviders/AuthProvider';
 
 const MockedSignIn = () => (
 	<BrowserRouter>
-		<SignIn />
+		<AuthProvider>
+			<SignIn />
+		</AuthProvider>
 	</BrowserRouter>
 );
 
@@ -17,9 +20,19 @@ describe('SignIn Component', () => {
 	beforeEach(() => {
 		cleanup();
 		vi.clearAllMocks();
-		global.fetch.mockResolvedValue({
-			ok: true,
-			text: () => Promise.resolve('Signed in, user: test@example.com'),
+		global.fetch.mockImplementation((url) => {
+			if (url.includes('/api/auth/getUser')) {
+				return Promise.resolve({
+					ok: false,
+					status: 401,
+					json: () => Promise.resolve({}),
+				});
+			}
+			// Mock SignIn API call
+			return Promise.resolve({
+				ok: true,
+				text: () => Promise.resolve('Signed in, user: test@example.com'),
+			});
 		});
 	});
 
@@ -76,10 +89,21 @@ describe('SignIn Component', () => {
 	});
 
 	it('handles authentication failure', async () => {
-		global.fetch.mockResolvedValueOnce({
-			ok: false,
-			status: 401,
-			text: () => Promise.resolve('Unauthorized'),
+		global.fetch.mockImplementation((url) => {
+			if (url.includes('/api/auth/getUser')) {
+				return Promise.resolve({
+					ok: false,
+					status: 401,
+					json: () => Promise.resolve({}),
+				});
+			}
+			// Mock SignIn API call fail
+			return Promise.resolve({
+				ok: false,
+				status: 401,
+				text: () => Promise.resolve('Unauthorized'),
+				json: () => Promise.resolve({}),
+			});
 		});
 
 		render(<MockedSignIn />);

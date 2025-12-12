@@ -70,7 +70,7 @@ describe('Header Component', () => {
 
 		render(<MockedHeader />);
 
-		expect(screen.getByText(/sign in or up/i)).toBeInTheDocument();
+		expect(screen.getByText(/sign in/i)).toBeInTheDocument();
 	});
 
 	it('handles sign out action', async () => {
@@ -155,7 +155,7 @@ describe('Header Component', () => {
 		render(<MockedHeader />);
 
 		// Header show loading state
-		expect(screen.getByText(/Loading user.../i)).toBeInTheDocument();
+		expect(screen.getByText(/Checking user.../i)).toBeInTheDocument();
 	});
 
 	it('handles sign out errors gracefully', async () => {

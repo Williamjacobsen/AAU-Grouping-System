@@ -28,26 +28,27 @@ const CsvDownloadButton = memo(({ students, groups, supervisors, projects, sessi
 				return;
 			}
 
+		// Ignore empty groups
+		const groupsWithStudents = groups.filter(group => 
+			group.studentIds && group.studentIds.length > 0
+		);
 
-			// Check if groups have supervisor
-			const groupsWithoutSupervisors = groups.filter(group =>
-				!group.supervisorId ||
-				(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
-			);
+		// Check groups with students have supervisor
+		const groupsWithoutSupervisors = groupsWithStudents.filter(group =>
+			!group.supervisorId ||
+			(typeof group.supervisorId === 'string' && group.supervisorId.trim() === '')
+		);
 
-			// Check if groups have project
+		// Check groups with students have project
+		const groupsWithoutProjects = groupsWithStudents.filter(group =>
+			!group.assignedProjectId ||
+			(typeof group.assignedProjectId === 'string' && group.assignedProjectId.trim() === '')
+		);
 
-			const groupsWithoutProjects = groups.filter(group =>
-				!group.assignedProjectId ||
-				(typeof group.assignedProjectId === 'string' && group.assignedProjectId.trim() === '')
-			);
-
-			if (groupsWithoutProjects.length > 0 || groupsWithoutSupervisors.length > 0) {
-				alert("Error: Groups must have supervisors and projects assigned.");
-				return;
-			}
-
-			const newData = [];
+		if (groupsWithoutProjects.length > 0 || groupsWithoutSupervisors.length > 0) {
+			alert("Error: Groups with students must have supervisor and project assigned.");
+			return;
+		}			const newData = [];
 			let number = 0;
 
 			// Sort groups by supervisor

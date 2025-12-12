@@ -1,5 +1,15 @@
 package com.aau.grouping_system.Session;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
@@ -12,12 +22,6 @@ import com.aau.grouping_system.Utils.RequestRequirementService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @RestController
 @Validated // enables method-level validation

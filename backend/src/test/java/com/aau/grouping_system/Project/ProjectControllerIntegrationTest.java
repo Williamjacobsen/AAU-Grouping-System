@@ -8,6 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,8 +158,8 @@ class ProjectControllerIntegrationTest {
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getIds();
-        verify(mockProjectMap).getItems(emptyIds);
+        verify(mockProjectGroup, times(2)).getIds();
+        verify(mockProjectMap, times(2)).getItems(emptyIds);
         verify(mockProjectMap).addItem(eq(mockProjectGroup), any(Project.class));
     }
 
@@ -356,8 +357,8 @@ class ProjectControllerIntegrationTest {
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getIds();
-        verify(mockProjectMap).getItems(projectIds);
+        verify(mockProjectGroup, times(2)).getIds();
+        verify(mockProjectMap, times(2)).getItems(projectIds);
         verify(mockProjectMap, never()).addItem(any(), any());
     }
 
@@ -387,8 +388,8 @@ class ProjectControllerIntegrationTest {
 
         verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
         verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(mockProjectGroup).getIds();
-        verify(mockProjectMap).getItems(emptyIds);
+        verify(mockProjectGroup, times(2)).getIds();
+        verify(mockProjectMap, times(2)).getItems(emptyIds);
         verify(mockProjectMap).addItem(eq(mockProjectGroup), any(Project.class));
     }
 
