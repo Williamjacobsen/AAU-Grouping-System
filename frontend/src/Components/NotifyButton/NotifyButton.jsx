@@ -67,10 +67,11 @@ const NotifyButton = memo(({ sessionId }) => {
 				className="checkbox-group"
 				style={{ display: "inline", gap: "1rem" }}
 			>
-				<label className="checkbox-label">
+				<p className="checkbox-label">
 					When all groups have been made, send emails to students and
 					supervisors:
-				</label>
+				</p>
+				<br></br>
 				<button
 					className="button-primary"
 					onClick={sendNotifications}
@@ -83,6 +84,8 @@ const NotifyButton = memo(({ sessionId }) => {
 							? "Notifications sent"
 							: "Notify participants"}
 				</button>
+				<hr></hr>
+				<br></br>
 			</div>
 		</div>
 	);

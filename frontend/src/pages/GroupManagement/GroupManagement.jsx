@@ -219,7 +219,7 @@ export default function GroupManagement() {
 
 					<p>
 						You can download the CSV file after all groups have been made,
-						and supervisors have been assigned to the groups <br></br>
+						and supervisors have been assigned to the groups: <br></br>
 						<CsvDownloadButton
 							students={students}
 							groups={groups}
@@ -227,6 +227,7 @@ export default function GroupManagement() {
 							projects={projects}
 							session={session}
 						/>
+					<hr></hr>
 					</p>
 				</>
 			)}
