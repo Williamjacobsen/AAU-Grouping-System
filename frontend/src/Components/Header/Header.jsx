@@ -78,12 +78,12 @@ export default function Header() {
 						}
 						{user?.role === "Student" &&
 							<>
-								<Tab path="/about" label="About" helpText="Go to the 'My Wishes' page." />
-								<Tab path="/profile" label="Profile" helpText="Go to the 'My Wishes' page." />
+								<Tab path="/about" label="About" helpText="Go to the 'Projects' page." />
+								<Tab path="/profile" label="Profile" helpText="Go to the 'Projects' page." />
 								{session &&
 									<>
-										<Tab path={`/session/${session.id}/studentQuestionnaire`} label="My Wishes" helpText="Step 1) Fill out the form. Step 2) Go to the 'Projects' page." />
-										<Tab path={`/session/${session.id}/projects`} label="Projects" helpText="Step 1) View the available projects. Step 2) If your coordinator has allowed student project proposals, you may create a single project proposal. Step 3) Go to the 'Students' page." />
+										<Tab path={`/session/${session.id}/projects`} label="Projects" helpText="Step 1) View the available projects. Step 2) If your coordinator has allowed student project proposals, you may create a single project proposal. Step 3) Go to the 'My Wishes' page." />
+										<Tab path={`/session/${session.id}/studentQuestionnaire`} label="My Wishes" helpText="Step 1) Fill out the form. Step 2) Go to the 'Students' page." />
 										<Tab path={`/session/${session.id}/students`} label="Students" helpText="On this page, you can view student wishes, view which groups have already been formed, and send a join request to a group. You can also chat with students via the chat box in the lower right corner. Make sure to also take a look at the 'My Group' page." />
 										<Tab path={`/session/${session.id}/my-group`} label="My Group" helpText="On this page, you can either cancel your group join request, make a new group, or view or leave your current group. If you are the owner of your group, you can also modify your group's preferences. Make sure to also take a look at the 'Students' page." />
 									</>
