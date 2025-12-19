@@ -5,14 +5,14 @@ import '@testing-library/jest-dom/vitest';
 import { BrowserRouter } from 'react-router-dom';
 
 import Header from "./Header";
-import { useAuth } from '../../ContextProviders/AuthProvider';
-import { useGetSessionByUserOrParameter } from '../../hooks/useGetSession';
+import { useAuth } from '../../context/AuthProvider';
+import { useGetSessionByUserOrParameter } from '../../hooks/fetching/useGetSession';
 
-vi.mock('../../ContextProviders/AuthProvider', () => ({
+vi.mock('../../context/AuthProvider', () => ({
 	useAuth: vi.fn(),
 }));
 
-vi.mock('../../hooks/useGetSession', () => ({
+vi.mock('../../hooks/fetching/useGetSession', () => ({
 	useGetSessionByUserOrParameter: vi.fn(),
 }));
 

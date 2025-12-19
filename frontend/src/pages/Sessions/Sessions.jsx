@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../ContextProviders/AuthProvider";
-import useSessionManager from "./useSessionManager";
+import { useAuth } from "../../context/AuthProvider";
+import useSessionManager from "./hooks/useSessionManager";
 import "./Sessions.css";
 
 export default function Sessions() {
@@ -65,7 +65,7 @@ export default function Sessions() {
 	};
 
 	const manageSupervisors = (sessionId) => {
-		navigate(`/session/${sessionId}/supervisorsPage`);
+		navigate(`/session/${sessionId}/supervisors`);
 	};
 
 	return (

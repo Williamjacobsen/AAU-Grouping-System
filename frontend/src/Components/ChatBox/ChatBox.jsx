@@ -1,20 +1,20 @@
 import { useEffect, useRef, useState, useMemo } from "react";
-import { useAppState } from "../../ContextProviders/AppStateContext";
-import ChatSystem from "./Utils/ChatSystem";
-import useFetchMessages from "./Utils/useFetchMessages";
-import handleSubscriptions from "./Utils/handleSubscriptions";
-import HiddenChatBox from "./UI/HiddenChatBox";
-import ChatArea from "./UI/ChatArea/ChatArea";
-import Sidebar from "./UI//Sidebar/Sidebar";
-import Header from "./UI/Header";
-import sendReadReceipt from "./Utils/sendReadReceipt";
-import getUnreadMessagesCounters from "./Utils/getUnreadMessagesCounters";
-import getLastChatRoomActivityCounters from "./Utils/getLastChatRoomActivityCounters";
-import sortChatRooms from "./Utils/sortChatRooms";
-import useSyncMessagesData from "./Utils/useSyncMessagesData";
-import { useAuth } from "../../ContextProviders/AuthProvider";
-import isDirectRoom from "./Utils/isDirectRoom";
-import getConversationKey from "./Utils/getConversationKey";
+import { useAppState } from "../../context/AppStateContext";
+import ChatSystem from "./utils/ChatSystem";
+import useFetchMessages from "./utils/useFetchMessages";
+import handleSubscriptions from "./utils/handleSubscriptions";
+import HiddenChatBox from "./ui/HiddenChatBox";
+import ChatArea from "./ui/chatArea/ChatArea";
+import Sidebar from "./ui/sidebar/Sidebar";
+import Header from "./ui/Header";
+import sendReadReceipt from "./utils/sendReadReceipt";
+import getUnreadMessagesCounters from "./utils/getUnreadMessagesCounters";
+import getLastChatRoomActivityCounters from "./utils/getLastChatRoomActivityCounters";
+import sortChatRooms from "./utils/sortChatRooms";
+import useSyncMessagesData from "./utils/useSyncMessagesData";
+import { useAuth } from "../../context/AuthProvider";
+import isDirectRoom from "./utils/isDirectRoom";
+import getConversationKey from "./utils/getConversationKey";
 
 export default function ChatBox() {
 	const [showChatBox, setShowChatBox] = useState(false);
