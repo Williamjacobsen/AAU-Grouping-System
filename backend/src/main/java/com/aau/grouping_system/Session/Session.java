@@ -31,6 +31,10 @@ public class Session extends DatabaseItem {
 		this.name = name;
 	}
 
+	@Override
+	protected void onCascadeRemove(Database db) {
+	}
+
 	// @formatter:off
 	public String getCoordinatorId() { return coordinatorId; }
 	

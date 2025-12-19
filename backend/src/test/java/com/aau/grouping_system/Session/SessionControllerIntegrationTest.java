@@ -34,18 +34,18 @@ import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
-import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.Utils.RequestRequirementService;
+import com.aau.grouping_system.User.User;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 
 @WebMvcTest(SessionController.class)
 @AutoConfigureWebMvc
-@ComponentScan(basePackages = { 
-    "com.aau.grouping_system.Session", 
-    "com.aau.grouping_system.Exceptions", 
-    "com.aau.grouping_system.User.SessionMember" 
+@ComponentScan(basePackages = {
+		"com.aau.grouping_system.Session",
+		"com.aau.grouping_system.Exceptions",
+		"com.aau.grouping_system.User.SessionMember"
 })
 @Import({ SessionControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class SessionControllerIntegrationTest {
@@ -53,371 +53,371 @@ class SessionControllerIntegrationTest {
 	@Autowired
 	private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @MockitoBean
-    private Database database;
+	@MockitoBean
+	private Database database;
 
-    @MockitoBean
-    private SessionService sessionService;
+	@MockitoBean
+	private SessionService sessionService;
 
-    @MockitoBean
-    private AuthService authService;
+	@MockitoBean
+	private AuthService authService;
 
-    @MockitoBean
-    private RequestRequirementService requestRequirementService;
+	@MockitoBean
+	private RequestRequirementService requestRequirementService;
 
-    @MockitoBean
-    private com.aau.grouping_system.User.SessionMember.SessionMemberService sessionMemberService;
+	@MockitoBean
+	private com.aau.grouping_system.User.SessionMember.SessionMemberService sessionMemberService;
 
-    @MockitoBean
-    private SessionSetupService sessionSetupService;
+	@MockitoBean
+	private SessionSetupService sessionSetupService;
 
-    private Session mockSession;
-    private Session serializableSession;
-    private Coordinator mockCoordinator;
-    private Student mockStudent;
-    private Supervisor mockSupervisor;
-    private Project mockProject;
-    private User mockUser;
-    private DatabaseItemChildGroup mockSupervisorGroup;
-    private DatabaseItemChildGroup mockStudentGroup;
-    private DatabaseItemChildGroup mockProjectGroup;
-    private DatabaseMap<Session> mockSessionMap;
+	private Session mockSession;
+	private Session serializableSession;
+	private Coordinator mockCoordinator;
+	private Student mockStudent;
+	private Supervisor mockSupervisor;
+	private Project mockProject;
+	private User mockUser;
+	private DatabaseItemChildGroup mockSupervisorGroup;
+	private DatabaseItemChildGroup mockStudentGroup;
+	private DatabaseItemChildGroup mockProjectGroup;
+	private DatabaseMap<Session> mockSessionMap;
 
-    // Custom Session class
-    private static class TestSession extends Session {
-        public TestSession(Database db, Coordinator coordinator, String name) {
-            super(db, coordinator, name);
-        }
-        
-        @Override
-        public DatabaseItemChildGroup getSupervisors() {
-            return null;
-        }
-        
-        @Override
-        public DatabaseItemChildGroup getStudents() {
-            return null;
-        }
-        
-        @Override
-        public DatabaseItemChildGroup getProjects() {
-            return null;
-        }
-    }
+	// Custom Session class
+	private static class TestSession extends Session {
+		public TestSession(Database db, Coordinator coordinator, String name) {
+			super(db, coordinator, name);
+		}
 
-    @BeforeEach
-    @SuppressWarnings("unchecked")
-    void setUp() {
-        // Create mock objects
-        mockSession = mock(Session.class);
-        mockCoordinator = mock(Coordinator.class);
-        mockStudent = mock(Student.class);
-        mockSupervisor = mock(Supervisor.class);
-        mockProject = mock(Project.class);
-        mockUser = mock(User.class);
-        mockSupervisorGroup = mock(DatabaseItemChildGroup.class);
-        mockStudentGroup = mock(DatabaseItemChildGroup.class);
-        mockProjectGroup = mock(DatabaseItemChildGroup.class);
-        mockSessionMap = mock(DatabaseMap.class);
-        
-        // Setup mock database
-        when(database.getSessions()).thenReturn(mockSessionMap);
-        
-        // Setup mock session
-        when(mockSession.getId()).thenReturn("session-123");
-        when(mockSession.getName()).thenReturn("Test Session");
-        when(mockSession.getSupervisors()).thenReturn(mockSupervisorGroup);
-        when(mockSession.getStudents()).thenReturn(mockStudentGroup);
-        when(mockSession.getProjects()).thenReturn(mockProjectGroup);
-        
-        try {
-            serializableSession = new TestSession(database, mockCoordinator, "Test Session");
-        } catch (Exception e) {
-            serializableSession = mock(Session.class);
-            when(serializableSession.getId()).thenReturn("session-123");
-            when(serializableSession.getName()).thenReturn("Test Session");
-            when(serializableSession.getSupervisors()).thenReturn(null);
-            when(serializableSession.getStudents()).thenReturn(null);
-            when(serializableSession.getProjects()).thenReturn(null);
-        }
-        
-        // Setup mock user
-        when(mockCoordinator.getId()).thenReturn("coordinator-123");
-        when(mockCoordinator.getEmail()).thenReturn("coordinator@test.com");
-        when(mockStudent.getId()).thenReturn("student-123");
-        when(mockStudent.getEmail()).thenReturn("student@test.com");
-        when(mockSupervisor.getId()).thenReturn("supervisor-123");
-        when(mockSupervisor.getEmail()).thenReturn("supervisor@test.com");
-        when(mockUser.getId()).thenReturn("user-123");
-        
-        // Setup mock project
-        when(mockProject.getId()).thenReturn("project-123");
-        when(mockProject.getName()).thenReturn("Test Project");
-    }
+		@Override
+		public DatabaseItemChildGroup getSupervisors() {
+			return null;
+		}
 
-    @Test
-    void testCreateSession_ValidRequest_ReturnsSuccess() throws Exception {
-        // Arrange
-        String requestBody = """
-                {
-                    "name": "New Test Session"
-                }
-                """;
+		@Override
+		public DatabaseItemChildGroup getStudents() {
+			return null;
+		}
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
-        when(sessionService.createSession("New Test Session", mockCoordinator))
-                .thenReturn(serializableSession);
+		@Override
+		public DatabaseItemChildGroup getProjects() {
+			return null;
+		}
+	}
 
-        // Act & Assert
-        mockMvc.perform(post("/api/sessions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody)
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.id").value("session-123"))
-                .andExpect(jsonPath("$.name").value("Test Session"));
+	@BeforeEach
+	@SuppressWarnings("unchecked")
+	void setUp() {
+		// Create mock objects
+		mockSession = mock(Session.class);
+		mockCoordinator = mock(Coordinator.class);
+		mockStudent = mock(Student.class);
+		mockSupervisor = mock(Supervisor.class);
+		mockProject = mock(Project.class);
+		mockUser = mock(User.class);
+		mockSupervisorGroup = mock(DatabaseItemChildGroup.class);
+		mockStudentGroup = mock(DatabaseItemChildGroup.class);
+		mockProjectGroup = mock(DatabaseItemChildGroup.class);
+		mockSessionMap = mock(DatabaseMap.class);
 
-        verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
-        verify(sessionService).createSession("New Test Session", mockCoordinator);
-    }
+		// Setup mock database
+		when(database.getSessions()).thenReturn(mockSessionMap);
 
-    @Test
-    void testCreateSession_InvalidName_ReturnsBadRequest() throws Exception {
-        // Arrange
-        String requestBody = """
-                {
-                    "name": ""
-                }
-                """;
+		// Setup mock session
+		when(mockSession.getId()).thenReturn("session-123");
+		when(mockSession.getName()).thenReturn("Test Session");
+		when(mockSession.getSupervisors()).thenReturn(mockSupervisorGroup);
+		when(mockSession.getStudents()).thenReturn(mockStudentGroup);
+		when(mockSession.getProjects()).thenReturn(mockProjectGroup);
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
+		try {
+			serializableSession = new TestSession(database, mockCoordinator, "Test Session");
+		} catch (Exception e) {
+			serializableSession = mock(Session.class);
+			when(serializableSession.getId()).thenReturn("session-123");
+			when(serializableSession.getName()).thenReturn("Test Session");
+			when(serializableSession.getSupervisors()).thenReturn(null);
+			when(serializableSession.getStudents()).thenReturn(null);
+			when(serializableSession.getProjects()).thenReturn(null);
+		}
 
-        // Act & Assert
-        mockMvc.perform(post("/api/sessions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(requestBody)
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isBadRequest());
-    }
+		// Setup mock user
+		when(mockCoordinator.getId()).thenReturn("coordinator-123");
+		when(mockCoordinator.getEmail()).thenReturn("coordinator@test.com");
+		when(mockStudent.getId()).thenReturn("student-123");
+		when(mockStudent.getEmail()).thenReturn("student@test.com");
+		when(mockSupervisor.getId()).thenReturn("supervisor-123");
+		when(mockSupervisor.getEmail()).thenReturn("supervisor@test.com");
+		when(mockUser.getId()).thenReturn("user-123");
 
-    @Test
-    void testGetAllSessions_ValidCoordinator_ReturnsSessionList() throws Exception {
-        // Arrange
-        CopyOnWriteArrayList<Session> sessions = new CopyOnWriteArrayList<>();
-        sessions.add(serializableSession);
+		// Setup mock project
+		when(mockProject.getId()).thenReturn("project-123");
+		when(mockProject.getName()).thenReturn("Test Project");
+	}
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
-        when(sessionService.getSessionsByCoordinator(mockCoordinator))
-                .thenReturn(sessions);
+	@Test
+	void testCreateSession_ValidRequest_ReturnsSuccess() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "name": "New Test Session"
+				}
+				""";
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions")
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value("session-123"));
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
+		when(sessionService.createSession("New Test Session", mockCoordinator))
+				.thenReturn(serializableSession);
 
-        verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
-        verify(sessionService).getSessionsByCoordinator(mockCoordinator);
-    }
+		// Act & Assert
+		mockMvc.perform(post("/api/sessions")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody)
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").value("session-123"))
+				.andExpect(jsonPath("$.name").value("Test Session"));
 
-    @Test
-    void testGetSession_ValidSessionAndUser_ReturnsSession() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
+		verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
+		verify(sessionService).createSession("New Test Session", mockCoordinator);
+	}
 
-        when(requestRequirementService.requireSessionExists(sessionId))
-                .thenReturn(serializableSession);
-        when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
-                .thenReturn(mockUser);
+	@Test
+	void testCreateSession_InvalidName_ReturnsBadRequest() throws Exception {
+		// Arrange
+		String requestBody = """
+				{
+				    "name": ""
+				}
+				""";
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions/{sessionId}", sessionId)
-                .sessionAttr("user", mockUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value("session-123"))
-                .andExpect(jsonPath("$.name").value("Test Session"));
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
 
-        verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
-        verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
-    }
+		// Act & Assert
+		mockMvc.perform(post("/api/sessions")
+				.contentType(MediaType.APPLICATION_JSON)
+				.content(requestBody)
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isBadRequest());
+	}
 
-    @Test
-    void testGetSupervisors_ValidSessionAndUser_ReturnsSupervisorList() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
-        CopyOnWriteArrayList<Supervisor> supervisors = new CopyOnWriteArrayList<>();
-        supervisors.add(mockSupervisor);
+	@Test
+	void testGetAllSessions_ValidCoordinator_ReturnsSessionList() throws Exception {
+		// Arrange
+		CopyOnWriteArrayList<Session> sessions = new CopyOnWriteArrayList<>();
+		sessions.add(serializableSession);
 
-        when(requestRequirementService.requireSessionExists(sessionId))
-                .thenReturn(mockSession);
-        when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
-                .thenReturn(mockUser);
-        CopyOnWriteArrayList<String> supervisorIds = new CopyOnWriteArrayList<>();
-        supervisors.forEach(supervisor -> supervisorIds.add(supervisor.getId()));
-        
-        DatabaseMap<Supervisor> mockSupervisorMap = mock(DatabaseMap.class);
-        when(mockSession.getSupervisors()).thenReturn(mockSupervisorGroup);
-        doReturn(supervisorIds).when(mockSupervisorGroup).getIds();
-        when(database.getSupervisors()).thenReturn(mockSupervisorMap);
-        doReturn(supervisors).when(mockSupervisorMap).getItems(supervisorIds);
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
+		when(sessionService.getSessionsByCoordinator(mockCoordinator))
+				.thenReturn(sessions);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions/{sessionId}/getSupervisors", sessionId)
-                .sessionAttr("user", mockUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value("supervisor-123"));
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions")
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].id").value("session-123"));
 
-        verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
-        verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
-    }
+		verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
+		verify(sessionService).getSessionsByCoordinator(mockCoordinator);
+	}
 
-    @Test
-    void testGetStudents_ValidSessionAndUser_ReturnsStudentList() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
-        CopyOnWriteArrayList<Student> students = new CopyOnWriteArrayList<>();
-        students.add(mockStudent);
+	@Test
+	void testGetSession_ValidSessionAndUser_ReturnsSession() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
 
-        when(requestRequirementService.requireSessionExists(sessionId))
-                .thenReturn(mockSession);
-        when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
-                .thenReturn(mockUser);
-        CopyOnWriteArrayList<String> studentIds = new CopyOnWriteArrayList<>();
-        students.forEach(student -> studentIds.add(student.getId()));
-        
-        DatabaseMap<Student> mockStudentMap = mock(DatabaseMap.class);
-        when(mockSession.getStudents()).thenReturn(mockStudentGroup);
-        doReturn(studentIds).when(mockStudentGroup).getIds();
-        when(database.getStudents()).thenReturn(mockStudentMap);
-        doReturn(students).when(mockStudentMap).getItems(studentIds);
+		when(requestRequirementService.requireSessionExists(sessionId))
+				.thenReturn(serializableSession);
+		when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
+				.thenReturn(mockUser);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions/{sessionId}/getStudents", sessionId)
-                .sessionAttr("user", mockUser))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value("student-123"));
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions/{sessionId}", sessionId)
+				.sessionAttr("user", mockUser))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.id").value("session-123"))
+				.andExpect(jsonPath("$.name").value("Test Session"));
 
-        verify(requestRequirementService).requireSessionExists(sessionId);
-        verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
-        verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
-    }
+		verify(requestRequirementService).requireSessionExists(sessionId);
+		verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
+		verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
+	}
 
-    @Test
-    void testGetProjects_ValidSession_ReturnsProjectList() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
-        CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
-        projects.add(mockProject);
+	@Test
+	void testGetSupervisors_ValidSessionAndUser_ReturnsSupervisorList() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
+		CopyOnWriteArrayList<Supervisor> supervisors = new CopyOnWriteArrayList<>();
+		supervisors.add(mockSupervisor);
 
-        when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
-        CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
-        projects.forEach(project -> projectIds.add(project.getId()));
-        
-        DatabaseMap<Project> mockProjectMap = mock(DatabaseMap.class);
-        when(mockSession.getProjects()).thenReturn(mockProjectGroup);
-        doReturn(projectIds).when(mockProjectGroup).getIds();
-        when(database.getProjects()).thenReturn(mockProjectMap);
-        doReturn(projects).when(mockProjectMap).getItems(projectIds);
+		when(requestRequirementService.requireSessionExists(sessionId))
+				.thenReturn(mockSession);
+		when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
+				.thenReturn(mockUser);
+		CopyOnWriteArrayList<String> supervisorIds = new CopyOnWriteArrayList<>();
+		supervisors.forEach(supervisor -> supervisorIds.add(supervisor.getId()));
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].id").value("project-123"));
+		DatabaseMap<Supervisor> mockSupervisorMap = mock(DatabaseMap.class);
+		when(mockSession.getSupervisors()).thenReturn(mockSupervisorGroup);
+		doReturn(supervisorIds).when(mockSupervisorGroup).getIds();
+		when(database.getSupervisors()).thenReturn(mockSupervisorMap);
+		doReturn(supervisors).when(mockSupervisorMap).getItems(supervisorIds);
 
-        verify(mockSessionMap).getItem(sessionId);
-    }
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions/{sessionId}/getSupervisors", sessionId)
+				.sessionAttr("user", mockUser))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].id").value("supervisor-123"));
 
-    @Test
-    void testGetProjects_SessionNotFound_ReturnsNotFound() throws Exception {
-        // Arrange
-        String sessionId = "nonexistent-session";
+		verify(requestRequirementService).requireSessionExists(sessionId);
+		verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
+		verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
+	}
 
-        when(mockSessionMap.getItem(sessionId)).thenReturn(null);
+	@Test
+	void testGetStudents_ValidSessionAndUser_ReturnsStudentList() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
+		CopyOnWriteArrayList<Student> students = new CopyOnWriteArrayList<>();
+		students.add(mockStudent);
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
-                .andExpect(status().isNotFound());
+		when(requestRequirementService.requireSessionExists(sessionId))
+				.thenReturn(mockSession);
+		when(requestRequirementService.requireUserExists(any(HttpServletRequest.class)))
+				.thenReturn(mockUser);
+		CopyOnWriteArrayList<String> studentIds = new CopyOnWriteArrayList<>();
+		students.forEach(student -> studentIds.add(student.getId()));
 
-        verify(mockSessionMap).getItem(sessionId);
-    }
+		DatabaseMap<Student> mockStudentMap = mock(DatabaseMap.class);
+		when(mockSession.getStudents()).thenReturn(mockStudentGroup);
+		doReturn(studentIds).when(mockStudentGroup).getIds();
+		when(database.getStudents()).thenReturn(mockStudentMap);
+		doReturn(students).when(mockStudentMap).getItems(studentIds);
 
-    @Test
-    void testDeleteSession_ValidCoordinatorAndSession_ReturnsSuccess() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions/{sessionId}/getStudents", sessionId)
+				.sessionAttr("user", mockUser))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].id").value("student-123"));
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
-        when(sessionService.deleteSession(sessionId, mockCoordinator))
-                .thenReturn(true);
+		verify(requestRequirementService).requireSessionExists(sessionId);
+		verify(requestRequirementService).requireUserExists(any(HttpServletRequest.class));
+		verify(requestRequirementService).requireUserIsAuthorizedSession(sessionId, mockUser);
+	}
 
-        // Act & Assert
-        mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isOk())
-                .andExpect(content().string("Session deleted successfully"));
+	@Test
+	void testGetProjects_ValidSession_ReturnsProjectList() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
+		CopyOnWriteArrayList<Project> projects = new CopyOnWriteArrayList<>();
+		projects.add(mockProject);
 
-        verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
-        verify(sessionService).deleteSession(sessionId, mockCoordinator);
-    }
+		when(mockSessionMap.getItem(sessionId)).thenReturn(mockSession);
+		CopyOnWriteArrayList<String> projectIds = new CopyOnWriteArrayList<>();
+		projects.forEach(project -> projectIds.add(project.getId()));
 
-    @Test
-    void testDeleteSession_UnauthorizedUser_ReturnsForbidden() throws Exception {
-        // Arrange
-        String sessionId = "session-123";
+		DatabaseMap<Project> mockProjectMap = mock(DatabaseMap.class);
+		when(mockSession.getProjects()).thenReturn(mockProjectGroup);
+		doReturn(projectIds).when(mockProjectGroup).getIds();
+		when(database.getProjects()).thenReturn(mockProjectMap);
+		doReturn(projects).when(mockProjectMap).getItems(projectIds);
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
-        when(sessionService.deleteSession(sessionId, mockCoordinator))
-                .thenReturn(false);
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$.length()").value(1))
+				.andExpect(jsonPath("$[0].id").value("project-123"));
 
-        // Act & Assert
-        mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isForbidden());
+		verify(mockSessionMap).getItem(sessionId);
+	}
 
-        verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
-        verify(sessionService).deleteSession(sessionId, mockCoordinator);
-    }
+	@Test
+	void testGetProjects_SessionNotFound_ReturnsNotFound() throws Exception {
+		// Arrange
+		String sessionId = "nonexistent-session";
 
-    @Test
-    void testGetSessions_EmptyList_ReturnsEmptyArray() throws Exception {
-        // Arrange
-        CopyOnWriteArrayList<Session> emptySessions = new CopyOnWriteArrayList<>();
+		when(mockSessionMap.getItem(sessionId)).thenReturn(null);
 
-        when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
-                .thenReturn(mockCoordinator);
-        when(sessionService.getSessionsByCoordinator(mockCoordinator))
-                .thenReturn(emptySessions);
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions/{sessionId}/getProjects", sessionId))
+				.andExpect(status().isNotFound());
 
-        // Act & Assert
-        mockMvc.perform(get("/api/sessions")
-                .sessionAttr("user", mockCoordinator))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$.length()").value(0));
+		verify(mockSessionMap).getItem(sessionId);
+	}
 
-        verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
-        verify(sessionService).getSessionsByCoordinator(mockCoordinator);
-    }
+	@Test
+	void testDeleteSession_ValidCoordinatorAndSession_ReturnsSuccess() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
 
-    @Configuration
-    static class TestConfig {
-    }
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
+		when(sessionService.deleteSession(sessionId, mockCoordinator))
+				.thenReturn(true);
+
+		// Act & Assert
+		mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isOk())
+				.andExpect(content().string("Session deleted successfully"));
+
+		verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
+		verify(sessionService).deleteSession(sessionId, mockCoordinator);
+	}
+
+	@Test
+	void testDeleteSession_UnauthorizedUser_ReturnsForbidden() throws Exception {
+		// Arrange
+		String sessionId = "session-123";
+
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
+		when(sessionService.deleteSession(sessionId, mockCoordinator))
+				.thenReturn(false);
+
+		// Act & Assert
+		mockMvc.perform(delete("/api/sessions/{sessionId}", sessionId)
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isForbidden());
+
+		verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
+		verify(sessionService).deleteSession(sessionId, mockCoordinator);
+	}
+
+	@Test
+	void testGetSessions_EmptyList_ReturnsEmptyArray() throws Exception {
+		// Arrange
+		CopyOnWriteArrayList<Session> emptySessions = new CopyOnWriteArrayList<>();
+
+		when(requestRequirementService.requireUserCoordinatorExists(any(HttpServletRequest.class)))
+				.thenReturn(mockCoordinator);
+		when(sessionService.getSessionsByCoordinator(mockCoordinator))
+				.thenReturn(emptySessions);
+
+		// Act & Assert
+		mockMvc.perform(get("/api/sessions")
+				.sessionAttr("user", mockCoordinator))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$").isArray())
+				.andExpect(jsonPath("$.length()").value(0));
+
+		verify(requestRequirementService).requireUserCoordinatorExists(any(HttpServletRequest.class));
+		verify(sessionService).getSessionsByCoordinator(mockCoordinator);
+	}
+
+	@Configuration
+	static class TestConfig {
+	}
 }

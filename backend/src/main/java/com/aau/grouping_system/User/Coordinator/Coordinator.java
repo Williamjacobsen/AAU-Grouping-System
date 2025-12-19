@@ -14,6 +14,10 @@ public class Coordinator extends User {
 	}
 
 	@Override
+	protected void onCascadeRemove(Database db) {
+	}
+
+	@Override
 	public Role getRole() {
 		return Role.Coordinator;
 	}

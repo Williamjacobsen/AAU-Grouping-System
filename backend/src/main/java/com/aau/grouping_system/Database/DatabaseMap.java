@@ -17,6 +17,7 @@ public class DatabaseMap<T extends DatabaseItem> implements Serializable {
 
 	public void cascadeRemoveItem(Database db, String id) {
 		T item = getItem(id);
+		item.onCascadeRemove(db);
 		item.cascadeRemoveChildItems(db);
 		item.disconnectFromParentItem(db);
 		map.remove(id);

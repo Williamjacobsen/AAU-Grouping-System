@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import "./SessionSetup.css";
-import SessionSetupForm from "./SessionSetupForm";
-import EmailNewPasswordsForm from "./EmailNewPasswords";
-import ResetFormButton from "./ResetFormButton";
+import SessionSetupForm from "./components/SessionSetupForm";
+import EmailNewPasswordsForm from "./components/EmailNewPasswords";
+import ResetFormButton from "./components/ResetFormButton";
 
-import { useAppState } from "ContextProviders/AppStateContext";
+import { useAppState } from "context/AppStateContext";
 
 export default function SessionSetup() {
 	const { sessionId } = useParams(); // Gets the session ID via the URL parameter "../:sessionId/setup"

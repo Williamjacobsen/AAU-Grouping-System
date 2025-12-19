@@ -51,28 +51,29 @@ public class ProjectController {
 	private void requireStudentHasNotAlreadyCreatedProject(User user, Session session) {
 		// Get projects in session
 		CopyOnWriteArrayList<Project> sessionProjects = db.getProjects().getItems(session.getProjects().getIds());
-		
+
 		// Handle null case safely
 		if (sessionProjects == null) {
 			return; // No existing projects, so student can create one
 		}
-		
+
 		// Check if student has already created a project
 		for (Project project : sessionProjects) {
 			if (project != null && project.getCreatorUserId().equals(user.getId())) {
 				throw new RequestException(HttpStatus.BAD_REQUEST,
-						"Students are only allowed to create one project proposal per session. You have already created: " + project.getName());
+						"Students are only allowed to create one project proposal per session. You have already created: "
+								+ project.getName());
 			}
 		}
 	}
 
 	private void requireProjectNameIsUnique(String projectName, Session session) {
 		CopyOnWriteArrayList<Project> sessionProjects = db.getProjects().getItems(session.getProjects().getIds());
-		
+
 		if (sessionProjects == null) {
 			return;
 		}
-		
+
 		// Check if project name already exists
 		for (Project project : sessionProjects) {
 			if (project != null && project.getName().equalsIgnoreCase(projectName.trim())) {
@@ -92,7 +93,8 @@ public class ProjectController {
 
 	@GetMapping({ "/sessions/{sessionId}/getProjects", "/getSessionProjects/{sessionId}" }) // retrieves all projects from
 																																													// sessionid
-	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(@PathVariable("sessionId") String sessionId) {
+	public ResponseEntity<CopyOnWriteArrayList<Project>> getSessionsProjects(
+			@PathVariable("sessionId") String sessionId) {
 		Session session = db.getSessions().getItem(sessionId); // ask the database for session with certain id
 
 		// Check if session exists if not throw error

@@ -36,9 +36,10 @@ import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-@WebMvcTest({StudentController.class, com.aau.grouping_system.Session.SessionSetupController.class})
+@WebMvcTest({ StudentController.class, com.aau.grouping_system.Session.SessionSetupController.class })
 @AutoConfigureWebMvc
-@ComponentScan(basePackages = { "com.aau.grouping_system.User.SessionMember.Student", "com.aau.grouping_system.Session", "com.aau.grouping_system.Config",
+@ComponentScan(basePackages = { "com.aau.grouping_system.User.SessionMember.Student", "com.aau.grouping_system.Session",
+		"com.aau.grouping_system.Config",
 		"com.aau.grouping_system.Exceptions" })
 @Import({ StudentControllerIntegrationTest.TestConfig.class, SecurityConfig.class })
 class StudentControllerIntegrationTest {
@@ -97,7 +98,8 @@ class StudentControllerIntegrationTest {
 				""";
 
 		when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
-		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
+		when(requirementService.requireUserCoordinatorExists(any()))
+				.thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
 		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")
@@ -124,7 +126,8 @@ class StudentControllerIntegrationTest {
 				""";
 
 		when(requirementService.requireSessionExists("session-123")).thenReturn(testSession);
-		when(requirementService.requireUserCoordinatorExists(any())).thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
+		when(requirementService.requireUserCoordinatorExists(any()))
+				.thenReturn(mock(com.aau.grouping_system.User.Coordinator.Coordinator.class));
 
 		// Act & Assert
 		mockMvc.perform(post("/api/sessionSetup/session-123/saveSetup")

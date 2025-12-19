@@ -1,11 +1,11 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 
-import ProjectsTable from "./ProjectsTable";
+import ProjectsTable from "./components/ProjectsTable";
 import "./Projects.css";
 
-import { useAppState } from "ContextProviders/AppStateContext";
-import { useAuth } from "ContextProviders/AuthProvider";
+import { useAppState } from "context/AppStateContext";
+import { useAuth } from "context/AuthProvider";
 
 export default function Project() {
 

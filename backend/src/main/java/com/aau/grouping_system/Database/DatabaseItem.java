@@ -10,6 +10,8 @@ public abstract class DatabaseItem implements Serializable {
 	private CopyOnWriteArrayList<DatabaseItemChildGroup> childItemGroups = new CopyOnWriteArrayList<>();
 	private DatabaseItemChildGroup parentItemChildGroup = null;
 
+	abstract protected void onCascadeRemove(Database db);
+
 	void cascadeRemoveChildItems(Database db) {
 		for (DatabaseItemChildGroup childGroup : childItemGroups) {
 			for (String childId : childGroup.getIds()) {

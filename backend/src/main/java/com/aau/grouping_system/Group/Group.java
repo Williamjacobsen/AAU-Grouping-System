@@ -2,8 +2,10 @@ package com.aau.grouping_system.Group;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.Session.Session;
+import com.aau.grouping_system.User.SessionMember.Student.Student;
 
 public class Group extends DatabaseItem {
 
@@ -26,6 +28,17 @@ public class Group extends DatabaseItem {
 			String name) {
 		this.sessionId = session.getId();
 		this.name = name;
+	}
+
+	@Override
+	protected void onCascadeRemove(Database db) {
+		// Disconnect from linked students
+		for (Student member : db.getStudents().getItems(this.studentIds)) {
+			member.setGroupId(null);
+		}
+		for (Student studentRequestingToJoin : db.getStudents().getItems(this.joinRequestStudentIds)) {
+			studentRequestingToJoin.setActiveJoinRequestGroupId(null);
+		}
 	}
 
 	// @formatter:off

@@ -5,10 +5,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.InputValidation.NoWhitespace;
-import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.UserService;
 import com.aau.grouping_system.Utils.RequestRequirementService;
 

@@ -5,25 +5,25 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
 import NoPage from "./pages/NoPage/NoPage";
-import Header from "./Components/Header/Header";
+import Header from "./components/Header/Header";
 import About from "./pages/About/About";
-import SignIn from "./pages/User/SignIn";
-import SignUp from "./pages/User/SignUp";
-import Profile from "./pages/User/Profile";
-import ForgotPassword from "./pages/User/ForgotPassword";
-import ResetPassword from "./pages/User/ResetPassword";
-import Students from "./pages/Status/Status";
+import SignIn from "./pages/profileSystem/SignIn";
+import SignUp from "./pages/profileSystem/SignUp";
+import Profile from "./pages/profileSystem/Profile";
+import ForgotPassword from "./pages/profileSystem/ForgotPassword";
+import ResetPassword from "./pages/profileSystem/ResetPassword";
+import Students from "./pages/Students/Students";
 import Sessions from "./pages/Sessions/Sessions";
 import Projects from "./pages/Projects/Projects";
-import StudentQuestionnaire from "./pages/StudentQuestionnaire/StudentQuestionnaire";
-import GroupManagement from "./pages/GroupManagement/GroupManagement";
+import MyWishes from "./pages/MyWishes/MyWishes";
+import FinalizeGroups from "./pages/FinalizeGroups/FinalizeGroups";
 import SessionSetup from "./pages/SessionSetup/SessionSetup";
-import SupervisorsPage from "./pages/SupervisorsPage/SupervisorsPage";
-import StudentPage from "./pages/StudentPage/StudentPage";
-import ChatBox from "./Components/ChatBox/ChatBox";
+import Supervisors from "./pages/Supervisors/Supervisors";
+import Student from "./pages/Student/Student";
+import ChatBox from "./components/ChatBox/ChatBox";
 import MyGroup from "./pages/MyGroup/MyGroup";
-import { AppStateProvider } from "./ContextProviders/AppStateContext";
-import { AuthProvider } from "./ContextProviders/AuthProvider";
+import { AppStateProvider } from "./context/AppStateContext";
+import { AuthProvider } from "./context/AuthProvider";
 
 export default function App() {
 	return (
@@ -32,7 +32,7 @@ export default function App() {
 				<BrowserRouter>
 					<Routes>
 						<Route path="/" element={<Header />}>
-							<Route path="/about" element={<About />} />
+							<Route path="about" element={<About />} />
 							<Route path="sign-in" element={<SignIn />} />
 							<Route path="sign-up" element={<SignUp />} />
 							<Route path="profile" element={<Profile />} />
@@ -59,10 +59,10 @@ export default function App() {
 									<Route path="projects" element={<Projects />} />
 									<Route path="students" element={<Students />} />
 									<Route path="my-group" element={<MyGroup />} />
-									<Route path="groupManagement" element={<GroupManagement />} />
-									<Route path="studentQuestionnaire" element={<StudentQuestionnaire />} />
-									<Route path="supervisorsPage" element={<SupervisorsPage />} />
-									<Route path="student/:studentId" element={<StudentPage />} />
+									<Route path="finalize-groups" element={<FinalizeGroups />} />
+									<Route path="my-wishes" element={<MyWishes />} />
+									<Route path="supervisors" element={<Supervisors />} />
+									<Route path="student/:studentId" element={<Student />} />
 								</Route>
 							</Route>
 							<Route path="*" element={<NoPage />} />

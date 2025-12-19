@@ -1,0 +1,172 @@
+.group-container {
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 1.5rem;
+	font-family: inherit;
+	color: #000;
+}
+
+.group-row {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px;
+	margin-bottom: 2rem;
+	justify-content: flex-start;
+}
+
+.group-box {
+	width: 340px;
+	height: auto;
+	background-color: #fff;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	padding: 0 0.75rem 0.5rem 0.75rem;
+	box-sizing: border-box;
+	cursor: pointer;
+}
+
+.group-box:hover {
+	border-color: #3498db;
+}
+
+.toLarge-groups {
+	background-color: #2734ae;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.completed-groups {
+	background-color: #27ae60;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.almost-completed-groups {
+	background-color: #f1c40f;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.incomplete-groups {
+	background-color: #e74c3c;
+	font-weight: 500;
+	margin-bottom: 0.75rem;
+}
+
+.selected {
+	background-color: #3B82F6;
+	color: #fff;
+	border: 1px solid #2980b9;
+	border-radius: 4px;
+}
+
+.group-project {
+	font-size: 0.9rem;
+	color: #666;
+	margin-bottom: 10px;
+}
+
+.highlight {
+	color: #333;
+	font-weight: 600;
+}
+
+.student-priorities {
+	font-size: 0.85rem;
+	color: #000000;
+}
+
+.group-name {
+	font-weight: 700;
+	font-size: large;
+	color: #204098;
+}
+
+.group-number {
+	color: #204098;
+	font-weight: 700;
+}
+
+
+.student-name {
+	font-weight: 600;
+	padding: 0px 2px;
+	border-radius: 6px;
+	margin-right: 4px;
+}
+
+.undo-box {
+	text-align: center;
+	margin: 10px 0;
+}
+
+.undo-box button {
+	background-color: #000000;
+	color: white;
+	border: none;
+	padding: 6px 12px;
+	border-radius: 4px;
+	cursor: pointer;
+	font-weight: bold;
+}
+
+.undo-box button:hover {
+	background-color: #474747;
+}
+
+.error-message {
+	color: #000;
+	font-weight: 500;
+	padding: 1rem;
+	margin-bottom: 1rem;
+	background-color: #f8d7da;
+	border-left: 3px solid #e74c3c;
+}
+
+.assign-button {
+	margin-bottom: 4px;
+	padding: 0;
+	background: none;
+	border: none;
+	border-radius: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	font-size: 12px;
+	overflow: visible;
+}
+
+.assign-button p {
+	margin: 0;
+	font-weight: 600;
+	color: #374151;
+}
+
+.assign-button select {
+	border-radius: 4px;
+	border: none;
+	background-color: #f3f4f6;
+	cursor: pointer;
+	font-size: 11px;
+	height: 26px;
+	padding: 2px 8px;
+	box-shadow: none;
+	outline: 1px solid #e5e7eb;
+	transition: outline-color 0.2s;
+}
+
+.assign-button select:hover,
+.assign-button select:focus {
+	outline-color: #3b82f6;
+}
+
+.assign-row {
+	display: flex;
+	gap: 12px;
+	margin-bottom: 0px;
+}
+
+.assign-row .assign-button {
+	flex: 1;
+	margin-bottom: 0;
+}
