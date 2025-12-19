@@ -36,8 +36,7 @@ export default function FinalizeGroups() {
 
 
 	const { moveStudent, moveAllMembers, assignSupervisor, assignProject } = useGroupActions(sessionId, setGroups);
-	const { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member }
-		= useSplitGroupsIntoSections(groups, session);
+	const { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups } = useSplitGroupsIntoSections(groups, session);
 
 	useEffect(() => {
 		if (fetchedGroups) {
@@ -207,10 +206,8 @@ export default function FinalizeGroups() {
 					<div className="group-row">
 						<RenderStudentList
 							localStudentsWithNoGroup={localStudentsWithNoGroup}
-							groupsWith1Member={groupsWith1Member}
 							selectedStudent={selectedStudent}
 							handleStudentClick={handleStudentClick}
-							students={students}
 							projects={projects}
 						/>
 					</div>

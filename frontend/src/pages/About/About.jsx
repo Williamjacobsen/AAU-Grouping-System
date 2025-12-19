@@ -43,7 +43,6 @@ export default function About() {
 					<h3>Supervisors</h3>
 					<ol>
 						<li>Add project proposals.</li>
-						<li>Manage group supervision load.</li>
 					</ol>
 				</div>
 			</div>

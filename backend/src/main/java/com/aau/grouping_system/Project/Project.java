@@ -1,5 +1,6 @@
 package com.aau.grouping_system.Project;
 
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.User.User;
 
@@ -16,6 +17,10 @@ public class Project extends DatabaseItem {
 		this.description = description;
 		this.creatorUserId = creatorUser.getId();
 		this.creatorUserRole = creatorUser.getRole();
+	}
+
+	@Override
+	protected void onCascadeRemove(Database db) {
 	}
 
 	// @formatter:off

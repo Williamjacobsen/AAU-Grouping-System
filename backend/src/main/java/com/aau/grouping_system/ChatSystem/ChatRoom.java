@@ -4,6 +4,7 @@ import java.util.Deque;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Database.DatabaseItem;
 import com.aau.grouping_system.ChatSystem.WebSocket.WebSocketService.MessageDatabaseFormat;
 
@@ -22,6 +23,10 @@ public class ChatRoom extends DatabaseItem {
 		this.isGroup = isGroup;
 	}
 
+	@Override
+	protected void onCascadeRemove(Database db) {
+	}
+
 	public String getConversationKey() {
 		return conversationKey;
 	}
@@ -38,7 +43,8 @@ public class ChatRoom extends DatabaseItem {
 		return lastRead;
 	}
 
-	// This method replaces direct access to the AtomicInteger (it is not Serializable)
+	// This method replaces direct access to the AtomicInteger (it is not
+	// Serializable)
 	public synchronized int getAndIncrementNextId() {
 		return nextMessageId++;
 	}

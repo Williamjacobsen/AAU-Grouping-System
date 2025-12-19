@@ -28,16 +28,10 @@ export default function useSplitGroupsIntoSections(groups, session) {
 
 	const incompleteGroups = useMemo(() => {
 		return groups.filter(group =>
-			group.studentIds?.length > 1 && group.studentIds?.length < session?.minGroupSize * almostCompleteFraction
+			group.studentIds?.length < session?.minGroupSize * almostCompleteFraction
 			&& group.studentIds?.length !== 0
 		);
 	}, [groups, session]);
 
-	const groupsWith1Member = useMemo(() => {
-		return groups.filter(group =>
-			group.studentIds?.length === 1
-		);
-	}, [groups]);
-
-	return { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups, groupsWith1Member };
+	return { toLargeGroups, completedGroups, almostCompletedGroups, incompleteGroups };
 }

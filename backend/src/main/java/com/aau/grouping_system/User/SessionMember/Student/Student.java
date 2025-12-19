@@ -1,5 +1,6 @@
 package com.aau.grouping_system.User.SessionMember.Student;
 
+import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.SessionMember.SessionMember;
 
@@ -12,6 +13,14 @@ public class Student extends SessionMember {
 
 	public Student(String email, String name, Session session) {
 		super(email, name, session);
+	}
+
+	@Override
+	protected void onCascadeRemove(Database db) {
+		// Disconnect from linked group
+		if (groupId != null) {
+			db.getGroups().getItem(this.groupId).getStudentIds().remove(this.getId());
+		}
 	}
 
 	@Override

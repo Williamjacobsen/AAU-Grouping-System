@@ -198,7 +198,7 @@ export default function GroupMenu({
 							{getIsUserGroupOwner()
 								? "You"
 								: students.find(
-									(student) => student.id === getUserGroup().studentIds[0]
+									(student) => student.id === getUserGroup()?.studentIds[0]
 								).name}
 						</span>
 					</div>
