@@ -1,6 +1,5 @@
 package com.aau.grouping_system.Session;
 
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.http.HttpStatus;
@@ -14,17 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.aau.grouping_system.Authentication.AuthService;
 import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.Exceptions.RequestException;
-import com.aau.grouping_system.Group.Group;
 import com.aau.grouping_system.Project.Project;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.Student.Student;
 import com.aau.grouping_system.User.SessionMember.Supervisor.Supervisor;
+import com.aau.grouping_system.Utils.RequestRequirementService;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
-import com.aau.grouping_system.Utils.RequestRequirementService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,14 +34,14 @@ public class SessionController {
 
 	private final Database db;
 	private final SessionService sessionService;
-	private final AuthService authService;
 	private final RequestRequirementService requestRequirementService;
 
-	public SessionController(Database db, SessionService sessionService, AuthService authService,
+	public SessionController(
+			Database db,
+			SessionService sessionService,
 			RequestRequirementService requestRequirementService) {
 		this.db = db;
 		this.sessionService = sessionService;
-		this.authService = authService;
 		this.requestRequirementService = requestRequirementService;
 	}
 

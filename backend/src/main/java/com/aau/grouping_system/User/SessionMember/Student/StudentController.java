@@ -1,6 +1,5 @@
 package com.aau.grouping_system.User.SessionMember.Student;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,8 +14,8 @@ import com.aau.grouping_system.Session.Session;
 import com.aau.grouping_system.User.User;
 import com.aau.grouping_system.User.Coordinator.Coordinator;
 import com.aau.grouping_system.User.SessionMember.SessionMemberService;
-import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 import com.aau.grouping_system.Utils.RequestRequirementService;
+import com.aau.grouping_system.InputValidation.NoDangerousCharacters;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;

@@ -6,7 +6,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import com.aau.grouping_system.Database.Database;
 import com.aau.grouping_system.EmailSystem.EmailService;
 import com.aau.grouping_system.Exceptions.RequestException;
 import com.aau.grouping_system.Session.Session;
@@ -15,15 +14,12 @@ import com.aau.grouping_system.User.UserService;
 @Service
 public class SessionMemberService {
 
-	private final Database db;
 	private final EmailService emailService;
 	private final UserService userService;
 
 	public SessionMemberService(
-			Database db,
 			EmailService emailService,
 			UserService userService) {
-		this.db = db;
 		this.emailService = emailService;
 		this.userService = userService;
 	}
