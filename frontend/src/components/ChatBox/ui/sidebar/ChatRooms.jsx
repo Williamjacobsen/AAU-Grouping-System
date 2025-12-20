@@ -82,7 +82,7 @@ export default function chatRooms({
 								margin: 0,
 								fontSize: unreadCount > 0 ? "20.5px" : "20px",
 								fontWeight: unreadCount > 0 ? 600 : 500,
-								width: "11rem",
+								width: unreadCount > 0 ? "10rem" : "11rem",
 								overflow: "hidden",
 								textOverflow: "ellipsis",
 								whiteSpace: "nowrap",
@@ -90,6 +90,26 @@ export default function chatRooms({
 						>
 							{chatRoom}
 						</h4>
+  
+          {unreadCount > 0 && (
+							<span
+								style={{
+									position: "absolute",
+									right: "4rem",
+									backgroundColor: "#3b82f6",
+									color: "white",
+									borderRadius: "12px",
+									padding: "2px 8px",
+									fontSize: "12px",
+									fontWeight: "bold",
+									minWidth: "20px",
+									textAlign: "center",
+								}}
+							>
+								{unreadCount}
+							</span>
+						)}
+
 						<span
 							style={{
 								cursor: "pointer",
@@ -106,7 +126,7 @@ export default function chatRooms({
 								boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
 								transition: "transform 0.15s ease, box-shadow 0.15s ease",
 								position: "absolute",
-								right: "2.5rem",
+								right: "1.5rem",
 							}}
 							onMouseEnter={(e) => {
 								e.currentTarget.style.transform = "scale(1.05)";
