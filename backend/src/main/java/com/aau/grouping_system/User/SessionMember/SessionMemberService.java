@@ -53,7 +53,7 @@ public class SessionMemberService {
 				%s
 
 				Please use your ID and password to sign in to the group formation session via the following link:
-				http://localhost:3000/sign-in
+				http://64.226.97.37:8080/sign-in
 
 				""", sessionMember.getName(), session.getName(), sessionMember.getId(), newPassword);
 
