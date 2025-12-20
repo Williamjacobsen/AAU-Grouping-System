@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Outlet, useLocation } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 
@@ -25,13 +25,24 @@ import MyGroup from "./pages/MyGroup/MyGroup";
 import { AppStateProvider } from "./context/AppStateContext";
 import { AuthProvider } from "./context/AuthProvider";
 
+function Layout() {
+  const location = useLocation();
+  
+  return (
+    <>
+      <Header />
+      {location.pathname === "/" && <About />}
+    </>
+  );
+}
+
 export default function App() {
 	return (
 		<React.StrictMode>
 			<AuthProvider>
 				<BrowserRouter>
 					<Routes>
-						<Route path="/" element={<Header />}>
+						<Route path="/" element={<Layout />}>
 							<Route path="about" element={<About />} />
 							<Route path="sign-in" element={<SignIn />} />
 							<Route path="sign-up" element={<SignUp />} />
