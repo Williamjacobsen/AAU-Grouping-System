@@ -70,7 +70,23 @@ export default function ChatBox() {
 			chatSystem,
 			students
 		);
+
+    if (messageKey) {
+		  setUnreadMessagesByRoom((prev) => {
+			  const updated = { ...prev };
+			  updated[messageKey] = 0;
+			  return updated;
+		  });
+	  }
 	}, [selectedChatRoom, roomMessages, user.name, students]);
+
+  useEffect(() => {
+	  const total = Object.values(unreadMessagesByRoom).reduce((sum, count) => {
+		  const numCount = Number(count);
+	  	return sum + (isNaN(numCount) ? 0 : numCount);
+	  }, 0);
+	  setUnreadMessagesCount(total);
+  }, [unreadMessagesByRoom]);
 
 	useEffect(() => {
 		getUnreadMessagesCounters(
